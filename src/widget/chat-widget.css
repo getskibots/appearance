@@ -1,0 +1,2073 @@
+/* GetSkiBots — Chat widget (embeddable) styles.
+   Extracted verbatim from the original single-file index.html <style>.
+   Covers the launcher, chat surface, voice mode, and the snowfall overlay.
+   Loaded by the dashboard preview and (later) shippable as a standalone bundle. */
+/* =========================================================================
+   SNOWFALL OVERLAY — applied to the chat surface (real, not preview-card).
+   The .gsb-snowfall container sits absolutely inside .gsb-chat covering
+   the full surface. The runtime engine populates it with .gsb-snow-flake /
+   .gsb-snow-crystal / .gsb-snow-streak elements based on the partner's
+   chosen style.
+   ========================================================================= */
+
+.gsb-snowfall {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 90;
+  /* Mix-blend-mode lighten ensures snow flakes only BRIGHTEN the underlying
+     content — never darken or obscure. Text and UI stay fully readable while
+     the white flakes still appear visibly bright on dark elements (webcam,
+     header) and subtly visible on light elements (chat bg, message panels). */
+  mix-blend-mode: lighten;
+}
+
+/* Disable entirely when canvas data attribute is missing / set to 'none'.
+   Empty string also acts as a kill switch. */
+.preview-canvas:not([data-snow-style]) .gsb-snowfall,
+.preview-canvas[data-snow-style=""] .gsb-snowfall,
+.preview-canvas[data-snow-style="none"] .gsb-snowfall {
+  display: none;
+}
+
+/* === REALISTIC === Soft circular flakes with radial gradient, gentle drift */
+.gsb-snow-flake {
+  position: absolute;
+  top: -20px;
+  background: radial-gradient(circle, rgba(255,255,255,0.95) 30%, rgba(255,255,255,0) 100%);
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* === CRYSTALLINE === Sharp 6-pointed flakes drawn with crossing gradients */
+.gsb-snow-crystal {
+  position: absolute;
+  top: -20px;
+  background-image:
+    linear-gradient(0deg,   transparent 47%, #fff 47%, #fff 53%, transparent 53%),
+    linear-gradient(60deg,  transparent 47%, #fff 47%, #fff 53%, transparent 53%),
+    linear-gradient(120deg, transparent 47%, #fff 47%, #fff 53%, transparent 53%);
+  filter: drop-shadow(0 0 3px rgba(255,255,255,0.65));
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* === STORM === Thin diagonal streaks driven sideways with wind */
+.gsb-snow-streak {
+  position: absolute;
+  top: -20px;
+  width: 1.5px;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,0.95), transparent);
+  border-radius: 1px;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transform: rotate(20deg);
+}
+
+/* Keyframes shared across all flake types — translate down, fade in/out.
+   Each flake gets random horizontal drift via inline style for variety. */
+@keyframes gsb-snow-fall {
+  0%   { transform: translate3d(0, 0, 0);
+         opacity: 0; }
+  10%  { opacity: var(--flake-opacity, 0.85); }
+  90%  { opacity: var(--flake-opacity, 0.85); }
+  100% { transform: translate3d(var(--flake-drift, 8px), var(--flake-distance, 600px), 0);
+         opacity: 0; }
+}
+
+@keyframes gsb-snow-fall-storm {
+  0%   { transform: translate3d(0, 0, 0) rotate(20deg);
+         opacity: 0; }
+  10%  { opacity: var(--flake-opacity, 0.95); }
+  90%  { opacity: var(--flake-opacity, 0.95); }
+  100% { transform: translate3d(var(--flake-drift, -40px), var(--flake-distance, 600px), 0) rotate(20deg);
+         opacity: 0; }
+}
+
+/* Reduced motion: kill animations, render flakes as a static dusting at
+   their starting positions. Falls back to a sparse decorative overlay. */
+@media (prefers-reduced-motion: reduce) {
+  .gsb-snow-flake, .gsb-snow-crystal, .gsb-snow-streak {
+    animation: none !important;
+    opacity: 0.4;
+  }
+}
+
+/* When canvas signals reduced-motion preference is being respected AND
+   user's OS is reduced — same kill switch via JS for browsers that don't
+   trigger the media query reliably (some embedded webviews). */
+.preview-canvas[data-snow-static="true"] .gsb-snow-flake,
+.preview-canvas[data-snow-static="true"] .gsb-snow-crystal,
+.preview-canvas[data-snow-static="true"] .gsb-snow-streak {
+  animation: none !important;
+  opacity: 0.4;
+}
+
+
+/* =========================================================================
+   CHAT WIDGET (rendered inside preview canvas)
+   ========================================================================= */
+
+.gsb-launcher {
+  position: fixed !important;
+  bottom: 60px !important;
+  right: 24px !important;
+  z-index: 90;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  font-family: var(--gsb-body-font, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+  color: inherit;
+  transition: opacity 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: auto;
+}
+
+/* Simple bubble */
+.gsb-launcher[data-icon-style="traditional"] {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: gsb-launcher-pulse-traditional 2.5s ease-out infinite;
+}
+
+/* ============================================================
+   DEPTH EFFECT INTEGRATION FOR LAUNCHER
+   - 'none'    → suppress pulse animation entirely (flat launcher).
+   - 'shadow'  → suppress pulse, apply neutral drop shadow.
+   - 'glow'    → suppress pulse, apply STATIC brand-color halo.
+   - 'radiate' → KEEP pulse animation (the existing brand-color ripple).
+                 The pulse keyframes already provide a brand halo, so we
+                 must NOT apply a static box-shadow that would compete with
+                 the animated keyframes.
+   ============================================================ */
+.gsb-launcher[data-effect-mode="none"][data-icon-style="traditional"],
+.gsb-launcher[data-effect-mode="none"][data-icon-style="custom"],
+.gsb-launcher[data-effect-mode="none"][data-icon-style="enhanced"],
+.gsb-launcher[data-effect-mode="none"][data-icon-style="slidein"] {
+  animation: none !important;
+  box-shadow: none !important;
+}
+
+.gsb-launcher[data-effect-mode="shadow"][data-icon-style="traditional"],
+.gsb-launcher[data-effect-mode="shadow"][data-icon-style="custom"],
+.gsb-launcher[data-effect-mode="shadow"][data-icon-style="enhanced"],
+.gsb-launcher[data-effect-mode="shadow"][data-icon-style="slidein"] {
+  animation: none !important;
+  box-shadow: var(--gsb-depth-effect, none) !important;
+}
+
+/* Glow — static halo, no animation (across all launcher styles) */
+.gsb-launcher[data-effect-mode="glow"][data-icon-style="traditional"],
+.gsb-launcher[data-effect-mode="glow"][data-icon-style="custom"],
+.gsb-launcher[data-effect-mode="glow"][data-icon-style="enhanced"],
+.gsb-launcher[data-effect-mode="glow"][data-icon-style="slidein"] {
+  animation: none !important;
+  box-shadow: var(--gsb-depth-effect, none) !important;
+}
+
+/* Radiate — restore the keyframe animation. The base rules at lines 1847,
+   1915, and 2029 already declare the animation, but we re-declare here to
+   ensure it wins specificity battles when the partner toggles between modes
+   and the previous mode's `animation: none !important` lingered. */
+.gsb-launcher[data-effect-mode="radiate"][data-icon-style="traditional"] {
+  animation: gsb-launcher-pulse-traditional 2.5s ease-out infinite !important;
+}
+.gsb-launcher[data-effect-mode="radiate"][data-icon-style="custom"] {
+  animation: gsb-launcher-pulse-traditional 2.5s ease-out infinite !important;
+}
+.gsb-launcher[data-effect-mode="radiate"][data-icon-style="enhanced"],
+.gsb-launcher[data-effect-mode="radiate"][data-icon-style="slidein"] {
+  animation: gsb-launcher-pulse-enhanced 4s ease-out infinite !important;
+}
+
+.gsb-launcher[data-icon-style="traditional"] .gsb-launcher-traditional-icon {
+  width: 24px;
+  height: 24px;
+  color: #fff;
+}
+
+/* Custom icon variant: same shape as traditional, but renders an uploaded image */
+.gsb-launcher[data-icon-style="custom"] {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: gsb-launcher-pulse-traditional 2.5s ease-out infinite;
+  overflow: hidden;
+}
+
+.gsb-launcher[data-icon-style="custom"] .gsb-launcher-custom-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  color: #fff;
+}
+
+/* Hide irrelevant children based on icon style */
+.gsb-launcher[data-icon-style="traditional"] .gsb-launcher-custom-icon,
+.gsb-launcher[data-icon-style="traditional"] .gsb-launcher__row,
+.gsb-launcher[data-icon-style="traditional"] .gsb-launcher-cta,
+.gsb-launcher[data-icon-style="traditional"] .gsb-launcher-microlabel { display: none !important; }
+
+.gsb-launcher[data-icon-style="custom"] .gsb-launcher-traditional-icon,
+.gsb-launcher[data-icon-style="custom"] .gsb-launcher__row,
+.gsb-launcher[data-icon-style="custom"] .gsb-launcher-cta,
+.gsb-launcher[data-icon-style="custom"] .gsb-launcher-microlabel { display: none !important; }
+
+.gsb-launcher[data-icon-style="enhanced"] .gsb-launcher-traditional-icon,
+.gsb-launcher[data-icon-style="enhanced"] .gsb-launcher-custom-icon,
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-traditional-icon,
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-custom-icon { display: none !important; }
+
+/* ============================================================
+   LIVE AGENT INDICATOR DOT — green pulsing dot in the top-right
+   corner of the launcher. Appears on Simple, Pillowdrop, and
+   Custom launcher styles when [data-liveagent="on"]. Status pill
+   (enhanced) is excluded — it has its own human-avatar treatment.
+   ============================================================ */
+.gsb-launcher-agent-dot {
+  position: absolute;
+  display: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #3eb364;
+  border: 2px solid #fff;
+  z-index: 5;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.gsb-launcher-agent-dot::after {
+  /* Pulsing ring */
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid rgba(62, 179, 100, 0.6);
+  animation: gsb-agent-dot-pulse 2.2s ease-out infinite;
+}
+
+@keyframes gsb-agent-dot-pulse {
+  0%   { transform: scale(1);   opacity: 0.85; }
+  70%  { transform: scale(1.9); opacity: 0; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+/* Show on Simple bubble (traditional) — top-right of the 56px circle */
+.gsb-launcher[data-icon-style="traditional"][data-liveagent="on"] .gsb-launcher-agent-dot,
+[data-liveagent="on"] .gsb-launcher[data-icon-style="traditional"] .gsb-launcher-agent-dot {
+  display: block;
+  top: 2px;
+  right: 2px;
+}
+
+/* Show on Custom upload — same position as traditional */
+.gsb-launcher[data-icon-style="custom"][data-liveagent="on"] .gsb-launcher-agent-dot,
+[data-liveagent="on"] .gsb-launcher[data-icon-style="custom"] .gsb-launcher-agent-dot {
+  display: block;
+  top: 2px;
+  right: 2px;
+}
+
+/* Show on Pillowdrop (slidein) — top of the vertical pill */
+.gsb-launcher[data-icon-style="slidein"][data-liveagent="on"] .gsb-launcher-agent-dot,
+[data-liveagent="on"] .gsb-launcher[data-icon-style="slidein"] .gsb-launcher-agent-dot {
+  display: block;
+  top: 4px;
+  right: 4px;
+}
+
+/* Hidden on Status pill (enhanced) — that style uses the human avatar */
+.gsb-launcher[data-icon-style="enhanced"] .gsb-launcher-agent-dot {
+  display: none !important;
+}
+
+/* Custom launcher has overflow:hidden which would clip the dot. Remove that
+   constraint and instead clip the uploaded image alone via its own border-radius */
+.gsb-launcher[data-icon-style="custom"] {
+  overflow: visible;
+}
+.gsb-launcher[data-icon-style="custom"] .gsb-launcher-custom-icon {
+  border-radius: 50%;
+}
+
+/* Status pill — CONDENSED state (default, no live agent)
+   Compact pill with avatars + divider + weather inline, "Need help?" CTA below.
+   Sized tightly so the pill matches the actual content footprint. */
+.gsb-launcher[data-icon-style="enhanced"],
+.gsb-launcher[data-icon-style="slidein"] {
+  background: var(--enhanced-bg);
+  color: var(--enhanced-fg);
+  border-radius: var(--gsb-radius);
+  padding: 6px 12px 6px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: stretch;
+  min-width: 152px;
+  animation: gsb-launcher-pulse-enhanced 4s ease-out infinite;
+  text-align: left;
+  transition: min-width 280ms ease, padding 280ms ease, gap 280ms ease;
+}
+
+/* EXPANDED state — when liveagent is on, AGENT ONLINE label sits inline,
+   pill widens to give it room and let "Need help?" center properly */
+[data-liveagent="on"] .gsb-launcher[data-icon-style="enhanced"],
+.gsb-launcher[data-icon-style="enhanced"][data-liveagent="on"] {
+  min-width: 220px;
+  padding: 8px 14px 8px 8px;
+  gap: 6px;
+}
+
+.gsb-launcher__row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.gsb-launcher-avatars {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.gsb-launcher-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--enhanced-fg);
+  background: #fff;
+}
+
+.gsb-launcher-avatar-ai {
+  z-index: 2;
+  border-color: #3eb364;
+  animation: gsb-avatar-pulse 2.2s ease-out infinite;
+}
+
+.gsb-launcher-avatar-ai svg { width: 14px; height: 14px; color: var(--brand-deep); }
+
+.gsb-launcher-avatar-human {
+  margin-left: -6px;
+  background: var(--enhanced-human-bg);
+  border-color: var(--enhanced-fg-soft);
+  color: var(--enhanced-fg-soft);
+  z-index: 1;
+  transition: background 250ms ease, border-color 250ms ease;
+}
+
+.gsb-launcher-avatar-human svg { width: 12px; height: 12px; }
+
+[data-liveagent="on"] .gsb-launcher-avatar-human {
+  background: #fff;
+  border-color: #3eb364;
+  color: var(--brand-deep);
+  animation: gsb-avatar-pulse 2.2s ease-out infinite;
+  animation-delay: 1.1s;
+}
+
+.gsb-launcher-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--enhanced-divider);
+  flex: 0 0 auto;
+}
+
+.gsb-launcher-weather {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.gsb-launcher[data-show-weather="true"] .gsb-launcher-weather { display: inline-flex; }
+.gsb-launcher[data-show-weather="true"] .gsb-launcher-divider { display: block; }
+.gsb-launcher:not([data-show-weather="true"]) .gsb-launcher-divider { display: none; }
+
+.gsb-launcher-weather svg { width: 18px; height: 18px; color: var(--enhanced-fg); flex: 0 0 auto; }
+
+.gsb-launcher-weather__temp {
+  font-size: calc(15px * var(--gsb-text-scale, 1));
+  font-weight: 700;
+  color: var(--enhanced-fg);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.gsb-launcher-weather__unit {
+  font-size: calc(10px * var(--gsb-text-scale, 1));
+  font-weight: 700;
+  color: var(--enhanced-fg-soft);
+  margin-left: 1px;
+}
+
+.gsb-launcher-cta {
+  display: none;
+  /* Grid: phantom left | centered text | arrow right.
+     Phantom column balances the arrow's width so text optically centers. */
+  grid-template-columns: 1em 1fr 1em;
+  align-items: center;
+  font-size: calc(12px * var(--gsb-text-scale, 1));
+  font-weight: 600;
+  color: var(--enhanced-fg);
+  padding-top: 6px;
+  margin-top: 0;
+  border-top: 1px solid var(--enhanced-divider);
+  letter-spacing: 0.005em;
+}
+
+.gsb-launcher-cta .gsb-cta-text {
+  grid-column: 2;
+  text-align: center;
+  /* Defensive overflow safety: ensures the pill never blows up if
+     somehow a too-long string slips through the form's 24-char cap. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  /* Emoji-friendly font stack: body font handles text glyphs, then native
+     OS emoji fonts handle color emoji (🎿, 🏂, ❄️ etc.). Browsers automatically
+     fall through the stack per glyph, so mixed text+emoji renders correctly. */
+  font-family: var(--gsb-body-font, 'Inter'), 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+}
+
+.gsb-launcher-cta .gsb-cta-arrow {
+  grid-column: 3;
+  font-size: calc(14px * var(--gsb-text-scale, 1));
+  opacity: 0.85;
+  justify-self: end;
+}
+
+.gsb-launcher[data-show-cta="true"] .gsb-launcher-cta { display: grid; }
+
+/* CTA inner pieces — defaults are for horizontal pill; slide-in overrides further down */
+.gsb-launcher-cta .gsb-cta-icon,
+.gsb-launcher-cta .gsb-cta-help-label { display: none; }
+
+.gsb-launcher-microlabel {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  font-size: calc(11px * var(--gsb-text-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  color: var(--enhanced-fg);
+  text-transform: uppercase;
+  line-height: 1;
+  flex: 1 1 auto;
+  white-space: nowrap;
+  justify-content: center;
+}
+
+.gsb-launcher-microlabel__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3eb364;
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.gsb-launcher-microlabel__dot::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid rgba(62, 179, 100, 0.6);
+  animation: gsb-microlabel-dot-pulse 2.2s ease-out infinite;
+}
+
+@keyframes gsb-microlabel-dot-pulse {
+  0%   { transform: scale(1);   opacity: 0.85; }
+  70%  { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+[data-liveagent="on"] .gsb-launcher[data-icon-style="enhanced"] .gsb-launcher-microlabel,
+.gsb-launcher[data-icon-style="enhanced"][data-liveagent="on"] .gsb-launcher-microlabel {
+  display: inline-flex;
+}
+
+/* Hide microlabel on slidein (Pillowdrop) — vertical orientation can't fit it inline */
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-microlabel { display: none !important; }
+
+.preview-canvas[data-preview-open="true"] .gsb-launcher,
+body.modal-open .gsb-launcher {
+  opacity: 0;
+  pointer-events: none;
+  animation: none;
+}
+
+.gsb-launcher:hover { animation: none !important; }
+
+/* =========================================================================
+   CHAT SURFACE — production fidelity from sharable.link/25yu2bgv
+   Includes: header, body (full panel two-col), webcam hero, conditions
+   table, season banner, chips, messages, composer with voice group,
+   footer wordmark, and full voice mode overlay.
+   ========================================================================= */
+.gsb-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(247, 243, 237, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms var(--ease-launch);
+  z-index: 60;
+}
+
+body.modal-open[data-variant="middle"] .gsb-backdrop,
+body.modal-open[data-variant="full"] .gsb-backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.modal-open[data-variant="side"] .gsb-backdrop {
+  opacity: 0.5;
+  pointer-events: auto;
+  background: rgba(247, 243, 237, 0.35);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* =========================================================================
+   CHAT SURFACE — base
+   ========================================================================= */
+.gsb-chat {
+  position: fixed;
+  background: #fff;
+  /* Baseline shadow is ALWAYS on — STRONG drop shadow that lifts the chat
+     panel prominently off the page on both desktop and mobile.
+     Five-layer composition: wide ambient layer for atmospheric lift, medium
+     layer for body, tighter sharp layer for ground anchoring, contact shadow
+     for grounding, hairline inner border for edge definition.
+     The --gsb-depth-effect var stacks ADDITIVE decoration on top: Shadow
+     mode adds more depth, Glow mode adds brand halo, Radiate adds nothing
+     (launcher-only effect), None adds nothing (just baseline). */
+  box-shadow:
+    0 32px 80px rgba(23,19,15,0.28),
+    0 14px 32px rgba(23,19,15,0.16),
+    0 4px 10px rgba(23,19,15,0.10),
+    0 1px 3px rgba(23,19,15,0.06),
+    0 0 0 1px rgba(23,19,15,0.05),
+    var(--gsb-depth-effect, 0 0 0 transparent);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 70;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 500ms var(--ease-launch), opacity 500ms var(--ease-launch), box-shadow 240ms ease;
+  font-family: var(--gsb-body-font, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+  font-size: calc(14px * var(--gsb-text-scale, 1));
+}
+
+body.modal-open .gsb-chat {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* SIDE PANEL */
+/* =========================================================================
+   PANEL OPEN/CLOSE TRANSITIONS — unified origin
+   All three panel variants emerge from and recede to the bottom-right corner,
+   which is where the launcher pill sits. Resting positions are preserved
+   per variant (Side anchors right, Middle centers, Full centers wide), but
+   the transform-origin is `bottom right` everywhere. The scale grows from
+   that corner outward, creating a coherent "the launcher pill expanded into
+   the chat" feeling regardless of which variant is active.
+   ========================================================================= */
+
+/* SIDE PANEL */
+body[data-variant="side"] .gsb-chat {
+  right: 24px;
+  top: 74px;
+  bottom: 24px;
+  width: 400px;
+  max-width: calc(100vw - 48px);
+  height: calc(100dvh - 98px);
+  border-radius: var(--gsb-radius);
+  transform: scale(0.6);
+  transform-origin: bottom right;
+}
+body.modal-open[data-variant="side"] .gsb-chat {
+  transform: scale(1);
+}
+
+/* MIDDLE PANEL */
+body[data-variant="middle"] .gsb-chat {
+  /* Resting position centered on screen (modal feel) */
+  left: 50%;
+  top: 50%;
+  width: 480px;
+  height: 640px;
+  max-width: calc(100vw - 48px);
+  max-height: calc(100dvh - 48px);
+  border-radius: var(--gsb-radius);
+  /* The translate(-50%, -50%) centers the panel; the scale shrinks it toward
+     bottom-right of its own bounding box — visually toward the launcher. */
+  transform: translate(-50%, -50%) scale(0.5);
+  transform-origin: bottom right;
+}
+body.modal-open[data-variant="middle"] .gsb-chat {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* FULL PANEL */
+body[data-variant="full"] .gsb-chat {
+  left: 64px;
+  right: 64px;
+  top: 114px;
+  bottom: 64px;
+  width: auto;
+  height: calc(100dvh - 178px);
+  max-width: 1100px;
+  margin: 0 auto;
+  border-radius: var(--gsb-radius);
+  /* Full panel is too wide to use a tiny scale (would look weird), so we
+     use a gentler shrink. Origin still bottom-right so the corner closest
+     to the launcher is the anchor point of the animation. */
+  transform: scale(0.85);
+  transform-origin: bottom right;
+}
+body.modal-open[data-variant="full"] .gsb-chat {
+  transform: scale(1);
+}
+
+/* =========================================================================
+   CHAT HEADER
+   ========================================================================= */
+.gsb-chat-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70px;
+  padding: 12px 16px;
+  background: var(--gsb-chat-header-bg);
+  border-bottom: 1px solid var(--jh-border);
+  flex: 0 0 auto;
+}
+
+.gsb-chat-header img {
+  max-height: var(--logo-max-height, 44px);
+  width: auto;
+  display: block;
+}
+
+.gsb-chat-header__logo {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: calc(18px * var(--gsb-text-scale, 1));
+  letter-spacing: 0.02em;
+  color: var(--jh-ink);
+}
+
+body[data-variant="full"] .gsb-chat-header {
+  justify-content: flex-start;
+  padding-left: 32px;
+}
+
+.gsb-chat-close {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  border: 0;
+  color: var(--jh-ink-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.gsb-chat-close:hover { background: var(--jh-surface); color: var(--jh-ink); }
+
+.gsb-agent-status-header {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 5px 8px;
+  border-radius: 999px;
+  background: #effaf2;
+  border: 1px solid #c9e9d3;
+  color: #1a3924;
+  font-size: calc(10.5px * var(--gsb-text-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.gsb-agent-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3eb364;
+  animation: agent-pulse 3.5s ease-in-out infinite;
+}
+
+@keyframes agent-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(62,179,100,0.5); }
+  50%      { box-shadow: 0 0 0 5px rgba(62,179,100,0); }
+}
+
+body[data-variant="full"] .gsb-agent-status-header { display: none; }
+
+@media (max-width: 899px) {
+  body[data-variant="full"] .gsb-agent-status-header { display: inline-flex; }
+}
+
+/* =========================================================================
+   CHAT BODY (split for Full Panel)
+   ========================================================================= */
+.gsb-chat-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+body[data-variant="full"] .gsb-chat-body {
+  flex-direction: row;
+}
+
+.gsb-chat-left-column,
+.gsb-chat-right-column {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.gsb-chat-right-column {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+}
+
+.gsb-chat-left-column { display: none; }
+
+body[data-variant="full"] .gsb-chat-left-column {
+  display: flex;
+  width: 380px;
+  flex: 0 0 380px;
+  border-right: 1px solid var(--jh-border);
+  background: var(--jh-surface);
+  overflow-y: auto;
+}
+
+@media (max-width: 899px) {
+  body[data-variant="full"] .gsb-chat-body {
+    flex-direction: column;
+  }
+  body[data-variant="full"] .gsb-chat-left-column {
+    width: 100%;
+    flex: 0 0 auto;
+    border-right: none;
+    border-bottom: 1px solid var(--jh-border);
+  }
+}
+
+/* HERO WEBCAM */
+.gsb-chat-hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: #1a1a1a;
+  flex: 0 0 auto;
+}
+
+.gsb-webcam-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.gsb-webcam-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #2c4060 0%, #1a2638 100%);
+  color: rgba(255,255,255,0.6);
+  font-size: 12px;
+}
+
+.gsb-webcam-live {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px 4px 8px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  z-index: 2;
+}
+
+.gsb-webcam-live::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  animation: live-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+.gsb-webcam-meta {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  font-size: 12px;
+  z-index: 2;
+}
+
+.gsb-webcam-meta .station-name { font-weight: 700; }
+
+.gsb-webcam-meta .updated {
+  color: rgba(255,255,255,0.75);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* WELCOME LINE */
+.gsb-welcome {
+  padding: 18px 20px 4px;
+  flex: 0 0 auto;
+}
+
+.gsb-welcome-greeting {
+  font-family: var(--serif);
+  font-size: calc(17px * var(--gsb-text-scale, 1));
+  line-height: 1.4;
+  color: var(--jh-ink);
+}
+
+/* CONDITIONS TABLE */
+.gsb-conditions {
+  margin: 14px 20px;
+  border: 1px solid var(--jh-border);
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+  font-size: 12px;
+  flex: 0 0 auto;
+}
+
+.gsb-conditions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--jh-surface);
+  border-bottom: 1px solid var(--jh-border);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+.gsb-conditions-header .live-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.gsb-conditions-header .live-dot::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3eb364;
+}
+
+.gsb-conditions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.gsb-conditions-cell {
+  padding: 10px 12px;
+  border-right: 1px solid var(--jh-border);
+  border-bottom: 1px solid var(--jh-border);
+  min-height: 64px;
+}
+
+.gsb-conditions-cell:nth-child(3n) { border-right: none; }
+.gsb-conditions-cell:nth-last-child(-n+3) { border-bottom: none; }
+
+.gsb-conditions-cell .label {
+  font-size: calc(9px * var(--gsb-text-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--jh-ink-soft);
+  margin-bottom: 4px;
+}
+
+.gsb-conditions-cell .value {
+  font-family: var(--serif);
+  font-size: calc(22px * var(--gsb-text-scale, 1));
+  font-weight: 700;
+  color: var(--jh-ink);
+  line-height: 1;
+}
+
+.gsb-conditions-cell .value .unit {
+  font-size: calc(11px * var(--gsb-text-scale, 1));
+  font-weight: 400;
+  color: var(--jh-ink-soft);
+}
+
+.gsb-conditions-source {
+  padding: 7px 14px;
+  background: var(--jh-surface);
+  font-size: 9px;
+  color: var(--jh-ink-soft);
+  text-align: center;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* SEASON STATUS BANNER (if not in season) */
+.gsb-season-banner {
+  margin: 14px 20px 0;
+  padding: 12px 14px;
+  background: #fff7e6;
+  border: 1px solid #f0c66a;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #6b4a00;
+  flex: 0 0 auto;
+}
+
+.gsb-season-banner__title {
+  font-size: calc(10px * var(--gsb-text-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+/* SUGGESTED CHIPS */
+.gsb-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 20px 14px;
+  flex: 0 0 auto;
+}
+
+.gsb-chip {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 9px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--brand);
+  background: transparent;
+  color: var(--brand);
+  font-size: calc(13px * var(--gsb-text-scale, 1));
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gsb-chip:hover { background: var(--brand); color: #fff; }
+
+body.gsb-conversation-started .gsb-chips { display: none; }
+
+/* =========================================================================
+   MOBILE KEYBOARD-UP CHROME COLLAPSE
+   When the user focuses the composer on a phone, the keyboard rises and
+   eats ~40% of the viewport. On mobile only (≤640px), we collapse the
+   non-essential chrome to keep the conversation visible above the keyboard.
+   - Hero shrinks from full size to a thin strip (80px)
+   - Conditions table, welcome line, and suggested chips hide
+   - Smooth transition so the collapse doesn't feel jarring
+   On desktop / tablet, this rule never fires — webcam/conditions/welcome
+   stay scrollable as the user expects.
+   ========================================================================= */
+@media (max-width: 640px) {
+  body[data-keyboard-up] .gsb-chat-hero {
+    height: 80px !important;
+    max-height: 80px !important;
+    transition: height 280ms cubic-bezier(0.4, 0, 0.2, 1),
+                max-height 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  body[data-keyboard-up] .gsb-conditions { display: none; }
+  body[data-keyboard-up] .gsb-welcome { display: none; }
+  body[data-keyboard-up] .gsb-chips { display: none; }
+  body[data-keyboard-up] .gsb-season-banner { display: none; }
+}
+
+/* UNIFIED SCROLL MODEL — applies to all panel variants (side, middle, full).
+   Goal: one continuous vertical scroll covering the entire chat surface so
+   the user can scroll up to see the webcam, conditions, season banner,
+   welcome line, and all conversation history. Nothing is hidden, nothing
+   is fixed in place — everything flows in one scrollable column.
+
+   The right column is the scroll container. Messages flow naturally as
+   another item in the column. The chat body / right column setup already
+   has overflow-y: auto from the base .gsb-chat-right-column rule. */
+
+/* MESSAGES LIST — flows in the scrolling right column. Does not scroll
+   itself. Parent .gsb-chat-right-column has overflow-y: auto. */
+.gsb-messages {
+  flex: 0 0 auto;
+  padding: 8px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gsb-msg {
+  max-width: 85%;
+  padding: 10px 13px;
+  border-radius: var(--gsb-radius-sm);
+  font-size: calc(13px * var(--gsb-text-scale, 1));
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.gsb-msg--ai {
+  align-self: flex-start;
+  background: var(--jh-surface);
+  border: 1px solid var(--jh-border);
+  border-bottom-left-radius: 4px;
+}
+
+.gsb-msg--user {
+  align-self: flex-end;
+  background: var(--brand);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+/* TYPING INDICATOR — three dots pulsing in sequence, styled like an AI bubble */
+.gsb-typing-indicator {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 14px !important;
+  min-width: 0;
+  width: auto !important;
+  align-self: flex-start;
+}
+
+.gsb-typing-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--jh-ink-soft, #8a8579);
+  opacity: 0.4;
+  animation: gsb-typing-pulse 1.4s ease-in-out infinite;
+}
+
+.gsb-typing-dot:nth-child(1) { animation-delay: 0s; }
+.gsb-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.gsb-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes gsb-typing-pulse {
+  0%, 60%, 100% { opacity: 0.4; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+
+/* COMPOSER */
+.gsb-composer {
+  /* Bottom padding respects iPhone home indicator via safe-area-inset.
+     max() ensures we always get at least 12px even when there's no inset. */
+  padding: 12px 16px max(12px, env(safe-area-inset-bottom));
+  background: #fff;
+  border-top: 1px solid var(--jh-border);
+  flex: 0 0 auto;
+}
+
+.gsb-composer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1.5px solid var(--brand);
+  border-radius: 999px;
+  padding: 6px 6px 6px 18px;
+  background: #fff;
+}
+
+.gsb-composer-row input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  font-family: inherit;
+  font-size: calc(14px * var(--gsb-text-scale, 1));
+  color: var(--jh-ink);
+  background: transparent;
+  padding: 8px 0;
+}
+
+.gsb-composer-row input::placeholder { color: var(--jh-ink-soft); }
+
+.gsb-composer-send {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  cursor: pointer;
+  transition: background 160ms ease, transform 100ms ease;
+}
+
+.gsb-composer-send:hover { background: var(--brand-deep); }
+.gsb-composer-send:active { transform: scale(0.94); }
+
+/* =========================================================================
+   VOICE UI
+   - Mic button: tap to dictate, animated while listening
+   - Voice output toggle: speaker icon in header, when on AI responses are spoken
+   - Full voice mode: hands-free overlay (big mic, auto-listen, auto-speak)
+   ========================================================================= */
+
+/* MIC BUTTON in composer (left of input) */
+.gsb-composer-row {
+  padding: 6px 6px 6px 6px;  /* tighten left padding for the mic button */
+}
+
+/* Container that groups the mic + voice-mode buttons together on the left
+   side of the composer. Both are voice-input affordances, so they belong
+   as a visual unit. */
+.gsb-composer-voice-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.gsb-composer-mic {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--jh-ink-soft);
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+  position: relative;
+}
+
+.gsb-composer-mic:hover {
+  background: var(--jh-surface);
+  color: var(--brand);
+}
+
+.gsb-composer-mic svg { width: 18px; height: 18px; }
+
+/* Listening state — pulsing red ring */
+.gsb-composer-mic[data-listening="true"] {
+  background: var(--brand);
+  color: #fff;
+  animation: mic-listening-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes mic-listening-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--brand-rgb), 0.45); }
+  50%      { box-shadow: 0 0 0 8px rgba(var(--brand-rgb), 0); }
+}
+
+/* Hide composer mic when voice is unsupported */
+.gsb-composer-mic[data-supported="false"] { display: none; }
+
+/* When the input is in "listening" mode, show a subtle waveform indicator inside it */
+.gsb-composer-row[data-listening="true"] {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(var(--brand-rgb), 0.12);
+}
+
+.gsb-composer-listening-bars {
+  display: none;
+  align-items: center;
+  gap: 3px;
+  padding: 0 8px;
+  flex: 0 0 auto;
+}
+
+.gsb-composer-row[data-listening="true"] .gsb-composer-listening-bars {
+  display: inline-flex;
+}
+
+.gsb-composer-row[data-listening="true"] input {
+  font-style: italic;
+}
+
+.gsb-composer-listening-bars span {
+  display: block;
+  width: 2.5px;
+  height: 14px;
+  background: var(--brand);
+  border-radius: 1.5px;
+  animation: bars-bounce 1s ease-in-out infinite;
+}
+
+.gsb-composer-listening-bars span:nth-child(2) { animation-delay: 0.12s; }
+.gsb-composer-listening-bars span:nth-child(3) { animation-delay: 0.24s; }
+.gsb-composer-listening-bars span:nth-child(4) { animation-delay: 0.36s; }
+
+@keyframes bars-bounce {
+  0%, 100% { transform: scaleY(0.4); opacity: 0.6; }
+  50%      { transform: scaleY(1); opacity: 1; }
+}
+
+/* HEADER VOICE-OUTPUT TOGGLE (speaker icon next to close button) */
+.gsb-chat-header__actions {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.gsb-chat-header__actions .gsb-chat-close {
+  position: static;
+  transform: none;
+}
+
+.gsb-voice-output-toggle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  border: 0;
+  color: var(--jh-ink-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 160ms, color 160ms;
+}
+
+.gsb-voice-output-toggle:hover {
+  background: var(--jh-surface);
+  color: var(--jh-ink);
+}
+
+.gsb-voice-output-toggle[data-active="true"] {
+  background: var(--brand);
+  color: #fff;
+}
+
+.gsb-voice-output-toggle[data-active="true"]:hover {
+  background: var(--brand-deep);
+  color: #fff;
+}
+
+.gsb-voice-output-toggle svg { width: 16px; height: 16px; }
+
+/* Speaking state — gentle pulse on the toggle while AI speaks */
+.gsb-voice-output-toggle[data-speaking="true"] {
+  animation: speaker-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes speaker-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--brand-rgb), 0.45); }
+  50%      { box-shadow: 0 0 0 6px rgba(var(--brand-rgb), 0); }
+}
+
+/* "VOICE MODE" trigger — sits next to the mic in the left-side voice group. */
+.gsb-composer-voice-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px 5px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brand);
+  background: rgba(var(--brand-rgb), 0.08);
+  border: 1px solid rgba(var(--brand-rgb), 0.25);
+  border-radius: 999px;
+  cursor: pointer;
+  flex: none;
+  transition: background 140ms, color 140ms, border-color 140ms;
+}
+
+.gsb-composer-voice-mode:hover {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
+}
+
+.gsb-composer-voice-mode svg { width: 11px; height: 11px; }
+
+/* Subtle waveform breathing animation on idle so the icon reads clearly as "voice" */
+.gsb-composer-voice-mode svg rect:nth-child(1),
+.gsb-composer-voice-mode svg rect:nth-child(5) {
+  animation: voice-icon-bar 1.6s ease-in-out infinite;
+}
+.gsb-composer-voice-mode svg rect:nth-child(2),
+.gsb-composer-voice-mode svg rect:nth-child(4) {
+  animation: voice-icon-bar 1.6s ease-in-out infinite;
+  animation-delay: 0.2s;
+}
+.gsb-composer-voice-mode svg rect:nth-child(3) {
+  animation: voice-icon-bar 1.6s ease-in-out infinite;
+  animation-delay: 0.4s;
+}
+
+@keyframes voice-icon-bar {
+  0%, 100% { transform: scaleY(1); transform-origin: center; }
+  50%      { transform: scaleY(0.55); transform-origin: center; }
+}
+
+.gsb-composer-voice-mode[data-supported="false"] { display: none; }
+
+/* =========================================================================
+   FULL VOICE MODE OVERLAY — hands-free experience
+   ========================================================================= */
+.gsb-voice-mode-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--jh-ink) 0%, #0a0a0a 100%);
+  z-index: 100;
+  display: none;
+  flex-direction: column;
+  color: #fff;
+  overflow: hidden;
+}
+
+.gsb-voice-mode-overlay[data-open="true"] { display: flex; }
+
+.gsb-voice-mode-overlay::before {
+  /* Ambient brand-colored glow behind the orb */
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(var(--brand-rgb), 0.18) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.gsb-voice-mode__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.gsb-voice-mode__title {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.02em;
+}
+
+.gsb-voice-mode__exit {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.gsb-voice-mode__exit:hover { background: rgba(255,255,255,0.12); }
+.gsb-voice-mode__exit svg { width: 14px; height: 14px; }
+
+/* Main stage: centered orb */
+.gsb-voice-mode__stage {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  padding: 0 24px;
+  position: relative;
+  z-index: 2;
+  min-height: 0;
+}
+
+.gsb-voice-mode__orb {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255,255,255,0.4) 0%, transparent 35%),
+    radial-gradient(circle at 65% 70%, rgba(var(--brand-rgb), 0.5) 0%, transparent 50%),
+    linear-gradient(135deg, var(--brand) 0%, var(--brand-deep) 100%);
+  box-shadow:
+    0 0 80px rgba(var(--brand-rgb), 0.4),
+    inset 0 0 40px rgba(0,0,0,0.3);
+  animation: orb-idle 4s ease-in-out infinite;
+}
+
+@keyframes orb-idle {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.04); }
+}
+
+/* Listening state — orb radiates rings */
+.gsb-voice-mode__orb[data-state="listening"] {
+  animation: orb-listening 1.8s ease-out infinite;
+}
+
+@keyframes orb-listening {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--brand-rgb), 0.6), 0 0 80px rgba(var(--brand-rgb), 0.4); }
+  50%      { box-shadow: 0 0 0 30px rgba(var(--brand-rgb), 0), 0 0 80px rgba(var(--brand-rgb), 0.4); }
+}
+
+/* Speaking state — orb breathes faster, brighter */
+.gsb-voice-mode__orb[data-state="speaking"] {
+  animation: orb-speaking 0.8s ease-in-out infinite;
+}
+
+@keyframes orb-speaking {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.08); }
+}
+
+/* Inner ring of waveform bars on the orb when listening/speaking */
+.gsb-voice-mode__bars {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.gsb-voice-mode__orb[data-state="listening"] .gsb-voice-mode__bars,
+.gsb-voice-mode__orb[data-state="speaking"] .gsb-voice-mode__bars {
+  opacity: 1;
+}
+
+.gsb-voice-mode__bars span {
+  display: block;
+  width: 4px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 2px;
+  height: 18px;
+  animation: voice-bar-bounce 0.9s ease-in-out infinite;
+}
+
+.gsb-voice-mode__bars span:nth-child(1) { animation-delay: 0.0s; height: 14px; }
+.gsb-voice-mode__bars span:nth-child(2) { animation-delay: 0.1s; height: 28px; }
+.gsb-voice-mode__bars span:nth-child(3) { animation-delay: 0.2s; height: 22px; }
+.gsb-voice-mode__bars span:nth-child(4) { animation-delay: 0.3s; height: 36px; }
+.gsb-voice-mode__bars span:nth-child(5) { animation-delay: 0.2s; height: 22px; }
+.gsb-voice-mode__bars span:nth-child(6) { animation-delay: 0.1s; height: 28px; }
+.gsb-voice-mode__bars span:nth-child(7) { animation-delay: 0.0s; height: 14px; }
+
+@keyframes voice-bar-bounce {
+  0%, 100% { transform: scaleY(0.45); opacity: 0.55; }
+  50%      { transform: scaleY(1.1); opacity: 1; }
+}
+
+/* Status label below orb */
+.gsb-voice-mode__status {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gsb-voice-mode__status[data-state="listening"] { color: #fff; }
+.gsb-voice-mode__status[data-state="speaking"] { color: rgba(var(--brand-rgb), 1); color: #ffb4b6; }
+
+.gsb-voice-mode__status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+}
+
+.gsb-voice-mode__status[data-state="listening"]::before {
+  background: #3eb364;
+  animation: voice-status-pulse 1.4s ease-in-out infinite;
+}
+
+.gsb-voice-mode__status[data-state="speaking"]::before {
+  background: #ffb4b6;
+  animation: voice-status-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes voice-status-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+  50%      { box-shadow: 0 0 0 6px transparent; opacity: 0.6; }
+}
+
+/* Live transcript area */
+.gsb-voice-mode__transcript {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #fff;
+  text-align: center;
+  max-width: 600px;
+  min-height: 60px;
+  letter-spacing: -0.005em;
+}
+
+.gsb-voice-mode__transcript--ai {
+  font-style: italic;
+  color: rgba(255,255,255,0.95);
+}
+
+.gsb-voice-mode__transcript--user {
+  color: rgba(255,255,255,0.7);
+  font-size: 18px;
+  font-style: italic;
+}
+
+.gsb-voice-mode__transcript:empty::after {
+  content: "Speak when ready…";
+  color: rgba(255,255,255,0.3);
+  font-size: 16px;
+  font-style: italic;
+  font-family: var(--gsb-body-font, 'Inter'), sans-serif;
+}
+
+/* Bottom controls: tap-to-interrupt + tap-to-speak */
+.gsb-voice-mode__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 0 24px 36px;
+  position: relative;
+  z-index: 2;
+}
+
+.gsb-voice-mode__btn {
+  padding: 14px 24px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 160ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gsb-voice-mode__btn:hover {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.3);
+}
+
+.gsb-voice-mode__btn--primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.gsb-voice-mode__btn--primary:hover {
+  background: var(--brand-deep);
+  border-color: var(--brand-deep);
+}
+
+.gsb-voice-mode__btn svg { width: 14px; height: 14px; }
+
+/* Recent message snippet at the bottom — small, last user/AI exchange */
+.gsb-voice-mode__history {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  text-align: center;
+  margin-top: 8px;
+  font-family: var(--gsb-body-font, 'Inter'), sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.gsb-voice-mode__history-item {
+  max-width: 480px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Toast for voice-unsupported message */
+.gsb-voice-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--jh-ink);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  z-index: 200;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms, transform 200ms;
+  max-width: 320px;
+  text-align: center;
+}
+
+.gsb-voice-toast[data-show="true"] {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+@media (max-width: 720px) {
+  .gsb-voice-mode__orb { width: 140px; height: 140px; }
+  .gsb-voice-mode__transcript { font-size: 18px; }
+  .gsb-voice-mode__stage { gap: 24px; }
+
+  /* COMPOSER — compact everything so the send button always fits on phones */
+  .gsb-composer { padding: 10px 10px calc(10px + env(safe-area-inset-bottom)); }
+  .gsb-composer-row {
+    gap: 4px;
+    padding: 4px 4px 4px 8px;
+    flex-wrap: nowrap;     /* never wrap; fit horizontally */
+  }
+  /* COMPOSER MOBILE — touch targets meet 44×44px ergonomic minimum.
+     Mic + send both 44px to match Apple HIG / Material guidelines. The
+     composer-row uses flex with min-width:0 on the input so the input
+     accommodates whatever space remains. */
+  .gsb-composer-mic {
+    width: 44px; height: 44px;
+    flex: 0 0 44px;
+  }
+  .gsb-composer-mic svg { width: 18px; height: 18px; }
+  .gsb-composer-row input {
+    font-size: 16px;       /* prevent iOS auto-zoom on focus */
+    padding: 6px 2px;
+    min-width: 0;
+  }
+  .gsb-composer-voice-mode {
+    font-size: 9px;
+    padding: 4px 7px 4px 5px;
+    gap: 3px;
+    flex: 0 0 auto;
+  }
+  .gsb-composer-voice-mode svg { width: 9px; height: 9px; }
+  .gsb-composer-send {
+    width: 44px; height: 44px;
+    flex: 0 0 44px;
+  }
+  .gsb-composer-send svg { width: 14px; height: 14px; }
+}
+
+/* On the smallest phones, hide the "Voice" text label inside the voice-mode
+   pill — keep just the icon to free up horizontal space */
+@media (max-width: 380px) {
+  .gsb-composer-voice-mode {
+    padding: 6px 8px;
+    gap: 0;
+  }
+  .gsb-composer-voice-mode > span,
+  .gsb-composer-voice-mode {
+    /* Hide the text node by replacing the button content via JS-equivalent
+       CSS approach: set font-size 0 then restore for the SVG */
+    font-size: 0;
+  }
+  .gsb-composer-voice-mode svg { width: 14px; height: 14px; }
+}
+
+/* FOOTER */
+.gsb-footer {
+  padding: 10px 16px;
+  background: #fff;
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #9a9087;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid var(--jh-border);
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.gsb-footer-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #6b6259;
+  font-weight: 700;
+}
+
+/* FULL PANEL — Agent status feature in left column */
+.gsb-agent-status-feature {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin: 14px 16px;
+  border-radius: 8px;
+  background: #effaf2;
+  border: 1px solid #c9e9d3;
+  color: #1a3924;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+body[data-variant="full"] .gsb-agent-status-feature {
+  display: inline-flex;
+}
+
+@media (max-width: 899px) {
+  body[data-variant="full"] .gsb-agent-status-feature { display: none; }
+}
+
+/* =========================================================================
+   MOBILE — chat surface adapts
+   ========================================================================= */
+/* =========================================================================
+   MOBILE FULLSCREEN — all panel variants fill the viewport at ≤900px.
+   The 900px breakpoint catches every phone (including wide Android phones
+   like Galaxy/Pixel which render at 700-800px effective width) and small
+   tablets in portrait mode. On these sizes, the dashboard's preview canvas
+   doesn't give the chat enough room to render at its desktop dimensions
+   without being squashed or revealing the dashboard chrome behind it.
+   The partner's layout-variant choice (Side / Middle / Full) doesn't matter
+   below 900px — all three behave identically: edge-to-edge, top-corners
+   rounded, no margins. This matches Intercom / Drift / HubSpot / Crisp
+   consumer chat behavior on mobile and tablet portrait.
+   ========================================================================= */
+@media (max-width: 900px) {
+  /* Prevent the page itself from scrolling when chat is fullscreen — clip any
+     horizontal/vertical overflow that would create stray scrollbars. */
+  html, body {
+    overflow: hidden !important;
+    width: 100%;
+    height: 100dvh;
+  }
+
+  body[data-variant="side"] .gsb-chat,
+  body[data-variant="middle"] .gsb-chat,
+  body[data-variant="full"] .gsb-chat {
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    /* Chat surface clips any horizontal overflow inside it — only the
+       designated scroll container (.gsb-chat-right-column) should scroll. */
+    overflow: hidden;
+    /* Top corners keep the partner's chosen corner-radius — looks like a
+       modern bottom-sheet drawer. Bottom corners are flush to the viewport
+       edge (where curves would be clipped invisibly anyway). The partner's
+       brand identity stays visible in the top rounding even at fullscreen. */
+    border-radius: var(--gsb-radius) var(--gsb-radius) 0 0;
+    transform: scale(0.96);
+    transform-origin: bottom right;
+  }
+  body.modal-open[data-variant="side"] .gsb-chat,
+  body.modal-open[data-variant="middle"] .gsb-chat,
+  body.modal-open[data-variant="full"] .gsb-chat {
+    transform: scale(1);
+  }
+
+  /* Hide the launcher entirely when the chat is open in mobile fullscreen —
+     it would overlap chat content. The X close button in the chat header
+     becomes the only exit, matching production widget behavior. */
+  body.modal-open .gsb-launcher {
+    display: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .gsb-launcher {
+    /* Respect iPhone home indicator — launcher sits above the gesture bar */
+    bottom: max(16px, env(safe-area-inset-bottom));
+    right: 16px;
+    min-width: 150px;
+    padding: 7px 10px 7px 8px;
+    border-radius: var(--gsb-radius);
+  }
+  .gsb-launcher-avatar { width: 22px; height: 22px; }
+  .gsb-launcher-weather svg { width: 13px; height: 13px; }
+  .gsb-launcher-weather__temp { font-size: 12px; }
+
+  .demo-controls { top: 8px; right: 8px; padding: 4px; }
+  .demo-controls__label { display: none; }
+  .demo-controls__pills button { padding: 4px 8px; font-size: 10px; }
+
+  .hero { padding: 50px 18px 50px; min-height: 420px; }
+  .hero__title { font-size: 36px; }
+  .nav { padding: 12px 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* =========================================================================
+   ANIMATIONS
+   ========================================================================= */
+
+@keyframes gsb-launcher-pulse-traditional {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--brand-rgb), calc(var(--gsb-radiate-strength, 1) * 0.5)), 0 6px 20px rgba(var(--brand-rgb), calc(var(--gsb-radiate-strength, 1) * 0.40)), 0 2px 4px rgba(23,19,15,0.18); }
+  50%      { box-shadow: 0 0 0 calc(var(--gsb-radiate-strength, 1) * 14px) rgba(var(--brand-rgb), 0), 0 6px 20px rgba(var(--brand-rgb), calc(var(--gsb-radiate-strength, 1) * 0.40)), 0 2px 4px rgba(23,19,15,0.18); }
+}
+
+@keyframes gsb-launcher-pulse-enhanced {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--brand-rgb), calc(var(--gsb-radiate-strength, 1) * 0.3)), 0 6px 20px rgba(var(--brand-rgb), calc(var(--gsb-radiate-strength, 1) * 0.30)), 0 2px 4px rgba(0,0,0,0.18); }
+  50%      { box-shadow: 0 0 0 calc(var(--gsb-radiate-strength, 1) * 10px) rgba(var(--brand-rgb), 0), 0 6px 20px rgba(var(--brand-rgb), calc(var(--gsb-radiate-strength, 1) * 0.30)), 0 2px 4px rgba(0,0,0,0.18); }
+}
+
+@keyframes gsb-avatar-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(62,179,100,0.55); }
+  50%      { box-shadow: 0 0 0 4px rgba(62,179,100,0); }
+}
+
+@keyframes gsb-agent-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(62,179,100,0.5); }
+  50%      { box-shadow: 0 0 0 5px rgba(62,179,100,0); }
+}
+
+/* Slide-in pill — translate offscreen / onscreen */
+.gsb-launcher[data-slide-state="hidden"] {
+  transform: translateX(calc(100% + 24px));
+  animation: none !important;
+  transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.gsb-launcher[data-slide-state="visible"] {
+  transform: translateX(0);
+  transition: transform 320ms cubic-bezier(0.2, 0.7, 0.3, 1.05);
+}
+
+/* =========================================================================
+   VERTICAL SLIDE-IN PILL (data-icon-style="slidein")
+   Stacked top-to-bottom in a narrow column. Designed to hug the right edge
+   of mobile e-commerce pages without obstructing product imagery or CTAs.
+
+   Layout rhythm (top → bottom):
+   ┌──────────┐
+   │  [AI ⊙] │   ← AI avatar (pulses green)
+   │  [HU ⊙] │   ← Human avatar (overlaps -7px)
+   │  ──────  │   ← divider
+   │  ☀️       │   ← weather icon
+   │  57°F    │   ← temp + unit (stacked tight)
+   │  ──────  │   ← divider
+   │  💬       │   ← chat bubble icon
+   │  HELP    │   ← microlabel
+   └──────────┘
+   ========================================================================= */
+.gsb-launcher[data-icon-style="slidein"] {
+  /* Override the horizontal status-pill base (still inheriting brand bg/fg) */
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  min-width: 0 !important;
+  width: 42px !important;
+  padding: 9px 4px 8px !important;
+  border-radius: var(--gsb-radius) !important;
+  text-align: center !important;
+}
+
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher__row {
+  flex-direction: column !important;
+  gap: 7px !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+/* AVATAR ZONE */
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-avatars {
+  flex-direction: column;
+  align-items: center;
+}
+
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-avatar {
+  width: 26px;
+  height: 26px;
+  border-width: 1.8px;
+}
+
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-avatar svg {
+  width: 12px;
+  height: 12px;
+}
+
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-avatar-human {
+  margin-left: 0;
+  margin-top: -7px;  /* vertical overlap instead of horizontal */
+}
+
+/* DIVIDERS — full-width inside pill, give each section its own zone */
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-divider {
+  width: 24px;
+  height: 1px;
+  flex: 0 0 auto;
+}
+
+/* WEATHER ZONE */
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-weather {
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-weather svg {
+  width: 16px;
+  height: 16px;
+}
+
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-weather__temp {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-weather__unit {
+  font-size: 7px;
+  margin-left: 1px;
+  font-weight: 700;
+}
+
+/* CTA ZONE — vertical, with chat bubble icon and HELP microlabel */
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-cta {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: none;
+  gap: 3px;
+  padding-top: 7px;
+  margin-top: 0;
+  border-top: 1px solid var(--enhanced-divider);
+  width: 100%;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--enhanced-fg);
+  align-items: center;
+  justify-content: center;
+}
+
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-cta .gsb-cta-text { display: none; }
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-cta .gsb-cta-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-cta .gsb-cta-icon svg {
+  width: 14px;
+  height: 14px;
+}
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-cta .gsb-cta-help-label {
+  display: block;
+  line-height: 1;
+}
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-cta .gsb-cta-arrow { display: none; }
+
+/* Microlabel ("Agent online") — hide when vertical; status is conveyed by the pulsing human avatar ring */
+.gsb-launcher[data-icon-style="slidein"] .gsb-launcher-microlabel { display: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
