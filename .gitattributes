@@ -1,0 +1,3 @@
+# Keep LF line endings in the repo and working tree so the refactor diffs
+# cleanly against the LF-based baseline import. Avoids CRLF churn on Windows.
+* text=auto eol=lf
