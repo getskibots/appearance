@@ -7,91 +7,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=DM+Serif+Display:ital,wght@0,400;1,400&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+<!-- Shared design tokens + base reset (extracted from the original inline <style>).
+     Loaded before the remaining inline styles to preserve cascade order. -->
+<link rel="stylesheet" href="/src/shared/tokens.css" />
+<link rel="stylesheet" href="/src/shared/reset.css" />
 <style>
-/* =========================================================================
-   GETSKIBOTS DASHBOARD — Agent Widget · Appearance Tab
-   Matches production: sidebar + topbar + sub-tab rail, Roboto, blue accents
-   ========================================================================= */
-
-:root {
-  /* Production tokens (matched to screenshot) */
-  --sidebar-bg:    #2470b8;
-  --sidebar-ink:   #ffffff;
-  --sidebar-ink-soft: rgba(255,255,255,0.78);
-  --sidebar-ink-muted:rgba(255,255,255,0.55);
-  --topbar-bg:     #ffffff;
-  --page-bg:       #f3f7fc;
-  --surface:       #ffffff;
-  --surface-2:     #f8fafd;
-  --ink:           #1d2640;
-  --ink-soft:      #4a546a;
-  --ink-muted:     #8892a6;
-  --border:        #e3e8f0;
-  --border-strong: #cdd5e0;
-  --accent:        #2470b8;        /* primary blue */
-  --accent-deep:   #1c5994;
-  --accent-soft:   #e8f1fb;
-  --warn-bg:       #fff7e6;
-  --warn-border:   #f0c66a;
-  --warn-ink:      #6b4a00;
-  --danger:        #c43f3f;
-  --shadow-sm:     0 1px 2px rgba(20,40,80,0.05);
-  --shadow-md:     0 2px 8px rgba(20,40,80,0.06);
-  --shadow-lg:     0 8px 28px rgba(20,40,80,0.10);
-  --radius-sm:     4px;
-  --radius:        6px;
-  --radius-lg:     10px;
-
-  /* BRAND TOKENS (set at runtime by setBrandColor) */
-  --brand:           #a41e23;
-  --brand-deep:      #7b1619;
-  --brand-rgb:       164,30,35;
-  --enhanced-bg:     #a41e23;
-  --enhanced-fg:     #ffffff;
-  --enhanced-fg-soft:rgba(255,255,255,0.78);
-  --enhanced-divider:rgba(255,255,255,0.18);
-  --enhanced-human-bg:rgba(255,255,255,0.18);
-
-  /* JH-themed surface tokens used by the embedded chat surface */
-  --jh-ink:        #1a1a1a;
-  --jh-ink-soft:   #4a4a4a;
-  --jh-ink-muted:  #7a7a7a;
-  --jh-bg:         #ffffff;
-  --jh-surface:    #f7f5f1;
-  --jh-border:     #e5e2dc;
-
-  /* Easing curves + serif fallback used by demo chat CSS */
-  --ease-launch:   cubic-bezier(0.55, 0.08, 0.18, 0.99);
-  --serif:         var(--gsb-display-font, 'Playfair Display', Georgia, serif);
-
-  /* Master corner radius (driven by Corner radius slider in Identity).
-     --gsb-radius applies to launcher pills, slide-in pill, chat surface.
-     --gsb-radius-sm is ~55% of master, used for inner buttons (e.g. composer send). */
-  --gsb-radius:    18px;
-  --gsb-radius-sm: 10px;
-
-  /* Chat header background (driven by Chat header color picker in Chat surface section) */
-  --gsb-chat-header-bg: #ffffff;
-
-  --logo-max-height: 44px;
-}
-
-* { box-sizing: border-box; }
-
-html, body {
-  margin: 0;
-  padding: 0;
-  background: var(--page-bg);
-  color: var(--ink);
-  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-button { font-family: inherit; }
-
 /* =========================================================================
    APP SHELL — sidebar + topbar
    ========================================================================= */
