@@ -3,6 +3,9 @@
    Drives the chat preview via the window.gsbChatPreview bridge defined by the
    widget runtime. To be decomposed into color-utils / snowfall / sync modules. */
 
+// BotScrew-aligned config mapper (drop-in contract). See docs/botscrew-widget-settings.md.
+import { toBotscrewWidgetSettings } from '../shared/widget-config.js';
+
 (function() {
   'use strict';
 
@@ -1448,6 +1451,10 @@
     setSyncStatus('syncing', 'Syncing…');
     try {
       localStorage.setItem(LIVE_PREVIEW_LS_KEY, JSON.stringify(config));
+      // BotScrew-aligned shape (drop-in contract) — see src/shared/widget-config.js
+      // and docs/botscrew-widget-settings.md. Written alongside the legacy preview
+      // config so the dashboard stays usable while emitting BotScrew-ready output.
+      localStorage.setItem('gsb_widget_settings', JSON.stringify(toBotscrewWidgetSettings(state)));
       setSyncStatus('synced', 'Synced');
       // Fade back to idle after 2 seconds
       setTimeout(function() {
