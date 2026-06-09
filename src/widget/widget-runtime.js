@@ -2,6 +2,11 @@
    Extracted verbatim from index.html's inline <script> (IIFE #2).
    Exposes window.gsbChatPreview for the dashboard to drive open/close/variant.
    To be decomposed into chat-module / knowledge-base / data / voice modules. */
+
+// Omni-sourced Jackson Hole knowledge (official resort links + curated guidance).
+// Snapshot ported from omni/src/data/parent.ts — see src/widget/knowledge/.
+import { JH_KNOWLEDGE, topicLink } from './knowledge/jackson-hole.js';
+
 /* =========================================================================
    PRODUCTION-FIDELITY CHAT MODULE
    Lifted from sharable.link/25yu2bgv. Includes: data fetching from Jackson
@@ -340,7 +345,10 @@
   // Pattern-matched responses with live data injection where available.
   // Patterns are checked in priority order — most specific first.
   // Live data refs: data.snow, data.trailLift, data.parking, data.webcams.
-  function generateAiResponse(userQuery) {
+  // NOTE: baseAiResponse holds the original hardcoded answers. generateAiResponse
+  // (below the function) wraps it to layer in omni's knowledge — official resort
+  // links and the pricing guardrail — so both the chat and voice paths benefit.
+  function baseAiResponse(userQuery) {
     var q = userQuery.toLowerCase().trim();
 
     // Helper: extract live data safely
@@ -569,6 +577,38 @@
 
     // ============= GENERIC FALLBACK =============
     return "I can help with snow conditions, lift status, trails, dining, lodging, lessons, tickets, parking, transport, and pretty much anything else about Jackson Hole. Try asking about Corbet's Couloir, Couloir restaurant, Aerial Tram, Mountain Sports School, or the Hobacks. What would you like to know?";
+  }
+
+  // Layer omni's curated knowledge on top of the base answer: an official resort
+  // link for the matched topic, plus the pricing guardrail (omni 'critical' note:
+  // never quote rates — direct guests to the phone line). Additive, so the
+  // original answers are preserved. Messages render as plain text (textContent),
+  // so we append inline sentences rather than rely on line breaks.
+  function enrichWithKnowledge(query, base) {
+    if (!base) return base;
+    var q = (query || '').toLowerCase();
+    var extras = [];
+
+    // Pricing guardrail — ticket / pass / pricing intents.
+    if (/\b(price|pricing|cost|how much|rate|rates)\b/.test(q) ||
+        /\b(tickets?|day pass|lift ticket)\b/.test(q) ||
+        /\bseason ?pass(es)?\b/.test(q)) {
+      extras.push('Pricing varies by date of visit — the best rates are online in advance; for current pricing call ' + JH_KNOWLEDGE.contactPhone + '.');
+    }
+
+    // Official resort link for the matched topic (omni knowledgeGroups).
+    var link = topicLink(q);
+    if (link && base.indexOf(link.url) === -1) {
+      extras.push('Official ' + link.label + ': ' + link.url);
+    }
+
+    if (!extras.length) return base;
+    return base + ' ' + extras.join(' ');
+  }
+
+  // Wrap the base responder so every path (chat + voice) gets the omni knowledge.
+  function generateAiResponse(userQuery) {
+    return enrichWithKnowledge(userQuery, baseAiResponse(userQuery));
   }
 
   function handleUserMessage(text) {
