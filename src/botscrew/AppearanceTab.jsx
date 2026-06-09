@@ -47,6 +47,48 @@ function Checkbox({ label, checked, onChange }) {
   );
 }
 
+function Select({ value, options, onChange }) {
+  return (
+    <select className={styles.select} value={value} onChange={(e) => onChange(e.target.value)}>
+      {options.map((o) => {
+        const val = typeof o === 'object' ? o.value : o;
+        const lbl = typeof o === 'object' ? o.label : o;
+        return <option key={val} value={val}>{lbl}</option>;
+      })}
+    </select>
+  );
+}
+
+function Segmented({ value, options, onChange }) {
+  return (
+    <div className={styles.segmented}>
+      {options.map((o) => {
+        const val = typeof o === 'object' ? o.value : o;
+        const lbl = typeof o === 'object' ? o.label : o;
+        return (
+          <button key={val} type="button" className={value === val ? styles.segOn : styles.seg} onClick={() => onChange(val)}>
+            {lbl}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function Slider({ value, min, max, step = 1, onChange }) {
+  return (
+    <div className={styles.sliderRow}>
+      <input
+        className={styles.slider}
+        type="range" min={min} max={max} step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+      />
+      <span className={styles.sliderValue}>{value}</span>
+    </div>
+  );
+}
+
 export default function AppearanceTab({
   settings,
   lang = 'English',
@@ -59,6 +101,12 @@ export default function AppearanceTab({
   const emit = (next) => onChange && onChange(next);
   const setLang = (field, value) => emit(patchLang(settings, lang, { [field]: value }));
   const setGreeting = (field, value) => emit(patchGreeting(settings, lang, { [field]: value }));
+
+  // GSB extension block (non-BotScrew; carried in gsbAppearance).
+  const ext = settings.gsbAppearance || {};
+  const setExt = (field, value) => emit({ ...settings, gsbAppearance: { ...ext, [field]: value } });
+  const setExtGroup = (group, field, value) =>
+    emit({ ...settings, gsbAppearance: { ...ext, [group]: { ...(ext[group] || {}), [field]: value } } });
 
   async function handleLogo(e) {
     const file = e.target.files && e.target.files[0];
@@ -219,6 +267,104 @@ export default function AppearanceTab({
           checked={!settings.isComposerInputEnabled}
           onChange={(v) => emit({ ...settings, isComposerInputEnabled: !v })}
         />
+      </section>
+
+      {/* ===== GetSkiBots extension (gsbAppearance) — non-BotScrew fields ===== */}
+      <div className={styles.extHeader}>
+        <span className="material-icons">tune</span>
+        GetSkiBots appearance <em>— extension, stored in gsbAppearance</em>
+      </div>
+
+      <section className={styles.section}>
+        <div className={styles.label}>Chat header color</div>
+        <div className={styles.colorRow}>
+          <input className={styles.colorHex} type="text" value={ext.chatHeaderColor || ''} onChange={(e) => setExt('chatHeaderColor', e.target.value)} />
+          <label className={styles.swatch} style={{ background: ext.chatHeaderColor || '#fff' }}>
+            <input type="color" value={/^#[0-9a-f]{6}$/i.test(ext.chatHeaderColor || '') ? ext.chatHeaderColor : '#ffffff'} onChange={(e) => setExt('chatHeaderColor', e.target.value)} />
+          </label>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <div className={styles.label}>Welcome text</div>
+        <input className={styles.input} type="text" value={ext.welcomeText || ''} onChange={(e) => setExt('welcomeText', e.target.value)} />
+      </section>
+
+      <section className={styles.section}>
+        <div className={styles.grid2}>
+          <div className={styles.field}>
+            <span className={styles.subLabel}>CTA text</span>
+            <input className={styles.input} type="text" value={ext.ctaText || ''} onChange={(e) => setExt('ctaText', e.target.value)} />
+          </div>
+          <div className={styles.field}>
+            <span className={styles.subLabel}>Corner radius</span>
+            <Slider value={ext.cornerRadius ?? 7} min={0} max={21} onChange={(v) => setExt('cornerRadius', v)} />
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <div className={styles.grid2}>
+          <div className={styles.field}>
+            <span className={styles.subLabel}>Bubble style</span>
+            <Select
+              value={ext.bubbleStyle || 'slidein'}
+              options={[{ value: 'traditional', label: 'Traditional' }, { value: 'custom', label: 'Custom' }, { value: 'enhanced', label: 'Status pill' }, { value: 'slidein', label: 'Slide-in' }]}
+              onChange={(v) => setExt('bubbleStyle', v)}
+            />
+          </div>
+          <div className={styles.field}>
+            <span className={styles.subLabel}>Panel layout</span>
+            <Segmented value={ext.layoutVariant || 'side'} options={[{ value: 'side', label: 'Side' }, { value: 'middle', label: 'Middle' }, { value: 'full', label: 'Full' }]} onChange={(v) => setExt('layoutVariant', v)} />
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <div className={styles.label}>Depth effect</div>
+        <Segmented value={ext.effectMode || 'radiate'} options={[{ value: 'none', label: 'None' }, { value: 'shadow', label: 'Shadow' }, { value: 'glow', label: 'Glow' }, { value: 'radiate', label: 'Radiate' }]} onChange={(v) => setExt('effectMode', v)} />
+        <div style={{ marginTop: 10 }}>
+          <span className={styles.subLabel}>Intensity</span>
+          <Slider value={ext.effectIntensity ?? 65} min={0} max={100} onChange={(v) => setExt('effectIntensity', v)} />
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <Checkbox label="Snowfall" checked={(ext.snowfall || {}).enabled} onChange={(v) => setExtGroup('snowfall', 'enabled', v)} />
+        {(ext.snowfall || {}).enabled && (
+          <div className={styles.grid2} style={{ marginTop: 8 }}>
+            <div className={styles.field}>
+              <span className={styles.subLabel}>Style</span>
+              <Select value={(ext.snowfall || {}).style || 'realistic'} options={[{ value: 'realistic', label: 'Realistic' }, { value: 'crystalline', label: 'Crystalline' }, { value: 'storm', label: 'Storm' }]} onChange={(v) => setExtGroup('snowfall', 'style', v)} />
+            </div>
+            <div className={styles.field}>
+              <span className={styles.subLabel}>Intensity</span>
+              <Slider value={(ext.snowfall || {}).intensity ?? 90} min={20} max={200} onChange={(v) => setExtGroup('snowfall', 'intensity', v)} />
+            </div>
+          </div>
+        )}
+      </section>
+
+      <section className={styles.section}>
+        <div className={styles.label}>Typography</div>
+        <div className={styles.grid2}>
+          <div className={styles.field}>
+            <span className={styles.subLabel}>Body font</span>
+            <Select value={(ext.typography || {}).bodyFont || 'Inter'} options={['Inter', 'DM Sans', 'System']} onChange={(v) => setExtGroup('typography', 'bodyFont', v)} />
+          </div>
+          <div className={styles.field}>
+            <span className={styles.subLabel}>Display font</span>
+            <Select value={(ext.typography || {}).displayFont || 'Playfair Display'} options={['Playfair Display', 'DM Serif Display', 'Merriweather']} onChange={(v) => setExtGroup('typography', 'displayFont', v)} />
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <div className={styles.label}>Status pill &amp; backdrop</div>
+        <Checkbox label="Live agent" checked={(ext.statusPillFeatures || {}).liveAgent} onChange={(v) => setExtGroup('statusPillFeatures', 'liveAgent', v)} />
+        <Checkbox label="Weather" checked={(ext.statusPillFeatures || {}).weather} onChange={(v) => setExtGroup('statusPillFeatures', 'weather', v)} />
+        <Checkbox label="Need help? CTA" checked={(ext.statusPillFeatures || {}).needHelpCta} onChange={(v) => setExtGroup('statusPillFeatures', 'needHelpCta', v)} />
+        <Checkbox label="Blurred background when open" checked={ext.blurredBackground} onChange={(v) => setExt('blurredBackground', v)} />
       </section>
     </div>
   );
