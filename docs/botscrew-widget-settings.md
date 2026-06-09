@@ -151,6 +151,38 @@ To support Option B, BotScrew must:
 If BotScrew cannot persist the extension yet, the native tab still works fully;
 the GSB-only features simply fall back to dashboard `DEFAULTS`.
 
+## Wiring (drop-in usage)
+
+The component is controlled; BotScrew composes it with the API client
+([`src/botscrew/botscrewApi.js`](../src/botscrew/botscrewApi.js)) inside their
+authenticated app. `baseUrl`, `botId`, `botType` come from their runtime context.
+
+```tsx
+import { useEffect, useMemo, useState } from 'react';
+import AppearanceTab from './AppearanceTab';
+import { createBotscrewApi, debounce } from './botscrewApi';
+
+function WidgetAppearance({ baseUrl, botId, botType }) {
+  const api = useMemo(() => createBotscrewApi({ baseUrl, botId }), [baseUrl, botId]);
+  const [settings, setSettings] = useState(null);
+  useEffect(() => { api.loadWidgetSettings().then(setSettings); }, [api]);
+  const save = useMemo(() => debounce((s) => api.saveWidgetSettings(s), 500), [api]);
+  if (!settings) return null;
+  return (
+    <AppearanceTab
+      settings={settings}
+      botType={botType}
+      onChange={(next) => { setSettings(next); save(next); }}     // PATCH /bot/{id}/widget
+      onUploadLogo={(file) => api.uploadWidgetLogo(file).then((r) => r.url)} // POST /file/widgetLogo
+    />
+  );
+}
+```
+
+> ⚠️ **Unconfirmed:** the exact field on the `POST /file/widgetLogo` response that
+> holds the uploaded image URL (assumed `r.url`) — confirm against BotScrew's API.
+> Everything else (endpoints, methods, payloads) is verified from their bundle.
+
 ## Local testing
 
 The dashboard writes the BotScrew-shaped object to `localStorage["gsb_widget_settings"]`
