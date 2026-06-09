@@ -1379,13 +1379,13 @@
 
   // ============= LIVE PREVIEW SYNC =============
   // Writes the current dashboard state to localStorage so the live preview
-  // page (sharable.link/o5ouaf6a) can pick it up. Both pages live on the
+  // page (sharable.link/0wa0vh2t) can pick it up. Both pages live on the
   // sharable.link origin so localStorage is shared. Auto-sync is debounced
   // to avoid hammering on slider drags. The "Live Preview" button click also
   // syncs immediately and encodes state in the URL hash for shareability —
   // partners can text the URL to anyone and the recipient sees the same
   // configured chat regardless of whether their localStorage is fresh.
-  var LIVE_PREVIEW_URL = 'https://sharable.link/o5ouaf6a';
+  var LIVE_PREVIEW_URL = 'https://sharable.link/0wa0vh2t';
   var LIVE_PREVIEW_LS_KEY = 'gsb_preview_config';
   var syncDebounceTimer = null;
   var syncStatusEl = $('livePreviewSyncStatus');
