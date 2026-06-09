@@ -1,0 +1,160 @@
+/* AppearanceTab styles — CSS Modules (BotScrew convention).
+ * Colors reference BotScrew's runtime token names with fallbacks, so the
+ * component inherits their real theme when dropped into the platform and still
+ * renders standalone. Remap the fallbacks to their exact tokens once we have
+ * their source. */
+.container {
+  --bs-ink: var(--color-text-primary, #181818);
+  --bs-ink-2: var(--color-text-secondary, #6b7280);
+  --bs-border: var(--color-border, #e3e6ea);
+  --bs-surface: var(--color-background, #ffffff);
+  --bs-surface-2: var(--color-background-secondary, #f6f7f9);
+  --bs-primary: var(--color-primary, #1f7ae0);
+
+  font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--bs-ink);
+  background: var(--bs-surface);
+  max-width: 560px;
+  padding: 8px 4px 24px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.title { font-size: 22px; font-weight: 700; margin: 0; }
+.langChip {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--bs-primary);
+  background: color-mix(in srgb, var(--bs-primary) 10%, transparent);
+  padding: 2px 10px;
+  border-radius: 100px;
+}
+
+.section {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--bs-border);
+}
+.section:last-child { border-bottom: 0; }
+
+.label { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.subLabel { font-size: 12px; color: var(--bs-ink-2); margin-bottom: 6px; display: block; }
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--bs-ink);
+  background: var(--bs-surface);
+  border: 1px solid var(--bs-border);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.input:focus {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bs-primary) 18%, transparent);
+}
+
+.field { display: flex; flex-direction: column; }
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* Color picker */
+.colorRow {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--bs-border);
+  border-radius: 6px;
+  overflow: hidden;
+  max-width: 320px;
+}
+.colorHex {
+  flex: 1 1 auto;
+  border: 0;
+  padding: 10px 12px;
+  font: inherit;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  text-transform: lowercase;
+  outline: none;
+  background: var(--bs-surface);
+}
+.swatch {
+  position: relative;
+  flex: 0 0 44px;
+  border-left: 1px solid var(--bs-border);
+  cursor: pointer;
+}
+.swatch input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+
+/* Checkbox rows */
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  cursor: pointer;
+  font-size: 14px;
+}
+.checkRow input { width: 16px; height: 16px; accent-color: var(--bs-primary); cursor: pointer; }
+
+/* Logo */
+.logoRow { display: flex; align-items: center; gap: 16px; }
+.logoPreview {
+  flex: 0 0 96px;
+  height: 96px;
+  border: 1px dashed var(--bs-border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bs-surface-2);
+  overflow: hidden;
+}
+.logoPreview img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.logoPreview .material-icons { color: var(--bs-ink-2); font-size: 32px; }
+.uploadBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 16px;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--bs-primary);
+  background: var(--bs-surface);
+  border: 1px solid var(--bs-primary);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.uploadBtn:hover { background: color-mix(in srgb, var(--bs-primary) 8%, transparent); }
+
+/* Segmented control */
+.segmented {
+  display: inline-flex;
+  background: var(--bs-surface-2);
+  border: 1px solid var(--bs-border);
+  border-radius: 6px;
+  padding: 2px;
+  width: 100%;
+}
+.seg, .segOn {
+  flex: 1 1 0;
+  padding: 7px 10px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--bs-ink-2);
+  cursor: pointer;
+}
+.segOn { background: var(--bs-primary); color: #fff; }
