@@ -4,7 +4,7 @@
    widget runtime. To be decomposed into color-utils / snowfall / sync modules. */
 
 // BotScrew-aligned config mapper (drop-in contract). See docs/botscrew-widget-settings.md.
-import { toBotscrewWidgetSettings } from '../shared/widget-config.js';
+import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/widget-config.js';
 
 (function() {
   'use strict';
@@ -377,7 +377,40 @@ import { toBotscrewWidgetSettings } from '../shared/widget-config.js';
   // Preview mode toggles the canvas between Chat surface and Embeddable Search
   var previewMode = 'chat';
 
-  var state = JSON.parse(JSON.stringify(DEFAULTS));
+  // Durable saved-config key. We persist in BotScrew widgetSettings shape — the
+  // same payload the eventual bot drop-in consumes — so Save/Load is lossless and
+  // production-ready (see src/shared/widget-config.js).
+  var SAVED_CONFIG_KEY = 'gsb_widget_settings';
+
+  // Restore the last saved config so settings survive a page reload. Hydrate via
+  // the inverse mapper and merge over DEFAULTS: top-level scalars overwrite, and
+  // nested objects (snowfall, typography, embedSearch…) merge sub-keys so any
+  // field added since the config was saved keeps its default instead of vanishing.
+  function loadSavedState() {
+    var base = JSON.parse(JSON.stringify(DEFAULTS));
+    try {
+      var raw = localStorage.getItem(SAVED_CONFIG_KEY);
+      if (!raw) return base;
+      var restored = fromBotscrewWidgetSettings(JSON.parse(raw));
+      for (var k in restored) {
+        if (!Object.prototype.hasOwnProperty.call(restored, k)) continue;
+        var val = restored[k];
+        if (val && typeof val === 'object' && !Array.isArray(val) &&
+            base[k] && typeof base[k] === 'object') {
+          for (var sk in val) {
+            if (Object.prototype.hasOwnProperty.call(val, sk)) base[k][sk] = val[sk];
+          }
+        } else {
+          base[k] = val;
+        }
+      }
+    } catch (err) {
+      console.warn('[appearance] could not restore saved config:', err);
+    }
+    return base;
+  }
+
+  var state = loadSavedState();
   var saved = JSON.parse(JSON.stringify(state));
 
   var $ = function(id) { return document.getElementById(id); };
@@ -1257,6 +1290,13 @@ import { toBotscrewWidgetSettings } from '../shared/widget-config.js';
 
   $('saveBtn').addEventListener('click', function() {
     saved = JSON.parse(JSON.stringify(state));
+    // Persist durably so the config survives a reload. Stored in BotScrew
+    // widgetSettings shape — the exact payload the bot drop-in consumes.
+    try {
+      localStorage.setItem(SAVED_CONFIG_KEY, JSON.stringify(toBotscrewWidgetSettings(state)));
+    } catch (err) {
+      console.warn('[appearance] save failed:', err);
+    }
     render();
     var b = $('saveBtn');
     var orig = b.textContent;
@@ -1476,10 +1516,9 @@ import { toBotscrewWidgetSettings } from '../shared/widget-config.js';
     setSyncStatus('syncing', 'Syncing…');
     try {
       localStorage.setItem(LIVE_PREVIEW_LS_KEY, JSON.stringify(config));
-      // BotScrew-aligned shape (drop-in contract) — see src/shared/widget-config.js
-      // and docs/botscrew-widget-settings.md. Written alongside the legacy preview
-      // config so the dashboard stays usable while emitting BotScrew-ready output.
-      localStorage.setItem('gsb_widget_settings', JSON.stringify(toBotscrewWidgetSettings(state)));
+      // Note: the durable BotScrew-shaped config (gsb_widget_settings) is written
+      // by the Save button, not here — auto-sync only feeds the sharable.link live
+      // preview, so Save/Revert and the dirty banner stay truthful.
       setSyncStatus('synced', 'Synced');
       // Fade back to idle after 2 seconds
       setTimeout(function() {
