@@ -365,10 +365,22 @@
 
 .content-card__head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 20px;
-  margin-bottom: 6px;
+  /* Sticky to the top (just below the 64px topbar) so Save/Revert stay reachable
+     while scrolling the long form. Full-bleeds over the card's padding; z-index
+     sits above the fixed chat preview so the actions stay clickable. */
+  position: sticky;
+  top: 64px;
+  z-index: 85;
+  margin: -28px -32px 0;
+  padding: 16px 32px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .content-card__title {
@@ -403,35 +415,6 @@
   align-items: center;
   flex: 0 0 auto;
 }
-
-/* Sticky save toolbar — a compact floating group pinned to the bottom-left of
-   the controls column so Save/Revert stay reachable while scrolling the long
-   form (Omni Knowledge pattern). It sits in the content grid column (2) and is
-   left-aligned + width:fit-content, so it never overlaps the fixed chat preview
-   on the right. */
-.save-bar {
-  grid-column: 2;
-  justify-self: start;
-  position: sticky;
-  bottom: 20px;
-  z-index: 85;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  width: fit-content;
-  max-width: 100%;
-  margin-top: 16px;
-  padding: 9px 12px 9px 16px;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border-strong);
-  border-radius: 999px;
-  box-shadow: 0 8px 28px rgba(20, 40, 80, 0.16);
-}
-
-/* The banner only renders when dirty; sits just left of the buttons. */
-.save-bar .dirty-banner { margin-right: 2px; }
 
 .dirty-banner {
   display: none;

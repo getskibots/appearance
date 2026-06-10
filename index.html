@@ -131,6 +131,14 @@
             </h2>
             <p class="content-card__sub">Customize widget appearance. Changes preview live on the right and only persist when you save.</p>
           </div>
+          <div class="content-card__actions">
+            <span class="dirty-banner" id="dirtyBanner" aria-live="polite">
+              <span class="dirty-banner__dot"></span>
+              Unsaved changes
+            </span>
+            <button class="btn btn--ghost" id="revertBtn">Revert</button>
+            <button class="btn btn--primary" id="saveBtn">Save changes</button>
+          </div>
         </div>
 
         <!-- Inner grid: controls + preview -->
@@ -1363,17 +1371,6 @@
             </div>
           </aside>
 
-        </div>
-
-        <!-- Sticky save bar — stays pinned to the bottom of the viewport while
-             scrolling the long form, so Save/Revert are always reachable. -->
-        <div class="save-bar">
-          <span class="dirty-banner" id="dirtyBanner" aria-live="polite">
-            <span class="dirty-banner__dot"></span>
-            Unsaved changes
-          </span>
-          <button class="btn btn--ghost" id="revertBtn">Revert</button>
-          <button class="btn btn--primary" id="saveBtn">Save changes</button>
         </div>
       </div>
     </div>
