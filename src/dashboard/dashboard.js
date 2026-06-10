@@ -338,6 +338,10 @@ import { toBotscrewWidgetSettings } from '../shared/widget-config.js';
     bubbleStyle: 'slidein',
     customIconUrl: null,
     slideState: 'visible',
+    // Auto-hide-on-scroll is a behavior available on both pill styles. Per-style
+    // so each remembers its own setting; default ON for slide-in (preserves prior
+    // behavior), OFF for the horizontal status pill (opt-in).
+    autoHideOnScroll: { enhanced: false, slidein: true },
     statusPillFeatures: { liveAgent: true, weather: true, needHelpCta: true },
     layoutVariant: 'side',
     blurredBackground: true,
@@ -583,11 +587,18 @@ import { toBotscrewWidgetSettings } from '../shared/widget-config.js';
       customBlock.style.display = state.bubbleStyle === 'custom' ? 'block' : 'none';
     }
 
-    // Slide-in note visibility
+    // Auto-hide-on-scroll behavior block — shown for both pill styles; the note +
+    // Simulate button (#autoHideDetail) only when the behavior is switched on.
+    var autoHide = state.autoHideOnScroll || {};
+    var isPillNow = (state.bubbleStyle === 'enhanced' || state.bubbleStyle === 'slidein');
+    var autoHideOn = isPillNow && !!autoHide[state.bubbleStyle];
     var slideinBlock = $('slideinNoteBlock');
     if (slideinBlock) {
-      slideinBlock.style.display = state.bubbleStyle === 'slidein' ? 'block' : 'none';
+      slideinBlock.style.display = isPillNow ? 'block' : 'none';
     }
+    setToggle('toggleAutoHide', autoHideOn);
+    var autoHideDetail = $('autoHideDetail');
+    if (autoHideDetail) autoHideDetail.style.display = autoHideOn ? 'block' : 'none';
 
     // Custom icon rendering inside the launcher
     var customIconImg = $('customIconImg');
@@ -615,8 +626,9 @@ import { toBotscrewWidgetSettings } from '../shared/widget-config.js';
       }
     }
 
-    // Slide state — only meaningful for slidein. Otherwise force visible.
-    if (state.bubbleStyle === 'slidein') {
+    // Slide state — applies when auto-hide-on-scroll is on for the current pill
+    // style (Status pill or Slide-in pill). Otherwise the launcher stays put.
+    if (autoHideOn) {
       launcher.setAttribute('data-slide-state', state.slideState || 'visible');
     } else {
       launcher.removeAttribute('data-slide-state');
@@ -935,11 +947,24 @@ import { toBotscrewWidgetSettings } from '../shared/widget-config.js';
     render();
   });
 
-  // Simulate scroll button — toggles slide state for slide-in pill
+  // True when the active pill style has auto-hide-on-scroll switched on.
+  function isAutoHideActive() {
+    var ah = state.autoHideOnScroll || {};
+    return (state.bubbleStyle === 'enhanced' || state.bubbleStyle === 'slidein') && !!ah[state.bubbleStyle];
+  }
+
+  // Auto-hide-on-scroll toggle — per-style; turning it off snaps the launcher back.
+  $('toggleAutoHide').addEventListener('click', function() {
+    if (state.bubbleStyle !== 'enhanced' && state.bubbleStyle !== 'slidein') return;
+    var cur = !!(state.autoHideOnScroll && state.autoHideOnScroll[state.bubbleStyle]);
+    state.autoHideOnScroll[state.bubbleStyle] = !cur;
+    if (cur) state.slideState = 'visible'; // turning off → snap back to visible
+    render();
+  });
+
+  // Simulate scroll button — toggles slide state for the active auto-hide pill.
   $('simulateScrollBtn').addEventListener('click', function() {
-    if (state.bubbleStyle !== 'slidein') return;
-    // Stop auto-cycle when user manually toggles
-    stopSlideAutoCycle();
+    if (!isAutoHideActive()) return;
     var btn = $('simulateScrollBtn');
     if (state.slideState === 'visible' || !state.slideState) {
       state.slideState = 'hidden';
@@ -962,7 +987,7 @@ import { toBotscrewWidgetSettings } from '../shared/widget-config.js';
   var SCROLL_THRESHOLD = 6; // ignore tiny inertia jitter
 
   function handleSlideScroll() {
-    if (state.bubbleStyle !== 'slidein') return;
+    if (!isAutoHideActive()) return;
     if (canvas.getAttribute('data-preview-open') === 'true') return;
 
     var currentY = window.scrollY || window.pageYOffset || 0;
@@ -989,7 +1014,7 @@ import { toBotscrewWidgetSettings } from '../shared/widget-config.js';
     // After scroll pauses for 1.2s, reveal the pill (assume user has stopped)
     if (scrollIdleTimer) clearTimeout(scrollIdleTimer);
     scrollIdleTimer = setTimeout(function() {
-      if (state.bubbleStyle !== 'slidein') return;
+      if (!isAutoHideActive()) return;
       if (canvas.getAttribute('data-preview-open') === 'true') return;
       if (state.slideState !== 'visible') {
         state.slideState = 'visible';
