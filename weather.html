@@ -1375,28 +1375,32 @@
     }
   }
 
-  /* ===================== TOP ACTION BAR (SAVE) ===================== */
+  /* ===================== SAVE / STATUS CLUSTER (card header) ===================== */
+  .weather-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+  .weather-saved-line {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  /* Contextual save actions — only visible when there are unsaved changes */
   .save-bar {
-    display: none;              /* removed per design — not needed on this page */
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: #fff;
-    border-bottom: 1px solid var(--border);
-    padding: 12px 32px;
-    margin: -24px -32px 20px;
+    display: none;
     align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 2px 8px rgba(20,30,50,.04);
+    gap: 10px;
   }
   .save-bar.dirty {
-    background: #fffaf2;
-    border-bottom-color: #f4d8a8;
+    display: flex;
   }
-  .save-bar.saved-flash {
-    background: #f0fdf4;
-    border-bottom-color: #bbf7d0;
-    transition: background 0.4s ease, border-color 0.4s ease;
+  .save-msg {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--warn);
+    white-space: nowrap;
   }
   .save-status {
     font-size: 13px;
@@ -2295,18 +2299,6 @@
         </button>
       </div>
 
-      <!-- Save bar (sticky to top) -->
-      <div class="save-bar" id="save-bar">
-        <div class="save-status">
-          <span class="dot" id="save-dot"></span>
-          <span id="save-status-text">Loaded — no changes</span>
-        </div>
-        <div style="display: flex; gap: 10px;">
-          <button class="btn btn-ghost" id="discard-btn" disabled>Discard</button>
-          <button class="btn btn-primary" id="save-btn" disabled>Save changes</button>
-        </div>
-      </div>
-
       <h1 class="page-title">Agent Widget</h1>
 
       <div class="layout">
@@ -2351,7 +2343,15 @@
                   <p class="card-desc">Drop in coordinates. We pull live conditions from a global weather source — covering resorts anywhere in the world.</p>
                 </div>
               </div>
-              <span class="status-pill idle" id="card-status-pill">Not connected</span>
+              <div class="weather-status">
+                <span class="status-pill idle" id="card-status-pill">Not connected</span>
+                <span class="weather-saved-line" id="weather-saved-line" style="display:none"></span>
+                <div class="save-bar" id="save-bar">
+                  <span class="save-msg" id="save-status-text"></span>
+                  <button class="btn btn-ghost" id="discard-btn" disabled>Discard</button>
+                  <button class="btn btn-primary" id="save-btn" disabled>Save changes</button>
+                </div>
+              </div>
             </div>
 
             <div class="field">
@@ -3053,9 +3053,12 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
       }
 
       if (sourceInfoEl) sourceInfoEl.innerHTML = cfg.sourceInfo;
-      if (statusPill) {
-        statusPill.className = cfg.pillClass;
-        statusPill.textContent = cfg.pillText;
+      if (src === 'direct') {
+        // Resort Direct is still a mock — show its placeholder pill
+        if (statusPill) { statusPill.className = cfg.pillClass; statusPill.textContent = cfg.pillText; }
+      } else {
+        // Open-Meteo — reflect real saved / connection state
+        refreshSaveStatus();
       }
     });
   });
@@ -3381,6 +3384,9 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
       if (nameEl) nameEl.textContent = window.__resortDisplayName;
       if (greetEl) greetEl.textContent = window.__resortDisplayName;
       if (footEl) footEl.textContent = window.__resortDisplayName;
+      // Geocoding resolved async — re-render the status so the saved-location
+      // line shows the place name instead of raw coordinates.
+      if (typeof refreshSaveStatus === 'function') refreshSaveStatus();
     } else if (baseInputs) {
       setText('loc-base-place', 'Geocoding unavailable', null);
       document.getElementById('loc-base-place').classList.add('dim');
@@ -3847,37 +3853,18 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
   // States: 'idle' (no save), 'loading' (fetching), 'connected' (live), 'error'
   let connectionState = 'idle';
   let connectionErrorMsg = '';
+  let livePreviewOn = false;    // mirrors the Live Preview toggle (wired further below)
 
   function setConnectionState(state, errorMsg = '') {
     connectionState = state;
     connectionErrorMsg = errorMsg;
 
-    const pillEl = document.getElementById('card-status-pill');
     const refreshBtnEl = document.getElementById('refresh-btn');
     const emptyEl = document.getElementById('readings-empty');
     const liveEl = document.getElementById('readings-live');
 
-    // Card-head pill
-    if (pillEl) {
-      pillEl.classList.remove('idle', 'loading', 'warn', 'danger');
-      switch (state) {
-        case 'idle':
-          pillEl.classList.add('idle');
-          pillEl.textContent = 'Not connected';
-          break;
-        case 'loading':
-          pillEl.classList.add('loading');
-          pillEl.textContent = 'Connecting…';
-          break;
-        case 'connected':
-          pillEl.textContent = 'Connected';
-          break;
-        case 'error':
-          pillEl.classList.add('warn');
-          pillEl.textContent = 'Connection issue';
-          break;
-      }
-    }
+    // The status pill + saved-location line are rendered by refreshSaveStatus()
+    // (it also knows dirty/saved state) — called at the end of this function.
 
     // Refresh button gating
     if (refreshBtnEl) {
@@ -3907,32 +3894,50 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
   function refreshSaveStatus() {
     const dirty = isDirty();
     const configured = hasConfiguredCoords(savedSnapshot);
+
+    // Contextual save actions — only visible (via .dirty) while there are edits
     saveBar.classList.toggle('dirty', dirty);
     saveBtn.disabled = !dirty;
     discardBtn.disabled = !dirty;
+    saveStatusEl.textContent = dirty
+      ? (configured ? 'Unsaved changes' : 'Set coordinates, then save')
+      : '';
 
-    if (dirty) {
-      // Has unsaved changes — same message regardless of connection state
-      saveStatusEl.textContent = configured
-        ? 'Unsaved changes'
-        : 'Ready — save to connect weather';
-    } else if (!configured) {
-      // Empty form, never saved
-      saveStatusEl.textContent = 'Enter your resort coordinates below to connect weather';
-    } else {
-      // Saved + connection state determines message
-      switch (connectionState) {
-        case 'loading':
-          saveStatusEl.textContent = 'Saved — fetching weather…';
-          break;
-        case 'connected':
-          saveStatusEl.textContent = lastSavedAt ? `Connected · saved ${fmtTimeAgo(lastSavedAt)}` : 'Connected';
-          break;
-        case 'error':
-          saveStatusEl.textContent = connectionErrorMsg || 'Saved — connection failed';
-          break;
-        default:
-          saveStatusEl.textContent = lastSavedAt ? `Saved ${fmtTimeAgo(lastSavedAt)}` : 'Saved';
+    // ----- Status pill: connection OR unsaved-preview state -----
+    const pillEl = document.getElementById('card-status-pill');
+    if (pillEl) {
+      pillEl.classList.remove('idle', 'loading', 'warn', 'danger', 'info');
+      if (dirty) {
+        pillEl.classList.add('warn');
+        pillEl.textContent = livePreviewOn ? 'Preview · unsaved' : 'Unsaved changes';
+      } else if (!configured) {
+        pillEl.classList.add('idle');
+        pillEl.textContent = 'Not connected';
+      } else if (connectionState === 'loading') {
+        pillEl.classList.add('loading');
+        pillEl.textContent = 'Connecting…';
+      } else if (connectionState === 'error') {
+        pillEl.classList.add('warn');
+        pillEl.textContent = 'Connection issue';
+      } else if (connectionState === 'connected') {
+        pillEl.textContent = 'Connected';
+      } else {
+        pillEl.classList.add('idle');
+        pillEl.textContent = 'Not connected';
+      }
+    }
+
+    // ----- Saved-location line: "Saved: <place> · saved Nm ago" when clean -----
+    const savedLineEl = document.getElementById('weather-saved-line');
+    if (savedLineEl) {
+      if (configured && !dirty) {
+        const place = window.__resortDisplayName
+          || `${savedSnapshot['base-lat']}, ${savedSnapshot['base-lng']}`;
+        const when = lastSavedAt ? ` · saved ${fmtTimeAgo(lastSavedAt)}` : '';
+        savedLineEl.textContent = `Saved: ${place}${when}`;
+        savedLineEl.style.display = '';
+      } else {
+        savedLineEl.style.display = 'none';
       }
     }
   }
@@ -3990,6 +3995,9 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
     if (!savedSnapshot) return;
     writeForm(savedSnapshot);
     refreshSaveStatus();
+    // Re-fetch the saved coordinates so the readings + saved-location line reflect
+    // the committed config again (not a discarded live-preview location).
+    if (hasConfiguredCoords(savedSnapshot)) doRefresh();
   }
 
   // -------------------------------------------------------------------
@@ -4000,7 +4008,6 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
   // -------------------------------------------------------------------
   const LIVE_PREVIEW_KEY = 'gsb-weather-live-preview';
   const livePreviewToggle = document.getElementById('live-preview-toggle');
-  let livePreviewOn = false;
   try { livePreviewOn = localStorage.getItem(LIVE_PREVIEW_KEY) === '1'; } catch (e) {}
   if (livePreviewToggle) livePreviewToggle.checked = livePreviewOn;
 
