@@ -45,13 +45,13 @@
   /* ===================== APP SHELL ===================== */
   .app {
     display: grid;
-    grid-template-columns: 96px 1fr;
+    grid-template-columns: 104px 1fr;
     min-height: 100vh;
   }
 
   /* ===================== LEFT NAV (PRIMARY) ===================== */
   .nav {
-    background: var(--sidebar);
+    background: #2a7dc0;          /* Omni botscrew-500 */
     color: var(--sidebar-text);
     display: flex;
     flex-direction: column;
@@ -62,10 +62,9 @@
     align-items: center;
     justify-content: center;
     height: 64px;
-    border-bottom: 1px solid rgba(255,255,255,0.12);
     padding: 8px;
   }
-  .nav-logo svg { width: 72px; height: auto; }
+  .nav-logo img { width: 72px; height: auto; }
   .nav-home {
     padding: 10px 12px;
     font-size: 13px;
@@ -95,16 +94,14 @@
     align-items: center;
     justify-content: center;
   }
+  .nav-item .icon svg { stroke-width: 1.75; }
+  .nav-item:hover {
+    background: #236aa8;          /* Omni botscrew-600 */
+    color: #fff;
+  }
   .nav-item.active {
     color: #fff;
-    background: rgba(255,255,255,0.08);
-  }
-  .nav-item.active::before {
-    content: "";
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
-    background: #fff;
+    background: #1b5689;          /* Omni botscrew-700 — solid fill */
   }
   .nav-item .badge {
     position: absolute;
@@ -1932,8 +1929,7 @@
       height: 56px;
       padding: 6px;
     }
-    .nav-logo svg { width: 44px; }
-    .nav-home { display: none; }
+    .nav-logo img { width: 44px; }
     .nav-items {
       padding: 6px 0;
     }
@@ -2196,13 +2192,8 @@
   <!-- ============= LEFT NAV ============= -->
   <aside class="nav">
     <div class="nav-logo">
-      <!-- Mountains + GET SKI BOTS wordmark (simplified) -->
-      <svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg" aria-label="GetSkiBots">
-        <polygon points="10,30 25,12 35,22 45,8 60,28 75,18 90,30" fill="#fff" opacity="0.95"/>
-        <text x="50" y="44" text-anchor="middle" fill="#fff" font-size="7" font-weight="700" letter-spacing="0.5" font-family="-apple-system, sans-serif">GET SKI BOTS</text>
-      </svg>
+      <img src="/src/assets/logo.png" alt="Get Ski Bots">
     </div>
-    <div class="nav-home">Home</div>
     <div class="nav-items">
       <a class="nav-item">
         <span class="icon">
@@ -2245,7 +2236,6 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3v4zM3 19a2 2 0 0 0 2 2h1v-6H3v4z"/></svg>
         </span>
         Support
-        <span class="badge">3</span>
       </a>
       <a class="nav-item active">
         <span class="icon">

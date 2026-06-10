@@ -5,7 +5,7 @@
 
 :root {
   /* Production tokens (matched to screenshot) */
-  --sidebar-bg:    #2470b8;
+  --sidebar-bg:    #2a7dc0;        /* Omni botscrew-500 */
   --sidebar-ink:   #ffffff;
   --sidebar-ink-soft: rgba(255,255,255,0.78);
   --sidebar-ink-muted:rgba(255,255,255,0.55);

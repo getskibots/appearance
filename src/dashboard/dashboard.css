@@ -8,7 +8,7 @@
 
 .app {
   display: grid;
-  grid-template-columns: 88px 1fr;
+  grid-template-columns: 104px 1fr;
   grid-template-rows: 64px 1fr;
   min-height: 100vh;
 }
@@ -29,12 +29,11 @@
   align-items: center;
   justify-content: center;
   padding: 6px;
-  border-bottom: 1px solid rgba(255,255,255,0.12);
 }
 
-.sidebar__brand svg {
-  width: 60px;
-  height: 50px;
+.sidebar__brand img {
+  width: 72px;
+  height: auto;
 }
 
 .sidebar__nav {
@@ -61,30 +60,19 @@
 }
 
 .sidebar__item:hover {
-  background: rgba(255,255,255,0.08);
+  background: #236aa8;            /* Omni botscrew-600 */
   color: var(--sidebar-ink);
 }
 
 .sidebar__item[data-active="true"] {
-  background: rgba(255,255,255,0.14);
+  background: #1b5689;            /* Omni botscrew-700 — solid fill, matches Omni */
   color: var(--sidebar-ink);
 }
 
-.sidebar__item[data-active="true"]::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 4px;
-  bottom: 4px;
-  width: 3px;
-  background: #fff;
-  border-radius: 0 2px 2px 0;
-}
-
 .sidebar__item svg {
-  width: 22px;
-  height: 22px;
-  stroke-width: 1.6;
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.75;
 }
 
 .sidebar__badge {
