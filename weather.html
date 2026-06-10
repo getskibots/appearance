@@ -1,0 +1,4277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GetSkiBots Dashboard — Weather</title>
+<style>
+  :root {
+    --brand: #a41e23;
+    --brand-deep: #7b1619;
+    --sidebar: #1e7fc7;
+    --sidebar-dark: #1a6fb0;
+    --sidebar-text: #ffffff;
+    --sidebar-text-dim: rgba(255,255,255,0.85);
+    --bg: #f4f7fb;
+    --panel: #ffffff;
+    --border: #e3e8ef;
+    --border-strong: #cdd5e0;
+    --text: #2a3340;
+    --text-muted: #6b7587;
+    --text-soft: #9aa3b3;
+    --tab-active-bg: #eaf3fc;
+    --tab-active-text: #1e7fc7;
+    --input-bg: #ffffff;
+    --input-border: #d9dee6;
+    --pill-bg: #f0f4f9;
+    --success: #2f8f5e;
+    --success-bg: #e8f5ee;
+    --warn: #c47a14;
+    --warn-bg: #fdf3e3;
+    --danger: #c2382e;
+    --danger-bg: #fbe9e7;
+    --shadow: 0 1px 2px rgba(20,30,50,.04), 0 2px 8px rgba(20,30,50,.04);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  /* ===================== APP SHELL ===================== */
+  .app {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ===================== LEFT NAV (PRIMARY) ===================== */
+  .nav {
+    background: var(--sidebar);
+    color: var(--sidebar-text);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 64px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    padding: 8px;
+  }
+  .nav-logo svg { width: 72px; height: auto; }
+  .nav-home {
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--sidebar-text-dim);
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+  .nav-items {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 6px;
+    color: var(--sidebar-text-dim);
+    font-size: 11px;
+    text-decoration: none;
+    position: relative;
+  }
+  .nav-item .icon {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nav-item.active {
+    color: #fff;
+    background: rgba(255,255,255,0.08);
+  }
+  .nav-item.active::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: #fff;
+  }
+  .nav-item .badge {
+    position: absolute;
+    top: 6px; right: 18px;
+    background: #ff6b4a;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 999px;
+    width: 18px; height: 18px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ===================== TOP BAR ===================== */
+  .topbar {
+    height: 64px;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+  }
+  .topbar-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text);
+    transition: all .15s ease;
+  }
+  .btn-primary {
+    background: var(--sidebar);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--sidebar-dark); }
+  .btn-ghost {
+    border: 1px solid var(--border-strong);
+    background: #fff;
+    color: var(--text);
+  }
+  .btn-ghost:hover { background: var(--bg); }
+  .topbar-user {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--text);
+    padding: 4px 10px 4px 4px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .topbar-user .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #c9d6e4, #8fa4bb);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 600; font-size: 12px;
+  }
+
+  /* ===================== MAIN ===================== */
+  .main {
+    display: flex;
+    flex-direction: column;
+  }
+  .content {
+    padding: 24px 32px 64px;
+    max-width: 1320px;
+    width: 100%;
+  }
+
+  .page-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 24px;
+    color: var(--text);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  /* ===================== SUB-NAV ===================== */
+  .subnav {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 24px;
+  }
+  .subnav-item {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 13px;
+    text-decoration: none;
+    margin-bottom: 2px;
+    cursor: pointer;
+  }
+  .subnav-item:hover {
+    background: var(--bg);
+  }
+  .subnav-item.active {
+    background: var(--tab-active-bg);
+    color: var(--tab-active-text);
+    font-weight: 500;
+  }
+  .subnav-item.new {
+    position: relative;
+  }
+  .subnav-item.new::after {
+    content: "NEW";
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--brand);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  /* ===================== PANEL ===================== */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .panel-head {
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-head h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .panel-head p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  /* ===================== CARDS ===================== */
+  .card {
+    padding: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card:last-child { border-bottom: 0; }
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .card-title .icon-tile {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--tab-active-bg);
+    color: var(--sidebar);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card-desc {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin: 4px 0 0;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--success-bg);
+    color: var(--success);
+    white-space: nowrap;
+  }
+  .status-pill::before {
+    content: "";
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .status-pill.warn {
+    background: var(--warn-bg);
+    color: var(--warn);
+  }
+  .status-pill.danger {
+    background: var(--danger-bg);
+    color: var(--danger);
+  }
+  .status-pill.idle {
+    background: #eef1f5;
+    color: var(--text-muted);
+  }
+  .status-pill.loading {
+    background: #fff7e6;
+    color: #b8842c;
+  }
+  .status-pill.loading::before {
+    animation: pulse-dot 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ===================== READINGS + CHAT PREVIEW LAYOUT ===================== */
+  .readings-and-preview {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 18px;
+    margin-top: 18px;
+  }
+  .readings-and-preview > .status-block,
+  .readings-and-preview > .chat-preview-block {
+    margin-top: 0;
+  }
+  @media (max-width: 1100px) {
+    .readings-and-preview {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ===================== CHAT PREVIEW BLOCK ===================== */
+  .chat-preview-block {
+    background: #f7f9fc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px 14px;
+    display: flex;
+    flex-direction: column;
+  }
+  .chat-preview-block .status-block-head {
+    margin-bottom: 14px;
+  }
+  .chat-preview-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+  }
+  .chat-preview-empty {
+    text-align: center;
+    padding: 30px 20px;
+    background: #fff;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    color: var(--text-muted);
+  }
+  .chat-preview-empty .readings-empty-icon { margin-bottom: 10px; }
+  .chat-preview-empty-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-soft);
+  }
+  .chat-preview-note {
+    margin: 12px 0 0;
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* ===================== CHAT MOCK ===================== */
+  .chat-mock {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(20, 30, 50, 0.06);
+    overflow: hidden;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .chat-mock-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 16px 10px;
+  }
+  .chat-mock-logo {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+  }
+  .chat-mock-logo svg { width: 100%; height: 100%; }
+  .chat-mock-resort {
+    flex: 1;
+    text-align: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text);
+    letter-spacing: -0.2px;
+  }
+  .chat-mock-close {
+    width: 24px; height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    color: var(--text-soft);
+    cursor: not-allowed;
+    border-radius: 4px;
+  }
+  .chat-mock-greeting {
+    padding: 10px 16px 14px;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.45;
+    border-bottom: 1px solid var(--border);
+  }
+  .chat-mock-greeting span { font-weight: 600; }
+
+  /* Conditions card inside chat */
+  .chat-mock-conditions {
+    margin: 14px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .chat-mock-conditions-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .chat-mock-cond-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    color: var(--text-muted);
+  }
+  .chat-mock-cond-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 3px rgba(46, 143, 94, 0.18);
+  }
+  .chat-mock-cond-updated {
+    font-size: 9px;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+  }
+  .chat-mock-cond-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .chat-mock-cond-cell {
+    background: #fff;
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .chat-mock-cond-k {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .chat-mock-cond-v {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.1;
+  }
+  .chat-mock-cond-v small {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-soft);
+    margin-left: 1px;
+  }
+  .chat-mock-cond-v.small {
+    font-size: 13px;
+    font-weight: 600;
+    padding-top: 3px;
+  }
+  .chat-mock-cond-v .muted {
+    color: var(--text-soft);
+    font-style: italic;
+    font-weight: 400;
+  }
+  .chat-mock-cond-foot {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.2px;
+  }
+  .chat-mock-cond-foot strong { color: var(--text); }
+
+  /* Conversation starters */
+  .chat-mock-starters {
+    padding: 6px 14px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .chat-mock-starter {
+    background: #fff;
+    border: 1px solid var(--brand);
+    color: var(--brand);
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: left;
+    font-family: inherit;
+    cursor: not-allowed;
+    opacity: 0.85;
+  }
+
+  /* Composer */
+  .chat-mock-composer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px 8px 16px;
+    border-top: 1px solid var(--border);
+    background: #fff;
+  }
+  .chat-mock-input {
+    flex: 1;
+    border: 0;
+    outline: 0;
+    padding: 10px 4px;
+    font-size: 13px;
+    font-family: inherit;
+    background: transparent;
+    color: var(--text);
+    cursor: not-allowed;
+  }
+  .chat-mock-input::placeholder {
+    color: var(--text-soft);
+  }
+  .chat-mock-send {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--brand);
+    border: 0;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: not-allowed;
+    flex: 0 0 30px;
+  }
+  .chat-mock-send:disabled { opacity: 1; }
+
+  /* Powered by */
+  .chat-mock-poweredby {
+    text-align: center;
+    padding: 8px;
+    font-size: 9px;
+    color: var(--text-soft);
+    letter-spacing: 0.8px;
+    background: #fafbfd;
+    border-top: 1px solid var(--border);
+  }
+  .chat-mock-poweredby strong {
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* No-summit variant inside chat preview */
+  .chat-mock-conditions.no-summit .chat-mock-cond-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* ===================== READINGS EMPTY STATE ===================== */
+  .readings-empty {
+    text-align: center;
+    padding: 40px 28px;
+    background: #fafbfd;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    color: var(--text-muted);
+  }
+  .readings-empty-icon {
+    margin-bottom: 12px;
+    color: var(--border-strong);
+    display: inline-flex;
+  }
+  .readings-empty-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .readings-empty-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    max-width: 420px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+  .readings-empty-desc strong {
+    color: var(--text);
+    background: #fff7e6;
+    padding: 1px 6px;
+    border-radius: 3px;
+    border: 1px solid #f4d8a8;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+    margin: 0 2px;
+  }
+
+  /* ===================== FORM ===================== */
+  .field {
+    margin-bottom: 18px;
+  }
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .field-row3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+  .label .req {
+    color: var(--brand);
+    font-weight: 400;
+  }
+  .label .opt {
+    color: var(--text-soft);
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .help-icon {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--text-soft);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: help;
+  }
+  .input, .select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--input-bg);
+    color: var(--text);
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .input:focus, .select:focus {
+    outline: none;
+    border-color: var(--sidebar);
+    box-shadow: 0 0 0 3px rgba(30,127,199,0.15);
+  }
+  .input.mono {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+  }
+  .help-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  /* ===================== LIVE PREVIEW TOGGLE ===================== */
+  .live-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text-muted);
+    user-select: none;
+    margin-right: 10px;
+  }
+  .live-toggle input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .live-toggle-track {
+    width: 30px;
+    height: 17px;
+    background: var(--border-strong);
+    border-radius: 999px;
+    position: relative;
+    transition: background .15s ease;
+    flex: 0 0 auto;
+  }
+  .live-toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 13px;
+    height: 13px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform .15s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,.2);
+  }
+  .live-toggle input:checked + .live-toggle-track {
+    background: var(--success);
+  }
+  .live-toggle input:checked + .live-toggle-track .live-toggle-thumb {
+    transform: translateX(13px);
+  }
+  .live-toggle-text {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .live-toggle input:checked ~ .live-toggle-text {
+    color: var(--success);
+  }
+  .live-toggle input:focus-visible + .live-toggle-track {
+    box-shadow: 0 0 0 3px rgba(30,127,199,0.25);
+  }
+
+  /* ===================== STATUS BLOCK ===================== */
+  .status-block {
+    margin-top: 20px;
+    background: #f7fafd;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 18px;
+  }
+  .status-block-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .status-block-head h4 {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+  }
+  .status-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .status-grid-6 {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  .status-grid-6.no-summit {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  @media (max-width: 1100px) {
+    .status-grid-6 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .status-grid-6.no-summit {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .status-cell .k {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-soft);
+    margin-bottom: 4px;
+  }
+  .status-cell .v {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .status-cell .v small {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-left: 2px;
+  }
+  .status-foot {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* Schema tag */
+  .schema-tag {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    background: #eef6fd;
+    color: var(--sidebar);
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    vertical-align: middle;
+  }
+
+  /* Muted placeholder for unmapped fields */
+  .v .muted {
+    color: var(--text-soft);
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  /* Hourly forecast strip */
+  .hourly-strip {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .hourly-head {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .hourly-row {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .hourly-row::-webkit-scrollbar { height: 4px; }
+  .hourly-row::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+  .hourly-cell {
+    flex: 0 0 60px;
+    background: #f7fafd;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 6px;
+    text-align: center;
+    font-size: 11px;
+  }
+  .hourly-cell .h-time {
+    color: var(--text-muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 4px;
+  }
+  .hourly-cell .h-icon {
+    font-size: 16px;
+    line-height: 1;
+    margin: 4px 0;
+  }
+  .hourly-cell .h-temp {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .hourly-cell .h-pop {
+    color: var(--sidebar);
+    font-size: 10px;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  .hourly-cell .h-pop.zero { color: var(--text-soft); font-weight: 400; }
+  .hourly-cell.night {
+    background: #f3f5f9;
+  }
+  .hourly-empty {
+    color: var(--text-soft);
+    font-size: 12px;
+    font-style: italic;
+    padding: 8px 12px;
+  }
+
+  /* Attribution row */
+  .attribution {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .attribution .attr-text strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .attribution .attr-link {
+    color: var(--sidebar);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .attribution .attr-link:hover {
+    text-decoration: underline;
+  }
+
+  /* ===================== PRESET ROW ===================== */
+  .preset-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    margin-top: 6px;
+    background: #fafbfd;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    flex-wrap: wrap;
+  }
+  .preset-row-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    font-weight: 600;
+    flex: 0 0 auto;
+  }
+  .preset-chips {
+    display: flex;
+    flex: 1 1 auto;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding: 2px 0;
+  }
+  .preset-chips::-webkit-scrollbar { height: 4px; }
+  .preset-chips::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+  .preset-chip {
+    background: #fff;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 130px;
+    flex: 0 0 auto;
+    transition: border-color 0.15s, background 0.15s, transform 0.05s;
+  }
+  .preset-chip:hover {
+    border-color: var(--brand);
+    background: #fff;
+  }
+  .preset-chip:active {
+    transform: translateY(1px);
+  }
+  .preset-chip-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .preset-chip-meta {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+  }
+  .preset-chip.flash {
+    border-color: var(--success);
+    background: #f0fdf4;
+  }
+  @media (max-width: 640px) {
+    .preset-row {
+      gap: 8px;
+      padding: 10px 12px;
+    }
+    .preset-row-label {
+      flex-basis: 100%;
+      font-size: 10px;
+    }
+    .preset-chip {
+      min-width: 120px;
+      padding: 7px 10px;
+    }
+  }
+
+  /* ===================== SECTION LABELS (Required/Optional pills) ===================== */
+  .section-label-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .section-label {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--text);
+    margin: 0;
+  }
+  .section-pill {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 4px;
+    line-height: 1.2;
+  }
+  .section-pill-required {
+    background: var(--brand);
+    color: #fff;
+  }
+  .section-pill-optional {
+    background: #eef6fd;
+    color: #1c4a72;
+    border: 1px solid #c9e0f4;
+  }
+  .section-sublabel {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 400;
+    flex: 1;
+  }
+  @media (max-width: 640px) {
+    .section-label-row {
+      gap: 8px;
+    }
+    .section-sublabel {
+      flex-basis: 100%;
+      margin-top: 2px;
+    }
+  }
+
+  /* ===================== LOCATION DETAIL PANEL ===================== */
+  .loc-detail {
+    margin-top: 18px;
+    background: #fafbfd;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .loc-detail-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  .loc-detail-head svg { color: var(--sidebar); }
+  .loc-detail-head h4 {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text);
+    flex: 1;
+  }
+  .loc-detail-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+  }
+  .loc-detail-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+  }
+  .loc-detail-body.single {
+    grid-template-columns: 1fr;
+  }
+  .loc-card {
+    background: #fff;
+    padding: 14px 16px;
+  }
+  .loc-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .loc-pill {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    padding: 2px 7px;
+    border-radius: 3px;
+  }
+  .loc-pill.base   { background: #eaf3fc; color: #1c4a72; }
+  .loc-pill.summit { background: #fde8eb; color: var(--brand); }
+  .loc-place {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .loc-place.dim {
+    color: var(--text-muted);
+    font-style: italic;
+    font-weight: 400;
+  }
+  .loc-card-grid {
+    display: grid;
+    gap: 6px;
+  }
+  .loc-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    font-size: 12px;
+  }
+  .loc-row .lk {
+    color: var(--text-muted);
+  }
+  .loc-row .lv {
+    color: var(--text);
+    font-weight: 500;
+    text-align: right;
+  }
+  .loc-row .lv.mono {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 11px;
+  }
+  .loc-row .lv.warn {
+    color: #c5751a;
+  }
+  .loc-row .lv.danger {
+    color: var(--brand);
+  }
+  .loc-row .lv.muted {
+    color: var(--text-soft);
+    font-style: italic;
+    font-weight: 400;
+  }
+  .loc-detail-foot {
+    padding: 12px 16px;
+    background: #fafbfd;
+    border-top: 1px solid var(--border);
+  }
+  .loc-warn {
+    background: #fff7e6;
+    border: 1px solid #f4d8a8;
+    color: #7a4d10;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .loc-warn.hidden { display: none; }
+  .loc-warn strong { color: #5a3a08; }
+  .loc-warn-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: space-between;
+  }
+  .loc-warn-text {
+    flex: 1;
+    line-height: 1.45;
+  }
+  .loc-warn-fix {
+    flex: 0 0 auto;
+    background: #fff;
+    border: 1px solid #d9a548;
+    color: #7a4d10;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+    font-family: inherit;
+  }
+  .loc-warn-fix:hover {
+    background: #fef3d6;
+    border-color: #b8842c;
+  }
+  .loc-warn-fix:active {
+    background: #f4d8a8;
+  }
+  .loc-detail-explainer {
+    margin: 0;
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 700px) {
+    .loc-detail-body {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ===================== INFO BANNER ===================== */
+  .info-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #eef6fd;
+    border: 1px solid #c9e0f4;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: #2c5d8a;
+  }
+  .info-banner svg {
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .info-banner strong {
+    color: #1c4a72;
+    font-weight: 600;
+  }
+
+  /* ===================== TABS ===================== */
+  .lang-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+  .lang-row .pill {
+    color: var(--sidebar);
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  /* ===================== STORAGE WARNING BANNER ===================== */
+  .storage-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #fff7e6;
+    border: 1px solid #f4d8a8;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: -24px -32px 16px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: #7a4d10;
+    line-height: 1.5;
+    position: relative;
+  }
+  .storage-warning.hidden { display: none; }
+  .storage-warning-icon {
+    flex: 0 0 16px;
+    color: #c5751a;
+    margin-top: 1px;
+  }
+  .storage-warning-body {
+    flex: 1;
+  }
+  .storage-warning-body strong {
+    color: #5a3a08;
+  }
+  .storage-warning-close {
+    flex: 0 0 auto;
+    background: transparent;
+    border: 0;
+    color: #b8842c;
+    cursor: pointer;
+    padding: 2px;
+    line-height: 0;
+    border-radius: 3px;
+    transition: background 0.15s;
+  }
+  .storage-warning-close:hover {
+    background: rgba(184, 132, 44, 0.12);
+  }
+  @media (max-width: 900px) {
+    .storage-warning {
+      margin: -18px -20px 12px;
+    }
+  }
+  @media (max-width: 640px) {
+    .storage-warning {
+      margin: -14px -14px 10px;
+      font-size: 11px;
+    }
+  }
+
+  /* ===================== TOP ACTION BAR (SAVE) ===================== */
+  .save-bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: 12px 32px;
+    margin: -24px -32px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(20,30,50,.04);
+  }
+  .save-bar.dirty {
+    background: #fffaf2;
+    border-bottom-color: #f4d8a8;
+  }
+  .save-bar.saved-flash {
+    background: #f0fdf4;
+    border-bottom-color: #bbf7d0;
+    transition: background 0.4s ease, border-color 0.4s ease;
+  }
+  .save-status {
+    font-size: 13px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .save-status .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text-soft);
+  }
+  .save-bar.dirty .dot { background: #f59e0b; }
+  .save-bar.saved-flash .dot { background: #10b981; }
+  .save-bar .btn-primary[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* ===================== RADIO/CHECKS ===================== */
+  .radio-group {
+    display: flex;
+    gap: 10px;
+  }
+  .radio {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    flex: 1;
+    background: #fff;
+  }
+  .radio.active {
+    border-color: var(--sidebar);
+    background: var(--tab-active-bg);
+    color: var(--sidebar);
+    font-weight: 500;
+  }
+  .radio .dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--input-border);
+    flex-shrink: 0;
+  }
+  .radio.active .dot {
+    border-color: var(--sidebar);
+    background: var(--sidebar);
+    box-shadow: inset 0 0 0 2px #fff;
+  }
+
+  /* ===================== SOURCE TABS ===================== */
+  .src-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 640px;
+  }
+  .src-tabs.src-tabs-2 {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 480px;
+  }
+  .src-tab {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    transition: all .15s ease;
+  }
+  .src-tab:hover {
+    border-color: var(--border-strong);
+    background: #fafbfd;
+  }
+  .src-tab.active {
+    border-color: var(--sidebar);
+    background: var(--tab-active-bg);
+    box-shadow: 0 0 0 1px var(--sidebar);
+  }
+  .src-tab-flag {
+    font-size: 22px;
+    line-height: 1;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .src-tab-flag.src-tab-logo {
+    width: 32px;
+    height: 32px;
+  }
+  .src-tab-flag.src-tab-logo svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .src-tab.active .src-tab-flag { color: var(--sidebar); }
+  .src-tab-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .src-tab-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .src-tab.active .src-tab-name { color: var(--sidebar); }
+  .src-tab-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .src-detect {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: var(--success-bg);
+    color: var(--success);
+    border-radius: 6px;
+    font-size: 12px;
+    max-width: 640px;
+  }
+  .src-detect strong {
+    color: var(--success);
+    font-weight: 600;
+  }
+  .src-detect svg {
+    flex-shrink: 0;
+  }
+
+  /* ===================== SOURCE PANELS ===================== */
+  .src-panel.hidden {
+    display: none;
+  }
+
+  /* ===================== RESORT DIRECT ===================== */
+  .direct-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 20px;
+    padding: 12px 16px;
+    background: #eef6fd;
+    border: 1px solid #c9e0f4;
+    border-radius: 6px;
+    color: #2c5d8a;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .direct-banner svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--sidebar);
+  }
+  .direct-banner strong {
+    color: #1c4a72;
+    font-weight: 600;
+  }
+
+  .direct-auth-field.hidden {
+    display: none;
+  }
+
+  .mono-inline {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    background: var(--pill-bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--text);
+  }
+
+  /* ===== Numbered steps ===== */
+  .step {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 16px;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .step:first-of-type {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--sidebar);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+  .step-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .step-head-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* ===== Mapper split-view ===== */
+  .mapper {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: 14px;
+    margin-top: 4px;
+  }
+  .mapper-pane {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .mapper-pane-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #f7fafd;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+  }
+  .mapper-pane-foot {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-top: 1px solid var(--border);
+    background: #fafbfd;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .mapper-progress {
+    color: var(--success);
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 11px;
+  }
+  .link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: 0;
+    color: var(--sidebar);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+  }
+  .link-btn:hover { text-decoration: underline; }
+
+  /* ===== JSON tree (left pane) ===== */
+  .json-tree {
+    margin: 0;
+    padding: 14px 16px;
+    background: #1e2733;
+    color: #c8d3e0;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: pre;
+    flex: 1;
+  }
+  .jt-brace { color: #6b7587; }
+  .jt-key { color: #7eb8e4; }
+  .jt-leaf {
+    color: #d4a96b;
+    cursor: pointer;
+    padding: 1px 4px;
+    border-radius: 3px;
+    transition: background .12s ease;
+    display: inline;
+  }
+  .jt-leaf:hover {
+    background: rgba(126, 184, 228, 0.18);
+    color: #fff;
+  }
+  .jt-leaf.jt-mapped {
+    background: rgba(62, 179, 100, 0.18);
+    color: #7ed8a0;
+    position: relative;
+  }
+  .jt-leaf.jt-mapped::after {
+    content: "✓ " attr(data-mapped-to);
+    margin-left: 8px;
+    font-size: 10px;
+    color: #7ed8a0;
+    background: rgba(62, 179, 100, 0.25);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  /* ===== Field mapping rows (right pane) ===== */
+  .map-list {
+    flex: 1;
+    padding: 4px 0;
+  }
+  .map-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .map-row:last-of-type { border-bottom: 0; }
+  .map-row.mapped { background: #f9fdfb; }
+  .map-row-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .map-field {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .map-req {
+    font-size: 10px;
+    color: var(--brand);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  .map-opt {
+    font-size: 10px;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+  }
+  .map-row-input {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .map-row-input .input {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  .map-resolved {
+    font-size: 11px;
+    color: var(--success);
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    padding-left: 2px;
+  }
+  .map-resolved strong {
+    color: var(--success);
+    font-weight: 700;
+  }
+  .map-resolved.muted {
+    color: var(--text-soft);
+  }
+  .map-resolved.muted em {
+    font-style: italic;
+  }
+  .map-divider {
+    padding: 8px 14px;
+    background: #fafbfd;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .map-units {
+    padding: 14px;
+    background: #fafbfd;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ===== Verify preview ===== */
+  .verify-preview {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-top: 14px;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, #1a2330 0%, #2a3340 100%);
+    border-radius: 10px;
+    color: #fff;
+    max-width: 480px;
+  }
+  .verify-cell {
+    flex: 1;
+    padding: 0 16px;
+  }
+  .verify-cell:first-child { padding-left: 0; }
+  .verify-cell:last-child { padding-right: 0; }
+  .verify-divider {
+    width: 1px;
+    background: rgba(255,255,255,0.15);
+  }
+  .verify-k {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 4px;
+  }
+  .verify-v {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .verify-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.65);
+    margin-top: 2px;
+  }
+
+  @media (max-width: 980px) {
+    .mapper {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* =====================================================================
+     RESPONSIVE — TABLET (≤ 900px)
+     ===================================================================== */
+  @media (max-width: 900px) {
+    /* Stack sub-nav above panel as horizontal scrollable tab strip */
+    .layout {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .subnav {
+      position: static;
+      display: flex;
+      flex-direction: row;
+      gap: 4px;
+      padding: 6px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+    }
+    .subnav::-webkit-scrollbar { height: 4px; }
+    .subnav::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+    .subnav-item {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      margin-bottom: 0;
+      padding: 8px 14px;
+      font-size: 13px;
+    }
+    .subnav-item.new::after {
+      position: static;
+      transform: none;
+      margin-left: 8px;
+      display: inline-block;
+    }
+
+    /* Tighter padding */
+    .content {
+      padding: 18px 20px 32px;
+    }
+    .save-bar {
+      padding: 12px 20px;
+      margin: -18px -20px 18px;
+    }
+    .page-title {
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    /* Status grid down to 3 cols */
+    .status-grid-6 {
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 12px;
+    }
+
+    /* Card padding tighter */
+    .card {
+      padding: 22px 20px;
+    }
+    .panel-head {
+      padding: 20px 22px 16px;
+    }
+    .panel-head h2 { font-size: 18px; }
+  }
+
+  /* =====================================================================
+     RESPONSIVE — MOBILE (≤ 640px)
+     ===================================================================== */
+  @media (max-width: 640px) {
+    /* Collapse sidebar to icon-only 56px bar */
+    .app {
+      grid-template-columns: 56px 1fr;
+    }
+    .nav-logo {
+      height: 56px;
+      padding: 6px;
+    }
+    .nav-logo svg { width: 44px; }
+    .nav-home { display: none; }
+    .nav-items {
+      padding: 6px 0;
+    }
+    .nav-item {
+      padding: 10px 4px;
+      font-size: 9px;
+      gap: 2px;
+    }
+    .nav-item .icon svg {
+      width: 18px;
+      height: 18px;
+    }
+    .nav-item .badge {
+      width: 14px; height: 14px;
+      font-size: 8px;
+      top: 4px;
+      right: 8px;
+    }
+
+    /* Top bar — drop "Test AI chat" label, compact user pill */
+    .topbar {
+      height: 56px;
+      padding: 0 14px;
+    }
+    .topbar-title {
+      font-size: 13px;
+    }
+    .topbar-actions { gap: 6px; }
+    .topbar-actions .btn-ghost {
+      display: none;
+    }
+    .topbar-actions .btn {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    .topbar-user span {
+      display: none;
+    }
+    .topbar-user svg {
+      display: none;
+    }
+    .topbar-user {
+      padding: 0;
+    }
+
+    /* Content padding tighter */
+    .content {
+      padding: 14px 14px 28px;
+    }
+    .page-title {
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+
+    /* Panel head and cards */
+    .panel-head {
+      padding: 16px 18px 14px;
+    }
+    .panel-head h2 { font-size: 17px; }
+    .panel-head p { font-size: 12px; }
+    .card {
+      padding: 18px 16px;
+    }
+    .card-head {
+      flex-wrap: wrap;
+    }
+    .card-title h3 { font-size: 15px; }
+    .card-desc { font-size: 12px; }
+
+    /* Info banner */
+    .info-banner {
+      padding: 10px 14px;
+      font-size: 12px;
+    }
+
+    /* Source tabs — single column to give each tile breathing room */
+    .src-tabs.src-tabs-2 {
+      grid-template-columns: 1fr;
+      max-width: 100%;
+    }
+    .src-tab {
+      padding: 12px;
+    }
+
+    /* Detect notice */
+    .src-detect {
+      font-size: 11px;
+      padding: 8px 12px;
+    }
+
+    /* Field rows — stack to 1 col on mobile */
+    .field-row {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .field-row3 {
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .field-row3 .field:nth-child(3) {
+      grid-column: 1 / -1;
+    }
+
+    /* Status grid — 2 cols on mobile so each cell stays readable */
+    .status-grid-6 {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 10px;
+    }
+    .status-cell .v {
+      font-size: 16px;
+    }
+    .status-block {
+      padding: 14px;
+    }
+    .status-block-head h4 {
+      font-size: 11px;
+    }
+    .schema-tag {
+      font-size: 8px;
+      padding: 1px 6px;
+    }
+
+    /* Status footer — stack the two halves */
+    .status-foot {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      font-size: 11px;
+    }
+
+    /* Attribution */
+    .attribution {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      font-size: 11px;
+    }
+
+    /* Hourly strip — already scrolls horizontally, just trim padding */
+    .hourly-strip {
+      margin-top: 12px;
+      padding-top: 12px;
+    }
+    .hourly-cell {
+      flex: 0 0 54px;
+      padding: 6px 4px;
+    }
+
+    /* Resort Direct mapper — split-view already collapses at 980px */
+    /* Step layout */
+    .step {
+      grid-template-columns: 24px 1fr;
+      gap: 12px;
+    }
+    .step-num {
+      width: 22px; height: 22px; font-size: 11px;
+    }
+    .step-title { font-size: 14px; }
+
+    /* JSON tree — smaller font on mobile */
+    .json-tree {
+      font-size: 11px;
+      padding: 12px;
+    }
+
+    /* Mapping rows — stack label above input on mobile */
+    .map-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+      padding: 12px 14px;
+    }
+
+    /* Verify preview */
+    .verify-preview {
+      max-width: 100%;
+      padding: 14px 16px;
+    }
+
+    /* Save bar — tighter, account for mobile content padding */
+    .save-bar {
+      padding: 10px 14px;
+      margin: -14px -14px 16px;
+      gap: 10px;
+    }
+    .save-status {
+      font-size: 11px;
+    }
+    .save-status svg { display: none; }
+    .save-bar .btn {
+      padding: 7px 12px;
+      font-size: 12px;
+    }
+
+    /* Touch target minimums on inputs */
+    .input, .select {
+      padding: 11px 12px;
+      font-size: 14px; /* prevent iOS zoom on focus */
+    }
+  }
+
+  /* =====================================================================
+     RESPONSIVE — SMALL MOBILE (≤ 420px)
+     ===================================================================== */
+  @media (max-width: 420px) {
+    /* Even tighter padding */
+    .content {
+      padding: 12px 10px 24px;
+    }
+    .panel-head {
+      padding: 14px 14px 12px;
+    }
+    .card {
+      padding: 14px 12px;
+    }
+
+    /* Hide top bar Test widget button — leave just the user avatar */
+    .topbar-actions .btn-primary {
+      padding: 5px 10px;
+      font-size: 11px;
+    }
+
+    /* Status grid stays 2-col but smaller text */
+    .status-cell .k { font-size: 10px; }
+    .status-cell .v { font-size: 15px; }
+    .status-cell .v small { font-size: 11px; }
+
+    /* Field row3 — single column on tiny screens */
+    .field-row3 {
+      grid-template-columns: 1fr;
+    }
+    .field-row3 .field:nth-child(3) {
+      grid-column: auto;
+    }
+
+    /* Verify preview — smaller numbers */
+    .verify-v { font-size: 14px; }
+  }
+
+  /* =====================================================================
+     PRINT / GENERAL POLISH
+     ===================================================================== */
+  @media (hover: none) {
+    /* Drop hover-only effects on touch devices to avoid sticky states */
+    .src-tab:hover { background: #fff; border-color: var(--input-border); }
+    .src-tab.active:hover {
+      border-color: var(--sidebar);
+      background: var(--tab-active-bg);
+    }
+    .subnav-item:hover { background: transparent; }
+    .subnav-item.active:hover {
+      background: var(--tab-active-bg);
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============= LEFT NAV ============= -->
+  <aside class="nav">
+    <div class="nav-logo">
+      <!-- Mountains + GET SKI BOTS wordmark (simplified) -->
+      <svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg" aria-label="GetSkiBots">
+        <polygon points="10,30 25,12 35,22 45,8 60,28 75,18 90,30" fill="#fff" opacity="0.95"/>
+        <text x="50" y="44" text-anchor="middle" fill="#fff" font-size="7" font-weight="700" letter-spacing="0.5" font-family="-apple-system, sans-serif">GET SKI BOTS</text>
+      </svg>
+    </div>
+    <div class="nav-home">Home</div>
+    <div class="nav-items">
+      <a class="nav-item">
+        <span class="icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+        </span>
+        Analytics
+      </a>
+      <a class="nav-item">
+        <span class="icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6"/><circle cx="12" cy="13" r="7"/><path d="M9 13h6"/></svg>
+        </span>
+        Knowledge
+      </a>
+      <a class="nav-item">
+        <span class="icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </span>
+        AI Messages
+      </a>
+      <a class="nav-item">
+        <span class="icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>
+        </span>
+        Flows
+      </a>
+      <a class="nav-item">
+        <span class="icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </span>
+        Actions
+      </a>
+      <a class="nav-item">
+        <span class="icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l2 2"/></svg>
+        </span>
+        Triggers
+      </a>
+      <a class="nav-item">
+        <span class="icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3v4zM3 19a2 2 0 0 0 2 2h1v-6H3v4z"/></svg>
+        </span>
+        Support
+        <span class="badge">3</span>
+      </a>
+      <a class="nav-item active">
+        <span class="icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </span>
+        Widget
+      </a>
+      <a class="nav-item">
+        <span class="icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+        </span>
+        Settings
+      </a>
+      <a class="nav-item">
+        <span class="icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </span>
+        Help
+      </a>
+    </div>
+  </aside>
+
+  <!-- ============= MAIN ============= -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title">Jackson Hole · ACTIVE</div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost">Test AI chat</button>
+        <button class="btn btn-primary">Test widget</button>
+        <div class="topbar-user">
+          <div class="avatar">BQ</div>
+          <span>Brandon Quinn</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Iframe storage limitation banner (only shown when storage is being wiped) -->
+      <div class="storage-warning hidden" id="storage-warning">
+        <div class="storage-warning-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="storage-warning-body">
+          <strong>Preview limitation:</strong> your browser is clearing this dashboard's saved values between page loads. This is a sharable.link iframe sandboxing quirk and won't happen in production — once integrated into the GetSkiBots backend, configs will persist normally.
+        </div>
+        <button class="storage-warning-close" id="storage-warning-close" type="button" aria-label="Dismiss">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Save bar (sticky to top) -->
+      <div class="save-bar" id="save-bar">
+        <div class="save-status">
+          <span class="dot" id="save-dot"></span>
+          <span id="save-status-text">Loaded — no changes</span>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-ghost" id="discard-btn" disabled>Discard</button>
+          <button class="btn btn-primary" id="save-btn" disabled>Save changes</button>
+        </div>
+      </div>
+
+      <h1 class="page-title">Agent Widget</h1>
+
+      <div class="layout">
+
+        <!-- Sub-nav -->
+        <nav class="subnav">
+          <a class="subnav-item" data-tab="appearance" href="index.html">Appearance</a>
+          <a class="subnav-item active new" data-tab="weather" href="weather.html" aria-current="page">Weather</a>
+          <a class="subnav-item" data-tab="contact-capture">Contact Capture</a>
+          <a class="subnav-item" data-tab="conversation-starters">Conversation Starters</a>
+          <a class="subnav-item" data-tab="chat-banner">Chat Banner Message</a>
+          <a class="subnav-item" data-tab="chat-menu">Chat Menu</a>
+          <a class="subnav-item" data-tab="install-script">Install Script</a>
+        </nav>
+
+        <!-- Panel -->
+        <section class="panel">
+
+          <div class="panel-head">
+            <h2>Weather</h2>
+            <p>Live mountain conditions inside your chat — guests get accurate temps, wind, and snow level alongside every conversation.</p>
+          </div>
+
+          <div style="padding: 24px 28px 0;">
+            <div class="info-banner">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <div>
+                <strong>The Enhanced + Weather launcher requires this to be configured.</strong> Set your resort coordinates below and the temperature will appear in the chat icon and inside the chat.
+              </div>
+            </div>
+          </div>
+
+          <!-- ============= WEATHER CARD ============= -->
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">
+                <div class="icon-tile">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+                </div>
+                <div>
+                  <h3>Weather</h3>
+                  <p class="card-desc">Drop in coordinates. We pull live conditions from a global weather source — covering resorts anywhere in the world.</p>
+                </div>
+              </div>
+              <span class="status-pill idle" id="card-status-pill">Not connected</span>
+            </div>
+
+            <div class="field">
+              <label class="label">Weather source</label>
+              <div class="src-tabs src-tabs-2" role="tablist">
+                <button class="src-tab active" data-src="om" role="tab" aria-selected="true">
+                  <span class="src-tab-flag src-tab-logo">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="Open-Meteo">
+                      <!-- Sky background -->
+                      <rect width="100" height="100" rx="14" fill="#1f6fb4"/>
+                      <!-- Stylized "OM" wordmark -->
+                      <text x="50" y="62" text-anchor="middle" fill="#fff"
+                            font-size="38" font-weight="800"
+                            font-family="-apple-system, sans-serif" letter-spacing="-1">OM</text>
+                      <!-- Subtle horizon line -->
+                      <line x1="22" y1="78" x2="78" y2="78" stroke="#fff" stroke-width="2" opacity="0.55"/>
+                    </svg>
+                  </span>
+                  <span class="src-tab-body">
+                    <span class="src-tab-name">Open-Meteo</span>
+                    <span class="src-tab-meta">Global · Default</span>
+                  </span>
+                </button>
+                <button class="src-tab" data-src="direct" role="tab" aria-selected="false">
+                  <span class="src-tab-flag">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                  </span>
+                  <span class="src-tab-body">
+                    <span class="src-tab-name">Resort Direct</span>
+                    <span class="src-tab-meta">Your own endpoint</span>
+                  </span>
+                </button>
+              </div>
+              <div class="src-detect">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Open-Meteo will fetch live weather once you save coordinates below. Works for any resort, anywhere.
+              </div>
+            </div>
+
+            <!-- Coords mode: shown for Open-Meteo -->
+            <div class="src-panel" data-panel="coords">
+
+            <!-- Preset row: tap to populate fields with example resort coords -->
+            <div class="preset-row">
+              <span class="preset-row-label">Try a preset:</span>
+              <div class="preset-chips">
+                <button type="button" class="preset-chip" data-preset="jackson-hole">
+                  <span class="preset-chip-name">Jackson Hole</span>
+                  <span class="preset-chip-meta">WY · base + summit</span>
+                </button>
+                <button type="button" class="preset-chip" data-preset="vail">
+                  <span class="preset-chip-name">Vail</span>
+                  <span class="preset-chip-meta">CO · base + summit</span>
+                </button>
+                <button type="button" class="preset-chip" data-preset="whistler">
+                  <span class="preset-chip-name">Whistler</span>
+                  <span class="preset-chip-meta">BC · base + summit</span>
+                </button>
+                <button type="button" class="preset-chip" data-preset="killington">
+                  <span class="preset-chip-name">Killington</span>
+                  <span class="preset-chip-meta">VT · base only</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="section-label-row">
+              <h4 class="section-label">Resort base</h4>
+              <span class="section-pill section-pill-required">Required</span>
+            </div>
+            <div class="field-row3">
+              <div class="field" style="margin-bottom: 0;">
+                <label class="label">Latitude</label>
+                <input id="base-lat" class="input mono" value="" placeholder="e.g. 43.5875 or 43.5875°N">
+              </div>
+              <div class="field" style="margin-bottom: 0;">
+                <label class="label">Longitude</label>
+                <input id="base-lng" class="input mono" value="" placeholder="e.g. -110.8279 or 110.8279°W">
+              </div>
+              <div class="field" style="margin-bottom: 0;">
+                <label class="label">Elevation <span class="opt">ft</span></label>
+                <input id="base-elev" class="input mono" value="" placeholder="e.g. 6311">
+              </div>
+            </div>
+            <p class="help-text" style="margin-top: 6px;">Used for base-elevation temperature, conditions, and wind. Paste from Google (<code class="mono-inline">39.6433° N, 106.3781° W</code>), GPS apps, or Google Maps — we'll figure out the format.</p>
+
+            <div class="section-label-row">
+              <h4 class="section-label">Summit</h4>
+              <span class="section-pill section-pill-optional">Optional</span>
+              <span class="section-sublabel">Adds dual-altitude readings — base + summit</span>
+            </div>
+            <div class="field-row3">
+              <div class="field" style="margin-bottom: 0;">
+                <label class="label">Latitude</label>
+                <input id="summit-lat" class="input mono" value="" placeholder="e.g. 43.5969 or 43.5969°N">
+              </div>
+              <div class="field" style="margin-bottom: 0;">
+                <label class="label">Longitude</label>
+                <input id="summit-lng" class="input mono" value="" placeholder="e.g. -110.8716 or 110.8716°W">
+              </div>
+              <div class="field" style="margin-bottom: 0;">
+                <label class="label">Elevation <span class="opt">ft</span></label>
+                <input id="summit-elev" class="input mono" value="" placeholder="e.g. 10449">
+              </div>
+            </div>
+            <p class="help-text" style="margin-top: 6px;">Leave blank for single-altitude resorts. When set, the chat shows separate base and summit temperatures — summit-base spreads of 20°F+ help guests plan layers.</p>
+
+            <!-- Location Detail panel -->
+            <div class="loc-detail" id="loc-detail">
+              <div class="loc-detail-head">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <h4>Location detail</h4>
+                <span class="loc-detail-meta" id="loc-detail-meta">—</span>
+              </div>
+              <div class="loc-detail-body">
+                <div class="loc-card" id="loc-base">
+                  <div class="loc-card-head">
+                    <span class="loc-pill base">BASE</span>
+                    <span class="loc-place" id="loc-base-place">Looking up…</span>
+                  </div>
+                  <div class="loc-card-grid">
+                    <div class="loc-row">
+                      <span class="lk">Coordinates</span>
+                      <span class="lv mono" id="loc-base-coords">—</span>
+                    </div>
+                    <div class="loc-row">
+                      <span class="lk">Nearest known place</span>
+                      <span class="lv" id="loc-base-near">—</span>
+                    </div>
+                    <div class="loc-row">
+                      <span class="lk">Distance from coords</span>
+                      <span class="lv mono" id="loc-base-dist">—</span>
+                    </div>
+                    <div class="loc-row">
+                      <span class="lk">Your elevation</span>
+                      <span class="lv mono" id="loc-base-userelev">—</span>
+                    </div>
+                    <div class="loc-row">
+                      <span class="lk">Model DEM elevation</span>
+                      <span class="lv mono" id="loc-base-modelelev">—</span>
+                    </div>
+                    <div class="loc-row">
+                      <span class="lk">Elevation delta</span>
+                      <span class="lv mono" id="loc-base-delta">—</span>
+                    </div>
+                    <div class="loc-row">
+                      <span class="lk">Timezone</span>
+                      <span class="lv mono" id="loc-base-tz">—</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="loc-card" id="loc-summit">
+                  <div class="loc-card-head">
+                    <span class="loc-pill summit">SUMMIT</span>
+                    <span class="loc-place" id="loc-summit-place">Looking up…</span>
+                  </div>
+                  <div class="loc-card-grid">
+                    <div class="loc-row">
+                      <span class="lk">Coordinates</span>
+                      <span class="lv mono" id="loc-summit-coords">—</span>
+                    </div>
+                    <div class="loc-row">
+                      <span class="lk">Nearest known place</span>
+                      <span class="lv" id="loc-summit-near">—</span>
+                    </div>
+                    <div class="loc-row">
+                      <span class="lk">Distance from coords</span>
+                      <span class="lv mono" id="loc-summit-dist">—</span>
+                    </div>
+                    <div class="loc-row">
+                      <span class="lk">Your elevation</span>
+                      <span class="lv mono" id="loc-summit-userelev">—</span>
+                    </div>
+                    <div class="loc-row">
+                      <span class="lk">Model DEM elevation</span>
+                      <span class="lv mono" id="loc-summit-modelelev">—</span>
+                    </div>
+                    <div class="loc-row">
+                      <span class="lk">Elevation delta</span>
+                      <span class="lv mono" id="loc-summit-delta">—</span>
+                    </div>
+                    <div class="loc-row">
+                      <span class="lk">Distance base ↔ summit</span>
+                      <span class="lv mono" id="loc-summit-pair">—</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="loc-detail-foot">
+                <div id="loc-warn" class="loc-warn hidden"></div>
+                <p class="loc-detail-explainer">
+                  Open-Meteo does not use ground stations. Forecasts are interpolated from gridded weather models (ECMWF, GFS, ICON) at ~3–25 km resolution. The "Model DEM elevation" is what the model thinks the ground is at your coords; passing your real elevation as an override applies a temperature lapse-rate correction.
+                </p>
+              </div>
+            </div>
+
+            </div><!-- /coords panel -->
+
+            <!-- Resort Direct mode: shown when "Resort Direct" source is active -->
+            <div class="src-panel hidden" data-panel="direct">
+
+              <div class="direct-banner">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                <div>
+                  <strong>Use this if your resort already has a weather feed.</strong> Point us at any JSON endpoint, then map its fields to ours. Works with any shape — internal ops API, Snocountry feed, on-mountain sensors, custom JSON. Polled every 15 minutes.
+                </div>
+              </div>
+
+              <!-- ===== STEP 1: CONNECT ===== -->
+              <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                  <h4 class="step-title">Connect to your endpoint</h4>
+
+                  <div style="margin-top: 12px;">
+                    <label class="label">Endpoint URL <span class="req">required</span></label>
+                    <div style="display: flex; gap: 8px;">
+                      <input class="input mono" value="https://api.jacksonhole.com/weather/current" style="flex: 1;" placeholder="https://your-resort.com/api/weather">
+                      <button class="btn btn-primary" style="white-space: nowrap;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+                        Fetch sample
+                      </button>
+                    </div>
+                    <p class="help-text" style="margin-top: 6px;">Must return JSON. We'll fetch once to inspect the shape, then poll on the same schedule going forward.</p>
+                  </div>
+
+                  <div style="margin-top: 16px;">
+                    <label class="label">Authentication</label>
+                    <select class="select" style="max-width: 380px;" id="direct-auth-mode">
+                      <option value="none">None — public endpoint</option>
+                      <option value="bearer">Bearer token</option>
+                      <option value="header">Custom header</option>
+                    </select>
+                  </div>
+
+                  <div class="direct-auth-field hidden" data-auth="bearer" style="margin-top: 12px;">
+                    <label class="label">Token</label>
+                    <input class="input mono" placeholder="Bearer token value" type="password">
+                    <p class="help-text" style="margin-top: 6px;">Sent as <code class="mono-inline">Authorization: Bearer &lt;token&gt;</code>. Stored encrypted.</p>
+                  </div>
+
+                  <div class="direct-auth-field hidden" data-auth="header" style="margin-top: 12px;">
+                    <div class="field-row" style="margin-bottom: 0;">
+                      <div class="field" style="margin-bottom: 0;">
+                        <label class="label">Header name</label>
+                        <input class="input mono" placeholder="X-API-Key">
+                      </div>
+                      <div class="field" style="margin-bottom: 0;">
+                        <label class="label">Header value</label>
+                        <input class="input mono" placeholder="Value" type="password">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ===== STEP 2: MAP FIELDS ===== -->
+              <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                  <div class="step-head-row">
+                    <h4 class="step-title">Map your fields to ours</h4>
+                    <span class="status-pill" style="font-size: 11px;">200 OK · 142ms · 4 fields auto-mapped</span>
+                  </div>
+                  <p class="help-text" style="margin-top: 4px; margin-bottom: 14px;">
+                    We auto-detected 4 of 4 fields based on your response shape. Click any value in the JSON tree on the left to re-map a field. Use dot-notation paths (<code class="mono-inline">base.tempF</code>) or bracket notation (<code class="mono-inline">[0].temp</code>) for arrays.
+                  </p>
+
+                  <div class="mapper">
+                    <!-- LEFT: JSON sample (clickable tree) -->
+                    <div class="mapper-pane">
+                      <div class="mapper-pane-head">
+                        <span>Sample response</span>
+                        <button class="link-btn">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                          Re-fetch
+                        </button>
+                      </div>
+                      <div class="json-tree">
+<span class="jt-brace">{</span>
+  <span class="jt-key">"base"</span>: <span class="jt-brace">{</span>
+    <span class="jt-key">"tempF"</span>: <span class="jt-leaf jt-mapped" data-path="base.tempF" data-mapped-to="Base temp">21</span>,
+    <span class="jt-key">"conditions"</span>: <span class="jt-leaf jt-mapped" data-path="base.conditions" data-mapped-to="Conditions">"Light snow"</span>,
+    <span class="jt-key">"windMph"</span>: <span class="jt-leaf jt-mapped" data-path="base.windMph" data-mapped-to="Wind speed">14</span>,
+    <span class="jt-key">"windDir"</span>: <span class="jt-leaf jt-mapped" data-path="base.windDir" data-mapped-to="Wind direction">"NW"</span>
+  <span class="jt-brace">}</span>,
+  <span class="jt-key">"summit"</span>: <span class="jt-brace">{</span>
+    <span class="jt-key">"tempF"</span>: <span class="jt-leaf jt-mapped" data-path="summit.tempF" data-mapped-to="Summit temp">8</span>,
+    <span class="jt-key">"windMph"</span>: <span class="jt-leaf" data-path="summit.windMph">22</span>,
+    <span class="jt-key">"windDir"</span>: <span class="jt-leaf" data-path="summit.windDir">"NW"</span>
+  <span class="jt-brace">}</span>,
+  <span class="jt-key">"updatedAt"</span>: <span class="jt-leaf" data-path="updatedAt">"2026-04-27T20:34:00Z"</span>
+<span class="jt-brace">}</span>
+                      </div>
+                      <div class="mapper-pane-foot">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        Click any value to map it. Mapped values are highlighted.
+                      </div>
+                    </div>
+
+                    <!-- RIGHT: Field mappings -->
+                    <div class="mapper-pane">
+                      <div class="mapper-pane-head">
+                        <span>Field mappings</span>
+                        <span class="mapper-progress">4 of 4 required</span>
+                      </div>
+
+                      <div class="map-list">
+
+                        <div class="map-row mapped">
+                          <div class="map-row-label">
+                            <span class="map-field">Base temp</span>
+                            <span class="map-req">required</span>
+                          </div>
+                          <div class="map-row-input">
+                            <input class="input mono" value="base.tempF">
+                            <span class="map-resolved">→ <strong>21</strong></span>
+                          </div>
+                        </div>
+
+                        <div class="map-row mapped">
+                          <div class="map-row-label">
+                            <span class="map-field">Conditions</span>
+                            <span class="map-req">required</span>
+                          </div>
+                          <div class="map-row-input">
+                            <input class="input mono" value="base.conditions">
+                            <span class="map-resolved">→ <strong>Light snow</strong></span>
+                          </div>
+                        </div>
+
+                        <div class="map-row mapped">
+                          <div class="map-row-label">
+                            <span class="map-field">Wind speed</span>
+                            <span class="map-req">required</span>
+                          </div>
+                          <div class="map-row-input">
+                            <input class="input mono" value="base.windMph">
+                            <span class="map-resolved">→ <strong>14</strong></span>
+                          </div>
+                        </div>
+
+                        <div class="map-row mapped">
+                          <div class="map-row-label">
+                            <span class="map-field">Wind direction</span>
+                            <span class="map-req">required</span>
+                          </div>
+                          <div class="map-row-input">
+                            <input class="input mono" value="base.windDir">
+                            <span class="map-resolved">→ <strong>NW</strong></span>
+                          </div>
+                        </div>
+
+                        <div class="map-divider">
+                          <span>Optional</span>
+                        </div>
+
+                        <div class="map-row mapped">
+                          <div class="map-row-label">
+                            <span class="map-field">Summit temp</span>
+                            <span class="map-opt">optional</span>
+                          </div>
+                          <div class="map-row-input">
+                            <input class="input mono" value="summit.tempF">
+                            <span class="map-resolved">→ <strong>8</strong></span>
+                          </div>
+                        </div>
+
+                        <div class="map-row">
+                          <div class="map-row-label">
+                            <span class="map-field">Summit wind speed</span>
+                            <span class="map-opt">optional</span>
+                          </div>
+                          <div class="map-row-input">
+                            <input class="input mono" placeholder="Click a value or type a path">
+                            <span class="map-resolved muted">→ <em>not mapped</em></span>
+                          </div>
+                        </div>
+
+                        <div class="map-row">
+                          <div class="map-row-label">
+                            <span class="map-field">Updated at</span>
+                            <span class="map-opt">optional</span>
+                          </div>
+                          <div class="map-row-input">
+                            <input class="input mono" placeholder="Click a value or type a path">
+                            <span class="map-resolved muted">→ <em>not mapped</em></span>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <div class="map-units">
+                        <div class="field-row" style="margin-bottom: 0;">
+                          <div class="field" style="margin-bottom: 0;">
+                            <label class="label">Temperature unit in response</label>
+                            <select class="select">
+                              <option>Fahrenheit (°F)</option>
+                              <option>Celsius (°C)</option>
+                            </select>
+                          </div>
+                          <div class="field" style="margin-bottom: 0;">
+                            <label class="label">Wind speed unit</label>
+                            <select class="select">
+                              <option>mph</option>
+                              <option>km/h</option>
+                              <option>m/s</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ===== STEP 3: VERIFY ===== -->
+              <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                  <h4 class="step-title">Verify and save</h4>
+                  <p class="help-text" style="margin-top: 4px;">This is what your guests will see in the chat. If anything looks wrong, adjust the field mappings above.</p>
+
+                  <div class="verify-preview">
+                    <div class="verify-cell">
+                      <div class="verify-k">Base</div>
+                      <div class="verify-v">21°F · Light snow</div>
+                      <div class="verify-sub">Wind 14 mph NW</div>
+                    </div>
+                    <div class="verify-divider"></div>
+                    <div class="verify-cell">
+                      <div class="verify-k">Summit</div>
+                      <div class="verify-v">8°F</div>
+                      <div class="verify-sub">Wind not mapped</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /direct panel -->
+
+            <!-- Live readings + chat preview (side-by-side on desktop) -->
+            <div class="readings-and-preview">
+
+            <!-- Live readings (normalized schema) -->
+            <div class="status-block">
+              <div class="status-block-head">
+                <h4>Live readings</h4>
+                <div style="display: flex; align-items: center;">
+                  <label class="live-toggle" title="Fetch live weather as you type — no Save needed. Your saved config is left untouched until you hit Save.">
+                    <input type="checkbox" id="live-preview-toggle">
+                    <span class="live-toggle-track"><span class="live-toggle-thumb"></span></span>
+                    <span class="live-toggle-text">⚡ Live preview</span>
+                  </label>
+                  <button class="btn btn-ghost" id="refresh-btn" style="padding: 4px 10px; font-size: 12px;" disabled title="Save your coordinates first to enable refresh">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                    <span id="refresh-btn-label">Refresh</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Empty state (shown until first save) -->
+              <div class="readings-empty" id="readings-empty">
+                <div class="readings-empty-icon">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                </div>
+                <div class="readings-empty-title">Not connected yet</div>
+                <div class="readings-empty-desc">Enter your resort base coordinates above and hit <strong>Save</strong> — live weather will start flowing.</div>
+              </div>
+
+              <!-- Live data (hidden until first save) -->
+              <div class="readings-live" id="readings-live" style="display: none;">
+                <div class="status-grid status-grid-6" id="status-grid">
+                  <div class="status-cell">
+                    <div class="k">Base temp</div>
+                    <div class="v" id="reading-base-temp"><span class="muted">—</span></div>
+                  </div>
+                  <div class="status-cell" id="reading-summit-cell">
+                    <div class="k">Summit temp</div>
+                    <div class="v" id="reading-summit-temp"><span class="muted">—</span></div>
+                  </div>
+                  <div class="status-cell">
+                    <div class="k">Conditions</div>
+                    <div class="v" style="font-size: 14px; padding-top: 4px;" id="reading-conditions"><span class="muted">—</span></div>
+                  </div>
+                  <div class="status-cell">
+                    <div class="k">Wind</div>
+                    <div class="v" id="reading-wind"><span class="muted">—</span></div>
+                  </div>
+                  <div class="status-cell">
+                    <div class="k">Snow level</div>
+                    <div class="v" id="reading-snow-level"><span class="muted">—</span></div>
+                  </div>
+                  <div class="status-cell">
+                    <div class="k">Precip chance</div>
+                    <div class="v" id="reading-pop"><span class="muted">—</span></div>
+                  </div>
+                </div>
+
+                <!-- Hourly preview strip -->
+                <div class="hourly-strip" id="hourly-strip">
+                  <div class="hourly-head">Next 12 hours</div>
+                  <div class="hourly-row" id="hourly-row">
+                    <div class="hourly-empty">Forecast data appears here when source provides hourly arrays</div>
+                  </div>
+                </div>
+
+                <div class="status-foot">
+                  <span data-status="source-info">Awaiting first refresh…</span>
+                  <span style="color: var(--text-muted); font-weight: 500;" data-status="health">—</span>
+                </div>
+
+                <!-- Attribution (per-source) -->
+                <div class="attribution" id="attribution">
+                  <span class="attr-text">Data: <strong>Open-Meteo</strong> · open-meteo.com</span>
+                  <a class="attr-link" id="attr-link" href="https://open-meteo.com/" target="_blank" rel="noopener">View source ↗</a>
+                </div>
+              </div>
+            </div><!-- /status-block -->
+
+            <!-- Chat preview — what guests see in the chat right now -->
+            <div class="chat-preview-block">
+              <div class="status-block-head">
+                <h4>Chat preview</h4>
+                <span class="chat-preview-meta">What guests see right now</span>
+              </div>
+
+              <!-- Empty state -->
+              <div class="chat-preview-empty" id="chat-preview-empty">
+                <div class="readings-empty-icon">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                  </svg>
+                </div>
+                <div class="chat-preview-empty-text">Connect weather to see the chat preview</div>
+              </div>
+
+              <!-- Live preview (mirrors production chat widget) -->
+              <div class="chat-preview-live" id="chat-preview-live" style="display: none;">
+                <div class="chat-mock">
+                  <!-- Chat header -->
+                  <div class="chat-mock-head">
+                    <div class="chat-mock-logo">
+                      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 26 L11 12 L18 22 L24 14 L29 26 Z" fill="var(--brand)"/>
+                        <path d="M9 26 L13 18 L17 26 Z" fill="#fff" opacity="0.4"/>
+                      </svg>
+                    </div>
+                    <div class="chat-mock-resort" id="chat-mock-resort">Your Resort</div>
+                    <button class="chat-mock-close" type="button" disabled aria-hidden="true">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                  </div>
+
+                  <!-- Greeting -->
+                  <div class="chat-mock-greeting">
+                    Welcome to <span id="chat-mock-greeting-name">your resort</span>, ask us anything, we're here to help.
+                  </div>
+
+                  <!-- LIVE CONDITIONS card -->
+                  <div class="chat-mock-conditions">
+                    <div class="chat-mock-conditions-head">
+                      <span class="chat-mock-cond-label"><span class="chat-mock-cond-dot"></span>LIVE CONDITIONS</span>
+                      <span class="chat-mock-cond-updated" id="chat-mock-updated">—</span>
+                    </div>
+                    <div class="chat-mock-cond-grid">
+                      <div class="chat-mock-cond-cell">
+                        <div class="chat-mock-cond-k">Base temp</div>
+                        <div class="chat-mock-cond-v" id="chat-mock-base-temp">—<small>°F</small></div>
+                      </div>
+                      <div class="chat-mock-cond-cell" id="chat-mock-summit-cell">
+                        <div class="chat-mock-cond-k">Summit temp</div>
+                        <div class="chat-mock-cond-v" id="chat-mock-summit-temp">—<small>°F</small></div>
+                      </div>
+                      <div class="chat-mock-cond-cell">
+                        <div class="chat-mock-cond-k">Conditions</div>
+                        <div class="chat-mock-cond-v small" id="chat-mock-conditions">—</div>
+                      </div>
+                      <div class="chat-mock-cond-cell">
+                        <div class="chat-mock-cond-k">Wind base</div>
+                        <div class="chat-mock-cond-v" id="chat-mock-wind-base">—<small>mph</small></div>
+                      </div>
+                      <div class="chat-mock-cond-cell" id="chat-mock-wind-summit-cell">
+                        <div class="chat-mock-cond-k">Wind summit</div>
+                        <div class="chat-mock-cond-v" id="chat-mock-wind-summit">—<small>mph</small></div>
+                      </div>
+                      <div class="chat-mock-cond-cell">
+                        <div class="chat-mock-cond-k">Snow level</div>
+                        <div class="chat-mock-cond-v" id="chat-mock-snow-level">—<small>ft</small></div>
+                      </div>
+                    </div>
+                    <div class="chat-mock-cond-foot">
+                      Source: <strong>Open-Meteo</strong> · <span id="chat-mock-resort-foot">your resort</span>
+                    </div>
+                  </div>
+
+                  <!-- Conversation starters -->
+                  <div class="chat-mock-starters">
+                    <button type="button" class="chat-mock-starter" disabled>What lifts are open today?</button>
+                    <button type="button" class="chat-mock-starter" disabled>Where should a beginner ski?</button>
+                    <button type="button" class="chat-mock-starter" disabled>What's the snow report?</button>
+                  </div>
+
+                  <!-- Composer -->
+                  <div class="chat-mock-composer">
+                    <input type="text" class="chat-mock-input" placeholder="Ask me anything about your trip" disabled>
+                    <button type="button" class="chat-mock-send" disabled aria-label="Send">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </button>
+                  </div>
+
+                  <!-- Powered by -->
+                  <div class="chat-mock-poweredby">
+                    POWERED BY <strong>GET SKI BOTS</strong>
+                  </div>
+                </div>
+              </div>
+
+              <p class="chat-preview-note">
+                This is a faithful preview of the chat widget your guests interact with. All values match the live readings to the left and update automatically.
+              </p>
+            </div>
+
+            </div><!-- /readings-and-preview -->
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+// Live conditions come from the shared Open-Meteo adapter (same module the chat
+// widget uses) so the dashboard preview and production widget can never drift.
+import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js';
+
+(function(){
+  const SOURCES = {
+    om: {
+      panel: 'coords',
+      detectMsg: 'Open-Meteo will fetch live weather once you save coordinates below. Works for any resort, anywhere.',
+      detectClass: 'src-detect',
+      sourceInfo: 'Pulled from Open-Meteo · Updated 4 min ago · Cached 15 min server-side',
+      pillText: 'Connected',
+      pillClass: 'status-pill'
+    },
+    direct: {
+      panel: 'direct',
+      detectMsg: '<strong>Resort Direct API.</strong> Pulling from your own endpoint with custom field mapping. Configure below.',
+      detectClass: 'src-detect info-detect',
+      sourceInfo: 'Pulled from <strong>api.jacksonhole.com/weather/current</strong> · Updated 2 min ago · 4 of 4 fields mapped',
+      pillText: 'Custom endpoint',
+      pillClass: 'status-pill info'
+    }
+  };
+
+  const tabs = document.querySelectorAll('.src-tab');
+  const panels = document.querySelectorAll('.src-panel');
+  const detectEl = document.querySelector('.src-detect');
+  const sourceInfoEl = document.querySelector('[data-status="source-info"]');
+  const statusPill = document.querySelector('.card-head .status-pill');
+
+  // Inject helper styles
+  const style = document.createElement('style');
+  style.textContent = `
+    .src-detect.warn-detect { background: var(--warn-bg); color: var(--warn); }
+    .src-detect.warn-detect strong { color: var(--warn); }
+    .src-detect.info-detect { background: #eef6fd; color: #2c5d8a; }
+    .src-detect.info-detect strong { color: #1c4a72; }
+    .status-pill.info { background: #eef6fd; color: var(--sidebar); }
+  `;
+  document.head.appendChild(style);
+
+  // ===== Source tab switching =====
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const src = tab.dataset.src;
+      const cfg = SOURCES[src];
+      if (!cfg) return;
+
+      tabs.forEach(t => {
+        t.classList.toggle('active', t === tab);
+        t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+      });
+
+      panels.forEach(p => {
+        p.classList.toggle('hidden', p.dataset.panel !== cfg.panel);
+      });
+
+      if (detectEl) {
+        detectEl.className = cfg.detectClass;
+        detectEl.innerHTML = `
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          ${cfg.detectMsg}
+        `;
+      }
+
+      if (sourceInfoEl) sourceInfoEl.innerHTML = cfg.sourceInfo;
+      if (statusPill) {
+        statusPill.className = cfg.pillClass;
+        statusPill.textContent = cfg.pillText;
+      }
+    });
+  });
+
+  // ===== Auth mode dropdown reveal =====
+  const authModeSelect = document.getElementById('direct-auth-mode');
+  if (authModeSelect) {
+    const authFields = document.querySelectorAll('.direct-auth-field');
+    authModeSelect.addEventListener('change', () => {
+      const mode = authModeSelect.value;
+      authFields.forEach(f => {
+        f.classList.toggle('hidden', f.dataset.auth !== mode);
+      });
+    });
+  }
+
+  // ===== JSON tree click-to-map (selects last-clicked map row's input) =====
+  const jsonLeaves = document.querySelectorAll('.json-tree .jt-leaf');
+  const mapInputs = document.querySelectorAll('.map-row-input input');
+  let lastFocusedMapInput = null;
+
+  mapInputs.forEach(input => {
+    input.addEventListener('focus', () => { lastFocusedMapInput = input; });
+  });
+
+  jsonLeaves.forEach(leaf => {
+    leaf.addEventListener('click', () => {
+      const path = leaf.dataset.path;
+      if (!path) return;
+
+      // Use last-focused input, or first empty input as fallback
+      let target = lastFocusedMapInput;
+      if (!target || target.value) {
+        target = Array.from(mapInputs).find(i => !i.value);
+      }
+      if (!target) return;
+
+      target.value = path;
+      target.focus();
+
+      // Visual flash
+      target.style.transition = 'background .3s ease';
+      target.style.background = '#e8f5ee';
+      setTimeout(() => { target.style.background = ''; }, 600);
+    });
+  });
+
+  // ===== Live weather fetch (Open-Meteo) =====
+  // Internal contract: GetSkiBots weather schema. Each source has an adapter that
+  // produces { resort, forecast_current, forecast_hourly, forecast_semi_daily,
+  // forecast_snow_daily, forecast_snow_summary, attribution }.
+  // The dashboard reads ONLY the normalized model.
+  const refreshBtn = document.getElementById('refresh-btn');
+  const refreshLabel = document.getElementById('refresh-btn-label');
+
+  // -------------------------------------------------------------------
+  // Helpers
+  // -------------------------------------------------------------------
+  const cToF = c => c == null ? null : Math.round((c * 9/5 + 32));
+  const kmhToMph = k => k == null ? null : Math.round(k * 0.621371);
+  // mToFt / ftToM now come from the shared open-meteo adapter (imported above).
+
+  // -------------------------------------------------------------------
+  // Flexible coordinate parser — accepts decimal, degrees-minutes-seconds,
+  // degrees-decimal-minutes, with or without °/'/" symbols, with cardinal
+  // direction (N/S/E/W) before or after, and signed or unsigned.
+  //
+  // Returns { value: number, kind: 'lat'|'lng'|null, original: string } or null.
+  // -------------------------------------------------------------------
+  function parseCoord(raw, kindHint) {
+    if (raw == null) return null;
+    let s = String(raw).trim();
+    if (!s) return null;
+
+    // Detect cardinal direction. Strip it from the working string so we can
+    // parse the numeric portion cleanly. North/East = +, South/West = -.
+    let sign = 1;
+    let cardinalKind = null;
+    const cardinal = s.match(/[NSEW]/i);
+    if (cardinal) {
+      const c = cardinal[0].toUpperCase();
+      if (c === 'S' || c === 'W') sign = -1;
+      cardinalKind = (c === 'N' || c === 'S') ? 'lat' : 'lng';
+      s = s.replace(/[NSEW]/ig, '').trim();
+    }
+
+    // Detect explicit negative sign in the leading position.
+    if (s.startsWith('-')) {
+      sign *= -1;
+      s = s.slice(1).trim();
+    } else if (s.startsWith('+')) {
+      s = s.slice(1).trim();
+    }
+
+    // Replace common degree/minute/second symbols with spaces, then collapse
+    // to whitespace. This turns "39° 38' 36\"" into "39 38 36".
+    s = s.replace(/[°º⁰]/g, ' ')
+         .replace(/['′]/g, ' ')
+         .replace(/["″]/g, ' ')
+         .replace(/[,]/g, '.')   // some locales use comma as decimal
+         .replace(/\s+/g, ' ')
+         .trim();
+
+    // Tokenize into numeric parts
+    const parts = s.split(' ').map(p => parseFloat(p)).filter(n => Number.isFinite(n));
+    if (parts.length === 0) return null;
+
+    let value;
+    if (parts.length === 1) {
+      // Pure decimal degrees: "39.6433"
+      value = parts[0];
+    } else if (parts.length === 2) {
+      // Degrees + decimal minutes: "39 38.580"
+      value = parts[0] + (parts[1] / 60);
+    } else if (parts.length >= 3) {
+      // Degrees + minutes + seconds: "39 38 36"
+      value = parts[0] + (parts[1] / 60) + (parts[2] / 3600);
+    }
+
+    if (!Number.isFinite(value)) return null;
+    value = sign * value;
+
+    // Validate range based on kind hint or detected cardinal
+    const kind = cardinalKind || kindHint || null;
+    if (kind === 'lat' && Math.abs(value) > 90) return null;
+    if (kind === 'lng' && Math.abs(value) > 180) return null;
+
+    return { value: Math.round(value * 100000) / 100000, kind, original: raw };
+  }
+
+  // Parse a "lat, lng" or "lat lng" pair. Returns { lat, lng } or null.
+  function parseCoordPair(raw) {
+    if (!raw) return null;
+    const s = String(raw).trim();
+    // Try common pair separators
+    let parts = null;
+    // "lat, lng" with cardinal letters keeping hemisphere info
+    const m = s.match(/^(.+?[NSEW]?)\s*[,;]\s*(.+)$/i);
+    if (m) {
+      parts = [m[1].trim(), m[2].trim()];
+    } else {
+      // "39.6433°N 106.3781°W" — split on whitespace boundary that contains a hemisphere letter
+      const m2 = s.match(/^(.+?[NS])\s+(.+?[EW])$/i);
+      if (m2) parts = [m2[1].trim(), m2[2].trim()];
+    }
+    if (!parts) return null;
+    const lat = parseCoord(parts[0], 'lat');
+    const lng = parseCoord(parts[1], 'lng');
+    if (lat == null || lng == null) return null;
+    return { lat: lat.value, lng: lng.value };
+  }
+
+  const timeAgo = (iso) => {
+    if (!iso) return 'unknown';
+    const diffMin = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+    if (diffMin < 1) return 'just now';
+    if (diffMin === 1) return '1 min ago';
+    if (diffMin < 60) return `${diffMin} min ago`;
+    const h = Math.floor(diffMin/60);
+    return h === 1 ? '1 hr ago' : `${h} hr ago`;
+  };
+
+  // -------------------------------------------------------------------
+  // Geocoding + distance helpers (for Location Detail panel)
+  // -------------------------------------------------------------------
+  function haversineKm(lat1, lng1, lat2, lng2) {
+    const toRad = d => d * Math.PI / 180;
+    const R = 6371;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng/2)**2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+  }
+  const kmToMi = km => km * 0.621371;
+
+  // Open-Meteo's reverse geocoding endpoint. No API key, no rate limit issues at our scale.
+  // Note: Open-Meteo's geocoder is forward-only (name → coords), so we use a different
+  // free reverse-geocoding service (BigDataCloud's free tier — no API key for client-side).
+  async function reverseGeocode(lat, lng) {
+    try {
+      const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`;
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const d = await r.json();
+      return {
+        place: d.locality || d.city || d.principalSubdivision || 'Unknown area',
+        admin: d.principalSubdivision || '',
+        country: d.countryName || '',
+        countryCode: d.countryCode || '',
+        // BigDataCloud doesn't return its own coords, only descriptive fields
+        // So we'll show the configured coords back as the reference
+      };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function fmtCoord(lat, lng) {
+    const lats = (lat >= 0 ? `${lat.toFixed(4)}°N` : `${(-lat).toFixed(4)}°S`);
+    const lngs = (lng >= 0 ? `${lng.toFixed(4)}°E` : `${(-lng).toFixed(4)}°W`);
+    return `${lats}, ${lngs}`;
+  }
+  function fmtMi(km) {
+    if (km == null) return '—';
+    const mi = kmToMi(km);
+    if (mi < 0.1) return '< 0.1 mi';
+    if (mi < 10) return `${mi.toFixed(1)} mi`;
+    return `${Math.round(mi)} mi`;
+  }
+  function fmtFt(ft) {
+    if (ft == null || !Number.isFinite(ft)) return '—';
+    return `${Math.round(ft).toLocaleString()} ft`;
+  }
+  function fmtDelta(delta) {
+    if (delta == null || !Number.isFinite(delta)) return '—';
+    const sign = delta >= 0 ? '+' : '';
+    return `${sign}${Math.round(delta).toLocaleString()} ft`;
+  }
+  function deltaClass(delta) {
+    if (delta == null) return 'muted';
+    const abs = Math.abs(delta);
+    if (abs > 1500) return 'danger';
+    if (abs > 500) return 'warn';
+    return '';
+  }
+
+  async function renderLocationDetail(baseModel, summitModel, baseInputs, summitInputs) {
+    const setText = (id, text, cls) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = text;
+      if (cls != null) {
+        el.className = el.className.split(' ').filter(c => !['warn','danger','muted'].includes(c) && c.length).join(' ');
+        if (cls) el.classList.add(cls);
+      }
+    };
+    const setHTML = (id, html) => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = html;
+    };
+
+    // Meta line: model run time
+    const baseFc = baseModel?.forecast_current;
+    const meta = baseFc?.display_at ? `Open-Meteo · model run ${timeAgo(baseFc.display_at)}` : 'Open-Meteo';
+    setText('loc-detail-meta', meta);
+
+    // BASE card
+    if (baseInputs) {
+      setText('loc-base-coords', fmtCoord(baseInputs.lat, baseInputs.lng));
+      setText('loc-base-userelev', baseInputs.elevFt != null ? fmtFt(baseInputs.elevFt) : '— (not set)');
+      const baseModelElevM = baseModel?.forecast_current?._native?.modelElevM;
+      const baseModelElevFt = baseModelElevM != null ? mToFt(baseModelElevM) : null;
+      setText('loc-base-modelelev', baseModelElevFt != null ? fmtFt(baseModelElevFt) : '—');
+      const baseDelta = (baseInputs.elevFt != null && baseModelElevFt != null) ? (baseInputs.elevFt - baseModelElevFt) : null;
+      const baseDeltaEl = document.getElementById('loc-base-delta');
+      if (baseDeltaEl) {
+        baseDeltaEl.textContent = fmtDelta(baseDelta);
+        baseDeltaEl.className = 'lv mono';
+        const cls = deltaClass(baseDelta);
+        if (cls) baseDeltaEl.classList.add(cls);
+      }
+      setText('loc-base-tz', baseModel?.resort?.timezone || '—');
+    }
+
+    // SUMMIT card — show or hide based on whether summit is configured
+    const summitCardEl = document.getElementById('loc-summit');
+    const locDetailBodyEl = document.querySelector('.loc-detail-body');
+    if (summitInputs && !isNaN(summitInputs.lat) && !isNaN(summitInputs.lng)) {
+      // Summit configured → show the card and populate
+      summitCardEl.style.display = '';
+      if (locDetailBodyEl) locDetailBodyEl.classList.remove('single');
+
+      setText('loc-summit-coords', fmtCoord(summitInputs.lat, summitInputs.lng));
+      setText('loc-summit-userelev', summitInputs.elevFt != null ? fmtFt(summitInputs.elevFt) : '— (not set)');
+      const summitModelElevM = summitModel?.forecast_current?._native?.modelElevM;
+      const summitModelElevFt = summitModelElevM != null ? mToFt(summitModelElevM) : null;
+      setText('loc-summit-modelelev', summitModelElevFt != null ? fmtFt(summitModelElevFt) : '—');
+      const summitDelta = (summitInputs.elevFt != null && summitModelElevFt != null) ? (summitInputs.elevFt - summitModelElevFt) : null;
+      const summitDeltaEl = document.getElementById('loc-summit-delta');
+      if (summitDeltaEl) {
+        summitDeltaEl.textContent = fmtDelta(summitDelta);
+        summitDeltaEl.className = 'lv mono';
+        const cls = deltaClass(summitDelta);
+        if (cls) summitDeltaEl.classList.add(cls);
+      }
+
+      // Distance base ↔ summit
+      if (baseInputs) {
+        const pairKm = haversineKm(baseInputs.lat, baseInputs.lng, summitInputs.lat, summitInputs.lng);
+        const pairEl = document.getElementById('loc-summit-pair');
+        if (pairEl) {
+          pairEl.textContent = fmtMi(pairKm);
+          pairEl.className = 'lv mono';
+          if (pairKm > 16) pairEl.classList.add('danger');     // > 10 mi apart = probably wrong
+          else if (pairKm > 8) pairEl.classList.add('warn');   // > 5 mi apart = sus
+        }
+      }
+    } else {
+      // Summit not configured → hide the card entirely, base card takes full width
+      summitCardEl.style.display = 'none';
+      if (locDetailBodyEl) locDetailBodyEl.classList.add('single');
+    }
+
+    // Geocoding (parallel, non-blocking — show "Looking up…" while pending)
+    const baseGeoP = baseInputs ? reverseGeocode(baseInputs.lat, baseInputs.lng) : Promise.resolve(null);
+    const summitGeoP = (summitInputs && !isNaN(summitInputs.lat)) ? reverseGeocode(summitInputs.lat, summitInputs.lng) : Promise.resolve(null);
+    const [baseGeo, summitGeo] = await Promise.all([baseGeoP, summitGeoP]);
+
+    if (baseGeo) {
+      const placeStr = [baseGeo.place, baseGeo.admin, baseGeo.country].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join(', ');
+      setText('loc-base-place', placeStr || 'Unknown area');
+      document.getElementById('loc-base-place').classList.remove('dim');
+      setText('loc-base-near', baseGeo.place || '—');
+      // BigDataCloud doesn't give us coords back, so we can't compute exact distance to the named place.
+      // Instead show a simple "within ~city limits" if locality matched, or fall back to admin region.
+      setText('loc-base-dist', baseGeo.place ? 'within named locality' : '—');
+
+      // Stash the resolved name for the chat preview header
+      window.__resortDisplayName = baseGeo.place || baseGeo.admin || 'Your Resort';
+      const nameEl = document.getElementById('chat-mock-resort');
+      const greetEl = document.getElementById('chat-mock-greeting-name');
+      const footEl = document.getElementById('chat-mock-resort-foot');
+      if (nameEl) nameEl.textContent = window.__resortDisplayName;
+      if (greetEl) greetEl.textContent = window.__resortDisplayName;
+      if (footEl) footEl.textContent = window.__resortDisplayName;
+    } else if (baseInputs) {
+      setText('loc-base-place', 'Geocoding unavailable', null);
+      document.getElementById('loc-base-place').classList.add('dim');
+    }
+
+    if (summitGeo) {
+      const placeStr = [summitGeo.place, summitGeo.admin, summitGeo.country].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join(', ');
+      setText('loc-summit-place', placeStr || 'Unknown area');
+      document.getElementById('loc-summit-place').classList.remove('dim');
+      setText('loc-summit-near', summitGeo.place || '—');
+      setText('loc-summit-dist', summitGeo.place ? 'within named locality' : '—');
+    }
+
+    // Validation warnings
+    const warnings = [];
+    const fixActions = []; // { label, fn } — pushed in same order as warnings
+
+    if (baseInputs && summitInputs && !isNaN(summitInputs.lat) && !isNaN(summitInputs.lng)) {
+      const pairKm = haversineKm(baseInputs.lat, baseInputs.lng, summitInputs.lat, summitInputs.lng);
+
+      if (pairKm > 16) {
+        // Try sign-flip diagnostics: would flipping any one of the four lat/lng
+        // signs put base and summit close together? That almost always means a
+        // typo where the user dropped a "-" sign.
+        const candidates = [
+          { name: 'base longitude',  field: 'base-lng',   newVal: -baseInputs.lng,  pair: { lat: baseInputs.lat, lng: -baseInputs.lng } },
+          { name: 'base latitude',   field: 'base-lat',   newVal: -baseInputs.lat,  pair: { lat: -baseInputs.lat, lng: baseInputs.lng } },
+          { name: 'summit longitude',field: 'summit-lng', newVal: -summitInputs.lng,pair: { lat: summitInputs.lat, lng: -summitInputs.lng }, isSummit: true },
+          { name: 'summit latitude', field: 'summit-lat', newVal: -summitInputs.lat,pair: { lat: -summitInputs.lat, lng: summitInputs.lng }, isSummit: true }
+        ];
+        let bestFix = null;
+        for (const c of candidates) {
+          const fixedKm = c.isSummit
+            ? haversineKm(baseInputs.lat, baseInputs.lng, c.pair.lat, c.pair.lng)
+            : haversineKm(c.pair.lat, c.pair.lng, summitInputs.lat, summitInputs.lng);
+          if (fixedKm < 16 && (bestFix == null || fixedKm < bestFix.fixedKm)) {
+            bestFix = { ...c, fixedKm };
+          }
+        }
+
+        if (bestFix) {
+          warnings.push(
+            `<strong>Base and summit are ${fmtMi(pairKm)} apart.</strong> ` +
+            `Looks like the <strong>${bestFix.name}</strong> sign was dropped — flipping it puts them ${fmtMi(bestFix.fixedKm)} apart.`
+          );
+          fixActions.push({
+            label: `Flip ${bestFix.name} sign`,
+            fn: () => {
+              const el = document.getElementById(bestFix.field);
+              if (el) {
+                el.value = String(bestFix.newVal);
+                refreshSaveStatus();
+                doRefresh();
+              }
+            }
+          });
+        } else {
+          warnings.push(
+            `<strong>Base and summit are ${fmtMi(pairKm)} apart.</strong> Most ski resorts are within 5 miles base-to-summit. These coordinates may be from different resorts — check both lat/lng pairs.`
+          );
+          fixActions.push(null);
+        }
+      }
+
+      // Region mismatch via geocoded admin (state/province) — only if no sign-flip fix already proposed
+      if (pairKm <= 16 || !fixActions.length || fixActions[fixActions.length - 1] == null) {
+        if (baseGeo && summitGeo && baseGeo.admin && summitGeo.admin && baseGeo.admin !== summitGeo.admin) {
+          warnings.push(`<strong>Base is in ${baseGeo.admin}, summit is in ${summitGeo.admin}.</strong> These coordinates appear to be in different regions.`);
+          fixActions.push(null);
+        }
+      }
+    }
+
+    if (baseInputs && baseInputs.elevFt != null && baseModel?.forecast_current?._native?.modelElevM != null) {
+      const modelFt = mToFt(baseModel.forecast_current._native.modelElevM);
+      if (Math.abs(baseInputs.elevFt - modelFt) > 2000) {
+        warnings.push(`<strong>Base elevation override differs from model DEM by ${fmtDelta(baseInputs.elevFt - modelFt)}.</strong> Double-check the elevation value — large deltas often mean a typo or units mix-up.`);
+        fixActions.push({
+          label: 'Use model elevation',
+          fn: () => {
+            const el = document.getElementById('base-elev');
+            if (el) {
+              el.value = String(Math.round(modelFt));
+              refreshSaveStatus();
+              doRefresh();
+            }
+          }
+        });
+      }
+    }
+
+    const warnEl = document.getElementById('loc-warn');
+    if (warnings.length) {
+      warnEl.classList.remove('hidden');
+      warnEl.innerHTML = warnings.map((w, i) => {
+        const action = fixActions[i];
+        const btn = action
+          ? `<button type="button" class="loc-warn-fix" data-fix-idx="${i}">${action.label}</button>`
+          : '';
+        return `<div class="loc-warn-row"><span class="loc-warn-text">⚠ ${w}</span>${btn}</div>`;
+      }).join('');
+      // Wire up fix buttons
+      warnEl.querySelectorAll('.loc-warn-fix').forEach(btn => {
+        const idx = parseInt(btn.dataset.fixIdx, 10);
+        const action = fixActions[idx];
+        if (action) {
+          btn.addEventListener('click', action.fn);
+        }
+      });
+    } else {
+      warnEl.classList.add('hidden');
+      warnEl.innerHTML = '';
+    }
+  }
+
+  // The Open-Meteo adapter (fetchOpenMeteo) + its WMO/date/unit helpers now live
+  // in src/shared/weather/open-meteo.js, imported at the top of this module.
+
+  // -------------------------------------------------------------------
+  // Render normalized model into the UI
+  // -------------------------------------------------------------------
+  function renderModel(baseModel, summitModel, sourceName) {
+    // Pull display fields from the normalized current
+    const baseCur = baseModel?.forecast_current;
+    const summitCur = summitModel?.forecast_current;
+
+    const baseTempEl = document.getElementById('reading-base-temp');
+    const summitTempEl = document.getElementById('reading-summit-temp');
+    const summitCellEl = document.getElementById('reading-summit-cell');
+    const statusGridEl = document.getElementById('status-grid');
+    const condsEl = document.getElementById('reading-conditions');
+    const windEl = document.getElementById('reading-wind');
+    const snowLvlEl = document.getElementById('reading-snow-level');
+    const popEl = document.getElementById('reading-pop');
+
+    baseTempEl.innerHTML = baseCur?.temp != null ? `${baseCur.temp}<small>°F</small>` : `<span class="muted">—</span>`;
+
+    // Hide summit cell entirely when summit isn't configured (vs null data due to error)
+    const hasSummitData = summitCur && summitCur.temp != null;
+    if (summitModel == null) {
+      // Summit not configured at all — hide the cell, drop grid to 5 cols
+      summitCellEl.style.display = 'none';
+      statusGridEl.classList.add('no-summit');
+    } else {
+      // Summit is configured but may have null temp (data error)
+      summitCellEl.style.display = '';
+      statusGridEl.classList.remove('no-summit');
+      summitTempEl.innerHTML = hasSummitData ? `${summitCur.temp}<small>°F</small>` : `<span class="muted">—</span>`;
+    }
+
+    // Conditions label + emoji (if available)
+    const emoji = baseCur?.icon_emoji ? baseCur.icon_emoji + ' ' : '';
+    condsEl.innerHTML = baseCur?.conditions_label ? `${emoji}${baseCur.conditions_label}` : `<span class="muted">—</span>`;
+
+    if (baseCur?.wind_speed != null) {
+      const dirLabel = baseCur.wind_dir_label || '';
+      windEl.innerHTML = `${baseCur.wind_speed}<small>mph ${dirLabel}</small>`;
+    } else {
+      windEl.innerHTML = `<span class="muted">—</span>`;
+    }
+
+    // Snow level — only Open-Meteo provides this
+    if (baseCur?.snow_level != null) {
+      snowLvlEl.innerHTML = `${baseCur.snow_level.toLocaleString()}<small>ft</small>`;
+    } else {
+      snowLvlEl.innerHTML = `<span class="muted">—</span>`;
+    }
+
+    // POP — find the soonest hourly entry with a value, since current doesn't have it
+    const popValue = baseCur?.pop != null
+      ? baseCur.pop
+      : (baseModel?.forecast_hourly?.find(h => h.pop != null)?.pop);
+    if (popValue != null) {
+      const pct = Math.round(popValue * 100);
+      popEl.innerHTML = `${pct}<small>%</small>`;
+    } else {
+      popEl.innerHTML = `<span class="muted">—</span>`;
+    }
+
+    // Hourly strip
+    const hourlyRow = document.getElementById('hourly-row');
+    const hours = baseModel?.forecast_hourly?.slice(0, 12) || [];
+    if (hours.length) {
+      hourlyRow.innerHTML = hours.map(h => `
+        <div class="hourly-cell ${h.day_period === 'night' ? 'night' : ''}">
+          <div class="h-time">${h.display_at_local_label}</div>
+          <div class="h-icon">${h.icon_emoji || '·'}</div>
+          <div class="h-temp">${h.temp != null ? h.temp + '°' : '—'}</div>
+          <div class="h-pop ${(h.pop || 0) === 0 ? 'zero' : ''}">${h.pop != null ? Math.round(h.pop * 100) + '%' : '—'}</div>
+        </div>
+      `).join('');
+    } else {
+      hourlyRow.innerHTML = `<div class="hourly-empty">No hourly forecast available from this source</div>`;
+    }
+
+    // Source info footer
+    const sourceEl = document.querySelector('[data-status="source-info"]');
+    const native = baseCur?._native || {};
+    const baseModelFt = mToFt(native.modelElevM);
+    const userElevFt = native.userElevM != null ? mToFt(native.userElevM) : null;
+    const elevNote = userElevFt != null ? ` (override: ${userElevFt.toLocaleString()}ft)` : ' (default)';
+    const summitModelFt = summitCur?._native?.modelElevM != null ? mToFt(summitCur._native.modelElevM) : null;
+    const sourceInfo = `Pulled from Open-Meteo · base modeled at <strong>${baseModelFt != null ? baseModelFt.toLocaleString() + 'ft' : '—'}</strong>${elevNote}` +
+      (summitModelFt != null ? ` · summit at <strong>${summitModelFt.toLocaleString()}ft</strong>` : '') +
+      ` · Updated ${timeAgo(baseCur?.display_at)}`;
+    sourceEl.innerHTML = sourceInfo;
+
+    const healthEl = document.querySelector('[data-status="health"]');
+    healthEl.style.color = 'var(--success)';
+    healthEl.textContent = 'All readings nominal';
+
+    // Attribution row
+    const attr = baseModel?.attribution;
+    const attrTextEl = document.querySelector('.attribution .attr-text');
+    const attrLinkEl = document.getElementById('attr-link');
+    if (attr && attrTextEl) {
+      const sourceName = attr.source === 'open-meteo' ? 'Open-Meteo' : attr.source;
+      attrTextEl.innerHTML = `Data: <strong>${sourceName}</strong> · ${attr.description}`;
+    }
+    if (attr && attrLinkEl) {
+      attrLinkEl.href = attr.link_url;
+      attrLinkEl.textContent = `${attr.link_text} ↗`;
+    }
+
+    // Render the chat preview (mirrors what guests see)
+    renderChatMock(baseModel, summitModel);
+  }
+
+  // Render the in-dashboard chat preview using the same normalized model.
+  // This is the "what guests see" view — distinct from the engineer-facing
+  // readings grid, but driven by the exact same data.
+  function renderChatMock(baseModel, summitModel) {
+    const baseCur = baseModel?.forecast_current;
+    const summitCur = summitModel?.forecast_current;
+    const hasSummit = !!summitCur;
+
+    // Resort name from input or fallback
+    const resortName = (window.__resortDisplayName || 'Your Resort');
+    const nameEl = document.getElementById('chat-mock-resort');
+    const greetEl = document.getElementById('chat-mock-greeting-name');
+    const footEl = document.getElementById('chat-mock-resort-foot');
+    if (nameEl) nameEl.textContent = resortName;
+    if (greetEl) greetEl.textContent = resortName;
+    if (footEl) footEl.textContent = resortName;
+
+    const setCell = (id, html) => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = html;
+    };
+
+    // Base temp
+    setCell('chat-mock-base-temp',
+      baseCur?.temp != null ? `${baseCur.temp}<small>°F</small>` : `<span class="muted">—</span>`);
+
+    // Summit temp + cell visibility
+    const summitCellEl = document.getElementById('chat-mock-summit-cell');
+    const windSummitCellEl = document.getElementById('chat-mock-wind-summit-cell');
+    const condBlockEl = document.querySelector('.chat-mock-conditions');
+    if (hasSummit) {
+      summitCellEl.style.display = '';
+      windSummitCellEl.style.display = '';
+      if (condBlockEl) condBlockEl.classList.remove('no-summit');
+      setCell('chat-mock-summit-temp',
+        summitCur.temp != null ? `${summitCur.temp}<small>°F</small>` : `<span class="muted">—</span>`);
+      const summitWind = summitCur.wind_speed != null
+        ? `${summitCur.wind_speed}<small>mph ${summitCur.wind_dir_label || ''}</small>`
+        : `<span class="muted">—</span>`;
+      setCell('chat-mock-wind-summit', summitWind);
+    } else {
+      // No summit — drop both summit cells, grid auto-collapses to 2-col
+      summitCellEl.style.display = 'none';
+      windSummitCellEl.style.display = 'none';
+      if (condBlockEl) condBlockEl.classList.add('no-summit');
+    }
+
+    // Conditions (icon + label)
+    const condsHtml = baseCur?.conditions_label
+      ? `${baseCur.icon_emoji ? baseCur.icon_emoji + ' ' : ''}${baseCur.conditions_label}`
+      : `<span class="muted">—</span>`;
+    setCell('chat-mock-conditions', condsHtml);
+
+    // Wind base
+    const baseWind = baseCur?.wind_speed != null
+      ? `${baseCur.wind_speed}<small>mph ${baseCur.wind_dir_label || ''}</small>`
+      : `<span class="muted">—</span>`;
+    setCell('chat-mock-wind-base', baseWind);
+
+    // Snow level — when null, show em-dash (some sources don't expose it)
+    const snowLvlHtml = baseCur?.snow_level != null
+      ? `${baseCur.snow_level.toLocaleString()}<small>ft</small>`
+      : `<span class="muted">—</span>`;
+    setCell('chat-mock-snow-level', snowLvlHtml);
+
+    // Updated timestamp
+    const updatedEl = document.getElementById('chat-mock-updated');
+    if (updatedEl) updatedEl.textContent = baseCur?.display_at ? `UPDATED ${timeAgo(baseCur.display_at).toUpperCase()}` : '';
+  }
+
+  function setReadingsError(sourceInfo, healthText) {
+    const ids = ['reading-base-temp', 'reading-summit-temp', 'reading-conditions', 'reading-wind', 'reading-snow-level', 'reading-pop'];
+    ids.forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = '<span class="muted">—</span>'; });
+    document.getElementById('hourly-row').innerHTML = '<div class="hourly-empty">No data available</div>';
+    document.querySelector('[data-status="source-info"]').innerHTML = sourceInfo;
+    const h = document.querySelector('[data-status="health"]');
+    h.style.color = 'var(--danger)';
+    h.textContent = healthText;
+  }
+
+  function setLoading(isLoading) {
+    refreshBtn.disabled = isLoading;
+    refreshLabel.textContent = isLoading ? 'Fetching…' : 'Refresh';
+    refreshBtn.style.opacity = isLoading ? '0.6' : '1';
+  }
+
+  // -------------------------------------------------------------------
+  // Source-aware refresh
+  // -------------------------------------------------------------------
+  async function doRefresh() {
+    const activeSource = document.querySelector('.src-tab.active')?.dataset.src;
+    if (activeSource === 'direct') {
+      setReadingsError(
+        `<strong>Resort Direct API.</strong> Save your endpoint config to enable live refresh from this dashboard.`,
+        'Demo mode'
+      );
+      const h = document.querySelector('[data-status="health"]');
+      h.style.color = 'var(--text-muted)';
+      return;
+    }
+
+    const readCoord = (id, kind) => {
+      const r = parseCoord(document.getElementById(id).value, kind);
+      return r ? r.value : NaN;
+    };
+    const baseLat = readCoord('base-lat', 'lat');
+    const baseLng = readCoord('base-lng', 'lng');
+    const parseElev = (raw) => {
+      if (!raw) return null;
+      const cleaned = String(raw).replace(/[^0-9.\-]/g, '');
+      const n = parseFloat(cleaned);
+      return Number.isFinite(n) ? n : null;
+    };
+    const baseElevFt = parseElev(document.getElementById('base-elev').value);
+    const summitLat = readCoord('summit-lat', 'lat');
+    const summitLng = readCoord('summit-lng', 'lng');
+    const summitElevFt = parseElev(document.getElementById('summit-elev').value);
+    const hasSummit = !isNaN(summitLat) && !isNaN(summitLng);
+
+    if (isNaN(baseLat) || isNaN(baseLng)) {
+      setReadingsError('<strong>Missing or unparseable base coordinates.</strong> Try a format like <code>39.6433</code> or <code>39.6433°N</code>.', 'Configuration error');
+      setConnectionState('error', 'Saved — coordinates unreadable');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Convert feet → meters for the API call (Open-Meteo expects meters)
+      const baseArgs   = { lat: baseLat,   lng: baseLng,   elevationM: ftToM(baseElevFt),   elevationFt: baseElevFt,   name: 'Base'   };
+      const summitArgs = { lat: summitLat, lng: summitLng, elevationM: ftToM(summitElevFt), elevationFt: summitElevFt, name: 'Summit' };
+
+      const promises = [fetchOpenMeteo(baseArgs)];
+      if (hasSummit) promises.push(fetchOpenMeteo(summitArgs));
+      const results = await Promise.allSettled(promises);
+
+      const baseModel = results[0].status === 'fulfilled' ? results[0].value : null;
+      const summitModel = hasSummit && results[1].status === 'fulfilled' ? results[1].value : null;
+
+      if (results[0].status === 'rejected') {
+        setReadingsError(
+          `<strong>Open-Meteo query failed.</strong> ${results[0].reason.message}`,
+          'Source error'
+        );
+        setConnectionState('error', `Saved — couldn't reach Open-Meteo`);
+        return;
+      }
+
+      window.__lastWeatherModel = { source: activeSource, base: baseModel, summit: summitModel };
+
+      renderModel(baseModel, summitModel, activeSource);
+
+      // Update Location Detail panel (geocoding + grid info, only for Open-Meteo)
+      if (activeSource === 'om') {
+        renderLocationDetail(
+          baseModel,
+          summitModel,
+          { lat: baseLat, lng: baseLng, elevFt: baseElevFt },
+          hasSummit ? { lat: summitLat, lng: summitLng, elevFt: summitElevFt } : null
+        ).catch(e => console.warn('Location detail render failed:', e));
+      }
+
+      // Connection succeeded
+      setConnectionState('connected');
+    } catch (e) {
+      setReadingsError(`<strong>Refresh failed.</strong> ${e.message}`, 'Source error');
+      setConnectionState('error', `Saved — refresh failed`);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (refreshBtn) refreshBtn.addEventListener('click', doRefresh);
+
+  // ===========================================================================
+  // SAVE / DIRTY-TRACKING / FORM PERSISTENCE
+  // ===========================================================================
+  const STORAGE_KEY = 'gsb-weather-config-v1';
+  // EMPTY_FORM is the "fresh dashboard" state — no resort configured yet.
+  const EMPTY_FORM = {
+    'base-lat':    '',
+    'base-lng':    '',
+    'base-elev':   '',
+    'summit-lat':  '',
+    'summit-lng':  '',
+    'summit-elev': ''
+  };
+  const TRACKED_FIELDS = Object.keys(EMPTY_FORM);
+
+  // hasConfiguredCoords: is the saved snapshot a real configuration (i.e. base lat AND lng both set)?
+  // Empty strings are falsy here. A saved config requires at minimum base lat + lng.
+  const hasConfiguredCoords = (snap) => {
+    if (!snap) return false;
+    return String(snap['base-lat']).trim() !== '' && String(snap['base-lng']).trim() !== '';
+  };
+
+  const saveBar      = document.getElementById('save-bar');
+  const saveBtn      = document.getElementById('save-btn');
+  const discardBtn   = document.getElementById('discard-btn');
+  const saveStatusEl = document.getElementById('save-status-text');
+  let lastSavedAt = null;
+  let savedSnapshot = null;
+
+  function readForm() {
+    const out = {};
+    TRACKED_FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      out[id] = el ? el.value : '';
+    });
+    return out;
+  }
+  function writeForm(values) {
+    TRACKED_FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && values[id] != null) el.value = values[id];
+    });
+  }
+  function isDirty() {
+    if (!savedSnapshot) return false;
+    const cur = readForm();
+    return TRACKED_FIELDS.some(id => String(cur[id]).trim() !== String(savedSnapshot[id]).trim());
+  }
+  function fmtTimeAgo(ts) {
+    if (!ts) return 'never';
+    const diffSec = Math.floor((Date.now() - ts) / 1000);
+    if (diffSec < 5) return 'just now';
+    if (diffSec < 60) return `${diffSec}s ago`;
+    const diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) return `${diffMin} min ago`;
+    const diffHr = Math.floor(diffMin / 60);
+    if (diffHr < 24) return `${diffHr}h ago`;
+    const diffDay = Math.floor(diffHr / 24);
+    return `${diffDay}d ago`;
+  }
+  // Connection state machine — drives multiple UI surfaces
+  // States: 'idle' (no save), 'loading' (fetching), 'connected' (live), 'error'
+  let connectionState = 'idle';
+  let connectionErrorMsg = '';
+
+  function setConnectionState(state, errorMsg = '') {
+    connectionState = state;
+    connectionErrorMsg = errorMsg;
+
+    const pillEl = document.getElementById('card-status-pill');
+    const refreshBtnEl = document.getElementById('refresh-btn');
+    const emptyEl = document.getElementById('readings-empty');
+    const liveEl = document.getElementById('readings-live');
+
+    // Card-head pill
+    if (pillEl) {
+      pillEl.classList.remove('idle', 'loading', 'warn', 'danger');
+      switch (state) {
+        case 'idle':
+          pillEl.classList.add('idle');
+          pillEl.textContent = 'Not connected';
+          break;
+        case 'loading':
+          pillEl.classList.add('loading');
+          pillEl.textContent = 'Connecting…';
+          break;
+        case 'connected':
+          pillEl.textContent = 'Connected';
+          break;
+        case 'error':
+          pillEl.classList.add('warn');
+          pillEl.textContent = 'Connection issue';
+          break;
+      }
+    }
+
+    // Refresh button gating
+    if (refreshBtnEl) {
+      const canRefresh = state === 'connected' || state === 'error';
+      refreshBtnEl.disabled = !canRefresh;
+      refreshBtnEl.title = canRefresh ? '' : 'Save your coordinates first to enable refresh';
+    }
+
+    // Empty state vs live readings visibility (and chat preview)
+    if (emptyEl && liveEl) {
+      const showLive = state === 'loading' || state === 'connected' || state === 'error';
+      emptyEl.style.display = showLive ? 'none' : '';
+      liveEl.style.display = showLive ? '' : 'none';
+    }
+    const chatEmpty = document.getElementById('chat-preview-empty');
+    const chatLive  = document.getElementById('chat-preview-live');
+    if (chatEmpty && chatLive) {
+      const showLive = state === 'loading' || state === 'connected' || state === 'error';
+      chatEmpty.style.display = showLive ? 'none' : '';
+      chatLive.style.display = showLive ? '' : 'none';
+    }
+
+    // Refresh save bar status since connection state affects it
+    refreshSaveStatus();
+  }
+
+  function refreshSaveStatus() {
+    const dirty = isDirty();
+    const configured = hasConfiguredCoords(savedSnapshot);
+    saveBar.classList.toggle('dirty', dirty);
+    saveBtn.disabled = !dirty;
+    discardBtn.disabled = !dirty;
+
+    if (dirty) {
+      // Has unsaved changes — same message regardless of connection state
+      saveStatusEl.textContent = configured
+        ? 'Unsaved changes'
+        : 'Ready — save to connect weather';
+    } else if (!configured) {
+      // Empty form, never saved
+      saveStatusEl.textContent = 'Enter your resort coordinates below to connect weather';
+    } else {
+      // Saved + connection state determines message
+      switch (connectionState) {
+        case 'loading':
+          saveStatusEl.textContent = 'Saved — fetching weather…';
+          break;
+        case 'connected':
+          saveStatusEl.textContent = lastSavedAt ? `Connected · saved ${fmtTimeAgo(lastSavedAt)}` : 'Connected';
+          break;
+        case 'error':
+          saveStatusEl.textContent = connectionErrorMsg || 'Saved — connection failed';
+          break;
+        default:
+          saveStatusEl.textContent = lastSavedAt ? `Saved ${fmtTimeAgo(lastSavedAt)}` : 'Saved';
+      }
+    }
+  }
+
+  function loadFromStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        savedSnapshot = { ...EMPTY_FORM };
+        return;
+      }
+      const parsed = JSON.parse(raw);
+      if (parsed.values) {
+        writeForm(parsed.values);
+        savedSnapshot = { ...parsed.values };
+        if (parsed.savedAt) lastSavedAt = parsed.savedAt;
+      } else {
+        savedSnapshot = { ...EMPTY_FORM };
+      }
+    } catch (e) {
+      console.warn('Failed to load saved config:', e);
+      savedSnapshot = { ...EMPTY_FORM };
+    }
+  }
+
+  function saveNow() {
+    const values = readForm();
+
+    // Gate: don't save an empty form (no base coords means no real config)
+    if (!hasConfiguredCoords(values)) {
+      saveStatusEl.textContent = 'Base latitude and longitude are required to save';
+      saveBar.classList.add('dirty');
+      return;
+    }
+
+    const payload = { values, savedAt: Date.now() };
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    } catch (e) {
+      console.warn('localStorage write failed:', e);
+    }
+    savedSnapshot = { ...values };
+    lastSavedAt = payload.savedAt;
+    saveBar.classList.add('saved-flash');
+    setTimeout(() => saveBar.classList.remove('saved-flash'), 1800);
+
+    // Transition to loading state (drives pill, empty state, save status text)
+    setConnectionState('loading');
+
+    // Trigger live data refresh — doRefresh will set state to 'connected' or 'error'
+    doRefresh();
+  }
+
+  function discardNow() {
+    if (!savedSnapshot) return;
+    writeForm(savedSnapshot);
+    refreshSaveStatus();
+  }
+
+  // -------------------------------------------------------------------
+  // Live preview mode — instant, debounced fetch as you type (no Save).
+  // Lets you drop in a lat/long and see live weather immediately while
+  // experimenting. The saved config (savedSnapshot / localStorage) is left
+  // untouched — only an explicit Save commits coordinates.
+  // -------------------------------------------------------------------
+  const LIVE_PREVIEW_KEY = 'gsb-weather-live-preview';
+  const livePreviewToggle = document.getElementById('live-preview-toggle');
+  let livePreviewOn = false;
+  try { livePreviewOn = localStorage.getItem(LIVE_PREVIEW_KEY) === '1'; } catch (e) {}
+  if (livePreviewToggle) livePreviewToggle.checked = livePreviewOn;
+
+  function debounce(fn, ms) {
+    let timer;
+    return function() { clearTimeout(timer); timer = setTimeout(fn, ms); };
+  }
+
+  // Fire a live refresh only when: mode is on, source is Open-Meteo, and the
+  // base coordinates currently parse (so half-typed input doesn't error-spam).
+  const triggerLivePreview = debounce(() => {
+    if (!livePreviewOn) return;
+    if (document.querySelector('.src-tab.active')?.dataset.src !== 'om') return;
+    const lat = parseCoord(document.getElementById('base-lat').value, 'lat');
+    const lng = parseCoord(document.getElementById('base-lng').value, 'lng');
+    if (lat && lng) doRefresh();
+  }, 500);
+
+  if (livePreviewToggle) {
+    livePreviewToggle.addEventListener('change', () => {
+      livePreviewOn = livePreviewToggle.checked;
+      try { localStorage.setItem(LIVE_PREVIEW_KEY, livePreviewOn ? '1' : '0'); } catch (e) {}
+      if (livePreviewOn) triggerLivePreview();  // fetch now if coords are already present
+    });
+  }
+
+  // Hook up dirty tracking + live preview on every tracked input
+  TRACKED_FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', refreshSaveStatus);
+      el.addEventListener('input', triggerLivePreview);
+      el.addEventListener('change', refreshSaveStatus);
+    }
+  });
+
+  // -------------------------------------------------------------------
+  // Resort presets — click to populate the form with example coords
+  // -------------------------------------------------------------------
+  const RESORT_PRESETS = {
+    'jackson-hole': {
+      'base-lat':    '43.5875',
+      'base-lng':    '-110.8279',
+      'base-elev':   '6311',
+      'summit-lat':  '43.5969',
+      'summit-lng':  '-110.8716',
+      'summit-elev': '10449'
+    },
+    'vail': {
+      'base-lat':    '39.6403',
+      'base-lng':    '-106.3742',
+      'base-elev':   '8120',
+      'summit-lat':  '39.6126',
+      'summit-lng':  '-106.3783',
+      'summit-elev': '11570'
+    },
+    'whistler': {
+      'base-lat':    '50.1163',
+      'base-lng':    '-122.9574',
+      'base-elev':   '2214',
+      'summit-lat':  '50.0590',
+      'summit-lng':  '-122.9486',
+      'summit-elev': '7160'
+    },
+    'killington': {
+      'base-lat':    '43.6045',
+      'base-lng':    '-72.7986',
+      'base-elev':   '1165',
+      'summit-lat':  '',
+      'summit-lng':  '',
+      'summit-elev': ''
+    }
+  };
+
+  function applyPreset(presetKey) {
+    const preset = RESORT_PRESETS[presetKey];
+    if (!preset) return;
+    Object.entries(preset).forEach(([fieldId, value]) => {
+      const el = document.getElementById(fieldId);
+      if (el) el.value = value;
+    });
+    refreshSaveStatus();
+    triggerLivePreview();
+  }
+
+  document.querySelectorAll('.preset-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const presetKey = chip.dataset.preset;
+      applyPreset(presetKey);
+      // Visual flash to confirm the action
+      chip.classList.add('flash');
+      setTimeout(() => chip.classList.remove('flash'), 600);
+    });
+  });
+
+  // Coordinate inputs: normalize on blur, split pairs on paste
+  const COORD_FIELDS = [
+    { id: 'base-lat',    kind: 'lat', pairFor: 'base-lng' },
+    { id: 'base-lng',    kind: 'lng', pairFor: 'base-lat' },
+    { id: 'summit-lat',  kind: 'lat', pairFor: 'summit-lng' },
+    { id: 'summit-lng',  kind: 'lng', pairFor: 'summit-lat' }
+  ];
+
+  COORD_FIELDS.forEach(({ id, kind, pairFor }) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    // Normalize on blur — turn "39.6433°N" into "39.6433"
+    el.addEventListener('blur', () => {
+      const raw = el.value.trim();
+      if (!raw) return;
+      const parsed = parseCoord(raw, kind);
+      if (parsed && parsed.value !== parseFloat(raw)) {
+        el.value = String(parsed.value);
+        refreshSaveStatus();
+      } else if (!parsed && raw) {
+        // Couldn't parse — visually flag the input
+        el.style.borderColor = 'var(--brand)';
+        el.title = `Could not parse "${raw}" as a coordinate. Try formats like 39.6433, 39.6433°N, or 39° 38' 36" N.`;
+      } else {
+        el.style.borderColor = '';
+        el.title = '';
+      }
+    });
+
+    // Reset error styling on focus
+    el.addEventListener('focus', () => {
+      el.style.borderColor = '';
+      el.title = '';
+    });
+
+    // Paste handler: if a coord pair is pasted, distribute to both fields
+    el.addEventListener('paste', (e) => {
+      const text = (e.clipboardData || window.clipboardData)?.getData('text');
+      if (!text) return;
+
+      // Try parsing as a pair first
+      const pair = parseCoordPair(text);
+      if (pair) {
+        e.preventDefault();
+        const partnerEl = document.getElementById(pairFor);
+        // If we're in a lat field and parsed a pair, lat goes here, lng goes to partner
+        if (kind === 'lat') {
+          el.value = String(pair.lat);
+          if (partnerEl) partnerEl.value = String(pair.lng);
+        } else {
+          el.value = String(pair.lng);
+          if (partnerEl) partnerEl.value = String(pair.lat);
+        }
+        refreshSaveStatus();
+        triggerLivePreview();
+        // Visually pulse both fields to show the auto-split
+        [el, partnerEl].filter(Boolean).forEach(node => {
+          node.style.transition = 'background-color 0.4s ease';
+          node.style.backgroundColor = '#f0fdf4';
+          setTimeout(() => { node.style.backgroundColor = ''; }, 800);
+        });
+        return;
+      }
+
+      // Single-coord paste — let the parser normalize after the paste lands
+      // Use setTimeout(0) to read the field value after paste completes
+      setTimeout(() => {
+        const parsed = parseCoord(el.value, kind);
+        if (parsed) {
+          el.value = String(parsed.value);
+          refreshSaveStatus();
+          triggerLivePreview();
+        }
+      }, 0);
+    });
+  });
+
+  saveBtn.addEventListener('click', saveNow);
+  discardBtn.addEventListener('click', discardNow);
+
+  // Update timestamp every 30 seconds so "saved 2 min ago" stays accurate
+  setInterval(() => { if (!isDirty()) refreshSaveStatus(); }, 30000);
+
+  // Keyboard shortcut: ⌘/Ctrl+S
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+      e.preventDefault();
+      if (isDirty()) saveNow();
+    }
+  });
+
+  // -------------------------------------------------------------------
+  // Storage health check — detect iframe sandboxing that wipes localStorage
+  // between loads. If sessionStorage shows we've been here in this tab, but
+  // localStorage's healthcheck has been wiped, sandboxing is happening.
+  // -------------------------------------------------------------------
+  const HEALTHCHECK_KEY = 'gsb-storage-healthcheck-v1';
+  const HEALTHCHECK_DISMISSED_KEY = 'gsb-storage-warning-dismissed';
+  const TAB_VISITED_KEY = 'gsb-tab-visited';
+
+  function checkStorageHealth() {
+    let localOK = false;
+    let previousHealthcheckExisted = false;
+    let visitedThisSession = false;
+
+    try {
+      previousHealthcheckExisted = localStorage.getItem(HEALTHCHECK_KEY) != null;
+      localStorage.setItem(HEALTHCHECK_KEY, String(Date.now()));
+      localOK = localStorage.getItem(HEALTHCHECK_KEY) != null;
+    } catch (e) {
+      localOK = false;
+    }
+
+    try {
+      visitedThisSession = sessionStorage.getItem(TAB_VISITED_KEY) === '1';
+      sessionStorage.setItem(TAB_VISITED_KEY, '1');
+    } catch (e) {
+      // sessionStorage blocked — nothing more we can do
+    }
+
+    const dismissed = (() => {
+      try { return sessionStorage.getItem(HEALTHCHECK_DISMISSED_KEY) === '1'; }
+      catch (e) { return false; }
+    })();
+
+    // Confirmed wipe: this tab has been here before (sessionStorage proves it),
+    // but the localStorage healthcheck we wrote on the previous load is gone.
+    // That's iframe storage being cleared between loads.
+    const isWiped = localOK && visitedThisSession && !previousHealthcheckExisted;
+
+    if (isWiped && !dismissed) {
+      const banner = document.getElementById('storage-warning');
+      if (banner) banner.classList.remove('hidden');
+    }
+  }
+
+  // Wire up the dismiss button
+  const storageWarnCloseBtn = document.getElementById('storage-warning-close');
+  if (storageWarnCloseBtn) {
+    storageWarnCloseBtn.addEventListener('click', () => {
+      const banner = document.getElementById('storage-warning');
+      if (banner) banner.classList.add('hidden');
+      try { sessionStorage.setItem(HEALTHCHECK_DISMISSED_KEY, '1'); }
+      catch (e) {}
+    });
+  }
+
+  // Run health check after the rest of boot finishes (don't block load)
+  setTimeout(checkStorageHealth, 100);
+
+  // Initial load: read storage, populate form, set status
+  loadFromStorage();
+
+  if (hasConfiguredCoords(savedSnapshot)) {
+    // Resort is already configured — show loading state, then fetch
+    setConnectionState('loading');
+    setTimeout(doRefresh, 600);
+  } else {
+    // Fresh dashboard — stay in idle/empty state
+    setConnectionState('idle');
+  }
+
+  // Re-run on source tab switch — but only if configured
+  document.querySelectorAll('.src-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      if (hasConfiguredCoords(savedSnapshot)) {
+        setTimeout(doRefresh, 200);
+      }
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>

@@ -6,6 +6,7 @@
 // Omni-sourced Jackson Hole knowledge (official resort links + curated guidance).
 // Snapshot ported from omni/src/data/parent.ts — see src/widget/knowledge/.
 import { JH_KNOWLEDGE, topicLink } from './knowledge/jackson-hole.js';
+import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
 
 /* =========================================================================
    PRODUCTION-FIDELITY CHAT MODULE
@@ -127,6 +128,105 @@ import { JH_KNOWLEDGE, topicLink } from './knowledge/jackson-hole.js';
     });
   }
 
+  // ============= LIVE WEATHER (Open-Meteo) =============
+  // Resolve resort coordinates, then override data.snow.weather with live
+  // Open-Meteo readings. Snow stats keep coming from the resort feed/fallback.
+  //
+  // Coordinate resolution order:
+  //   1. window.gsbWeatherConfig  — injected by the host page / BotScrew config
+  //   2. localStorage 'gsb-weather-config-v1' — what the Weather dashboard saves
+  //   3. Jackson Hole defaults    — so the launcher never renders empty
+  var JH_DEFAULT_COORDS = {
+    base:   { lat: 43.5875, lng: -110.8279, elevFt: 6311 },
+    summit: { lat: 43.5969, lng: -110.8716, elevFt: 10449 }
+  };
+
+  function num(v) { var n = parseFloat(v); return Number.isFinite(n) ? n : null; }
+
+  // Normalize the dashboard's flat field shape ({'base-lat':..,'summit-lng':..})
+  // OR a structured { base:{lat,lng,elevFt}, summit:{...} } into the structured form.
+  function normalizeCoordConfig(cfg) {
+    if (!cfg) return null;
+    var v = cfg.values || cfg; // dashboard saves { values, savedAt }
+    var baseLat = num(v.base && v.base.lat != null ? v.base.lat : v['base-lat']);
+    var baseLng = num(v.base && v.base.lng != null ? v.base.lng : v['base-lng']);
+    if (baseLat == null || baseLng == null) return null;
+    var out = {
+      base: {
+        lat: baseLat, lng: baseLng,
+        elevFt: num(v.base && v.base.elevFt != null ? v.base.elevFt : v['base-elev'])
+      }
+    };
+    var sLat = num(v.summit && v.summit.lat != null ? v.summit.lat : v['summit-lat']);
+    var sLng = num(v.summit && v.summit.lng != null ? v.summit.lng : v['summit-lng']);
+    if (sLat != null && sLng != null) {
+      out.summit = {
+        lat: sLat, lng: sLng,
+        elevFt: num(v.summit && v.summit.elevFt != null ? v.summit.elevFt : v['summit-elev'])
+      };
+    }
+    return out;
+  }
+
+  function resolveWeatherCoords() {
+    var fromGlobal = normalizeCoordConfig(window.gsbWeatherConfig);
+    if (fromGlobal) return fromGlobal;
+    try {
+      var raw = localStorage.getItem('gsb-weather-config-v1');
+      if (raw) {
+        var fromLS = normalizeCoordConfig(JSON.parse(raw));
+        if (fromLS) return fromLS;
+      }
+    } catch (e) { /* storage blocked — fall through to default */ }
+    return JH_DEFAULT_COORDS;
+  }
+
+  function applyOpenMeteoWeather() {
+    var coords = resolveWeatherCoords();
+    if (!coords || !coords.base) return Promise.resolve();
+
+    var jobs = [fetchOpenMeteo({ lat: coords.base.lat, lng: coords.base.lng, elevationFt: coords.base.elevFt, name: 'Base' })];
+    if (coords.summit) {
+      jobs.push(fetchOpenMeteo({ lat: coords.summit.lat, lng: coords.summit.lng, elevationFt: coords.summit.elevFt, name: 'Summit' }));
+    }
+
+    return Promise.allSettled(jobs).then(function(results) {
+      var baseRes = results[0];
+      if (baseRes.status !== 'fulfilled') return; // keep resort-feed/fallback weather
+
+      data.snow = data.snow || {};
+      data.snow.weather = data.snow.weather || {};
+
+      var bc = baseRes.value.forecast_current;
+      data.snow.weather.base = {
+        temperature: { value: String(bc.temp) },
+        wind: { value: String(bc.wind_speed) }
+      };
+
+      if (coords.summit) {
+        var summitRes = results[1];
+        if (summitRes && summitRes.status === 'fulfilled') {
+          var sc = summitRes.value.forecast_current;
+          data.snow.weather.tramSummit = {
+            temperature: { value: String(sc.temp) },
+            wind: { value: String(sc.wind_speed) }
+          };
+        }
+        // if the summit fetch failed, leave any prior reading in place (best effort)
+      } else {
+        // Base-only resort — drop any stale summit reading and blank its cells so
+        // the conditions card doesn't show a leftover value from another resort.
+        delete data.snow.weather.tramSummit;
+        ['cellSummitTemp', 'statSummitTemp', 'cellWind'].forEach(function(id) {
+          var el = $(id); if (el) el.innerHTML = '<span class="unit">—</span>';
+        });
+      }
+
+      setDataStatus('live', 'Live weather · Open-Meteo');
+      renderAllData();
+    });
+  }
+
   // ============= RENDER DATA INTO UI =============
   function fmt(value, fallback) {
     if (value === undefined || value === null || value === '') return fallback || '—';
@@ -160,9 +260,10 @@ import { JH_KNOWLEDGE, topicLink } from './knowledge/jackson-hole.js';
       safeSet('statParking', parking.totalAvailability + '<span style="font-size:14px;font-weight:400;opacity:0.7">%</span>');
     }
 
-    // Launcher temp (uses tram summit) — populates the floating launcher's weather block
-    if (weather.tramSummit && weather.tramSummit.temperature) {
-      safeSet('launcherTemp', fmt(weather.tramSummit.temperature.value) + '<span class="gsb-launcher-weather__unit">°F</span>');
+    // Launcher temp — base temperature (where the guest actually is, and the only
+    // reading guaranteed present since summit coords are optional in the config).
+    if (weather.base && weather.base.temperature) {
+      safeSet('launcherTemp', fmt(weather.base.temperature.value) + '<span class="gsb-launcher-weather__unit">°F</span>');
     }
 
     // Conditions table inside chat
@@ -1126,7 +1227,7 @@ import { JH_KNOWLEDGE, topicLink } from './knowledge/jackson-hole.js';
 
   // ============= INIT =============
   detectVoiceSupport();
-  fetchAll();
+  fetchAll().then(applyOpenMeteoWeather);
 
 
   // ============= PUBLIC API =============
@@ -1135,7 +1236,7 @@ import { JH_KNOWLEDGE, topicLink } from './knowledge/jackson-hole.js';
     openChat: openChat,
     closeChat: closeChat,
     setVariant: setVariant,
-    refreshData: fetchAll,
+    refreshData: function() { return fetchAll().then(applyOpenMeteoWeather); },
     handleQuery: function(q) { handleUserMessage(q); }
   };
 
