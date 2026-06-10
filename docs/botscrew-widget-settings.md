@@ -151,37 +151,28 @@ To support Option B, BotScrew must:
 If BotScrew cannot persist the extension yet, the native tab still works fully;
 the GSB-only features simply fall back to dashboard `DEFAULTS`.
 
-## Wiring (drop-in usage)
+## Producing & consuming this contract
 
-The component is controlled; BotScrew composes it with the API client
-([`src/botscrew/botscrewApi.js`](../src/botscrew/botscrewApi.js)) inside their
-authenticated app. `baseUrl`, `botId`, `botType` come from their runtime context.
+The appearance dashboard (`index.html` + `src/dashboard/dashboard.js`) is the
+**producer**: on every change it maps its internal `state` to this shape via
+[`src/shared/widget-config.js`](../src/shared/widget-config.js)
+(`toBotscrewWidgetSettings`) and writes it to `localStorage["gsb_widget_settings"]`.
+`fromBotscrewWidgetSettings` is the inverse (hydrate dashboard state from a stored
+`widgetSettings`), so a round-trip is lossless.
 
-```tsx
-import { useEffect, useMemo, useState } from 'react';
-import AppearanceTab from './AppearanceTab';
-import { createBotscrewApi, debounce } from './botscrewApi';
+To drop into BotScrew, an engineer:
 
-function WidgetAppearance({ baseUrl, botId, botType }) {
-  const api = useMemo(() => createBotscrewApi({ baseUrl, botId }), [baseUrl, botId]);
-  const [settings, setSettings] = useState(null);
-  useEffect(() => { api.loadWidgetSettings().then(setSettings); }, [api]);
-  const save = useMemo(() => debounce((s) => api.saveWidgetSettings(s), 500), [api]);
-  if (!settings) return null;
-  return (
-    <AppearanceTab
-      settings={settings}
-      botType={botType}
-      onChange={(next) => { setSettings(next); save(next); }}     // PATCH /bot/{id}/widget
-      onUploadLogo={(file) => api.uploadWidgetLogo(file).then((r) => r.url)} // POST /file/widgetLogo
-    />
-  );
-}
-```
+1. Loads `widgetSettings` with `GET /bot/{botId}/widget` (and
+   `…/widget/default-translations`) and renders the Appearance tab from it.
+2. On edit, saves the whole object with `PATCH /bot/{botId}/widget`
+   (debounced, `credentials: "include"`).
+3. Uploads logos with `POST /file/widgetLogo` (multipart `file`, ≤ 2 MB).
+
+The 8 native fields map 1:1; the `gsbAppearance` block is persisted as opaque JSON.
 
 > ⚠️ **Unconfirmed:** the exact field on the `POST /file/widgetLogo` response that
-> holds the uploaded image URL (assumed `r.url`) — confirm against BotScrew's API.
-> Everything else (endpoints, methods, payloads) is verified from their bundle.
+> holds the uploaded image URL — confirm against BotScrew's API. Everything else
+> (endpoints, methods, payloads) is verified from their bundle.
 
 ## Local testing
 
