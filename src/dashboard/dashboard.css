@@ -369,18 +369,18 @@
   justify-content: space-between;
   gap: 20px;
   /* Sticky to the top (just below the 64px topbar) so Save/Revert stay reachable
-     while scrolling the long form. Full-bleeds over the card's padding; z-index
-     sits above the fixed chat preview so the actions stay clickable. */
+     while scrolling the long form. Constrained to the controls area (left of the
+     docked chat preview) and capped in width so the actions never overlap the
+     preview; z-index keeps them clickable above it. */
   position: sticky;
   top: 64px;
   z-index: 85;
-  margin: -28px -32px 0;
-  padding: 16px 32px;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  max-width: 600px;
+  margin: -28px 0 0 -32px;
+  padding: 14px 24px 14px 32px;
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  border-radius: var(--radius-lg) 0 0 0;
 }
 
 .content-card__title {
