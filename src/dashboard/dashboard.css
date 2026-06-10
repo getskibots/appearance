@@ -21,6 +21,11 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  position: sticky;            /* stays put while content scrolls */
+  top: 0;
+  height: 100vh;
+  align-self: start;
+  overflow-y: auto;
 }
 
 .sidebar__brand {
@@ -314,33 +319,33 @@
 /* Sub-tab rail (Appearance / Contact Capture / etc.) */
 .subtabs {
   background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  padding: 8px;
-  position: sticky;
-  top: 88px;
+  overflow: hidden;
 }
 
 .subtabs__item {
   display: block;
-  padding: 12px 16px;
+  padding: 14px 16px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--ink-soft);
-  border-radius: 6px;
+  color: var(--ink);
   cursor: pointer;
   text-decoration: none;
-  margin-bottom: 2px;
+  border-bottom: 1px solid #eef1f5;
 }
 
-.subtabs__item:hover { background: var(--accent-soft); color: var(--accent); }
+.subtabs__item:last-child { border-bottom: 0; }
+
+.subtabs__item:hover { background: #f8fafd; }
 
 .subtabs__item[data-active="true"] {
-  background: var(--accent);
+  background: #2a7dc0;          /* Omni botscrew-500 — solid */
   color: #fff;
 }
 
-.subtabs__item[data-active="true"]:hover { background: var(--accent); color: #fff; }
+.subtabs__item[data-active="true"]:hover { background: #2a7dc0; color: #fff; }
 
 /* The main content card holding controls + preview */
 .content-card {

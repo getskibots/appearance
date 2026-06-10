@@ -56,6 +56,11 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    position: sticky;            /* stays put while content scrolls */
+    top: 0;
+    height: 100vh;
+    align-self: start;
+    overflow-y: auto;
   }
   .nav-logo {
     display: flex;
@@ -204,29 +209,32 @@
   .subnav {
     background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px;
+    border-radius: 10px;
+    overflow: hidden;
     box-shadow: var(--shadow);
-    position: sticky;
-    top: 24px;
   }
   .subnav-item {
     display: block;
-    padding: 10px 14px;
-    border-radius: 6px;
+    padding: 14px 16px;
     color: var(--text);
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: 500;
     text-decoration: none;
-    margin-bottom: 2px;
     cursor: pointer;
+    border-bottom: 1px solid #eef1f5;
+  }
+  .subnav-item:last-child {
+    border-bottom: 0;
   }
   .subnav-item:hover {
-    background: var(--bg);
+    background: #f8fafd;
   }
   .subnav-item.active {
-    background: var(--tab-active-bg);
-    color: var(--tab-active-text);
-    font-weight: 500;
+    background: #2a7dc0;          /* Omni botscrew-500 — solid */
+    color: #fff;
+  }
+  .subnav-item.active:hover {
+    background: #2a7dc0;
   }
   .subnav-item.new {
     position: relative;
@@ -1369,6 +1377,7 @@
 
   /* ===================== TOP ACTION BAR (SAVE) ===================== */
   .save-bar {
+    display: none;              /* removed per design — not needed on this page */
     position: sticky;
     top: 0;
     z-index: 50;
@@ -1376,7 +1385,6 @@
     border-bottom: 1px solid var(--border);
     padding: 12px 32px;
     margin: -24px -32px 20px;
-    display: flex;
     align-items: center;
     justify-content: space-between;
     box-shadow: 0 2px 8px rgba(20,30,50,.04);
