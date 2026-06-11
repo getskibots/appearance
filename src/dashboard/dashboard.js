@@ -670,8 +670,7 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
       typography: ['typography'],
       panel: ['layoutVariant','blurredBackground'],
       behavior: ['soundNotifications','popupMessagePreview','askForRating','disableTextInput'],
-      embed: ['embedSearch','embedButton'],
-      greeting: []
+      embed: ['embedSearch','embedButton']
     };
     Object.keys(ACC_CARD_FIELDS).forEach(function(id) {
       var card = document.querySelector('.acc-card[data-acc-id="' + id + '"]');

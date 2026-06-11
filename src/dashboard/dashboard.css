@@ -959,6 +959,21 @@
   border-bottom: 1px solid var(--border);
 }
 .toggle-row--standalone:last-child { border-bottom: 0; }
+/* A standalone toggle row immediately followed by an explanatory note drops its
+   own divider so the note carries the single divider for the group. */
+.toggle-row--has-note { border-bottom: 0; }
+
+/* Subordinate note tied to the toggle row above it (e.g. the preserved
+   greeting-popup settings note under "Show pop-up message preview"). */
+.popup-note {
+  margin: 0;
+  padding: 0 0 12px 0;
+  font-size: 12px;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  border-bottom: 1px solid var(--border);
+}
 
 /* Child row sits indented under its parent toggle. Used for CTA text input
    that sits visually subordinate to the "Need help? CTA" toggle. */
@@ -1849,17 +1864,6 @@
 /* =========================================================================
    GREETING POPUP (existing — preserved)
    ========================================================================= */
-.greeting-stub {
-  margin-top: 28px;
-  padding: 20px;
-  background: var(--surface-2);
-  border: 1px dashed var(--border-strong);
-  border-radius: 6px;
-  font-size: 13px;
-  color: var(--ink-muted);
-  font-style: italic;
-}
-
 /* =========================================================================
    RESPONSIVE — Mobile-friendly dashboard for Android
    Strategy:

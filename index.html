@@ -681,13 +681,14 @@
                 </div>
                 <button type="button" class="toggle" id="toggleSound" role="switch" aria-checked="true"></button>
               </div>
-              <div class="toggle-row toggle-row--standalone">
+              <div class="toggle-row toggle-row--standalone toggle-row--has-note">
                 <div class="toggle-row__main">
                   <div class="toggle-row__title">Show pop-up message preview</div>
                   <div class="toggle-row__desc">Show a preview bubble of the most recent agent message.</div>
                 </div>
                 <button type="button" class="toggle" id="togglePopup" role="switch" aria-checked="false"></button>
               </div>
+              <p class="popup-note">Existing greeting popup settings (popup logo, size, alignment, position, spacing) are preserved as in current production. Detailed UI is omitted in this prototype to keep focus on the redesigned controls.</p>
               <div class="toggle-row toggle-row--standalone">
                 <div class="toggle-row__main">
                   <div class="toggle-row__title">Ask for rating after conversation ends</div>
@@ -890,22 +891,6 @@
                   <span class="embed-snippet__label">Install snippet</span>
                   <span class="embed-snippet__tag">&lt;div</span> <span class="embed-snippet__attr">data-gsb-search-button</span><span class="embed-snippet__tag">&gt;&lt;/div&gt;</span>
                 </div>
-              </div>
-            </section>
-
-            <!-- GREETING POPUP STUB (preserves existing) -->
-            <section class="section acc-card" data-acc-id="greeting">
-              <button type="button" class="acc-head" aria-expanded="false">
-                <span class="acc-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
-                <span class="acc-head__titles">
-                  <span class="acc-head__title">Greeting popup</span>
-                  <span class="acc-head__desc">The teaser bubble that appears beside the launcher</span>
-                </span>
-                <span class="acc-head__dot" aria-hidden="true"></span>
-                <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-              </button>
-              <div class="greeting-stub">
-                Existing greeting popup settings (popup logo, size, alignment, position, spacing) preserved as in current production. Detailed UI omitted in this prototype to keep focus on the redesigned controls.
               </div>
             </section>
 
