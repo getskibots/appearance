@@ -112,8 +112,8 @@
 
 .gsb-launcher {
   position: fixed !important;
-  bottom: 60px !important;
-  right: 24px !important;
+  bottom: var(--gsb-launcher-bottom, 60px) !important;
+  right: var(--gsb-launcher-side, 24px) !important;
   z-index: 90;
   cursor: pointer;
   border: 0;
@@ -1929,6 +1929,15 @@ body[data-variant="full"] .gsb-agent-status-feature {
 .gsb-launcher[data-slide-state="visible"] {
   transform: translateX(0);
   transition: transform 320ms cubic-bezier(0.2, 0.7, 0.3, 1.05);
+}
+
+/* Placement: Align to Left — anchor to the left edge, and slide off to the left */
+.gsb-launcher[data-align="left"] {
+  right: auto !important;
+  left: var(--gsb-launcher-side, 24px) !important;
+}
+.gsb-launcher[data-align="left"][data-slide-state="hidden"] {
+  transform: translateX(calc(-100% - 24px));
 }
 
 /* =========================================================================

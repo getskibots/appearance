@@ -342,6 +342,10 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     // so each remembers its own setting; default ON for both pills so the launcher
     // stays clear of checkout/CTA elements out of the box.
     autoHideOnScroll: { enhanced: true, slidein: true },
+    // Launcher placement: which corner it anchors to + spacing from the screen
+    // edges (px). Maps to BotScrew's greetingMessagePopupSettings.{alignment,
+    // bottomSpacing, sideSpacing}; the greeting popup + open panel inherit it.
+    placement: { align: 'right', bottomSpacing: 32, sideSpacing: 32 },
     statusPillFeatures: { liveAgent: true, weather: true, needHelpCta: true },
     layoutVariant: 'side',
     blurredBackground: true,
@@ -594,6 +598,22 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     canvas.setAttribute('data-variant', state.layoutVariant);
     canvas.setAttribute('data-device', previewDevice);
     launcher.setAttribute('data-icon-style', state.bubbleStyle);
+
+    // Launcher placement — corner + edge spacing (popup + open panel inherit it)
+    var place = state.placement || {};
+    var pAlign = place.align === 'left' ? 'left' : 'right';
+    var pBottom = place.bottomSpacing != null ? place.bottomSpacing : 32;
+    var pSide = place.sideSpacing != null ? place.sideSpacing : 32;
+    launcher.setAttribute('data-align', pAlign);
+    document.documentElement.style.setProperty('--gsb-launcher-bottom', pBottom + 'px');
+    document.documentElement.style.setProperty('--gsb-launcher-side', pSide + 'px');
+    document.querySelectorAll('#placementAlignSegmented button').forEach(function(b) {
+      var active = b.dataset.value === pAlign;
+      b.setAttribute('data-active', String(active));
+      b.setAttribute('aria-checked', String(active));
+    });
+    if (document.activeElement !== $('placementBottom')) $('placementBottom').value = pBottom;
+    if (document.activeElement !== $('placementSide')) $('placementSide').value = pSide;
 
     var isPillStyle = (state.bubbleStyle === 'enhanced' || state.bubbleStyle === 'slidein');
     launcher.setAttribute('data-show-weather', state.statusPillFeatures.weather && isPillStyle ? 'true' : 'false');
@@ -977,6 +997,26 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
 
   $('removeCustomIconBtn').addEventListener('click', function() {
     state.customIconUrl = null;
+    render();
+  });
+
+  // Placement — align (corner) + bottom/side spacing (px, clamped to BotScrew's 24–300)
+  document.querySelectorAll('#placementAlignSegmented button').forEach(function(b) {
+    b.addEventListener('click', function() {
+      state.placement.align = b.dataset.value;
+      render();
+    });
+  });
+  $('placementBottom').addEventListener('input', function(e) {
+    var v = parseInt(e.target.value, 10);
+    if (isNaN(v)) return;
+    state.placement.bottomSpacing = Math.max(24, Math.min(300, v));
+    render();
+  });
+  $('placementSide').addEventListener('input', function(e) {
+    var v = parseInt(e.target.value, 10);
+    if (isNaN(v)) return;
+    state.placement.sideSpacing = Math.max(24, Math.min(300, v));
     render();
   });
 

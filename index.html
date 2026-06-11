@@ -504,6 +504,34 @@
                 </div>
               </div>
 
+              <!-- Placement: corner + edge spacing for the launcher (popup + open panel inherit) -->
+              <div class="field">
+                <label class="field__label">Placement</label>
+                <p class="field__hint" style="margin-top:0;margin-bottom:12px">Which corner the launcher anchors to, and how far it sits from the screen edges. The greeting popup and open chat inherit this.</p>
+                <div style="max-width:280px">
+                  <div class="segmented" id="placementAlignSegmented" role="radiogroup" aria-label="Align launcher to">
+                    <button type="button" data-value="left" data-active="false" role="radio" aria-checked="false">Left</button>
+                    <button type="button" data-value="right" data-active="true" role="radio" aria-checked="true">Right</button>
+                  </div>
+                </div>
+                <div style="display:flex;gap:24px;margin-top:14px;flex-wrap:wrap">
+                  <div>
+                    <label class="field__label" for="placementBottom" style="font-weight:400;font-size:13px;color:var(--ink-soft)">Bottom spacing</label>
+                    <div class="max-height-row">
+                      <input class="input" type="number" id="placementBottom" min="24" max="300" step="1" value="32" style="width:80px" />
+                      <span style="color:var(--ink-muted);font-size:13px">px</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="field__label" for="placementSide" style="font-weight:400;font-size:13px;color:var(--ink-soft)">Side spacing</label>
+                    <div class="max-height-row">
+                      <input class="input" type="number" id="placementSide" min="24" max="300" step="1" value="32" style="width:80px" />
+                      <span style="color:var(--ink-muted);font-size:13px">px</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div class="field">
                 <label class="field__label">Status pill features</label>
                 <div class="toggle-group" id="pillFeaturesGroup">

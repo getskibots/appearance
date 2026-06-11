@@ -18,15 +18,17 @@
 /** Default language key BotScrew uses (their default config is "English"). */
 export const DEFAULT_LANG = 'English';
 
-/** GreetingMessagePopupSettings defaults — BotScrew exposes these, our dashboard
- *  does not yet, so we emit sensible defaults (documented as not-yet-exposed). */
+/** GreetingMessagePopupSettings. alignment + bottom/side spacing are driven by the
+ *  dashboard's launcher Placement control (state.placement); popupLogoUrl/Size are
+ *  not yet exposed in our UI, so we emit sensible defaults for those. */
 function greetingPopupDefaults(state) {
+  var p = state.placement || {};
   return {
     popupLogoUrl: state.logoUrl || null,
-    popupLogoSize: 64,     // BotScrew valid range 40–100 px
-    alignment: 'Right',    // 'Left' | 'Right'
-    bottomSpacing: 32,     // BotScrew valid range 24–300 px
-    sideSpacing: 32,       // BotScrew valid range 24–300 px
+    popupLogoSize: 64,     // BotScrew valid range 40–100 px (not yet exposed in our UI)
+    alignment: p.align === 'left' ? 'Left' : 'Right',          // ⇄ state.placement.align
+    bottomSpacing: p.bottomSpacing != null ? p.bottomSpacing : 32, // ⇄ state.placement.bottomSpacing (24–300)
+    sideSpacing: p.sideSpacing != null ? p.sideSpacing : 32,       // ⇄ state.placement.sideSpacing (24–300)
   };
 }
 
@@ -111,6 +113,11 @@ export function fromBotscrewWidgetSettings(settings, opts) {
     disableTextInput: settings.isComposerInputEnabled === undefined
       ? undefined
       : !settings.isComposerInputEnabled,
+    placement: lc.greetingMessagePopupSettings ? {
+      align: lc.greetingMessagePopupSettings.alignment === 'Left' ? 'left' : 'right',
+      bottomSpacing: lc.greetingMessagePopupSettings.bottomSpacing,
+      sideSpacing: lc.greetingMessagePopupSettings.sideSpacing,
+    } : undefined,
   };
   // Layer the extension fields back in (snowfall, typography, etc.).
   for (var k in ext) {

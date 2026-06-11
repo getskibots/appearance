@@ -111,6 +111,9 @@ interface WidgetSettings {
 | `popupMessagePreview` | `…​.doShowPopupMessagePreview` | reused for pop-up preview AND greeting popup |
 | `askForRating` | `…​.doAskForRating` | **hidden when `botType === "AI_AGENT"`** |
 | `disableTextInput` | `isComposerInputEnabled` | **inverted, global** |
+| `placement.align` | `greetingMessagePopupSettings.alignment` | launcher Placement control; `'left'`⇄`'Left'`, `'right'`⇄`'Right'` |
+| `placement.bottomSpacing` | `greetingMessagePopupSettings.bottomSpacing` | px, 24–300 |
+| `placement.sideSpacing` | `greetingMessagePopupSettings.sideSpacing` | px, 24–300 |
 
 ## `gsbAppearance` extension — unmapped field reference
 
