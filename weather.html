@@ -1479,6 +1479,21 @@
     text-align: left;
     font-family: inherit;
     transition: all .15s ease;
+    position: relative;
+  }
+  /* ✓ Saved badge — marks which source is the committed one */
+  .src-tab.saved::after {
+    content: "✓ Saved";
+    position: absolute;
+    top: 7px;
+    right: 8px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: var(--success);
+    background: var(--success-bg);
+    padding: 1px 6px;
+    border-radius: 999px;
   }
   .src-tab:hover {
     border-color: var(--border-strong);
@@ -2569,7 +2584,7 @@
                   <div style="margin-top: 12px;">
                     <label class="label">Endpoint URL <span class="req">required</span></label>
                     <div style="display: flex; gap: 8px;">
-                      <input class="input mono" value="https://api.jacksonhole.com/weather/current" style="flex: 1;" placeholder="https://your-resort.com/api/weather">
+                      <input class="input mono" id="direct-endpoint-url" value="https://api.jacksonhole.com/weather/current" style="flex: 1;" placeholder="https://your-resort.com/api/weather">
                       <button class="btn btn-primary" style="white-space: nowrap;">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
                         Fetch sample
@@ -3053,13 +3068,8 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
       }
 
       if (sourceInfoEl) sourceInfoEl.innerHTML = cfg.sourceInfo;
-      if (src === 'direct') {
-        // Resort Direct is still a mock — show its placeholder pill
-        if (statusPill) { statusPill.className = cfg.pillClass; statusPill.textContent = cfg.pillText; }
-      } else {
-        // Open-Meteo — reflect real saved / connection state
-        refreshSaveStatus();
-      }
+      // Status pill + saved line are source-aware — let refreshSaveStatus render them.
+      refreshSaveStatus();
     });
   });
 
@@ -3818,6 +3828,24 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
   let lastSavedAt = null;
   let savedSnapshot = null;
 
+  // ----- Weather source ('om' = Open-Meteo, 'direct' = Resort Direct) -----
+  let savedSource = 'om';
+  let savedDirectUrl = '';
+  const DIRECT_URL_ID = 'direct-endpoint-url';
+  const activeSource   = () => document.querySelector('.src-tab.active')?.dataset.src || 'om';
+  const sourceLabel    = (s) => s === 'direct' ? 'Resort Direct' : 'Open-Meteo';
+  const directUrlValue = () => (document.getElementById(DIRECT_URL_ID)?.value || '').trim();
+  // Does the committed snapshot represent a usable config for its saved source?
+  function hasSavedConfig() {
+    return savedSource === 'direct' ? !!savedDirectUrl : hasConfiguredCoords(savedSnapshot);
+  }
+  // Mark which source tab is the committed one (✓ Saved badge).
+  function markSavedSourceTab() {
+    document.querySelectorAll('.src-tab').forEach(t => {
+      t.classList.toggle('saved', hasSavedConfig() && t.dataset.src === savedSource);
+    });
+  }
+
   function readForm() {
     const out = {};
     TRACKED_FIELDS.forEach(id => {
@@ -3834,6 +3862,8 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
   }
   function isDirty() {
     if (!savedSnapshot) return false;
+    if (activeSource() !== savedSource) return true;             // switched source
+    if (activeSource() === 'direct') return directUrlValue() !== (savedDirectUrl || '');
     const cur = readForm();
     return TRACKED_FIELDS.some(id => String(cur[id]).trim() !== String(savedSnapshot[id]).trim());
   }
@@ -3893,26 +3923,30 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
 
   function refreshSaveStatus() {
     const dirty = isDirty();
-    const configured = hasConfiguredCoords(savedSnapshot);
+    const configured = hasSavedConfig();
 
     // Contextual save actions — only visible (via .dirty) while there are edits
     saveBar.classList.toggle('dirty', dirty);
     saveBtn.disabled = !dirty;
     discardBtn.disabled = !dirty;
     saveStatusEl.textContent = dirty
-      ? (configured ? 'Unsaved changes' : 'Set coordinates, then save')
+      ? (configured ? 'Unsaved changes' : `Set up ${sourceLabel(activeSource())}, then save`)
       : '';
 
-    // ----- Status pill: connection OR unsaved-preview state -----
+    // ----- Status pill: connection / saved / unsaved-preview state -----
     const pillEl = document.getElementById('card-status-pill');
     if (pillEl) {
       pillEl.classList.remove('idle', 'loading', 'warn', 'danger', 'info');
       if (dirty) {
         pillEl.classList.add('warn');
-        pillEl.textContent = livePreviewOn ? 'Preview · unsaved' : 'Unsaved changes';
+        pillEl.textContent = (activeSource() === 'om' && livePreviewOn) ? 'Preview · unsaved' : 'Unsaved changes';
       } else if (!configured) {
         pillEl.classList.add('idle');
         pillEl.textContent = 'Not connected';
+      } else if (savedSource === 'direct') {
+        // Resort Direct: live fetch not wired yet — show a committed (not live) state
+        pillEl.classList.add('info');
+        pillEl.textContent = 'Saved';
       } else if (connectionState === 'loading') {
         pillEl.classList.add('loading');
         pillEl.textContent = 'Connecting…';
@@ -3927,14 +3961,18 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
       }
     }
 
-    // ----- Saved-location line: "Saved: <place> · saved Nm ago" when clean -----
+    // ----- Saved line: source-first, e.g. "Open-Meteo · Saved: Teton Village · 2m ago" -----
     const savedLineEl = document.getElementById('weather-saved-line');
     if (savedLineEl) {
       if (configured && !dirty) {
-        const place = window.__resortDisplayName
-          || `${savedSnapshot['base-lat']}, ${savedSnapshot['base-lng']}`;
         const when = lastSavedAt ? ` · saved ${fmtTimeAgo(lastSavedAt)}` : '';
-        savedLineEl.textContent = `Saved: ${place}${when}`;
+        if (savedSource === 'om') {
+          const place = window.__resortDisplayName
+            || `${savedSnapshot['base-lat']}, ${savedSnapshot['base-lng']}`;
+          savedLineEl.textContent = `Open-Meteo · ${place}${when}`;
+        } else {
+          savedLineEl.textContent = `Resort Direct${when}`;
+        }
         savedLineEl.style.display = '';
       } else {
         savedLineEl.style.display = 'none';
@@ -3953,6 +3991,10 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
       if (parsed.values) {
         writeForm(parsed.values);
         savedSnapshot = { ...parsed.values };
+        savedSource = parsed.source === 'direct' ? 'direct' : 'om';
+        savedDirectUrl = parsed.directUrl || '';
+        const urlEl = document.getElementById(DIRECT_URL_ID);
+        if (urlEl && savedDirectUrl) urlEl.value = savedDirectUrl;
         if (parsed.savedAt) lastSavedAt = parsed.savedAt;
       } else {
         savedSnapshot = { ...EMPTY_FORM };
@@ -3964,40 +4006,60 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
   }
 
   function saveNow() {
+    const source = activeSource();
     const values = readForm();
 
-    // Gate: don't save an empty form (no base coords means no real config)
-    if (!hasConfiguredCoords(values)) {
+    // Source-specific validation: Open-Meteo needs base coords; Resort Direct needs a URL.
+    if (source === 'om' && !hasConfiguredCoords(values)) {
       saveStatusEl.textContent = 'Base latitude and longitude are required to save';
       saveBar.classList.add('dirty');
       return;
     }
+    if (source === 'direct' && !directUrlValue()) {
+      saveStatusEl.textContent = 'An endpoint URL is required to save';
+      saveBar.classList.add('dirty');
+      return;
+    }
 
-    const payload = { values, savedAt: Date.now() };
+    const payload = { source, values, directUrl: directUrlValue(), savedAt: Date.now() };
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     } catch (e) {
       console.warn('localStorage write failed:', e);
     }
     savedSnapshot = { ...values };
+    savedSource = source;
+    savedDirectUrl = payload.directUrl;
     lastSavedAt = payload.savedAt;
     saveBar.classList.add('saved-flash');
     setTimeout(() => saveBar.classList.remove('saved-flash'), 1800);
+    markSavedSourceTab();
 
-    // Transition to loading state (drives pill, empty state, save status text)
-    setConnectionState('loading');
-
-    // Trigger live data refresh — doRefresh will set state to 'connected' or 'error'
-    doRefresh();
+    if (source === 'om') {
+      // Transition to loading; doRefresh resolves to 'connected' or 'error'
+      setConnectionState('loading');
+      doRefresh();
+    } else {
+      // Resort Direct: live fetch not wired yet — just reflect the saved state
+      refreshSaveStatus();
+      doRefresh();
+    }
   }
 
   function discardNow() {
     if (!savedSnapshot) return;
     writeForm(savedSnapshot);
-    refreshSaveStatus();
-    // Re-fetch the saved coordinates so the readings + saved-location line reflect
-    // the committed config again (not a discarded live-preview location).
-    if (hasConfiguredCoords(savedSnapshot)) doRefresh();
+    // Restore the saved source: flip back to its tab + its endpoint URL.
+    const urlEl = document.getElementById(DIRECT_URL_ID);
+    if (urlEl) urlEl.value = savedDirectUrl || urlEl.value;
+    const savedTab = document.querySelector(`.src-tab[data-src="${savedSource}"]`);
+    if (savedTab && !savedTab.classList.contains('active')) {
+      savedTab.click();   // switch handler re-renders panels + status
+    } else {
+      refreshSaveStatus();
+    }
+    // Re-fetch the saved Open-Meteo coords so readings + status reflect the commit.
+    if (savedSource === 'om' && hasConfiguredCoords(savedSnapshot)) doRefresh();
   }
 
   // -------------------------------------------------------------------
@@ -4254,24 +4316,38 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
   // Run health check after the rest of boot finishes (don't block load)
   setTimeout(checkStorageHealth, 100);
 
-  // Initial load: read storage, populate form, set status
-  loadFromStorage();
+  // Track unsaved edits to the Resort Direct endpoint URL
+  const directUrlEl = document.getElementById(DIRECT_URL_ID);
+  if (directUrlEl) directUrlEl.addEventListener('input', refreshSaveStatus);
 
-  if (hasConfiguredCoords(savedSnapshot)) {
-    // Resort is already configured — show loading state, then fetch
-    setConnectionState('loading');
-    setTimeout(doRefresh, 600);
+  // Initial load: read storage, populate form, restore the saved source, set status
+  loadFromStorage();
+  markSavedSourceTab();
+
+  // Restore the saved source tab (Open-Meteo is already active by default)
+  if (savedSource === 'direct') {
+    const dt = document.querySelector('.src-tab[data-src="direct"]');
+    if (dt && !dt.classList.contains('active')) dt.click();
+  }
+
+  if (hasSavedConfig()) {
+    if (savedSource === 'om') {
+      setConnectionState('loading');
+      setTimeout(doRefresh, 600);
+    } else {
+      refreshSaveStatus();   // Resort Direct: reflect the saved (not-yet-live) state
+    }
   } else {
-    // Fresh dashboard — stay in idle/empty state
     setConnectionState('idle');
   }
 
-  // Re-run on source tab switch — but only if configured
+  // On source switch: re-render status; re-fetch only when landing back on a clean saved Open-Meteo config
   document.querySelectorAll('.src-tab').forEach(t => {
     t.addEventListener('click', () => {
-      if (hasConfiguredCoords(savedSnapshot)) {
-        setTimeout(doRefresh, 200);
-      }
+      setTimeout(() => {
+        refreshSaveStatus();
+        if (activeSource() === 'om' && !isDirty() && hasConfiguredCoords(savedSnapshot)) doRefresh();
+      }, 200);
     });
   });
 
