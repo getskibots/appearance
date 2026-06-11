@@ -1162,14 +1162,24 @@ import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
 
   // Variant pills binding removed — dashboard's Panel layout radio cards drive setVariant via window.gsbChatPreview API
 
+  // ChatGPT-style action swap: Voice Mode shows when the input is empty, Send (↗)
+  // once there's text. Driven by data-has-text on the composer row (see CSS).
+  function syncComposerActions() {
+    var inp = $('gsbComposerInput');
+    var row = $('gsbComposerRow');
+    if (inp && row) row.setAttribute('data-has-text', inp.value.trim() ? 'true' : 'false');
+  }
+
   // Composer
   var composerInputEl = $('gsbComposerInput');
   if (composerInputEl) {
+    composerInputEl.addEventListener('input', syncComposerActions);
     composerInputEl.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         handleUserMessage(e.target.value);
         e.target.value = '';
+        syncComposerActions();
       }
     });
 
@@ -1203,7 +1213,9 @@ import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
     var input = $('gsbComposerInput');
     handleUserMessage(input.value);
     input.value = '';
+    syncComposerActions();
   });
+  syncComposerActions();
 
   // Chip clicks
   document.querySelectorAll('.gsb-chip').forEach(function(chip) {

@@ -1163,15 +1163,22 @@
 
                   <!-- COMPOSER -->
                   <div class="gsb-composer">
-                    <div class="gsb-composer-row" id="gsbComposerRow">
-                      <div class="gsb-composer-voice-group">
+                    <div class="gsb-composer-row" id="gsbComposerRow" data-has-text="false">
+                      <input type="text" id="gsbComposerInput" placeholder="Ask me anything about your trip" />
+                      <!-- Backwards-compat invisible alias for dashboard's render code that updates composerInput placeholder -->
+                      <input type="hidden" id="composerInput" />
+                      <div class="gsb-composer-listening-bars" aria-hidden="true">
+                        <span></span><span></span><span></span><span></span>
+                      </div>
+                      <div class="gsb-composer-actions">
                         <button class="gsb-composer-mic" id="gsbComposerMic" data-listening="false" data-supported="true" aria-label="Tap to dictate" title="Tap to dictate">
                           <svg viewBox="0 0 24 24" fill="none">
                             <rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/>
                             <path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
                           </svg>
                         </button>
-                        <button class="gsb-composer-voice-mode" id="gsbVoiceModeBtn" data-supported="true" aria-label="Start hands-free voice mode">
+                        <!-- Right action swaps: Voice Mode when the input is empty, Send (diagonal arrow) once you type -->
+                        <button class="gsb-composer-voice-mode" id="gsbVoiceModeBtn" data-supported="true" aria-label="Start hands-free voice mode" title="Voice mode">
                           <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
                             <rect x="1.5" y="6.5" width="1.6" height="3" rx="0.8" fill="currentColor"/>
                             <rect x="4" y="4" width="1.6" height="8" rx="0.8" fill="currentColor"/>
@@ -1179,20 +1186,13 @@
                             <rect x="9" y="4" width="1.6" height="8" rx="0.8" fill="currentColor"/>
                             <rect x="11.5" y="6.5" width="1.6" height="3" rx="0.8" fill="currentColor"/>
                           </svg>
-                          Voice
+                        </button>
+                        <button class="gsb-composer-send" id="gsbComposerSend" aria-label="Send">
+                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
                         </button>
                       </div>
-                      <input type="text" id="gsbComposerInput" placeholder="Ask me anything about your trip" />
-                      <!-- Backwards-compat invisible alias for dashboard's render code that updates composerInput placeholder -->
-                      <input type="hidden" id="composerInput" />
-                      <div class="gsb-composer-listening-bars" aria-hidden="true">
-                        <span></span><span></span><span></span><span></span>
-                      </div>
-                      <button class="gsb-composer-send" id="gsbComposerSend" aria-label="Send">
-                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                          <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                      </button>
                     </div>
                   </div>
 

@@ -1215,15 +1215,13 @@ body.gsb-conversation-started .gsb-chips { display: none; }
    - Full voice mode: hands-free overlay (big mic, auto-listen, auto-speak)
    ========================================================================= */
 
-/* MIC BUTTON in composer (left of input) */
+/* Composer row: input fills the left; the action cluster sits on the right. */
 .gsb-composer-row {
-  padding: 6px 6px 6px 6px;  /* tighten left padding for the mic button */
+  padding: 6px 6px 6px 18px;
 }
 
-/* Container that groups the mic + voice-mode buttons together on the left
-   side of the composer. Both are voice-input affordances, so they belong
-   as a visual unit. */
-.gsb-composer-voice-group {
+/* Right-side action cluster — mic (always) + the swapping Voice Mode / Send button. */
+.gsb-composer-actions {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -1365,32 +1363,32 @@ body.gsb-conversation-started .gsb-chips { display: none; }
   50%      { box-shadow: 0 0 0 6px rgba(var(--brand-rgb), 0); }
 }
 
-/* "VOICE MODE" trigger — sits next to the mic in the left-side voice group. */
+/* VOICE MODE trigger — the right-side action when the input is EMPTY. Same
+   brand-filled circle as the Send button so the two swap seamlessly (icon only). */
 .gsb-composer-voice-mode {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 5px 10px 5px 7px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--brand);
-  background: rgba(var(--brand-rgb), 0.08);
-  border: 1px solid rgba(var(--brand-rgb), 0.25);
-  border-radius: 999px;
-  cursor: pointer;
-  flex: none;
-  transition: background 140ms, color 140ms, border-color 140ms;
-}
-
-.gsb-composer-voice-mode:hover {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   background: var(--brand);
   color: #fff;
-  border-color: var(--brand);
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  cursor: pointer;
+  transition: background 160ms ease, transform 100ms ease;
 }
 
-.gsb-composer-voice-mode svg { width: 11px; height: 11px; }
+.gsb-composer-voice-mode:hover { background: var(--brand-deep); }
+.gsb-composer-voice-mode:active { transform: scale(0.94); }
+
+.gsb-composer-voice-mode svg { width: 15px; height: 15px; }
+
+/* ChatGPT-style swap: Voice Mode shows when empty; Send (diagonal arrow) shows
+   once there's text in the input (driven by data-has-text on the composer row). */
+.gsb-composer-row:not([data-has-text="true"]) .gsb-composer-send { display: none; }
+.gsb-composer-row[data-has-text="true"] .gsb-composer-voice-mode { display: none; }
 
 /* Subtle waveform breathing animation on idle so the icon reads clearly as "voice" */
 .gsb-composer-voice-mode svg rect:nth-child(1),
