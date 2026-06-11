@@ -233,6 +233,21 @@ import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
     return value;
   }
 
+  // Webcam "Updated …" stamp. The hero cam refreshes every 30s, so each successful
+  // load resets this to "just now"; if the feed stalls/goes offline the label keeps
+  // ticking ("2m ago") off the last good load, per the spec (label stays visible).
+  var camUpdatedAt = null;
+  function relTime(ms) {
+    var s = Math.round((Date.now() - ms) / 1000);
+    if (s < 45) return 'just now';
+    var m = Math.round(s / 60);
+    if (m < 60) return m + 'm ago';
+    return Math.round(m / 60) + 'h ago';
+  }
+  function updateCamStamp() {
+    if (camUpdatedAt) safeText('gsbHeroUpdated', 'Updated ' + relTime(camUpdatedAt));
+  }
+
   function renderAllData() {
     if (!data.snow) return;
 
@@ -318,6 +333,11 @@ import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
           var img = document.createElement('img');
           img.className = 'gsb-webcam-img';
           img.alt = cam.caption || 'Webcam';
+          img.onload = function() { camUpdatedAt = Date.now(); updateCamStamp(); };
+          img.onerror = function() {
+            if (camUpdatedAt) updateCamStamp();
+            else safeText('gsbHeroUpdated', 'Feed offline');
+          };
           img.src = cam.url;
           img.dataset.src = cam.url;
           heroEl.insertBefore(img, heroEl.firstChild);
@@ -326,6 +346,8 @@ import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
           setInterval(function() {
             img.src = img.dataset.src + '?t=' + Date.now();
           }, 30000);
+          // Keep the "Updated …" stamp ticking even if the feed stalls between loads
+          setInterval(updateCamStamp, 60000);
 
           // Use the same image for the page hero background (only exists in master demo)
           var siteHeroEl = $('siteHero');
