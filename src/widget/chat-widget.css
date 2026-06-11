@@ -1611,7 +1611,7 @@ body.gsb-conversation-started .gsb-chips { display: none; }
 /* Live transcript area */
 .gsb-voice-mode__transcript {
   font-family: var(--serif);
-  font-size: 22px;
+  font-size: calc(22px * var(--gsb-text-scale, 1));
   font-weight: 500;
   line-height: 1.4;
   color: #fff;
@@ -1628,14 +1628,14 @@ body.gsb-conversation-started .gsb-chips { display: none; }
 
 .gsb-voice-mode__transcript--user {
   color: rgba(255,255,255,0.7);
-  font-size: 18px;
+  font-size: calc(18px * var(--gsb-text-scale, 1));
   font-style: italic;
 }
 
 .gsb-voice-mode__transcript:empty::after {
   content: "Speak when ready…";
   color: rgba(255,255,255,0.3);
-  font-size: 16px;
+  font-size: calc(16px * var(--gsb-text-scale, 1));
   font-style: italic;
   font-family: var(--gsb-body-font, 'Inter'), sans-serif;
 }
@@ -1740,7 +1740,7 @@ body.gsb-conversation-started .gsb-chips { display: none; }
 
 @media (max-width: 720px) {
   .gsb-voice-mode__orb { width: 140px; height: 140px; }
-  .gsb-voice-mode__transcript { font-size: 18px; }
+  .gsb-voice-mode__transcript { font-size: calc(18px * var(--gsb-text-scale, 1)); }
   .gsb-voice-mode__stage { gap: 24px; }
 
   /* COMPOSER — compact everything so the send button always fits on phones */
