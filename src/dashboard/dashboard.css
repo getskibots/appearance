@@ -540,7 +540,7 @@
 /* First body element sits below the header with breathing room (the old
    section__sub used to supply this gap before it was removed as redundant). */
 .section.acc-card[data-open="true"] > .acc-head + * { padding-top: 18px; }
-.section.acc-card[data-open="true"] { padding-bottom: 8px; }
+.section.acc-card[data-open="true"] { padding-bottom: 24px; }
 
 /* In-card two-column grid: splits a card's controls into two labelled columns
    so they fill the card width instead of one narrow left-hand ribbon. Each
