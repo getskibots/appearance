@@ -45,23 +45,34 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
 - **4.1 Chat header** — 🟡 logo/name/welcome ✅, webcam hero with fallback ✅;
   per-cam location label + "last updated" partial.
 - **4.2 Live conditions block** — ✅ ~70%. Card built; base/summit temp + wind
-  **live via Open-Meteo**; snow figures from feed/fallback. Open-endpoint mapper
-  exists. Open: an Appearance "turn off conditions" toggle, and visibility/label cells.
+  **live via Open-Meteo**; the snow figures (24h / season total / depth) are
+  **leftover resort-feed cells with no Open-Meteo source** (static fallback) and are
+  slated to be retired. A **Winter/Summer mode toggle** is designed (winter = base/summit
+  temp, wind, conditions, 5-day snowfall, snow level; summer = temp, feels-like,
+  conditions, wind, UV, precip) but **not yet built** — paused while the Open-Meteo
+  integration is reworked into the Weather page. Also open: a "turn off conditions"
+  toggle and the Season Update banner's left-column agent-status pill was removed.
 
 ### 5 · Appearance tab — ✅ ~95% (the heaviest pre-build)
-- **5.1 Logo & branding** ✅ — logo upload, height, corner radius (launcher + panel),
-  depth effect, header color, widget name, placeholder, welcome message.
-  *Delta:* spec wants JPEG **accepted**; we currently reject it (one-line messaging change).
+- **5.1 Identity & branding** ✅ — logo upload (JPEG now **accepted with a warning**,
+  no longer rejected), height, corner radius (launcher + panel), depth effect, header
+  color, widget name, placeholder, welcome message, plus the **Recent update** control
+  that feeds the chat's Season Update banner (Write-it-myself / Automatic source toggle;
+  the Automatic "data source" picker is a wired-but-not-live placeholder). Laid out as a
+  two-column card.
 - **5.2 Launcher bubble** ✅ — all styles (simple/status pill/slide-in/custom), CTA
   text (≤24 glyphs), status-pill feature toggles, Save + live preview.
 - **5.3 Configurable icon style** 🟡 — styles done; business-hours auto live-agent not done.
-- **5.4 Snowfall** ✅ — realistic/crystalline/storm, intensity, show-on-mobile,
-  pause-when-idle, reduced-motion lock.
+- **5.4 Snowfall** ⬜ **parked** — the full effect (realistic/crystalline/storm,
+  intensity, show-on-mobile, pause-when-idle, reduced-motion lock) was removed from the
+  active build and preserved verbatim under `_parked/snowfall/` for later reintegration.
 - **5.5 Search bar** ✅ — radius, thickness, width, placeholder, live preview.
 - **5.6 Search button** ✅ — size, shape, background, icon weight, label.
 - **5.7 Typography** ✅ — body font, display font, text scale.
 - **5.8 Panel layout** ✅ — sidebar/middle/full, blurred background, thumbnails.
-- **5.9 Behavior** ✅ — sound, popup preview, ask-for-rating, disable text input.
+- **5.9 Behavior** ✅ — **realtime voice** on/off (hides the hands-free Voice Mode
+  button + overlay in the chat; dictation mic is separate), sound, popup preview,
+  ask-for-rating, disable text input.
 
 ### 6 · Widget integrations
 - **6.1 Weather (Open-Meteo)** ✅ ~75% — coords (base + optional summit), live
@@ -101,10 +112,14 @@ across all features + auth + the embed.
 - `preview.html` still runs an **older inline copy** of the widget (not unified onto
   `src/widget/widget-runtime.js`) — so it shows mock weather. Unifying it is the
   proxy task for "a real embedded widget that consumes the saved config."
-- **Voice** (mic dictation, TTS, hands-free Voice Mode) is built in the widget but
-  hardcoded on, with no dashboard control; full conversational voice needs a backend
-  to mint realtime keys.
-- **Summer/off-season conditions** — snow depth/season-total cells don't make sense
-  off-season; a summer mode is undesigned.
+- **Voice** (mic dictation, TTS, hands-free Voice Mode) is built in the widget and now
+  has a dashboard control — **Behavior → Realtime voice** hides the hands-free Voice
+  Mode when off. Full conversational voice still needs a backend to mint realtime keys.
+- **Winter/Summer mode** — designed (see §4.2) to replace the off-season-nonsensical
+  snow cells with mode-appropriate Open-Meteo insights; not yet built. Open-Meteo is
+  being reworked into the Weather page first.
+- **Season Update "Automatic" source** — the source toggle + data-source picker are
+  wired in the UI as a placeholder; consuming a live BotScrew Flow / AI Action output
+  (rendered into the banner) is open work. Manual copy works today.
 - Resort snow-feed **CORS** → needs a server-side proxy or the resort's own endpoint
   to go fully live.

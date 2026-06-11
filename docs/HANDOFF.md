@@ -95,8 +95,11 @@ bridge on `window`:
    live preview by setting **CSS variables** (`--brand`, `--gsb-radius`, …) and
    **data-attributes** (`data-variant`, `data-icon-style`, …) on the preview DOM.
 2. **Widget** (`widget-runtime.js`) owns the chat surface: data fetching, the
-   conditions card, message routing, voice, snowfall. It exposes
+   conditions card, the Season Update banner, message routing, and voice
+   (toggleable via Behavior → Realtime voice). It exposes
    `window.gsbChatPreview` so the dashboard can drive open/close/variant/query.
+   (The snowfall effect was removed from the active build — parked under
+   `_parked/snowfall/` for later.)
 3. **Persistence:** the Save button writes the config (in BotScrew shape) to
    `localStorage["gsb_widget_settings"]`; the dashboard hydrates from it on load.
 

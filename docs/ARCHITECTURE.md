@@ -44,8 +44,14 @@ chat-module / knowledge-base / data / voice). Responsibilities:
   via the shared adapter. Snow stats stay from the resort feed/fallback.
 - **Conditions card render** (`renderAllData`) — fills the `cell*` elements.
 - **Message routing** — keyword-based demo responses over the JH knowledge base.
-- **Voice** — Web Speech mic dictation, TTS read-aloud, hands-free Voice Mode.
-- **Snowfall** — the dashboard owns the snow engine; the widget refreshes it on open.
+- **Season Update banner** — renders the manual "Recent update" copy; a non-empty
+  manual value sets `data-manual-update` so the live weather feed won't overwrite it.
+- **Voice** — Web Speech mic dictation, TTS read-aloud, hands-free Voice Mode. The
+  hands-free Voice Mode is gated by **Behavior → Realtime voice** (`body[data-voice]`);
+  the dictation mic is independent.
+
+(The snowfall effect was removed from the active build and parked under
+`_parked/snowfall/`; the widget no longer drives a snow engine.)
 
 Public bridge: `window.gsbChatPreview = { openChat, closeChat, setVariant,
 refreshData, handleQuery }`. This exists for the **dashboard** to drive the preview —
