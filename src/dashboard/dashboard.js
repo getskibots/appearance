@@ -416,11 +416,7 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     var agentLabelText = state.statusPillFeatures.liveAgent ? 'Online' : 'AI Concierge';
     var agentLabelEl = $('gsbAgentStatusLabel');
     if (agentLabelEl) agentLabelEl.textContent = agentLabelText;
-    // Same swap for the Full panel left column footer indicator (text rendered after column move)
-    var fullColStatus = document.querySelector('.gsb-agent-status-feature');
-    if (fullColStatus) {
-      fullColStatus.innerHTML = '<span class="gsb-agent-status-dot"></span> ' + agentLabelText;
-    }
+    // (Left-column agent-status footer removed; only the chat-header label remains.)
 
     $('pillFeaturesGroup').setAttribute('data-disabled', isPillStyle ? 'false' : 'true');
 

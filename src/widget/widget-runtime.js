@@ -397,13 +397,8 @@ import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
     if (welcome) leftCol.appendChild(welcome);
     if (seasonBanner) leftCol.appendChild(seasonBanner);
     if (conditions) leftCol.appendChild(conditions);
-
-    // Add agent status footer in left column — label depends on liveAgent toggle (mirrored on body)
-    var liveAgentOn = document.body.getAttribute('data-liveagent') === 'on';
-    var statusEl = document.createElement('div');
-    statusEl.className = 'gsb-agent-status-feature';
-    statusEl.innerHTML = '<span class="gsb-agent-status-dot"></span> ' + (liveAgentOn ? 'Online' : 'AI Concierge');
-    leftCol.appendChild(statusEl);
+    // (Left-column agent status pill removed — TBD where the Online/AI Concierge
+    //  status belongs; the chat-header status element still carries it.)
   }
 
   function moveContentToRightColumn() {
