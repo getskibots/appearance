@@ -155,7 +155,6 @@
 }
 
 .gsb-launcher[data-effect-mode="shadow"][data-icon-style="traditional"],
-.gsb-launcher[data-effect-mode="shadow"][data-icon-style="custom"],
 .gsb-launcher[data-effect-mode="shadow"][data-icon-style="enhanced"],
 .gsb-launcher[data-effect-mode="shadow"][data-icon-style="slidein"] {
   animation: none !important;
@@ -164,7 +163,6 @@
 
 /* Glow — static halo, no animation (across all launcher styles) */
 .gsb-launcher[data-effect-mode="glow"][data-icon-style="traditional"],
-.gsb-launcher[data-effect-mode="glow"][data-icon-style="custom"],
 .gsb-launcher[data-effect-mode="glow"][data-icon-style="enhanced"],
 .gsb-launcher[data-effect-mode="glow"][data-icon-style="slidein"] {
   animation: none !important;
@@ -178,20 +176,14 @@
 .gsb-launcher[data-effect-mode="radiate"][data-icon-style="traditional"] {
   animation: gsb-launcher-pulse-traditional 2.5s ease-out infinite !important;
 }
+/* Custom never radiates — the uploaded image is the whole launcher. */
 .gsb-launcher[data-effect-mode="radiate"][data-icon-style="custom"] {
-  animation: gsb-launcher-pulse-traditional 2.5s ease-out infinite !important;
+  animation: none !important;
+  box-shadow: none !important;
 }
 .gsb-launcher[data-effect-mode="radiate"][data-icon-style="enhanced"],
 .gsb-launcher[data-effect-mode="radiate"][data-icon-style="slidein"] {
   animation: gsb-launcher-pulse-enhanced 4s ease-out infinite !important;
-}
-
-/* An empty custom launcher (no icon uploaded yet) shows NO depth effect — keeps it
-   clean instead of pulsing/glowing around nothing. Placed after the effect-mode
-   rules so it wins on equal specificity. */
-.gsb-launcher[data-icon-style="custom"][data-custom-empty="true"] {
-  animation: none !important;
-  box-shadow: none !important;
 }
 
 .gsb-launcher[data-icon-style="traditional"] .gsb-launcher-traditional-icon {
@@ -200,11 +192,10 @@
   color: #fff;
 }
 
-/* Custom icon variant: the uploaded image fully REPLACES the launcher badge — it
-   fills the round launcher edge-to-edge with NO brand background (transparent areas
-   show through, not the brand color). It honors the global Depth effect like the
-   other styles, but only once an icon is uploaded — an empty custom launcher stays
-   clean (see the [data-custom-empty="true"] rule above). */
+/* Custom icon variant: the uploaded image fully REPLACES the launcher — it fills
+   the round launcher edge-to-edge with NO brand background, NO pulse halo, and NO
+   depth effect of any kind (see the effect-mode overrides above). 100% swapped.
+   Transparent areas of the image show through, not the brand color. */
 .gsb-launcher[data-icon-style="custom"] {
   width: var(--gsb-custom-launcher-size, 56px);
   height: var(--gsb-custom-launcher-size, 56px);
@@ -213,7 +204,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: gsb-launcher-pulse-traditional 2.5s ease-out infinite;
+  animation: none;
+  box-shadow: none;
   overflow: hidden;
 }
 
