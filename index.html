@@ -484,9 +484,14 @@
                       <span class="field__hint" style="margin-top:0">Replaces the launcher entirely with your image. Square PNG or SVG, 64×64 minimum — fills the round launcher edge-to-edge.</span>
                     </div>
                   </div>
+                  <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
+                    <label class="field__label" for="customIconSize" style="font-weight:400;font-size:13px;color:var(--ink-soft);margin:0">Icon size</label>
+                    <input class="input" type="number" id="customIconSize" min="40" max="96" step="1" value="56" style="width:80px" />
+                    <span style="color:var(--ink-muted);font-size:13px">px</span>
+                  </div>
                 </div>
 
-                <!-- Conditional: Auto-hide on scroll (shown for Status pill + Slide-in pill) -->
+                <!-- Conditional: Auto-hide on scroll (shown for Status pill, Slide-in pill, and Custom) -->
                 <div class="conditional-block" id="slideinNoteBlock" style="display:none">
                   <div class="toggle-row" style="padding:2px 0">
                     <div class="toggle-row__main">

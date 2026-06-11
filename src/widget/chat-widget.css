@@ -197,8 +197,8 @@
    depth effect of any kind (see the effect-mode overrides above). 100% swapped.
    Transparent areas of the image show through, not the brand color. */
 .gsb-launcher[data-icon-style="custom"] {
-  width: 56px;
-  height: 56px;
+  width: var(--gsb-custom-launcher-size, 56px);
+  height: var(--gsb-custom-launcher-size, 56px);
   border-radius: 50%;
   background: transparent;
   display: flex;

@@ -43,6 +43,7 @@ function toGsbAppearance(state) {
     ctaText: state.ctaText,
     bubbleStyle: state.bubbleStyle,
     customIconUrl: state.customIconUrl,
+    customIconSize: state.customIconSize,
     slideState: state.slideState,
     autoHideOnScroll: state.autoHideOnScroll,
     layoutVariant: state.layoutVariant,

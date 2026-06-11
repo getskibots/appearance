@@ -337,11 +337,12 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     ctaText: 'Need help?',
     bubbleStyle: 'slidein',
     customIconUrl: null,
+    customIconSize: 56,         // px diameter of the custom launcher (the image fills it)
     slideState: 'visible',
-    // Auto-hide-on-scroll is a behavior available on both pill styles. Per-style
-    // so each remembers its own setting; default ON for both pills so the launcher
-    // stays clear of checkout/CTA elements out of the box.
-    autoHideOnScroll: { enhanced: true, slidein: true },
+    // Auto-hide-on-scroll is available on both pill styles AND the custom launcher.
+    // Per-style so each remembers its own setting; default ON so the launcher stays
+    // clear of checkout/CTA elements out of the box.
+    autoHideOnScroll: { enhanced: true, slidein: true, custom: true },
     // Launcher placement: which corner it anchors to + spacing from the screen
     // edges (px). Maps to BotScrew's greetingMessagePopupSettings.{alignment,
     // bottomSpacing, sideSpacing}; the greeting popup + open panel inherit it.
@@ -639,15 +640,20 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     if (customBlock) {
       customBlock.style.display = state.bubbleStyle === 'custom' ? 'block' : 'none';
     }
+    // Custom launcher size — the uploaded image fills the launcher, so this scales
+    // the whole thing (diameter in px).
+    var customSize = state.customIconSize != null ? state.customIconSize : 56;
+    document.documentElement.style.setProperty('--gsb-custom-launcher-size', customSize + 'px');
+    if ($('customIconSize') && document.activeElement !== $('customIconSize')) $('customIconSize').value = customSize;
 
     // Auto-hide-on-scroll behavior block — shown for both pill styles; the note +
     // Simulate button (#autoHideDetail) only when the behavior is switched on.
     var autoHide = state.autoHideOnScroll || {};
-    var isPillNow = (state.bubbleStyle === 'enhanced' || state.bubbleStyle === 'slidein');
-    var autoHideOn = isPillNow && !!autoHide[state.bubbleStyle];
+    var canAutoHide = supportsAutoHide(state.bubbleStyle);
+    var autoHideOn = canAutoHide && !!autoHide[state.bubbleStyle];
     var slideinBlock = $('slideinNoteBlock');
     if (slideinBlock) {
-      slideinBlock.style.display = isPillNow ? 'block' : 'none';
+      slideinBlock.style.display = canAutoHide ? 'block' : 'none';
     }
     setToggle('toggleAutoHide', autoHideOn);
     var autoHideDetail = $('autoHideDetail');
@@ -1000,6 +1006,14 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     render();
   });
 
+  // Custom launcher size (px diameter; the uploaded image fills it)
+  $('customIconSize').addEventListener('input', function(e) {
+    var v = parseInt(e.target.value, 10);
+    if (isNaN(v)) return;
+    state.customIconSize = Math.max(40, Math.min(96, v));
+    render();
+  });
+
   // Placement — align (corner) + bottom/side spacing (px, clamped to BotScrew's 24–300)
   document.querySelectorAll('#placementAlignSegmented button').forEach(function(b) {
     b.addEventListener('click', function() {
@@ -1020,15 +1034,19 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     render();
   });
 
-  // True when the active pill style has auto-hide-on-scroll switched on.
+  // Launcher styles that support the auto-hide-on-scroll (slide away) behavior.
+  function supportsAutoHide(style) {
+    return style === 'enhanced' || style === 'slidein' || style === 'custom';
+  }
+  // True when the active launcher style has auto-hide-on-scroll switched on.
   function isAutoHideActive() {
     var ah = state.autoHideOnScroll || {};
-    return (state.bubbleStyle === 'enhanced' || state.bubbleStyle === 'slidein') && !!ah[state.bubbleStyle];
+    return supportsAutoHide(state.bubbleStyle) && !!ah[state.bubbleStyle];
   }
 
   // Auto-hide-on-scroll toggle — per-style; turning it off snaps the launcher back.
   $('toggleAutoHide').addEventListener('click', function() {
-    if (state.bubbleStyle !== 'enhanced' && state.bubbleStyle !== 'slidein') return;
+    if (!supportsAutoHide(state.bubbleStyle)) return;
     var cur = !!(state.autoHideOnScroll && state.autoHideOnScroll[state.bubbleStyle]);
     state.autoHideOnScroll[state.bubbleStyle] = !cur;
     if (cur) state.slideState = 'visible'; // turning off → snap back to visible

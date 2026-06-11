@@ -61,8 +61,9 @@ interface GsbAppearance {
   ctaText: string;
   bubbleStyle: 'traditional' | 'custom' | 'enhanced' | 'slidein';
   customIconUrl: string | null;
+  customIconSize: number;                     // px diameter of the custom launcher (40–96)
   slideState: 'visible' | 'hidden';
-  autoHideOnScroll: { enhanced: boolean; slidein: boolean };  // per-pill-style slide-away-on-scroll
+  autoHideOnScroll: { enhanced: boolean; slidein: boolean; custom: boolean };  // per-style slide-away-on-scroll
   layoutVariant: 'side' | 'middle' | 'full';
   blurredBackground: boolean;
   effectMode: 'none' | 'shadow' | 'glow' | 'radiate';
@@ -129,8 +130,9 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `ctaText` | string | `Need help?` | Launcher CTA label (≤24 glyphs) |
 | `bubbleStyle` | enum | `slidein` | Launcher style: traditional/custom/enhanced/slidein |
 | `customIconUrl` | string\|null | `null` | Uploaded launcher icon (custom style) |
+| `customIconSize` | number (px) | `56` | Custom launcher diameter (40–96; image fills it) |
 | `slideState` | enum | `visible` | Slide-in pill shown/hidden |
-| `autoHideOnScroll` | object | `{enhanced:true, slidein:true}` | Per-pill-style auto-hide-on-scroll (on by default for both pills) |
+| `autoHideOnScroll` | object | `{enhanced:true, slidein:true, custom:true}` | Per-style auto-hide-on-scroll (Status pill, Slide-in pill, Custom; on by default) |
 | `layoutVariant` | enum | `side` | Panel layout: side/middle/full |
 | `blurredBackground` | boolean | `true` | Backdrop blur when open |
 | `effectMode` | enum | `radiate` | Depth effect: none/shadow/glow/radiate |
