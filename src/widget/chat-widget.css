@@ -1581,7 +1581,9 @@ body.gsb-conversation-started .gsb-chips { display: none; }
 }
 
 .gsb-voice-mode__status[data-state="listening"] { color: #fff; }
-.gsb-voice-mode__status[data-state="speaking"] { color: rgba(var(--brand-rgb), 1); color: #ffb4b6; }
+/* Lightened brand tint so the speaking state stays legible on the dark overlay
+   while still following the brand color. */
+.gsb-voice-mode__status[data-state="speaking"] { color: color-mix(in srgb, var(--brand), #fff 55%); }
 
 .gsb-voice-mode__status::before {
   content: "";
@@ -1597,7 +1599,7 @@ body.gsb-conversation-started .gsb-chips { display: none; }
 }
 
 .gsb-voice-mode__status[data-state="speaking"]::before {
-  background: #ffb4b6;
+  background: color-mix(in srgb, var(--brand), #fff 55%);
   animation: voice-status-pulse 0.9s ease-in-out infinite;
 }
 
