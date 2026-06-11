@@ -301,12 +301,10 @@
   right: 2px;
 }
 
-/* Show on Custom upload — same position as traditional */
-.gsb-launcher[data-icon-style="custom"][data-liveagent="on"] .gsb-launcher-agent-dot,
-[data-liveagent="on"] .gsb-launcher[data-icon-style="custom"] .gsb-launcher-agent-dot {
-  display: block;
-  top: 2px;
-  right: 2px;
+/* Custom launcher never shows the live-agent dot — a green dot on an uploaded
+   logo doesn't communicate "live agent" to anyone, so it's just noise. */
+.gsb-launcher[data-icon-style="custom"] .gsb-launcher-agent-dot {
+  display: none !important;
 }
 
 /* Show on Pillowdrop (slidein) — top of the vertical pill */
