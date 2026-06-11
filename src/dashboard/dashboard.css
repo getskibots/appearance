@@ -526,6 +526,9 @@
 .section.acc-card:not([data-open="true"]) > :not(.acc-head) { display: none; }
 /* Revealed body content gets side padding to match the card. */
 .section.acc-card[data-open="true"] > :not(.acc-head) { padding-left: 20px; padding-right: 20px; }
+/* First body element sits below the header with breathing room (the old
+   section__sub used to supply this gap before it was removed as redundant). */
+.section.acc-card[data-open="true"] > .acc-head + * { padding-top: 18px; }
 .section.acc-card[data-open="true"] { padding-bottom: 8px; }
 
 .field {
