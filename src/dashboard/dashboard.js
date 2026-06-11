@@ -142,7 +142,7 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     color: '#a41e23',
     chatHeaderColor: '#ffffff',
     widgetName: 'Jackson Hole Support',
-    inputPlaceholder: 'Ask me a JH question',
+    inputPlaceholder: 'Ask me anything. Here to help!',
     welcomeText: "Welcome to Jackson Hole, ask us anything, we're here to help.",
     // Manual "Recent update" pushed into the chat's Season Update banner.
     // updateLabel is the eyebrow; recentUpdate is the body (blank hides the banner).
