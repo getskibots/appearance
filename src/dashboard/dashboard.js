@@ -144,6 +144,10 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     widgetName: 'Jackson Hole Support',
     inputPlaceholder: 'Ask me a JH question',
     welcomeText: "Welcome to Jackson Hole, ask us anything, we're here to help.",
+    // Manual "Recent update" pushed into the chat's Season Update banner.
+    // updateLabel is the eyebrow; recentUpdate is the body (blank hides the banner).
+    updateLabel: 'Season update',
+    recentUpdate: "The 2025/26 ski season has wrapped. The Aerial Tram reopens for summer sightseeing on May 16th, with the gondolas joining June 6th.",
     ctaText: 'Need help?',
     bubbleStyle: 'slidein',
     customIconUrl: null,
@@ -364,6 +368,18 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     $('headerPlaceholderName').textContent = state.widgetName || 'Demo Resort';
     $('welcomeLine').textContent = state.welcomeText || "Welcome, ask us anything, we're here to help.";
     $('brandColTitle').textContent = state.widgetName || 'Demo Resort';
+
+    // Recent update → Season Update banner. Manual copy wins over the live feed
+    // (data-manual-update flags the runtime to leave it alone). Blank hides it.
+    var seasonBanner = $('gsbSeasonBanner');
+    if (seasonBanner) {
+      var hasUpdate = !!(state.recentUpdate && state.recentUpdate.trim());
+      seasonBanner.style.display = hasUpdate ? 'block' : 'none';
+      seasonBanner.setAttribute('data-manual-update', hasUpdate ? 'true' : 'false');
+      var seasonTitle = seasonBanner.querySelector('.gsb-season-banner__title');
+      if (seasonTitle) seasonTitle.textContent = state.updateLabel || 'Season update';
+      if ($('gsbSeasonText')) $('gsbSeasonText').textContent = state.recentUpdate || '';
+    }
     $('composerInput').placeholder = state.inputPlaceholder || 'Ask…';
 
     canvas.setAttribute('data-variant', state.layoutVariant);
@@ -485,6 +501,8 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     if (document.activeElement !== $('widgetName')) $('widgetName').value = state.widgetName;
     if (document.activeElement !== $('inputPlaceholder')) $('inputPlaceholder').value = state.inputPlaceholder;
     if (document.activeElement !== $('welcomeText')) $('welcomeText').value = state.welcomeText;
+    if (document.activeElement !== $('updateLabel')) $('updateLabel').value = state.updateLabel;
+    if (document.activeElement !== $('recentUpdate')) $('recentUpdate').value = state.recentUpdate;
 
     // CTA text on the launcher pill + character counter state.
     // Use glyph counting (Intl.Segmenter or spread-array fallback) so that
@@ -665,7 +683,7 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     // Per-accordion-card dirty dots — flag any card whose fields differ from the
     // last saved snapshot, so collapsed cards still signal what's been edited.
     var ACC_CARD_FIELDS = {
-      identity: ['logoUrl','logoMaxHeight','cornerRadius','effectMode','effectIntensity','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText'],
+      identity: ['logoUrl','logoMaxHeight','cornerRadius','effectMode','effectIntensity','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText','updateLabel','recentUpdate'],
       launcher: ['bubbleStyle','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','statusPillFeatures','ctaText'],
       typography: ['typography'],
       panel: ['layoutVariant','blurredBackground'],
@@ -973,6 +991,8 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
   $('widgetName').addEventListener('input', function(e){ state.widgetName = e.target.value; render(); });
   $('inputPlaceholder').addEventListener('input', function(e){ state.inputPlaceholder = e.target.value; render(); });
   $('welcomeText').addEventListener('input', function(e){ state.welcomeText = e.target.value; render(); });
+  $('updateLabel').addEventListener('input', function(e){ state.updateLabel = e.target.value; render(); });
+  $('recentUpdate').addEventListener('input', function(e){ state.recentUpdate = e.target.value; render(); });
   $('ctaText').addEventListener('input', function(e){
     // Glyph-aware cap at 24 user-visible chars (so 🎿 counts as 1, not 2).
     // Note: maxlength was removed from the HTML input because it counts
@@ -1288,6 +1308,8 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
       widgetName: state.widgetName,
       inputPlaceholder: state.inputPlaceholder,
       welcomeText: state.welcomeText,
+      updateLabel: state.updateLabel,
+      recentUpdate: state.recentUpdate,
       ctaText: state.ctaText,
       bubbleStyle: state.bubbleStyle,
       customIconUrl: state.customIconUrl,

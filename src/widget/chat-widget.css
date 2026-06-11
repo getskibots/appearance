@@ -908,16 +908,20 @@ body[data-variant="full"] .gsb-chat-left-column {
   text-transform: uppercase;
 }
 
-/* SEASON STATUS BANNER (if not in season) */
+/* SEASON / RECENT UPDATE BANNER — branded announcement card.
+   Soft brand wash + a 3px brand left-accent bar + brand-deep eyebrow, so it ties
+   to the resort's brand color (any hue) instead of the old amber/gold warning look.
+   Degrades gracefully if color-mix is unsupported: the left bar + ink stay. */
 .gsb-season-banner {
   margin: 14px 20px 0;
-  padding: 12px 14px;
-  background: #fff7e6;
-  border: 1px solid #f0c66a;
+  padding: 11px 14px 12px;
+  background: color-mix(in srgb, var(--brand) 5%, #fff);
+  border: 1px solid color-mix(in srgb, var(--brand) 16%, #fff);
+  border-left: 3px solid var(--brand);
   border-radius: 8px;
-  font-size: 12px;
+  font-size: calc(12px * var(--gsb-text-scale, 1));
   line-height: 1.5;
-  color: #6b4a00;
+  color: var(--jh-ink);
   flex: 0 0 auto;
 }
 
@@ -927,6 +931,7 @@ body[data-variant="full"] .gsb-chat-left-column {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-bottom: 4px;
+  color: var(--brand-deep, var(--brand));
 }
 
 /* SUGGESTED CHIPS */

@@ -58,6 +58,8 @@ interface GsbAppearance {
   cornerRadius: number;
   chatHeaderColor: string;
   welcomeText: string;
+  updateLabel: string;                        // eyebrow for the Season Update banner
+  recentUpdate: string;                       // banner body; blank hides the banner
   ctaText: string;
   bubbleStyle: 'traditional' | 'custom' | 'enhanced' | 'slidein';
   customIconUrl: string | null;
@@ -119,6 +121,8 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `cornerRadius` | number (px) | `7` | Master rounding (launcher pills, chat surface) |
 | `chatHeaderColor` | hex | `#ffffff` | Chat header background |
 | `welcomeText` | string | "Welcome to Jackson Hole…" | First greeting line |
+| `updateLabel` | string | `Season update` | Eyebrow label on the Season Update banner |
+| `recentUpdate` | string | "The 2025/26 ski season…" | Season Update banner body; **blank hides the banner**. Manual copy wins over the live weather feed (`data-manual-update`) |
 | `ctaText` | string | `Need help?` | Launcher CTA label (≤24 glyphs) |
 | `bubbleStyle` | enum | `slidein` | Launcher style: traditional/custom/enhanced/slidein |
 | `customIconUrl` | string\|null | `null` | Uploaded launcher icon (custom style) |

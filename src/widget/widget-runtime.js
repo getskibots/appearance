@@ -308,12 +308,16 @@ import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
       safeText('gsbConditionsTime', d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
     }
 
-    // Season banner — show if there's a detail message indicating off-season
+    // Season banner — show if there's a detail message indicating off-season.
+    // A manual "Recent update" (data-manual-update="true") takes precedence over
+    // the live feed, so don't overwrite it here.
     if (data.snow.snow && data.snow.snow.detail) {
+      var banner = $('gsbSeasonBanner');
+      var manualUpdate = banner && banner.getAttribute('data-manual-update') === 'true';
       var detail = data.snow.snow.detail;
-      if (detail.toLowerCase().indexOf('come to an end') !== -1 ||
-          detail.toLowerCase().indexOf('reopen for summer') !== -1) {
-        var banner = $('gsbSeasonBanner');
+      if (!manualUpdate &&
+          (detail.toLowerCase().indexOf('come to an end') !== -1 ||
+           detail.toLowerCase().indexOf('reopen for summer') !== -1)) {
         if (banner) banner.style.display = 'block';
         var trimmed = detail.length > 220 ? detail.substring(0, 220) + '…' : detail;
         safeText('gsbSeasonText', trimmed);
