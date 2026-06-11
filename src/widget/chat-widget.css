@@ -907,11 +907,15 @@ body[data-variant="full"] .gsb-chat-left-column {
 
 /* WELCOME LINE */
 .gsb-welcome {
-  padding: 18px 20px 4px;
+  /* Bottom padding 0 so the gap to the next block (Season banner / Conditions)
+     comes purely from that block's 14px top margin — keeps a uniform 14px rhythm
+     between every stacked content block. */
+  padding: 14px 20px 0;
   flex: 0 0 auto;
 }
 
 .gsb-welcome-greeting {
+  margin: 0;
   font-family: var(--serif);
   font-size: calc(17px * var(--gsb-text-scale, 1));
   line-height: 1.4;
