@@ -1693,6 +1693,7 @@ body.gsb-conversation-started .gsb-chips { display: none; }
   flex-direction: column;
   gap: 6px;
   align-items: center;
+  width: 100%;            /* fill the stage so items clamp to the panel width */
   font-size: 11px;
   color: rgba(255,255,255,0.45);
   text-align: center;
@@ -1704,7 +1705,7 @@ body.gsb-conversation-started .gsb-chips { display: none; }
 }
 
 .gsb-voice-mode__history-item {
-  max-width: 480px;
+  max-width: 100%;        /* was 480px — wider than the panel, so it overflowed */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
