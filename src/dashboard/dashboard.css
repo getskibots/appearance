@@ -509,11 +509,12 @@
   transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
 }
 .acc-head:hover { background: var(--surface); }
-/* Mirror Bootstrap's active-button tint (#e7f1ff / #0c63e4) but in GSB brand. */
+/* Open/active header cue: a neutral light-gray wash (Bootstrap tints its active
+   accordion button #e7f1ff; we use --surface-2 to stay hue-free, no brand red).
+   The rotated chevron carries the rest of the open-state signal. */
 .acc-card[data-open="true"] .acc-head {
-  background: color-mix(in srgb, var(--brand) 7%, #fff);
+  background: var(--surface-2);
 }
-.acc-card[data-open="true"] .acc-head__title { color: var(--brand-deep, var(--ink)); }
 .acc-head__icon {
   flex: none; width: 22px; height: 22px; color: var(--accent);
   display: inline-flex; align-items: center; justify-content: center;
