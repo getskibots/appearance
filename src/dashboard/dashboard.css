@@ -468,6 +468,56 @@
   margin: 0 0 18px;
 }
 
+/* =========================================================================
+   ACCORDION CARDS — each Appearance section is a collapsible card.
+   ========================================================================= */
+.acc-toolbar { display: flex; justify-content: flex-end; margin-bottom: 12px; }
+.acc-toolbar__btn {
+  background: transparent; border: 0; cursor: pointer; font: inherit;
+  font-size: 13px; color: var(--accent);
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px;
+}
+.acc-toolbar__btn:hover { text-decoration: underline; }
+
+/* A .section that is also .acc-card becomes a bordered, collapsible card. */
+.section.acc-card {
+  margin-bottom: 10px;
+  padding-bottom: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+}
+.section.acc-card:last-child { margin-bottom: 0; border-bottom: 1px solid var(--border); }
+
+.acc-head {
+  display: flex; align-items: center; gap: 14px; width: 100%;
+  padding: 16px 18px; background: transparent; border: 0; cursor: pointer;
+  text-align: left; font: inherit;
+}
+.acc-head:hover { background: var(--surface); }
+.acc-head__icon {
+  flex: none; width: 22px; height: 22px; color: var(--accent);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.acc-head__icon svg { width: 20px; height: 20px; }
+.acc-head__titles { flex: 1; min-width: 0; }
+.acc-head__title { display: block; font-size: 15px; font-weight: 500; color: var(--ink); }
+.acc-head__desc { display: block; font-size: 12.5px; color: var(--ink-muted); margin-top: 2px; }
+.acc-head__dot {
+  flex: none; width: 7px; height: 7px; border-radius: 50%;
+  background: #ba7517; display: none;
+}
+.acc-card[data-acc-dirty="true"] .acc-head__dot { display: inline-block; }
+.acc-head__chevron { flex: none; color: var(--ink-muted); transition: transform 200ms ease; }
+.acc-card[data-open="true"] .acc-head__chevron { transform: rotate(180deg); }
+
+/* Collapse: hide every direct child except the header until the card is open. */
+.section.acc-card:not([data-open="true"]) > :not(.acc-head) { display: none; }
+/* Revealed body content gets side padding to match the card. */
+.section.acc-card[data-open="true"] > :not(.acc-head) { padding-left: 18px; padding-right: 18px; }
+.section.acc-card[data-open="true"] { padding-bottom: 8px; }
+
 .field {
   margin-bottom: 18px;
 }

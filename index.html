@@ -141,9 +141,22 @@
           <!-- =================== CONTROLS =================== -->
           <div class="controls-col">
 
+            <!-- Accordion view control — separate from Save/Revert in the header -->
+            <div class="acc-toolbar">
+              <button type="button" class="acc-toolbar__btn" id="accExpandAll">Expand all</button>
+            </div>
+
             <!-- IDENTITY: Logo + Color + Naming -->
-            <section class="section">
-              <h3 class="section__title">Identity</h3>
+            <section class="section acc-card" data-acc-id="identity">
+              <button type="button" class="acc-head" aria-expanded="false">
+                <span class="acc-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.5 6 10.5a6 6 0 0 1-12 0C6 9.5 12 3 12 3z"/></svg></span>
+                <span class="acc-head__titles">
+                  <span class="acc-head__title">Identity &amp; branding</span>
+                  <span class="acc-head__desc">Logo, colors, corner radius, depth, name, placeholder, welcome</span>
+                </span>
+                <span class="acc-head__dot" aria-hidden="true"></span>
+                <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
               <p class="section__sub">Logo, brand color, and naming. The visual core of your widget.</p>
 
               <!-- Logo -->
@@ -290,8 +303,16 @@
             </section>
 
             <!-- LAUNCHER: Bubble style + Status pill features -->
-            <section class="section">
-              <h3 class="section__title">Launcher</h3>
+            <section class="section acc-card" data-acc-id="launcher">
+              <button type="button" class="acc-head" aria-expanded="false">
+                <span class="acc-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.6-.8L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 17 0z"/></svg></span>
+                <span class="acc-head__titles">
+                  <span class="acc-head__title">Launcher</span>
+                  <span class="acc-head__desc">Bubble style, placement, auto-hide, status-pill features</span>
+                </span>
+                <span class="acc-head__dot" aria-hidden="true"></span>
+                <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
               <p class="section__sub">Choose the bubble style and what it shows when collapsed.</p>
 
               <div class="field">
@@ -485,8 +506,16 @@
             </section>
 
             <!-- ============== TYPOGRAPHY ============== -->
-            <section class="section">
-              <h3 class="section__title">Typography</h3>
+            <section class="section acc-card" data-acc-id="typography">
+              <button type="button" class="acc-head" aria-expanded="false">
+                <span class="acc-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></span>
+                <span class="acc-head__titles">
+                  <span class="acc-head__title">Typography</span>
+                  <span class="acc-head__desc">Font pairing, body &amp; display fonts, text size</span>
+                </span>
+                <span class="acc-head__dot" aria-hidden="true"></span>
+                <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
               <p class="section__sub">Pick the fonts that match your resort's brand. Body font is used for messages, UI, and chips. Display font is used for the welcome line and headings inside the chat.</p>
 
               <!-- Preset pairings -->
@@ -574,8 +603,16 @@
             </section>
 
             <!-- PANEL LAYOUT -->
-            <section class="section">
-              <h3 class="section__title">Panel layout</h3>
+            <section class="section acc-card" data-acc-id="panel">
+              <button type="button" class="acc-head" aria-expanded="false">
+                <span class="acc-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="14" y1="4" x2="14" y2="20"/></svg></span>
+                <span class="acc-head__titles">
+                  <span class="acc-head__title">Panel layout</span>
+                  <span class="acc-head__desc">How the chat opens (side / middle / full) and blurred background</span>
+                </span>
+                <span class="acc-head__dot" aria-hidden="true"></span>
+                <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
               <p class="section__sub">How the chat surface appears when a guest opens it.</p>
 
               <div class="field">
@@ -629,8 +666,16 @@
             </section>
 
             <!-- BEHAVIOR -->
-            <section class="section">
-              <h3 class="section__title">Behavior</h3>
+            <section class="section acc-card" data-acc-id="behavior">
+              <button type="button" class="acc-head" aria-expanded="false">
+                <span class="acc-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2.2"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2.2"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="8" cy="17" r="2.2"/></svg></span>
+                <span class="acc-head__titles">
+                  <span class="acc-head__title">Behavior</span>
+                  <span class="acc-head__desc">Notification and interaction defaults</span>
+                </span>
+                <span class="acc-head__dot" aria-hidden="true"></span>
+                <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
               <p class="section__sub">Notification and interaction defaults.</p>
 
               <div class="toggle-row toggle-row--standalone">
@@ -664,8 +709,16 @@
             </section>
 
             <!-- ============== EMBEDDABLE SEARCH ============== -->
-            <section class="section">
-              <h3 class="section__title">Embeddable Search</h3>
+            <section class="section acc-card" data-acc-id="embed">
+              <button type="button" class="acc-head" aria-expanded="false">
+                <span class="acc-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></span>
+                <span class="acc-head__titles">
+                  <span class="acc-head__title">Embeddable components</span>
+                  <span class="acc-head__desc">The hero search bar and standalone search button</span>
+                </span>
+                <span class="acc-head__dot" aria-hidden="true"></span>
+                <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
               <p class="section__sub">Standalone components partners drop into their own website. Each is its own div tag in the install snippet — they can be placed independently.</p>
 
               <!-- ===== SEARCH BAR ===== -->
@@ -845,8 +898,16 @@
             </section>
 
             <!-- GREETING POPUP STUB (preserves existing) -->
-            <section class="section">
-              <h3 class="section__title">Greeting message popup</h3>
+            <section class="section acc-card" data-acc-id="greeting">
+              <button type="button" class="acc-head" aria-expanded="false">
+                <span class="acc-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+                <span class="acc-head__titles">
+                  <span class="acc-head__title">Greeting popup</span>
+                  <span class="acc-head__desc">The teaser bubble that appears beside the launcher</span>
+                </span>
+                <span class="acc-head__dot" aria-hidden="true"></span>
+                <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
               <p class="section__sub">The proactive greeting bubble that appears alongside the launcher.</p>
               <div class="greeting-stub">
                 Existing greeting popup settings (popup logo, size, alignment, position, spacing) preserved as in current production. Detailed UI omitted in this prototype to keep focus on the redesigned controls.

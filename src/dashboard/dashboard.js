@@ -661,6 +661,26 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
 
     var isDirty = JSON.stringify(state) !== JSON.stringify(saved);
     $('dirtyBanner').setAttribute('data-dirty', String(isDirty));
+
+    // Per-accordion-card dirty dots — flag any card whose fields differ from the
+    // last saved snapshot, so collapsed cards still signal what's been edited.
+    var ACC_CARD_FIELDS = {
+      identity: ['logoUrl','logoMaxHeight','cornerRadius','effectMode','effectIntensity','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText'],
+      launcher: ['bubbleStyle','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','statusPillFeatures','ctaText'],
+      typography: ['typography'],
+      panel: ['layoutVariant','blurredBackground'],
+      behavior: ['soundNotifications','popupMessagePreview','askForRating','disableTextInput'],
+      embed: ['embedSearch','embedButton'],
+      greeting: []
+    };
+    Object.keys(ACC_CARD_FIELDS).forEach(function(id) {
+      var card = document.querySelector('.acc-card[data-acc-id="' + id + '"]');
+      if (!card) return;
+      var dirty = ACC_CARD_FIELDS[id].some(function(k) {
+        return JSON.stringify(state[k]) !== JSON.stringify(saved[k]);
+      });
+      card.setAttribute('data-acc-dirty', String(dirty));
+    });
   }
 
   // ============= WIRING =============
@@ -1376,6 +1396,43 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
       // Let the default <a> behavior handle the new-tab open
     });
   }
+
+  // ============= ACCORDION =============
+  // Each Appearance section is a collapsible card. A header toggles its own card;
+  // "Expand all" toggles every card. Purely a view layer — never touches state,
+  // so it never trips the Unsaved-changes banner.
+  function accCards() { return document.querySelectorAll('.acc-card'); }
+  function accAllOpen() {
+    var cards = accCards();
+    return cards.length > 0 && Array.prototype.every.call(cards, function(c) {
+      return c.getAttribute('data-open') === 'true';
+    });
+  }
+  function setAccExpandAllLabel() {
+    var b = $('accExpandAll');
+    if (b) b.textContent = accAllOpen() ? 'Collapse all' : 'Expand all';
+  }
+  document.querySelectorAll('.acc-head').forEach(function(head) {
+    head.addEventListener('click', function() {
+      var card = head.closest('.acc-card');
+      var open = card.getAttribute('data-open') === 'true';
+      card.setAttribute('data-open', open ? 'false' : 'true');
+      head.setAttribute('aria-expanded', open ? 'false' : 'true');
+      setAccExpandAllLabel();
+    });
+  });
+  if ($('accExpandAll')) {
+    $('accExpandAll').addEventListener('click', function() {
+      var open = !accAllOpen();
+      accCards().forEach(function(c) {
+        c.setAttribute('data-open', open ? 'true' : 'false');
+        var h = c.querySelector('.acc-head');
+        if (h) h.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      setAccExpandAllLabel();
+    });
+  }
+  setAccExpandAllLabel();
 
   render();
   // Auto-open the chat preview on load so partners can immediately interact
