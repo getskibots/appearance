@@ -568,6 +568,26 @@
   .card-grid__col + .card-grid__col { margin-top: 24px; }
 }
 
+/* Flow picker (placeholder source for the Recent update / Season Update card). */
+.flow-picker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 360px;
+}
+.flow-picker .input { flex: 1 1 auto; }
+.flow-picker__badge {
+  flex: none;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, #fff);
+}
+
 .field {
   margin-bottom: 18px;
 }

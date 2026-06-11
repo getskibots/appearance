@@ -60,6 +60,8 @@ interface GsbAppearance {
   welcomeText: string;
   updateLabel: string;                        // eyebrow for the Season Update banner
   recentUpdate: string;                       // banner body; blank hides the banner
+  recentUpdateSource: 'manual' | 'flow';      // source of the Season Update content
+  recentUpdateFlow: string;                   // selected Flow / AI Action id (when source==='flow'; placeholder)
   ctaText: string;
   bubbleStyle: 'traditional' | 'custom' | 'enhanced' | 'slidein';
   customIconUrl: string | null;
@@ -123,6 +125,8 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `welcomeText` | string | "Welcome to Jackson Hole…" | First greeting line |
 | `updateLabel` | string | `Season update` | Eyebrow label on the Season Update banner |
 | `recentUpdate` | string | "The 2025/26 ski season…" | Season Update banner body; **blank hides the banner**. Manual copy wins over the live weather feed (`data-manual-update`) |
+| `recentUpdateSource` | enum | `manual` | Where the Season Update content comes from: `manual` (typed copy) or `flow` (a BotScrew Flow / AI Action) |
+| `recentUpdateFlow` | string | `''` | Selected Flow / AI Action id when `recentUpdateSource === 'flow'`. **Placeholder** — the picker is wired in the UI but live flow output is not yet consumed |
 | `ctaText` | string | `Need help?` | Launcher CTA label (≤24 glyphs) |
 | `bubbleStyle` | enum | `slidein` | Launcher style: traditional/custom/enhanced/slidein |
 | `customIconUrl` | string\|null | `null` | Uploaded launcher icon (custom style) |

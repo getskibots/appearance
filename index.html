@@ -305,10 +305,34 @@
 
               <!-- Recent Update (pushes to the Season Update banner) -->
               <div class="field">
-                <label class="field__label" for="recentUpdate">Recent update</label>
+                <label class="field__label">Recent update</label>
                 <p class="field__hint" style="margin-top:0;margin-bottom:10px">Pushes a short announcement into the Season Update card in the chat — closures, reopenings, events. Leave blank to hide it.</p>
-                <input class="input" type="text" id="updateLabel" value="Season update" placeholder="Label (e.g. Season update)" style="max-width:360px;margin-bottom:8px" />
-                <textarea class="textarea" id="recentUpdate" placeholder="e.g. The Aerial Tram reopens for summer sightseeing on May 16th." style="max-width:360px">The 2025/26 ski season has wrapped. The Aerial Tram reopens for summer sightseeing on May 16th, with the gondolas joining June 6th.</textarea>
+
+                <!-- Source toggle: type it, or pull it from a flow -->
+                <div class="segmented" id="updateSourceSegmented" role="radiogroup" aria-label="Recent update source" style="margin-bottom:12px;max-width:360px">
+                  <button type="button" data-update-source="manual" data-active="true" role="radio" aria-checked="true">Manual</button>
+                  <button type="button" data-update-source="flow" data-active="false" role="radio" aria-checked="false">From a flow</button>
+                </div>
+
+                <!-- Manual mode -->
+                <div id="updateManualGroup">
+                  <input class="input" type="text" id="updateLabel" value="Season update" placeholder="Label (e.g. Season update)" style="max-width:360px;margin-bottom:8px" />
+                  <textarea class="textarea" id="recentUpdate" placeholder="e.g. The Aerial Tram reopens for summer sightseeing on May 16th." style="max-width:360px">The 2025/26 ski season has wrapped. The Aerial Tram reopens for summer sightseeing on May 16th, with the gondolas joining June 6th.</textarea>
+                </div>
+
+                <!-- Flow mode (placeholder — not yet wired to live flows) -->
+                <div id="updateFlowGroup" style="display:none">
+                  <div class="flow-picker">
+                    <select class="input" id="updateFlow" style="max-width:360px">
+                      <option value="">Select a flow…</option>
+                      <option value="snow-report">Daily snow report</option>
+                      <option value="lift-status">Lift &amp; terrain status</option>
+                      <option value="events">Events &amp; happenings</option>
+                    </select>
+                    <span class="flow-picker__badge">Preview</span>
+                  </div>
+                  <p class="field__hint" style="margin-top:8px">The Season Update card shows this flow's latest output (an AI Action), refreshed when the chat opens. Live flow wiring comes next — this is a preview of the control.</p>
+                </div>
               </div>
 
               <!-- Input Placeholder -->

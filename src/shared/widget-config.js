@@ -42,6 +42,8 @@ function toGsbAppearance(state) {
     welcomeText: state.welcomeText,
     updateLabel: state.updateLabel,
     recentUpdate: state.recentUpdate,
+    recentUpdateSource: state.recentUpdateSource,
+    recentUpdateFlow: state.recentUpdateFlow,
     ctaText: state.ctaText,
     bubbleStyle: state.bubbleStyle,
     customIconUrl: state.customIconUrl,

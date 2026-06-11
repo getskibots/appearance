@@ -144,10 +144,14 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     widgetName: 'Jackson Hole Support',
     inputPlaceholder: 'Ask me anything. Here to help!',
     welcomeText: "Welcome to Jackson Hole, ask us anything, we're here to help.",
-    // Manual "Recent update" pushed into the chat's Season Update banner.
-    // updateLabel is the eyebrow; recentUpdate is the body (blank hides the banner).
+    // "Recent update" pushed into the chat's Season Update banner.
+    // updateLabel is the eyebrow; recentUpdate is the manual body (blank hides it).
     updateLabel: 'Season update',
     recentUpdate: "The 2025/26 ski season has wrapped. The Aerial Tram reopens for summer sightseeing on May 16th, with the gondolas joining June 6th.",
+    // Source toggle: 'manual' = typed copy above; 'flow' = pull from a BotScrew
+    // Flow / AI Action (placeholder — recentUpdateFlow holds the selected flow id).
+    recentUpdateSource: 'manual',
+    recentUpdateFlow: '',
     ctaText: 'Need help?',
     bubbleStyle: 'slidein',
     customIconUrl: null,
@@ -369,16 +373,38 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     $('welcomeLine').textContent = state.welcomeText || "Welcome, ask us anything, we're here to help.";
     $('brandColTitle').textContent = state.widgetName || 'Demo Resort';
 
-    // Recent update → Season Update banner. Manual copy wins over the live feed
-    // (data-manual-update flags the runtime to leave it alone). Blank hides it.
+    // Recent update → Season Update banner. Source = 'manual' (typed copy) or
+    // 'flow' (placeholder: shows a stub line for the selected flow). Either way
+    // we flag data-manual-update so the live weather feed leaves the banner alone.
+    var FLOW_LABELS = { 'snow-report': 'Daily snow report', 'lift-status': 'Lift & terrain status', 'events': 'Events & happenings' };
+    var updateSource = state.recentUpdateSource === 'flow' ? 'flow' : 'manual';
+    // Reflect the source toggle: segmented active state + which group is visible.
+    var srcBtns = document.querySelectorAll('#updateSourceSegmented [data-update-source]');
+    for (var si = 0; si < srcBtns.length; si++) {
+      var srcOn = srcBtns[si].getAttribute('data-update-source') === updateSource;
+      srcBtns[si].setAttribute('data-active', srcOn ? 'true' : 'false');
+      srcBtns[si].setAttribute('aria-checked', srcOn ? 'true' : 'false');
+    }
+    if ($('updateManualGroup')) $('updateManualGroup').style.display = updateSource === 'flow' ? 'none' : '';
+    if ($('updateFlowGroup')) $('updateFlowGroup').style.display = updateSource === 'flow' ? '' : 'none';
+    if ($('updateFlow') && document.activeElement !== $('updateFlow')) $('updateFlow').value = state.recentUpdateFlow || '';
+
     var seasonBanner = $('gsbSeasonBanner');
     if (seasonBanner) {
-      var hasUpdate = !!(state.recentUpdate && state.recentUpdate.trim());
-      seasonBanner.style.display = hasUpdate ? 'block' : 'none';
-      seasonBanner.setAttribute('data-manual-update', hasUpdate ? 'true' : 'false');
+      var bannerShow, bannerBody;
+      if (updateSource === 'flow') {
+        var flowName = FLOW_LABELS[state.recentUpdateFlow];
+        bannerShow = !!flowName;
+        bannerBody = flowName ? ('Live updates from the “' + flowName + '” flow will appear here.') : '';
+      } else {
+        bannerShow = !!(state.recentUpdate && state.recentUpdate.trim());
+        bannerBody = state.recentUpdate || '';
+      }
+      seasonBanner.style.display = bannerShow ? 'block' : 'none';
+      seasonBanner.setAttribute('data-manual-update', bannerShow ? 'true' : 'false');
       var seasonTitle = seasonBanner.querySelector('.gsb-season-banner__title');
       if (seasonTitle) seasonTitle.textContent = state.updateLabel || 'Season update';
-      if ($('gsbSeasonText')) $('gsbSeasonText').textContent = state.recentUpdate || '';
+      if ($('gsbSeasonText')) $('gsbSeasonText').textContent = bannerBody;
     }
     // Target the visible chat composer (#gsbComposerInput); fall back to the old
     // hidden #composerInput alias only if the real input isn't present.
@@ -682,7 +708,7 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     // Per-accordion-card dirty dots — flag any card whose fields differ from the
     // last saved snapshot, so collapsed cards still signal what's been edited.
     var ACC_CARD_FIELDS = {
-      identity: ['logoUrl','logoMaxHeight','cornerRadius','effectMode','effectIntensity','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText','updateLabel','recentUpdate'],
+      identity: ['logoUrl','logoMaxHeight','cornerRadius','effectMode','effectIntensity','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText','updateLabel','recentUpdate','recentUpdateSource','recentUpdateFlow'],
       launcher: ['bubbleStyle','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','statusPillFeatures','ctaText'],
       typography: ['typography'],
       panel: ['layoutVariant','blurredBackground'],
@@ -992,6 +1018,10 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
   $('welcomeText').addEventListener('input', function(e){ state.welcomeText = e.target.value; render(); });
   $('updateLabel').addEventListener('input', function(e){ state.updateLabel = e.target.value; render(); });
   $('recentUpdate').addEventListener('input', function(e){ state.recentUpdate = e.target.value; render(); });
+  document.querySelectorAll('#updateSourceSegmented [data-update-source]').forEach(function(btn){
+    btn.addEventListener('click', function(){ state.recentUpdateSource = btn.getAttribute('data-update-source'); render(); });
+  });
+  $('updateFlow').addEventListener('change', function(e){ state.recentUpdateFlow = e.target.value; render(); });
   $('ctaText').addEventListener('input', function(e){
     // Glyph-aware cap at 24 user-visible chars (so 🎿 counts as 1, not 2).
     // Note: maxlength was removed from the HTML input because it counts
@@ -1309,6 +1339,8 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
       welcomeText: state.welcomeText,
       updateLabel: state.updateLabel,
       recentUpdate: state.recentUpdate,
+      recentUpdateSource: state.recentUpdateSource,
+      recentUpdateFlow: state.recentUpdateFlow,
       ctaText: state.ctaText,
       bubbleStyle: state.bubbleStyle,
       customIconUrl: state.customIconUrl,
