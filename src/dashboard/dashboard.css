@@ -440,11 +440,13 @@
 .preview-col {
   /* Preview panel chrome is hidden — only the floating launcher and chat
      surface remain, repositioned to overlay the viewport like real
-     production. */
+     production. Sits ABOVE the sticky header (z-index 85) so the open chat
+     covers the Save/Revert actions like the real widget would — close the
+     preview to reach Save. */
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 80;
+  z-index: 90;
 }
 
 /* =========================================================================
