@@ -380,7 +380,10 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
       if (seasonTitle) seasonTitle.textContent = state.updateLabel || 'Season update';
       if ($('gsbSeasonText')) $('gsbSeasonText').textContent = state.recentUpdate || '';
     }
-    $('composerInput').placeholder = state.inputPlaceholder || 'Ask…';
+    // Target the visible chat composer (#gsbComposerInput); fall back to the old
+    // hidden #composerInput alias only if the real input isn't present.
+    var composerEl = $('gsbComposerInput') || $('composerInput');
+    if (composerEl) composerEl.placeholder = state.inputPlaceholder || 'Ask…';
 
     canvas.setAttribute('data-variant', state.layoutVariant);
     canvas.setAttribute('data-device', previewDevice);
