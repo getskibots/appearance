@@ -155,7 +155,6 @@
 }
 
 .gsb-launcher[data-effect-mode="shadow"][data-icon-style="traditional"],
-.gsb-launcher[data-effect-mode="shadow"][data-icon-style="custom"],
 .gsb-launcher[data-effect-mode="shadow"][data-icon-style="enhanced"],
 .gsb-launcher[data-effect-mode="shadow"][data-icon-style="slidein"] {
   animation: none !important;
@@ -164,7 +163,6 @@
 
 /* Glow — static halo, no animation (across all launcher styles) */
 .gsb-launcher[data-effect-mode="glow"][data-icon-style="traditional"],
-.gsb-launcher[data-effect-mode="glow"][data-icon-style="custom"],
 .gsb-launcher[data-effect-mode="glow"][data-icon-style="enhanced"],
 .gsb-launcher[data-effect-mode="glow"][data-icon-style="slidein"] {
   animation: none !important;
@@ -178,8 +176,10 @@
 .gsb-launcher[data-effect-mode="radiate"][data-icon-style="traditional"] {
   animation: gsb-launcher-pulse-traditional 2.5s ease-out infinite !important;
 }
+/* Custom never radiates — the uploaded image is the whole launcher. */
 .gsb-launcher[data-effect-mode="radiate"][data-icon-style="custom"] {
-  animation: gsb-launcher-pulse-traditional 2.5s ease-out infinite !important;
+  animation: none !important;
+  box-shadow: none !important;
 }
 .gsb-launcher[data-effect-mode="radiate"][data-icon-style="enhanced"],
 .gsb-launcher[data-effect-mode="radiate"][data-icon-style="slidein"] {
@@ -192,9 +192,10 @@
   color: #fff;
 }
 
-/* Custom icon variant: the uploaded image fully REPLACES the launcher badge —
-   it fills the round launcher edge-to-edge with no brand background behind it
-   (transparent areas of the image show through, not the brand color). */
+/* Custom icon variant: the uploaded image fully REPLACES the launcher — it fills
+   the round launcher edge-to-edge with NO brand background, NO pulse halo, and NO
+   depth effect of any kind (see the effect-mode overrides above). 100% swapped.
+   Transparent areas of the image show through, not the brand color. */
 .gsb-launcher[data-icon-style="custom"] {
   width: 56px;
   height: 56px;
@@ -203,7 +204,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: gsb-launcher-pulse-traditional 2.5s ease-out infinite;
+  animation: none;
+  box-shadow: none;
   overflow: hidden;
 }
 
