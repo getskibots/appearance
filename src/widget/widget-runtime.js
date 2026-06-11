@@ -810,11 +810,8 @@ import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
       $('gsbComposerMic').setAttribute('data-supported', 'false');
       $('gsbVoiceModeBtn').setAttribute('data-supported', 'false');
     }
-    if (!voice.ttsSupported) {
-      // Hide voice-output toggle if TTS not supported
-      $('gsbVoiceOutputToggle').setAttribute('data-supported', 'false');
-      $('gsbVoiceOutputToggle').style.display = 'none';
-    }
+    // (The read-aloud / voice-output toggle was removed from the header UI, so
+    //  there's no element to hide when TTS is unsupported.)
 
     // If neither, show a toast on first chat open
     if (!voice.sttSupported && !voice.ttsSupported) {
@@ -957,7 +954,6 @@ import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
     }
 
     utterance.onstart = function() {
-      $('gsbVoiceOutputToggle').setAttribute('data-speaking', 'true');
       if (voice.fullModeActive) {
         setOrbState('speaking');
         setTranscript(text, 'ai');
@@ -965,7 +961,6 @@ import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
       if (opts.onstart) opts.onstart();
     };
     utterance.onend = function() {
-      $('gsbVoiceOutputToggle').removeAttribute('data-speaking');
       if (voice.fullModeActive) {
         setOrbState('listening');
         // Auto-restart listening so it's a continuous voice loop
@@ -976,7 +971,6 @@ import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
       if (opts.onend) opts.onend();
     };
     utterance.onerror = function() {
-      $('gsbVoiceOutputToggle').removeAttribute('data-speaking');
       if (voice.fullModeActive) setOrbState('idle');
     };
 
@@ -989,7 +983,6 @@ import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
       return;
     }
     voice.outputEnabled = !voice.outputEnabled;
-    $('gsbVoiceOutputToggle').setAttribute('data-active', String(voice.outputEnabled));
 
     if (!voice.outputEnabled) {
       window.speechSynthesis.cancel();  // stop any in-progress speech
@@ -1221,7 +1214,6 @@ import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
 
   // Voice events
   $('gsbComposerMic').addEventListener('click', toggleComposerListening);
-  $('gsbVoiceOutputToggle').addEventListener('click', toggleVoiceOutput);
   $('gsbVoiceModeBtn').addEventListener('click', openVoiceMode);
   $('gsbVoiceModeExit').addEventListener('click', closeVoiceMode);
   $('gsbVoiceMainBtn').addEventListener('click', handleVoiceMainBtn);

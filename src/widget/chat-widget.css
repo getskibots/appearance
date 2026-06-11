@@ -762,6 +762,10 @@ body[data-variant="full"] .gsb-chat-header {
 
 body[data-variant="full"] .gsb-agent-status-header { display: none; }
 
+/* When Live agent is off, drop the agent-status pill entirely — no "AI Concierge"
+   messaging when there's no live agent to indicate. */
+body[data-liveagent="off"] .gsb-agent-status-header { display: none !important; }
+
 @media (max-width: 899px) {
   body[data-variant="full"] .gsb-agent-status-header { display: inline-flex; }
 }
