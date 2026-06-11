@@ -62,6 +62,7 @@ interface GsbAppearance {
   bubbleStyle: 'traditional' | 'custom' | 'enhanced' | 'slidein';
   customIconUrl: string | null;
   slideState: 'visible' | 'hidden';
+  autoHideOnScroll: { enhanced: boolean; slidein: boolean };  // per-pill-style slide-away-on-scroll
   layoutVariant: 'side' | 'middle' | 'full';
   blurredBackground: boolean;
   effectMode: 'none' | 'shadow' | 'glow' | 'radiate';
@@ -126,6 +127,7 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `bubbleStyle` | enum | `slidein` | Launcher style: traditional/custom/enhanced/slidein |
 | `customIconUrl` | string\|null | `null` | Uploaded launcher icon (custom style) |
 | `slideState` | enum | `visible` | Slide-in pill shown/hidden |
+| `autoHideOnScroll` | object | `{enhanced:false, slidein:true}` | Per-pill-style auto-hide-on-scroll (Status pill default off, Slide-in default on) |
 | `layoutVariant` | enum | `side` | Panel layout: side/middle/full |
 | `blurredBackground` | boolean | `true` | Backdrop blur when open |
 | `effectMode` | enum | `radiate` | Depth effect: none/shadow/glow/radiate |

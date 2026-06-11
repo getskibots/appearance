@@ -42,6 +42,7 @@ function toGsbAppearance(state) {
     bubbleStyle: state.bubbleStyle,
     customIconUrl: state.customIconUrl,
     slideState: state.slideState,
+    autoHideOnScroll: state.autoHideOnScroll,
     layoutVariant: state.layoutVariant,
     blurredBackground: state.blurredBackground,
     effectMode: state.effectMode,
