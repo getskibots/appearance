@@ -484,10 +484,10 @@
 
 /* A .section that is also .acc-card becomes an elevated, collapsible card.
    Matches BotScrew's Integrations-page card signature (pulled from their bundle):
-   10px radius, white surface, no hard border, and the brand-tinted soft shadow
-   `4px 4px 29px rgba(brand, .09)` — BotScrew tints theirs with brand blue
-   (19,69,186); we tint with --brand-rgb. The header padding/transitions below
-   still follow their Bootstrap accordion values. */
+   10px radius, white surface, no hard border, soft `4px 4px 29px` shadow.
+   BotScrew tints theirs with brand blue (19,69,186); we use a neutral cool
+   shadow (our 20,40,80 token hue) so the shadow stays hue-free, not brand-red.
+   Header padding/transitions below still follow their Bootstrap accordion values. */
 .section.acc-card {
   margin-bottom: 16px;
   padding-bottom: 0;
@@ -495,11 +495,11 @@
   border-radius: 10px;
   background: #fff;
   overflow: hidden;
-  box-shadow: 4px 4px 29px rgba(var(--brand-rgb), 0.09);
+  box-shadow: 4px 4px 29px rgba(20, 40, 80, 0.09);
   transition: box-shadow 0.15s ease-in-out;
 }
 .section.acc-card:last-child { margin-bottom: 0; }
-.section.acc-card:hover { box-shadow: 4px 6px 32px rgba(var(--brand-rgb), 0.13); }
+.section.acc-card:hover { box-shadow: 4px 6px 32px rgba(20, 40, 80, 0.13); }
 
 .acc-head {
   display: flex; align-items: center; gap: 14px; width: 100%;
