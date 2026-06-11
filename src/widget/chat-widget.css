@@ -215,6 +215,33 @@
   object-fit: cover;
 }
 
+/* Soft "radiate from the center of the icon" for the custom launcher. The launcher
+   itself stays clean (no box-shadow ring); this ::before is a separate glow layer
+   that starts at the icon's center and expands outward (custom is overflow:visible,
+   so it spills past the circle). z-index:-1 keeps it BEHIND the icon. Kept subtle
+   (~10%) so it never reads as a hard badge. Only shown once an icon is uploaded
+   (data-custom-icon) and only in radiate mode (the global default; None disables). */
+.gsb-launcher[data-icon-style="custom"][data-effect-mode="radiate"][data-custom-icon="true"]::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--brand-rgb), 0.85) 0%, rgba(var(--brand-rgb), 0) 68%);
+  transform: translate(-50%, -50%) scale(0.35);
+  opacity: 0;
+  z-index: -1;
+  pointer-events: none;
+  animation: gsb-custom-radiate 2.8s ease-out infinite;
+}
+@keyframes gsb-custom-radiate {
+  0%   { transform: translate(-50%, -50%) scale(0.35); opacity: 0; }
+  25%  { opacity: 0.16; }
+  100% { transform: translate(-50%, -50%) scale(2.3); opacity: 0; }
+}
+
 /* Hide irrelevant children based on icon style */
 .gsb-launcher[data-icon-style="traditional"] .gsb-launcher-custom-icon,
 .gsb-launcher[data-icon-style="traditional"] .gsb-launcher__row,

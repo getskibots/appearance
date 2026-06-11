@@ -645,6 +645,9 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     var customSize = state.customIconSize != null ? state.customIconSize : 56;
     document.documentElement.style.setProperty('--gsb-custom-launcher-size', customSize + 'px');
     if ($('customIconSize') && document.activeElement !== $('customIconSize')) $('customIconSize').value = customSize;
+    // Gate the custom launcher's soft center-radiate on an uploaded icon (so an
+    // empty custom launcher never pulses around nothing).
+    launcher.setAttribute('data-custom-icon', state.customIconUrl ? 'true' : 'false');
 
     // Auto-hide-on-scroll behavior block — shown for both pill styles; the note +
     // Simulate button (#autoHideDetail) only when the behavior is switched on.
