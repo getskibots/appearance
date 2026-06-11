@@ -725,18 +725,13 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
   $('logoFile').addEventListener('change', function(e) {
     var f = e.target.files && e.target.files[0];
     if (!f) return;
-    if (/jpeg|jpg/.test(f.type)) {
-      $('logoWarn').innerHTML = '<strong>JPEGs aren\'t accepted.</strong> JPEGs don\'t support transparency. Re-export as PNG with a transparent background or upload an SVG.';
-      $('logoWarn').setAttribute('data-show','true');
-      e.target.value = '';
-      return;
-    }
     var reader = new FileReader();
     reader.onload = function() {
       var url = reader.result;
       var img = new Image();
       img.onload = function() {
         var warnings = [];
+        if (/jpeg|jpg/.test(f.type)) warnings.push('JPEGs aren\'t recommended — they can\'t have a transparent background, so a PNG or SVG will sit cleaner on the chat header.');
         if (img.naturalWidth < 240) warnings.push('Logo is narrower than 240px — may look soft on retina.');
         if (img.naturalWidth > 2000) warnings.push('Logo is wider than 2000px — consider downsizing.');
         if (f.size > 200 * 1024) warnings.push('File is over 200KB — most logos compress under 50KB.');
