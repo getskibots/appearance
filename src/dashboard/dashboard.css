@@ -479,23 +479,33 @@
 }
 .acc-toolbar__btn:hover { text-decoration: underline; }
 
-/* A .section that is also .acc-card becomes a bordered, collapsible card. */
+/* A .section that is also .acc-card becomes a bordered, collapsible card.
+   Geometry matches BotScrew's Bootstrap accordion: 0.375rem (6px) radius,
+   1px #dee2e6-class border, 1rem 1.25rem (16px 20px) header/body padding,
+   0.15s ease-in-out surface transitions. Accent stays GSB brand, not BS blue. */
 .section.acc-card {
   margin-bottom: 10px;
   padding-bottom: 0;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 6px;
   background: #fff;
   overflow: hidden;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 .section.acc-card:last-child { margin-bottom: 0; border-bottom: 1px solid var(--border); }
 
 .acc-head {
   display: flex; align-items: center; gap: 14px; width: 100%;
-  padding: 16px 18px; background: transparent; border: 0; cursor: pointer;
+  padding: 16px 20px; background: transparent; border: 0; cursor: pointer;
   text-align: left; font: inherit;
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
 }
 .acc-head:hover { background: var(--surface); }
+/* Mirror Bootstrap's active-button tint (#e7f1ff / #0c63e4) but in GSB brand. */
+.acc-card[data-open="true"] .acc-head {
+  background: color-mix(in srgb, var(--brand) 7%, #fff);
+}
+.acc-card[data-open="true"] .acc-head__title { color: var(--brand-deep, var(--ink)); }
 .acc-head__icon {
   flex: none; width: 22px; height: 22px; color: var(--accent);
   display: inline-flex; align-items: center; justify-content: center;
@@ -509,13 +519,13 @@
   background: #ba7517; display: none;
 }
 .acc-card[data-acc-dirty="true"] .acc-head__dot { display: inline-block; }
-.acc-head__chevron { flex: none; color: var(--ink-muted); transition: transform 200ms ease; }
+.acc-head__chevron { flex: none; color: var(--ink-muted); transition: transform 0.2s ease-in-out; }
 .acc-card[data-open="true"] .acc-head__chevron { transform: rotate(180deg); }
 
 /* Collapse: hide every direct child except the header until the card is open. */
 .section.acc-card:not([data-open="true"]) > :not(.acc-head) { display: none; }
 /* Revealed body content gets side padding to match the card. */
-.section.acc-card[data-open="true"] > :not(.acc-head) { padding-left: 18px; padding-right: 18px; }
+.section.acc-card[data-open="true"] > :not(.acc-head) { padding-left: 20px; padding-right: 20px; }
 .section.acc-card[data-open="true"] { padding-bottom: 8px; }
 
 .field {
