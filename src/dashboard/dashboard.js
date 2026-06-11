@@ -395,7 +395,7 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
       if (updateSource === 'flow') {
         var flowName = FLOW_LABELS[state.recentUpdateFlow];
         bannerShow = !!flowName;
-        bannerBody = flowName ? ('Live updates from the “' + flowName + '” flow will appear here.') : '';
+        bannerBody = flowName ? ('Live updates from “' + flowName + '” will appear here.') : '';
       } else {
         bannerShow = !!(state.recentUpdate && state.recentUpdate.trim());
         bannerBody = state.recentUpdate || '';
