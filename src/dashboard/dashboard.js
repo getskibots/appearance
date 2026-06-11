@@ -339,9 +339,9 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     customIconUrl: null,
     slideState: 'visible',
     // Auto-hide-on-scroll is a behavior available on both pill styles. Per-style
-    // so each remembers its own setting; default ON for slide-in (preserves prior
-    // behavior), OFF for the horizontal status pill (opt-in).
-    autoHideOnScroll: { enhanced: false, slidein: true },
+    // so each remembers its own setting; default ON for both pills so the launcher
+    // stays clear of checkout/CTA elements out of the box.
+    autoHideOnScroll: { enhanced: true, slidein: true },
     statusPillFeatures: { liveAgent: true, weather: true, needHelpCta: true },
     layoutVariant: 'side',
     blurredBackground: true,

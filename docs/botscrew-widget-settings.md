@@ -127,7 +127,7 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `bubbleStyle` | enum | `slidein` | Launcher style: traditional/custom/enhanced/slidein |
 | `customIconUrl` | string\|null | `null` | Uploaded launcher icon (custom style) |
 | `slideState` | enum | `visible` | Slide-in pill shown/hidden |
-| `autoHideOnScroll` | object | `{enhanced:false, slidein:true}` | Per-pill-style auto-hide-on-scroll (Status pill default off, Slide-in default on) |
+| `autoHideOnScroll` | object | `{enhanced:true, slidein:true}` | Per-pill-style auto-hide-on-scroll (on by default for both pills) |
 | `layoutVariant` | enum | `side` | Panel layout: side/middle/full |
 | `blurredBackground` | boolean | `true` | Backdrop blur when open |
 | `effectMode` | enum | `radiate` | Depth effect: none/shadow/glow/radiate |
