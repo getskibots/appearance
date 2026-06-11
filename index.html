@@ -806,24 +806,21 @@
                   <input class="input" type="text" id="searchPlaceholder" value="Ask anything about your visit…" />
                 </div>
 
-                <!-- Inline magnifying glass icon -->
-                <div class="toggle-row" style="padding:8px 0;border-bottom:0">
-                  <div class="toggle-row__main">
-                    <div class="toggle-row__title" style="font-weight:400;font-size:13px;color:var(--ink-soft)">Show inline magnifying glass icon</div>
-                    <div class="toggle-row__desc">Adds a small glass icon inside the search bar, on the right edge.</div>
-                  </div>
-                  <button type="button" class="toggle" id="toggleSearchInlineGlass" role="switch" aria-checked="true"></button>
-                </div>
-
                 <!-- Inline live preview of the search bar - functional trigger -->
                 <div class="embed-inline-preview" aria-label="Live search bar preview">
                   <span class="embed-inline-preview__label">Live preview</span>
                   <div class="embed-inline-preview__stage embed-inline-preview__stage--search">
-                    <form class="gsb-embed-search" id="embedSearchPreview" data-inline-glass="true" autocomplete="off">
+                    <form class="gsb-embed-search" id="embedSearchPreview" autocomplete="off">
+                      <span class="gsb-embed-search__sparkle" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/>
+                          <path d="M19 14l.7 2.1L22 17l-2.3.9L19 20l-.7-2.1L16 17l2.3-.9L19 14z"/>
+                        </svg>
+                      </span>
                       <input type="text" class="gsb-embed-search__input" id="embedSearchPreviewInput" placeholder="Ask anything about your visit…" />
-                      <button type="submit" class="gsb-embed-search__inline-glass" aria-label="Send">
-                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="M4 12L12 4M12 4H6M12 4V10"/>
+                      <button type="submit" class="gsb-embed-search__send" aria-label="Send">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M5 12h14M13 6l6 6-6 6"/>
                         </svg>
                       </button>
                     </form>
@@ -1340,11 +1337,17 @@
 
                       <!-- The embeddable search bar lives here -->
                       <div class="embed-mock-hero__search-row">
-                        <div class="gsb-embed-search" id="embedSearchBar" data-inline-glass="true">
+                        <div class="gsb-embed-search" id="embedSearchBar">
+                          <span class="gsb-embed-search__sparkle" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/>
+                              <path d="M19 14l.7 2.1L22 17l-2.3.9L19 20l-.7-2.1L16 17l2.3-.9L19 14z"/>
+                            </svg>
+                          </span>
                           <input type="text" class="gsb-embed-search__input" id="embedSearchInput" placeholder="Ask anything about your visit…" disabled />
-                          <button type="button" class="gsb-embed-search__inline-glass" tabindex="-1">
-                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <path d="M4 12L12 4M12 4H6M12 4V10"/>
+                          <button type="button" class="gsb-embed-search__send" tabindex="-1" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <path d="M5 12h14M13 6l6 6-6 6"/>
                             </svg>
                           </button>
                         </div>

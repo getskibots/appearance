@@ -84,7 +84,7 @@ interface GsbAppearance {
   };
   embedSearch: {
     borderRadius: number; borderThickness: number;
-    width: 'hug' | 'fixed' | 'full'; placeholder: string; inlineGlass: boolean;
+    width: 'hug' | 'fixed' | 'full'; placeholder: string;
   };
   embedButton: {
     size: number; shape: 'round' | 'square' | 'pill';

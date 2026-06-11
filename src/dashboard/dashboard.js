@@ -365,8 +365,7 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
       borderRadius: 999,        // px (999 = pill)
       borderThickness: 1.5,     // px
       width: 'fixed',           // 'hug' | 'fixed' | 'full'
-      placeholder: 'Ask anything about your visit…',
-      inlineGlass: true
+      placeholder: 'Ask anything about your visit…'
     },
     embedButton: {
       size: 44,                 // px
@@ -818,7 +817,6 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
         search.style.setProperty('--gsb-search-width', '100%');
         search.style.setProperty('--gsb-search-maxwidth', 'none');
       }
-      search.setAttribute('data-inline-glass', es.inlineGlass ? 'true' : 'false');
     });
     searchInputs.forEach(function(searchInput) {
       if (searchInput && document.activeElement !== searchInput) searchInput.placeholder = es.placeholder;
@@ -841,7 +839,6 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
       b.setAttribute('data-active', String(b.dataset.value === es.width));
     });
     if (document.activeElement !== $('searchPlaceholder')) $('searchPlaceholder').value = es.placeholder;
-    setToggle('toggleSearchInlineGlass', es.inlineGlass);
 
     // ============= EMBEDDABLE BUTTON =============
     var eb = state.embedButton;
@@ -1456,11 +1453,6 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     state.embedSearch.placeholder = e.target.value;
     render();
   });
-
-  // SEARCH BAR — inline magnifying glass
-  bindToggle('toggleSearchInlineGlass',
-    function(){ return state.embedSearch.inlineGlass; },
-    function(v){ state.embedSearch.inlineGlass = v; });
 
   // BUTTON — size slider + presets
   $('btnSizeSlider').addEventListener('input', function(e) {
