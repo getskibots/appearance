@@ -277,6 +277,97 @@
     font-size: 13px;
   }
 
+  /* ===================== SOURCE ACCORDION ===================== */
+  .acc-wrap {
+    padding: 8px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .acc-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: box-shadow .15s ease;
+  }
+  .acc-card[data-open="true"] {
+    box-shadow: 0 2px 10px rgba(20,30,50,.07);
+  }
+  .acc-head {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+  }
+  .acc-head:hover { background: var(--surface-2, #f8fafd); }
+  .acc-card[data-open="true"] .acc-head { border-bottom: 1px solid var(--border); }
+  .acc-head__icon {
+    flex: none;
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--tab-active-bg);
+    color: var(--sidebar);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .acc-head__titles { flex: 1; min-width: 0; }
+  .acc-head__title { display: block; font-size: 16px; font-weight: 600; color: var(--text); }
+  .acc-head__desc { display: block; font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
+  .acc-head__chevron { flex: none; color: var(--text-soft); transition: transform .2s ease; }
+  .acc-card[data-open="true"] .acc-head__chevron { transform: rotate(180deg); }
+  .acc-body { padding: 4px 20px 22px; }
+  .acc-card:not([data-open="true"]) .acc-body { display: none; }
+
+  /* Active / Coming-soon badges */
+  .acc-badge {
+    flex: none;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .acc-badge--active { background: var(--success-bg); color: var(--success); }
+  .acc-badge--soon { background: #eef1f5; color: var(--text-muted); }
+
+  /* Coming-soon card: dimmed, non-active treatment */
+  .acc-card--soon .acc-head__icon { background: #eef1f5; color: var(--text-soft); }
+  .acc-card--soon .acc-head__title { color: var(--text-muted); }
+  .soon-panel {
+    text-align: center;
+    padding: 24px 20px;
+    background: #fafbfd;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+  }
+  .soon-panel__badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    background: #eef1f5;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+  }
+  .soon-panel__text {
+    margin: 0 auto;
+    max-width: 560px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+  .soon-panel__text strong { color: var(--text); }
+
   /* ===================== CARDS ===================== */
   .card {
     padding: 28px;
@@ -2346,67 +2437,37 @@
             </div>
           </div>
 
-          <!-- ============= WEATHER CARD ============= -->
-          <div class="card">
-            <div class="card-head">
-              <div class="card-title">
-                <div class="icon-tile">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-                </div>
-                <div>
-                  <h3>Weather</h3>
-                  <p class="card-desc">Drop in coordinates. We pull live conditions from a global weather source — covering resorts anywhere in the world.</p>
-                </div>
-              </div>
-              <div class="weather-status">
+          <!-- ============= WEATHER SOURCE ACCORDION ============= -->
+          <div class="acc-wrap">
+
+          <!-- ===== Open-Meteo (active source) ===== -->
+          <section class="acc-card" data-open="true" data-acc-id="open-meteo">
+            <button type="button" class="acc-head" aria-expanded="true">
+              <span class="acc-head__icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+              </span>
+              <span class="acc-head__titles">
+                <span class="acc-head__title">Open-Meteo</span>
+                <span class="acc-head__desc">Global default · live conditions by coordinates</span>
+              </span>
+              <span class="acc-badge acc-badge--active">Active</span>
+              <span class="weather-status">
                 <span class="status-pill idle" id="card-status-pill">Not connected</span>
                 <span class="weather-saved-line" id="weather-saved-line" style="display:none"></span>
-                <div class="save-bar" id="save-bar">
-                  <span class="save-msg" id="save-status-text"></span>
-                  <button class="btn btn-ghost" id="discard-btn" disabled>Discard</button>
-                  <button class="btn btn-primary" id="save-btn" disabled>Save changes</button>
-                </div>
-              </div>
+              </span>
+              <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+
+            <div class="acc-body">
+
+            <!-- Contextual save actions — appear only when there are unsaved edits -->
+            <div class="save-bar" id="save-bar">
+              <span class="save-msg" id="save-status-text"></span>
+              <button class="btn btn-ghost" id="discard-btn" disabled>Discard</button>
+              <button class="btn btn-primary" id="save-btn" disabled>Save changes</button>
             </div>
 
-            <div class="field">
-              <label class="label">Weather source</label>
-              <div class="src-tabs src-tabs-2" role="tablist">
-                <button class="src-tab active" data-src="om" role="tab" aria-selected="true">
-                  <span class="src-tab-flag src-tab-logo">
-                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="Open-Meteo">
-                      <!-- Sky background -->
-                      <rect width="100" height="100" rx="14" fill="#1f6fb4"/>
-                      <!-- Stylized "OM" wordmark -->
-                      <text x="50" y="62" text-anchor="middle" fill="#fff"
-                            font-size="38" font-weight="800"
-                            font-family="-apple-system, sans-serif" letter-spacing="-1">OM</text>
-                      <!-- Subtle horizon line -->
-                      <line x1="22" y1="78" x2="78" y2="78" stroke="#fff" stroke-width="2" opacity="0.55"/>
-                    </svg>
-                  </span>
-                  <span class="src-tab-body">
-                    <span class="src-tab-name">Open-Meteo</span>
-                    <span class="src-tab-meta">Global · Default</span>
-                  </span>
-                </button>
-                <button class="src-tab" data-src="direct" role="tab" aria-selected="false">
-                  <span class="src-tab-flag">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-                  </span>
-                  <span class="src-tab-body">
-                    <span class="src-tab-name">Resort Direct</span>
-                    <span class="src-tab-meta">Your own endpoint</span>
-                  </span>
-                </button>
-              </div>
-              <div class="src-detect">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Open-Meteo will fetch live weather once you save coordinates below. Works for any resort, anywhere.
-              </div>
-            </div>
-
-            <!-- Coords mode: shown for Open-Meteo -->
+            <!-- Coords -->
             <div class="src-panel" data-panel="coords">
 
             <!-- Preset row: tap to populate fields with example resort coords -->
@@ -2565,248 +2626,6 @@
 
             </div><!-- /coords panel -->
 
-            <!-- Resort Direct mode: shown when "Resort Direct" source is active -->
-            <div class="src-panel hidden" data-panel="direct">
-
-              <div class="direct-banner">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-                <div>
-                  <strong>Use this if your resort already has a weather feed.</strong> Point us at any JSON endpoint, then map its fields to ours. Works with any shape — internal ops API, Snocountry feed, on-mountain sensors, custom JSON. Polled every 15 minutes.
-                </div>
-              </div>
-
-              <!-- ===== STEP 1: CONNECT ===== -->
-              <div class="step">
-                <div class="step-num">1</div>
-                <div class="step-body">
-                  <h4 class="step-title">Connect to your endpoint</h4>
-
-                  <div style="margin-top: 12px;">
-                    <label class="label">Endpoint URL <span class="req">required</span></label>
-                    <div style="display: flex; gap: 8px;">
-                      <input class="input mono" id="direct-endpoint-url" value="https://api.jacksonhole.com/weather/current" style="flex: 1;" placeholder="https://your-resort.com/api/weather">
-                      <button class="btn btn-primary" style="white-space: nowrap;">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
-                        Fetch sample
-                      </button>
-                    </div>
-                    <p class="help-text" style="margin-top: 6px;">Must return JSON. We'll fetch once to inspect the shape, then poll on the same schedule going forward.</p>
-                  </div>
-
-                  <div style="margin-top: 16px;">
-                    <label class="label">Authentication</label>
-                    <select class="select" style="max-width: 380px;" id="direct-auth-mode">
-                      <option value="none">None — public endpoint</option>
-                      <option value="bearer">Bearer token</option>
-                      <option value="header">Custom header</option>
-                    </select>
-                  </div>
-
-                  <div class="direct-auth-field hidden" data-auth="bearer" style="margin-top: 12px;">
-                    <label class="label">Token</label>
-                    <input class="input mono" placeholder="Bearer token value" type="password">
-                    <p class="help-text" style="margin-top: 6px;">Sent as <code class="mono-inline">Authorization: Bearer &lt;token&gt;</code>. Stored encrypted.</p>
-                  </div>
-
-                  <div class="direct-auth-field hidden" data-auth="header" style="margin-top: 12px;">
-                    <div class="field-row" style="margin-bottom: 0;">
-                      <div class="field" style="margin-bottom: 0;">
-                        <label class="label">Header name</label>
-                        <input class="input mono" placeholder="X-API-Key">
-                      </div>
-                      <div class="field" style="margin-bottom: 0;">
-                        <label class="label">Header value</label>
-                        <input class="input mono" placeholder="Value" type="password">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- ===== STEP 2: MAP FIELDS ===== -->
-              <div class="step">
-                <div class="step-num">2</div>
-                <div class="step-body">
-                  <div class="step-head-row">
-                    <h4 class="step-title">Map your fields to ours</h4>
-                    <span class="status-pill" style="font-size: 11px;">200 OK · 142ms · 4 fields auto-mapped</span>
-                  </div>
-                  <p class="help-text" style="margin-top: 4px; margin-bottom: 14px;">
-                    We auto-detected 4 of 4 fields based on your response shape. Click any value in the JSON tree on the left to re-map a field. Use dot-notation paths (<code class="mono-inline">base.tempF</code>) or bracket notation (<code class="mono-inline">[0].temp</code>) for arrays.
-                  </p>
-
-                  <div class="mapper">
-                    <!-- LEFT: JSON sample (clickable tree) -->
-                    <div class="mapper-pane">
-                      <div class="mapper-pane-head">
-                        <span>Sample response</span>
-                        <button class="link-btn">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-                          Re-fetch
-                        </button>
-                      </div>
-                      <div class="json-tree">
-<span class="jt-brace">{</span>
-  <span class="jt-key">"base"</span>: <span class="jt-brace">{</span>
-    <span class="jt-key">"tempF"</span>: <span class="jt-leaf jt-mapped" data-path="base.tempF" data-mapped-to="Base temp">21</span>,
-    <span class="jt-key">"conditions"</span>: <span class="jt-leaf jt-mapped" data-path="base.conditions" data-mapped-to="Conditions">"Light snow"</span>,
-    <span class="jt-key">"windMph"</span>: <span class="jt-leaf jt-mapped" data-path="base.windMph" data-mapped-to="Wind speed">14</span>,
-    <span class="jt-key">"windDir"</span>: <span class="jt-leaf jt-mapped" data-path="base.windDir" data-mapped-to="Wind direction">"NW"</span>
-  <span class="jt-brace">}</span>,
-  <span class="jt-key">"summit"</span>: <span class="jt-brace">{</span>
-    <span class="jt-key">"tempF"</span>: <span class="jt-leaf jt-mapped" data-path="summit.tempF" data-mapped-to="Summit temp">8</span>,
-    <span class="jt-key">"windMph"</span>: <span class="jt-leaf" data-path="summit.windMph">22</span>,
-    <span class="jt-key">"windDir"</span>: <span class="jt-leaf" data-path="summit.windDir">"NW"</span>
-  <span class="jt-brace">}</span>,
-  <span class="jt-key">"updatedAt"</span>: <span class="jt-leaf" data-path="updatedAt">"2026-04-27T20:34:00Z"</span>
-<span class="jt-brace">}</span>
-                      </div>
-                      <div class="mapper-pane-foot">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                        Click any value to map it. Mapped values are highlighted.
-                      </div>
-                    </div>
-
-                    <!-- RIGHT: Field mappings -->
-                    <div class="mapper-pane">
-                      <div class="mapper-pane-head">
-                        <span>Field mappings</span>
-                        <span class="mapper-progress">4 of 4 required</span>
-                      </div>
-
-                      <div class="map-list">
-
-                        <div class="map-row mapped">
-                          <div class="map-row-label">
-                            <span class="map-field">Base temp</span>
-                            <span class="map-req">required</span>
-                          </div>
-                          <div class="map-row-input">
-                            <input class="input mono" value="base.tempF">
-                            <span class="map-resolved">→ <strong>21</strong></span>
-                          </div>
-                        </div>
-
-                        <div class="map-row mapped">
-                          <div class="map-row-label">
-                            <span class="map-field">Conditions</span>
-                            <span class="map-req">required</span>
-                          </div>
-                          <div class="map-row-input">
-                            <input class="input mono" value="base.conditions">
-                            <span class="map-resolved">→ <strong>Light snow</strong></span>
-                          </div>
-                        </div>
-
-                        <div class="map-row mapped">
-                          <div class="map-row-label">
-                            <span class="map-field">Wind speed</span>
-                            <span class="map-req">required</span>
-                          </div>
-                          <div class="map-row-input">
-                            <input class="input mono" value="base.windMph">
-                            <span class="map-resolved">→ <strong>14</strong></span>
-                          </div>
-                        </div>
-
-                        <div class="map-row mapped">
-                          <div class="map-row-label">
-                            <span class="map-field">Wind direction</span>
-                            <span class="map-req">required</span>
-                          </div>
-                          <div class="map-row-input">
-                            <input class="input mono" value="base.windDir">
-                            <span class="map-resolved">→ <strong>NW</strong></span>
-                          </div>
-                        </div>
-
-                        <div class="map-divider">
-                          <span>Optional</span>
-                        </div>
-
-                        <div class="map-row mapped">
-                          <div class="map-row-label">
-                            <span class="map-field">Summit temp</span>
-                            <span class="map-opt">optional</span>
-                          </div>
-                          <div class="map-row-input">
-                            <input class="input mono" value="summit.tempF">
-                            <span class="map-resolved">→ <strong>8</strong></span>
-                          </div>
-                        </div>
-
-                        <div class="map-row">
-                          <div class="map-row-label">
-                            <span class="map-field">Summit wind speed</span>
-                            <span class="map-opt">optional</span>
-                          </div>
-                          <div class="map-row-input">
-                            <input class="input mono" placeholder="Click a value or type a path">
-                            <span class="map-resolved muted">→ <em>not mapped</em></span>
-                          </div>
-                        </div>
-
-                        <div class="map-row">
-                          <div class="map-row-label">
-                            <span class="map-field">Updated at</span>
-                            <span class="map-opt">optional</span>
-                          </div>
-                          <div class="map-row-input">
-                            <input class="input mono" placeholder="Click a value or type a path">
-                            <span class="map-resolved muted">→ <em>not mapped</em></span>
-                          </div>
-                        </div>
-
-                      </div>
-
-                      <div class="map-units">
-                        <div class="field-row" style="margin-bottom: 0;">
-                          <div class="field" style="margin-bottom: 0;">
-                            <label class="label">Temperature unit in response</label>
-                            <select class="select">
-                              <option>Fahrenheit (°F)</option>
-                              <option>Celsius (°C)</option>
-                            </select>
-                          </div>
-                          <div class="field" style="margin-bottom: 0;">
-                            <label class="label">Wind speed unit</label>
-                            <select class="select">
-                              <option>mph</option>
-                              <option>km/h</option>
-                              <option>m/s</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- ===== STEP 3: VERIFY ===== -->
-              <div class="step">
-                <div class="step-num">3</div>
-                <div class="step-body">
-                  <h4 class="step-title">Verify and save</h4>
-                  <p class="help-text" style="margin-top: 4px;">This is what your guests will see in the chat. If anything looks wrong, adjust the field mappings above.</p>
-
-                  <div class="verify-preview">
-                    <div class="verify-cell">
-                      <div class="verify-k">Base</div>
-                      <div class="verify-v">21°F · Light snow</div>
-                      <div class="verify-sub">Wind 14 mph NW</div>
-                    </div>
-                    <div class="verify-divider"></div>
-                    <div class="verify-cell">
-                      <div class="verify-k">Summit</div>
-                      <div class="verify-v">8°F</div>
-                      <div class="verify-sub">Wind not mapped</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div><!-- /direct panel -->
 
             <!-- Live readings + chat preview (side-by-side on desktop) -->
             <div class="readings-and-preview">
@@ -2994,7 +2813,37 @@
             </div>
 
             </div><!-- /readings-and-preview -->
-          </div>
+
+            </div><!-- /acc-body -->
+          </section><!-- /Open-Meteo card -->
+
+          <!-- ===== Resort Direct (coming soon) ===== -->
+          <section class="acc-card acc-card--soon" data-open="false" data-acc-id="resort-direct">
+            <button type="button" class="acc-head" aria-expanded="false">
+              <span class="acc-head__icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              </span>
+              <span class="acc-head__titles">
+                <span class="acc-head__title">Resort Direct</span>
+                <span class="acc-head__desc">Bring your own resort feed — point us at any JSON endpoint</span>
+              </span>
+              <span class="acc-badge acc-badge--soon">Coming soon</span>
+              <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="acc-body">
+              <div class="soon-panel">
+                <span class="soon-panel__badge">🚧 Coming soon</span>
+                <p class="soon-panel__text">
+                  Point us at your resort's own weather or snow feed and we'll wire it straight into the chat card — no code.
+                  We auto-detect the format (OpenSnow, Alta, Snocountry, on-mountain sensors, or custom JSON), map it to our
+                  fields, and poll it every 15 minutes. Until then, <strong>Open-Meteo</strong> above covers live conditions
+                  for any resort, anywhere.
+                </p>
+              </div>
+            </div>
+          </section><!-- /Resort Direct card -->
+
+          </div><!-- /acc-wrap -->
         </section>
       </div>
     </div>
@@ -3025,6 +2874,16 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
       pillClass: 'status-pill info'
     }
   };
+
+  // ===== Source accordion (Open-Meteo / Resort Direct) =====
+  document.querySelectorAll('.acc-head').forEach(head => {
+    head.addEventListener('click', () => {
+      const card = head.closest('.acc-card');
+      const open = card.getAttribute('data-open') === 'true';
+      card.setAttribute('data-open', open ? 'false' : 'true');
+      head.setAttribute('aria-expanded', open ? 'false' : 'true');
+    });
+  });
 
   const tabs = document.querySelectorAll('.src-tab');
   const panels = document.querySelectorAll('.src-panel');
