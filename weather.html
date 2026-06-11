@@ -2785,12 +2785,6 @@
                     </div>
                   </div>
 
-                  <!-- Conversation starters -->
-                  <div class="chat-mock-starters">
-                    <button type="button" class="chat-mock-starter" disabled>What lifts are open today?</button>
-                    <button type="button" class="chat-mock-starter" disabled>Where should a beginner ski?</button>
-                    <button type="button" class="chat-mock-starter" disabled>What's the snow report?</button>
-                  </div>
 
                   <!-- Composer -->
                   <div class="chat-mock-composer">
@@ -3574,7 +3568,8 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
   // Source-aware refresh
   // -------------------------------------------------------------------
   async function doRefresh() {
-    const activeSource = document.querySelector('.src-tab.active')?.dataset.src;
+    // Resort Direct is parked (coming soon) — Open-Meteo is the only live source.
+    const activeSource = document.querySelector('.src-tab.active')?.dataset.src || 'om';
     if (activeSource === 'direct') {
       setReadingsError(
         `<strong>Resort Direct API.</strong> Save your endpoint config to enable live refresh from this dashboard.`,
