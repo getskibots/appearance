@@ -365,18 +365,18 @@
   justify-content: space-between;
   gap: 20px;
   /* Sticky to the top (just below the 64px topbar) so Save/Revert stay reachable
-     while scrolling the long form. Constrained to the controls area (left of the
-     docked chat preview) and capped in width so the actions never overlap the
-     preview; z-index keeps them clickable above it. */
+     while scrolling the long form. Full-bleed to both card edges so the divider
+     rule spans the whole card and the actions sit flush at the right edge; the
+     inner padding keeps the title/buttons aligned with the card content. z-index
+     keeps the actions clickable above the docked chat preview. */
   position: sticky;
   top: 64px;
   z-index: 85;
-  max-width: 600px;
-  margin: -28px 0 0 -32px;
-  padding: 14px 24px 14px 32px;
+  margin: -28px -32px 0;
+  padding: 16px 32px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  border-radius: var(--radius-lg) 0 0 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .content-card__title {
@@ -400,7 +400,8 @@
 }
 
 .content-card__sub {
-  margin: 4px 0 0;
+  /* Breathing room below the full-width divider rule. */
+  margin: 18px 0 4px;
   color: var(--ink-muted);
   font-size: 13px;
 }
