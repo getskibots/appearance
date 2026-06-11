@@ -3,35 +3,39 @@
 Refactor of a single-file prototype into a maintainable Vite multi-page app that
 separates the **embeddable chat widget** from the **admin appearance dashboard**.
 
+## Handoff / docs (start here)
+
+| Doc | For |
+|---|---|
+| [`docs/HANDOFF.md`](docs/HANDOFF.md) | **Start here** — orientation, run, repo map, integration boundary |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Code + runtime model, config flow, how to extend |
+| [`docs/BUILD-STATUS.md`](docs/BUILD-STATUS.md) | What's done vs pending (where the build is) |
+| [`docs/botscrew-widget-settings.md`](docs/botscrew-widget-settings.md) | The BotScrew data contract (authoritative) |
+
 ## Apps
 
-- **`index.html`** — the appearance dashboard (admin UI BotScrew uses to configure
-  the widget per resort).
+- **`index.html`** — the appearance dashboard (admin UI used to configure the
+  widget per resort).
 - **`preview.html`** — a standalone live preview of the widget on a Jackson Hole
   resort-site mock.
-
-Both pages share the same widget core under `src/widget`.
+- **`weather.html`** — resort coordinate + "own feed" weather config tab.
 
 ## Develop
 
 ```bash
 npm install
-npm run dev      # serves /index.html (dashboard) and /preview.html (preview)
-```
-
-- Dashboard: http://localhost:5173/index.html
-- Preview:   http://localhost:5173/preview.html
-
-```bash
-npm run build    # emits both pages to dist/
+npm run dev      # serves index.html (dashboard), preview.html, weather.html
+npm run build    # emits all pages to dist/
 npm run preview  # serves the production build
 ```
+
+Live demo (auto-deploys on push to `main`): https://getskibots.github.io/appearance/
 
 ## Layout
 
 ```
 src/
-  shared/      design tokens, reset, color utilities (used by both apps)
+  shared/      design tokens, reset, color utilities, weather adapter, config mapper
   widget/      the embeddable chat widget (framework-agnostic vanilla JS)
   dashboard/   the admin appearance UI
   assets/      extracted static assets (sample logo, etc.)

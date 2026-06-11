@@ -154,11 +154,13 @@ the GSB-only features simply fall back to dashboard `DEFAULTS`.
 ## Producing & consuming this contract
 
 The appearance dashboard (`index.html` + `src/dashboard/dashboard.js`) is the
-**producer**: on every change it maps its internal `state` to this shape via
+**producer**: on **Save** it maps its internal `state` to this shape via
 [`src/shared/widget-config.js`](../src/shared/widget-config.js)
 (`toBotscrewWidgetSettings`) and writes it to `localStorage["gsb_widget_settings"]`.
-`fromBotscrewWidgetSettings` is the inverse (hydrate dashboard state from a stored
-`widgetSettings`), so a round-trip is lossless.
+On load it hydrates `state` from that key via `fromBotscrewWidgetSettings` (merged
+over `DEFAULTS`), so a round-trip is lossless. (A separate `gsb_preview_config` is
+auto-written on every change, but only feeds the sharable.link live preview — it is
+not the source of truth.)
 
 To drop into BotScrew, an engineer:
 
@@ -177,7 +179,7 @@ The 8 native fields map 1:1; the `gsbAppearance` block is persisted as opaque JS
 ## Local testing
 
 The dashboard writes the BotScrew-shaped object to `localStorage["gsb_widget_settings"]`
-on every change (alongside the legacy `gsb_preview_config`). Inspect it in DevTools:
+when you click **Save changes** (and hydrates from it on reload). Inspect it in DevTools:
 
 ```js
 JSON.parse(localStorage.getItem('gsb_widget_settings'))
