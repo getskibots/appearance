@@ -44,6 +44,7 @@ function toGsbAppearance(state) {
     recentUpdate: state.recentUpdate,
     recentUpdateSource: state.recentUpdateSource,
     recentUpdateFlow: state.recentUpdateFlow,
+    realtimeVoice: state.realtimeVoice,
     ctaText: state.ctaText,
     bubbleStyle: state.bubbleStyle,
     customIconUrl: state.customIconUrl,

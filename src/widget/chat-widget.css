@@ -1291,6 +1291,11 @@ body.gsb-conversation-started .gsb-chips { display: none; }
 .gsb-composer-row:not([data-has-text="true"]) .gsb-composer-send { display: none; }
 .gsb-composer-row[data-has-text="true"] .gsb-composer-voice-mode { display: none; }
 
+/* Realtime voice turned off (Behavior toggle) → hide the hands-free Voice Mode
+   button + full overlay entirely. The dictation mic is a separate feature. */
+body[data-voice="off"] .gsb-composer-voice-mode { display: none !important; }
+body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
+
 /* Subtle waveform breathing animation on idle so the icon reads clearly as "voice" */
 .gsb-composer-voice-mode svg rect:nth-child(1),
 .gsb-composer-voice-mode svg rect:nth-child(5) {

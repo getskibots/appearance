@@ -171,6 +171,7 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     soundNotifications: true,
     popupMessagePreview: false,
     askForRating: false,
+    realtimeVoice: true,        // show the hands-free Voice Mode feature in the chat
     disableTextInput: false,
     // Typography
     typography: {
@@ -436,6 +437,9 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     launcher.setAttribute('data-show-cta', state.statusPillFeatures.needHelpCta && isPillStyle ? 'true' : 'false');
     canvas.setAttribute('data-liveagent', state.statusPillFeatures.liveAgent ? 'on' : 'off');
     document.body.setAttribute('data-liveagent', state.statusPillFeatures.liveAgent ? 'on' : 'off');
+    // Realtime voice on/off → hides the hands-free Voice Mode button + overlay in the chat.
+    canvas.setAttribute('data-voice', state.realtimeVoice ? 'on' : 'off');
+    document.body.setAttribute('data-voice', state.realtimeVoice ? 'on' : 'off');
     canvas.setAttribute('data-modal-blur', state.blurredBackground ? 'true' : 'false');
 
     // Swap chat header agent label: "AI Concierge" by default, "Agent Online" when liveAgent toggle is active
@@ -521,6 +525,7 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     setToggle('toggleSound', state.soundNotifications);
     setToggle('togglePopup', state.popupMessagePreview);
     setToggle('toggleRating', state.askForRating);
+    setToggle('toggleVoice', state.realtimeVoice);
     setToggle('toggleDisableInput', state.disableTextInput);
 
     if (document.activeElement !== $('widgetName')) $('widgetName').value = state.widgetName;
@@ -712,7 +717,7 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
       launcher: ['bubbleStyle','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','statusPillFeatures','ctaText'],
       typography: ['typography'],
       panel: ['layoutVariant','blurredBackground'],
-      behavior: ['soundNotifications','popupMessagePreview','askForRating','disableTextInput'],
+      behavior: ['soundNotifications','popupMessagePreview','askForRating','realtimeVoice','disableTextInput'],
       embed: ['embedSearch','embedButton']
     };
     Object.keys(ACC_CARD_FIELDS).forEach(function(id) {
@@ -1077,6 +1082,7 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
   bindToggle('toggleSound', function(){ return state.soundNotifications; }, function(v){ state.soundNotifications = v; });
   bindToggle('togglePopup', function(){ return state.popupMessagePreview; }, function(v){ state.popupMessagePreview = v; });
   bindToggle('toggleRating', function(){ return state.askForRating; }, function(v){ state.askForRating = v; });
+  bindToggle('toggleVoice', function(){ return state.realtimeVoice; }, function(v){ state.realtimeVoice = v; });
   bindToggle('toggleDisableInput', function(){ return state.disableTextInput; }, function(v){ state.disableTextInput = v; });
 
   launcher.addEventListener('click', function(){ setOpen(true); });
@@ -1341,6 +1347,7 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
       recentUpdate: state.recentUpdate,
       recentUpdateSource: state.recentUpdateSource,
       recentUpdateFlow: state.recentUpdateFlow,
+      realtimeVoice: state.realtimeVoice,
       ctaText: state.ctaText,
       bubbleStyle: state.bubbleStyle,
       customIconUrl: state.customIconUrl,

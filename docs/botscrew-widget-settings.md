@@ -62,6 +62,7 @@ interface GsbAppearance {
   recentUpdate: string;                       // banner body; blank hides the banner
   recentUpdateSource: 'manual' | 'flow';      // source of the Season Update content
   recentUpdateFlow: string;                   // selected Flow / AI Action id (when source==='flow'; placeholder)
+  realtimeVoice: boolean;                      // show the hands-free Voice Mode feature in the chat
   ctaText: string;
   bubbleStyle: 'traditional' | 'custom' | 'enhanced' | 'slidein';
   customIconUrl: string | null;
@@ -127,6 +128,7 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `recentUpdate` | string | "The 2025/26 ski season…" | Season Update banner body; **blank hides the banner**. Manual copy wins over the live weather feed (`data-manual-update`) |
 | `recentUpdateSource` | enum | `manual` | Where the Season Update content comes from: `manual` (typed copy) or `flow` (a BotScrew Flow / AI Action). **Partner-facing label is "Automatic"** — "flow" is kept out of the UI as jargon |
 | `recentUpdateFlow` | string | `''` | Selected Flow / AI Action id when `recentUpdateSource === 'flow'`. **Placeholder** — the picker is wired in the UI but live flow output is not yet consumed |
+| `realtimeVoice` | boolean | `true` | Behavior toggle. When `false`, the chat hides the hands-free Voice Mode button + overlay (`body[data-voice="off"]`). The dictation mic is a separate feature, unaffected |
 | `ctaText` | string | `Need help?` | Launcher CTA label (≤24 glyphs) |
 | `bubbleStyle` | enum | `slidein` | Launcher style: traditional/custom/enhanced/slidein |
 | `customIconUrl` | string\|null | `null` | Uploaded launcher icon (custom style) |
