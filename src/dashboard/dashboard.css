@@ -347,9 +347,12 @@
 
 .subtabs__item[data-active="true"]:hover { background: #2a7dc0; color: #fff; }
 
-/* The main content card holding controls + preview */
+/* The main content card holding controls + preview.
+   Subtle top-to-bottom gradient (white -> faint cool off-white) so the elevated
+   accordion cards float on a tinted surface, mirroring BotScrew's Integrations
+   page where cards sit on a gently graded background. */
 .content-card {
-  background: var(--surface);
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   padding: 28px 32px;
@@ -479,20 +482,24 @@
 }
 .acc-toolbar__btn:hover { text-decoration: underline; }
 
-/* A .section that is also .acc-card becomes a bordered, collapsible card.
-   Geometry matches BotScrew's Bootstrap accordion: 0.375rem (6px) radius,
-   1px #dee2e6-class border, 1rem 1.25rem (16px 20px) header/body padding,
-   0.15s ease-in-out surface transitions. Accent stays GSB brand, not BS blue. */
+/* A .section that is also .acc-card becomes an elevated, collapsible card.
+   Matches BotScrew's Integrations-page card signature (pulled from their bundle):
+   10px radius, white surface, no hard border, and the brand-tinted soft shadow
+   `4px 4px 29px rgba(brand, .09)` — BotScrew tints theirs with brand blue
+   (19,69,186); we tint with --brand-rgb. The header padding/transitions below
+   still follow their Bootstrap accordion values. */
 .section.acc-card {
-  margin-bottom: 10px;
+  margin-bottom: 16px;
   padding-bottom: 0;
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  border: 0;
+  border-radius: 10px;
   background: #fff;
   overflow: hidden;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  box-shadow: 4px 4px 29px rgba(var(--brand-rgb), 0.09);
+  transition: box-shadow 0.15s ease-in-out;
 }
-.section.acc-card:last-child { margin-bottom: 0; border-bottom: 1px solid var(--border); }
+.section.acc-card:last-child { margin-bottom: 0; }
+.section.acc-card:hover { box-shadow: 4px 6px 32px rgba(var(--brand-rgb), 0.13); }
 
 .acc-head {
   display: flex; align-items: center; gap: 14px; width: 100%;
