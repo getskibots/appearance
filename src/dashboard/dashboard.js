@@ -1279,6 +1279,12 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
   var embedSearchForm = $('embedSearchPreview');
   var embedSearchInput = $('embedSearchPreviewInput');
   if (embedSearchForm) {
+    // ChatGPT-style swap (visual): Voice Mode when empty, Send (arrow) once typing.
+    function syncEmbedSearchActions() {
+      embedSearchForm.setAttribute('data-has-text',
+        (embedSearchInput && embedSearchInput.value.trim()) ? 'true' : 'false');
+    }
+    if (embedSearchInput) embedSearchInput.addEventListener('input', syncEmbedSearchActions);
     embedSearchForm.addEventListener('submit', function(e) {
       e.preventDefault();
       var q = (embedSearchInput && embedSearchInput.value || '').trim();
@@ -1290,7 +1296,9 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
         }, 300);
       }
       if (embedSearchInput) embedSearchInput.value = '';
+      syncEmbedSearchActions();
     });
+    syncEmbedSearchActions();
   }
 
   // Embed mag glass button preview — opens chat normally

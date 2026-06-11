@@ -810,7 +810,7 @@
                 <div class="embed-inline-preview" aria-label="Live search bar preview">
                   <span class="embed-inline-preview__label">Live preview</span>
                   <div class="embed-inline-preview__stage embed-inline-preview__stage--search">
-                    <form class="gsb-embed-search" id="embedSearchPreview" autocomplete="off">
+                    <form class="gsb-embed-search" id="embedSearchPreview" data-has-text="false" autocomplete="off">
                       <span class="gsb-embed-search__sparkle" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                           <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/>
@@ -818,11 +818,29 @@
                         </svg>
                       </span>
                       <input type="text" class="gsb-embed-search__input" id="embedSearchPreviewInput" placeholder="Ask anything about your visit…" />
-                      <button type="submit" class="gsb-embed-search__send" aria-label="Send">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="M5 12h14M13 6l6 6-6 6"/>
-                        </svg>
-                      </button>
+                      <div class="gsb-embed-search__actions">
+                        <button type="button" class="gsb-embed-search__mic" aria-label="Tap to dictate" title="Tap to dictate (opens chat)">
+                          <svg viewBox="0 0 24 24" fill="none">
+                            <rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/>
+                            <path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+                          </svg>
+                        </button>
+                        <!-- Swap: Voice Mode when empty, Send once you type (matches the chat composer) -->
+                        <button type="button" class="gsb-embed-search__voice" aria-label="Voice mode" title="Voice mode (opens chat)">
+                          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <rect x="1.5" y="6.5" width="1.6" height="3" rx="0.8" fill="currentColor"/>
+                            <rect x="4" y="4" width="1.6" height="8" rx="0.8" fill="currentColor"/>
+                            <rect x="6.5" y="2" width="1.6" height="12" rx="0.8" fill="currentColor"/>
+                            <rect x="9" y="4" width="1.6" height="8" rx="0.8" fill="currentColor"/>
+                            <rect x="11.5" y="6.5" width="1.6" height="3" rx="0.8" fill="currentColor"/>
+                          </svg>
+                        </button>
+                        <button type="submit" class="gsb-embed-search__send" aria-label="Send">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M5 12h14M13 6l6 6-6 6"/>
+                          </svg>
+                        </button>
+                      </div>
                     </form>
                   </div>
                 </div>
