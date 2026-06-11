@@ -50,7 +50,6 @@ function toGsbAppearance(state) {
     blurredBackground: state.blurredBackground,
     effectMode: state.effectMode,
     effectIntensity: state.effectIntensity,
-    snowfall: state.snowfall,
     statusPillFeatures: state.statusPillFeatures,
     typography: state.typography,
     embedSearch: state.embedSearch,

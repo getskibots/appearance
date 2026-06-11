@@ -68,14 +68,6 @@ interface GsbAppearance {
   blurredBackground: boolean;
   effectMode: 'none' | 'shadow' | 'glow' | 'radiate';
   effectIntensity: number;                   // 0–100
-  snowfall: {
-    enabled: boolean;
-    style: 'realistic' | 'crystalline' | 'storm';
-    intensity: number;                       // 20–200 (flake count)
-    showOnMobile: boolean;
-    pauseWhenIdle: boolean;
-    respectReducedMotion: boolean;           // a11y-locked, always true
-  };
   statusPillFeatures: { liveAgent: boolean; weather: boolean; needHelpCta: boolean };
   typography: {
     bodyFont: 'Inter' | 'DM Sans' | 'System';
@@ -137,13 +129,10 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `blurredBackground` | boolean | `true` | Backdrop blur when open |
 | `effectMode` | enum | `radiate` | Depth effect: none/shadow/glow/radiate |
 | `effectIntensity` | number | `65` | Depth strength 0–100 |
-| `snowfall` | object | `{enabled:false,…}` | Snow overlay engine config |
 | `statusPillFeatures` | object | `{liveAgent,weather,needHelpCta:true}` | Status-pill toggles |
 | `typography` | object | `{Inter, Playfair Display, 1.0}` | Body/display fonts + text scale |
 | `embedSearch` | object | see schema | Embeddable search-bar config |
 | `embedButton` | object | see schema | Embeddable magnifying-glass button config |
-
-> **`respectReducedMotion`** inside `snowfall` is a11y-locked to `true`.
 
 ## What BotScrew's backend needs to do
 

@@ -238,97 +238,6 @@
                 </div>
               </div>
 
-              <!-- Snowfall effect (style + intensity + behavior toggles) -->
-              <div class="field">
-                <label class="field__label">Snowfall effect</label>
-                <p class="field__hint" style="margin-top:0;margin-bottom:12px">A weather overlay applied to the chat surface. Pick a style that matches your resort's brand voice. Tune density and behavior below.</p>
-                <div style="max-width:540px">
-
-                  <!-- MASTER ON/OFF TOGGLE -->
-                  <div class="toggle-row" style="padding-top:0;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:16px">
-                    <div class="toggle-row__main">
-                      <div class="toggle-row__title">Enable snowfall</div>
-                      <div class="toggle-row__desc">Master switch. Turn off to remove all weather effects from the chat surface.</div>
-                    </div>
-                    <button type="button" class="toggle" id="toggleSnowEnabled" role="switch" aria-checked="false"></button>
-                  </div>
-
-                  <div id="snowfallControls">
-                  <!-- PRIMARY STYLE PICKER — 3 cards using radio-card pattern -->
-                  <div class="radio-cards radio-cards--three" id="snowfallStyleCards" role="radiogroup" aria-label="Snowfall style">
-                    <label class="radio-card snow-card" data-checked="true" data-value="realistic">
-                      <input type="radio" name="snowfallStyle" value="realistic" checked />
-                      <div class="radio-card__icon snow-preview snow-preview--realistic" aria-hidden="true">
-                        <span class="snow-flake-mini"></span><span class="snow-flake-mini"></span>
-                        <span class="snow-flake-mini"></span><span class="snow-flake-mini"></span>
-                      </div>
-                      <div class="radio-card__title">Realistic</div>
-                      <div class="radio-card__desc">Soft atmospheric snow. Default for most resorts.</div>
-                    </label>
-                    <label class="radio-card snow-card" data-checked="false" data-value="crystalline">
-                      <input type="radio" name="snowfallStyle" value="crystalline" />
-                      <div class="radio-card__icon snow-preview snow-preview--crystalline" aria-hidden="true">
-                        <span class="snow-crystal-mini"></span><span class="snow-crystal-mini"></span>
-                        <span class="snow-crystal-mini"></span>
-                      </div>
-                      <div class="radio-card__title">Crystalline</div>
-                      <div class="radio-card__desc">Sharp geometric flakes. Premium and luxury resorts.</div>
-                    </label>
-                    <label class="radio-card snow-card" data-checked="false" data-value="storm">
-                      <input type="radio" name="snowfallStyle" value="storm" />
-                      <div class="radio-card__icon snow-preview snow-preview--storm" aria-hidden="true">
-                        <span class="snow-streak-mini"></span><span class="snow-streak-mini"></span>
-                        <span class="snow-streak-mini"></span><span class="snow-streak-mini"></span>
-                        <span class="snow-streak-mini"></span>
-                      </div>
-                      <div class="radio-card__title">Storm</div>
-                      <div class="radio-card__desc">Wind-driven diagonal sheets. Big-mountain identity.</div>
-                    </label>
-                  </div>
-
-                  <!-- INTENSITY SLIDER -->
-                  <label class="field__label" for="snowfallIntensity" style="margin-top:18px;display:block">Intensity</label>
-                  <div class="slider-row">
-                    <div class="slider-row__slider">
-                      <input type="range" id="snowfallIntensity" min="20" max="200" step="5" value="90" />
-                      <div class="slider-row__ticks">
-                        <span>Flurry</span><span>Steady</span><span>Whiteout</span>
-                      </div>
-                    </div>
-                    <div class="slider-row__readout">
-                      <span id="snowfallIntensityReadout">90</span>
-                    </div>
-                  </div>
-                  <p class="field__hint" style="margin-top:6px">Number of flakes rendered. Higher values increase visual density.</p>
-
-                  <!-- BEHAVIOR TOGGLES -->
-                  <div class="toggle-group" id="snowfallBehaviorGroup" style="margin-top:14px">
-                    <div class="toggle-row">
-                      <div class="toggle-row__main">
-                        <div class="toggle-row__title">Show on mobile</div>
-                        <div class="toggle-row__desc">Renders the overlay on phones. Disable to save battery on guest devices.</div>
-                      </div>
-                      <button type="button" class="toggle" id="toggleSnowMobile" role="switch" aria-checked="true"></button>
-                    </div>
-                    <div class="toggle-row">
-                      <div class="toggle-row__main">
-                        <div class="toggle-row__title">Pause when idle</div>
-                        <div class="toggle-row__desc">Stops the animation after 60 seconds of no chat activity. Resumes when the guest interacts.</div>
-                      </div>
-                      <button type="button" class="toggle" id="toggleSnowPause" role="switch" aria-checked="true"></button>
-                    </div>
-                    <div class="toggle-row toggle-row--locked">
-                      <div class="toggle-row__main">
-                        <div class="toggle-row__title">Respect reduced-motion preference</div>
-                        <div class="toggle-row__desc">Required for accessibility. Falls back to a static dusting when the guest's OS has Reduce Motion enabled.</div>
-                      </div>
-                      <button type="button" class="toggle" id="toggleSnowReducedMotion" role="switch" aria-checked="true" aria-disabled="true" disabled></button>
-                    </div>
-                  </div>
-                  </div><!-- /#snowfallControls -->
-
-                </div>
-              </div>
 
               <!-- Brand Color -->
               <div class="field">
@@ -1065,12 +974,6 @@
 
                 <!-- Chat surface — production fidelity from sharable.link/25yu2bgv -->
                 <div class="gsb-chat" id="gsbChat">
-
-                  <!-- SNOWFALL OVERLAY — full-bleed canvas absolutely positioned
-                       inside the chat surface. The engine populates it with
-                       flake elements based on state.snowfall.{style, intensity}.
-                       Pointer-events disabled so it never blocks chat interaction. -->
-                  <div class="gsb-snowfall" id="gsbSnowfall" aria-hidden="true"></div>
 
                   <!-- HEADER -->
                   <div class="gsb-chat-header">

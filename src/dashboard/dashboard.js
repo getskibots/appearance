@@ -129,188 +129,6 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     return Array.from(str).slice(0, maxGlyphs).join('');
   }
 
-  // ============= SNOWFALL ENGINE =============
-  // Renders the actual flake/streak elements inside the chat surface based
-  // on state.snowfall. Three styles supported: realistic (soft circles),
-  // crystalline (sharp 6-pointed flakes), storm (diagonal streaks).
-  // Re-runs whenever style or intensity changes; pauses when chat is closed
-  // (perf), respects prefers-reduced-motion (a11y), supports idle pause.
-  var SnowEngine = (function() {
-    var container = null;
-    var currentStyle = null;
-    var currentIntensity = 0;
-    var currentMobileEnabled = true;
-    var idleTimer = null;
-    var idlePaused = false;
-    var IDLE_MS = 60000;
-
-    function reduceMotion() {
-      try {
-        return window.matchMedia &&
-               window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      } catch (_) { return false; }
-    }
-
-    function isMobileViewport() {
-      // Check the dashboard's preview canvas device toggle for "mobile",
-      // or the actual viewport width. Either signal kills the overlay if
-      // the partner has disabled mobile snowfall.
-      try {
-        var canvasEl = document.querySelector('.preview-canvas');
-        if (canvasEl && canvasEl.getAttribute('data-device') === 'mobile') return true;
-      } catch (_) {}
-      return window.innerWidth < 720;
-    }
-
-    function clear() {
-      if (!container) return;
-      container.innerHTML = '';
-    }
-
-    function build(style, intensity) {
-      if (!container) container = document.getElementById('gsbSnowfall');
-      if (!container) return;
-      clear();
-
-      // Disable on mobile if partner toggled it off
-      if (isMobileViewport() && !currentMobileEnabled) return;
-
-      // Map intensity (20..200) to actual flake count. Cap at 80 for perf
-      // even at "Whiteout" — 80 elements is plenty visually and stays smooth
-      // even on low-end devices.
-      var count = Math.min(80, Math.max(8, Math.round(intensity / 2.5)));
-
-      var staticMode = reduceMotion();
-
-      for (var i = 0; i < count; i++) {
-        var el = document.createElement('span');
-        var leftPct = Math.random() * 100;
-        var size, fallDuration, drift, opacity, animation;
-
-        if (style === 'crystalline') {
-          el.className = 'gsb-snow-crystal';
-          size = 6 + Math.random() * 10;        // 6-16px
-          fallDuration = 7 + Math.random() * 6;  // 7-13s (slower, deliberate)
-          drift = (Math.random() - 0.5) * 30;    // gentle sway
-          opacity = 0.7 + Math.random() * 0.3;
-          animation = 'gsb-snow-fall';
-        } else if (style === 'storm') {
-          el.className = 'gsb-snow-streak';
-          size = 8 + Math.random() * 14;        // height 8-22px (streaks)
-          fallDuration = 0.8 + Math.random() * 1.2; // 0.8-2s (fast)
-          drift = -50 - Math.random() * 80;      // strong sideways wind
-          opacity = 0.7 + Math.random() * 0.3;
-          animation = 'gsb-snow-fall-storm';
-          el.style.height = size + 'px';
-          el.style.left = leftPct + '%';
-          el.style.setProperty('--flake-drift', drift + 'px');
-          el.style.setProperty('--flake-opacity', String(opacity));
-          el.style.setProperty('--flake-distance', '700px');
-          el.style.animationDuration = fallDuration + 's';
-          el.style.animationDelay = (Math.random() * fallDuration) + 's';
-          el.style.animationName = animation;
-          el.style.animationTimingFunction = 'linear';
-          el.style.animationIterationCount = 'infinite';
-          container.appendChild(el);
-          continue;
-        } else {
-          // realistic (default)
-          el.className = 'gsb-snow-flake';
-          size = 3 + Math.random() * 6;         // 3-9px
-          fallDuration = 5 + Math.random() * 7;  // 5-12s
-          drift = (Math.random() - 0.5) * 60;
-          opacity = 0.6 + Math.random() * 0.4;
-          animation = 'gsb-snow-fall';
-        }
-
-        // Common positioning + animation properties
-        el.style.width = size + 'px';
-        el.style.height = size + 'px';
-        el.style.left = leftPct + '%';
-        el.style.setProperty('--flake-drift', drift + 'px');
-        el.style.setProperty('--flake-opacity', String(opacity));
-        el.style.setProperty('--flake-distance', '700px');
-        el.style.animationDuration = fallDuration + 's';
-        el.style.animationDelay = (Math.random() * fallDuration) + 's';
-        el.style.animationName = animation;
-        el.style.animationTimingFunction = 'linear';
-        el.style.animationIterationCount = 'infinite';
-
-        if (staticMode) {
-          // Static dusting — kill animation, place at random vertical positions
-          el.style.animationPlayState = 'paused';
-          el.style.top = (Math.random() * 90) + '%';
-          el.style.opacity = String(opacity * 0.5);
-        }
-
-        container.appendChild(el);
-      }
-    }
-
-    function shouldRender() {
-      // Don't render if chat is closed (perf — flakes outside view are wasted)
-      var canvasEl = document.querySelector('.preview-canvas');
-      if (canvasEl && canvasEl.getAttribute('data-preview-open') !== 'true') {
-        return false;
-      }
-      return true;
-    }
-
-    function apply(snow) {
-      if (!snow) return;
-      currentMobileEnabled = !!snow.showOnMobile;
-
-      // Idle pause hook — restart timer on every apply (state change = activity)
-      if (snow.pauseWhenIdle) {
-        if (idleTimer) clearTimeout(idleTimer);
-        idleTimer = setTimeout(function() {
-          idlePaused = true;
-          if (container) {
-            container.querySelectorAll('span').forEach(function(el) {
-              el.style.animationPlayState = 'paused';
-            });
-          }
-        }, IDLE_MS);
-        // If we were previously idle-paused, resume now
-        if (idlePaused && container) {
-          idlePaused = false;
-          container.querySelectorAll('span').forEach(function(el) {
-            el.style.animationPlayState = 'running';
-          });
-        }
-      }
-
-      // None style → clear and bail
-      if (snow.style === 'none' || !snow.style) {
-        clear();
-        return;
-      }
-
-      // Skip rebuild if nothing relevant changed (perf)
-      if (snow.style === currentStyle && snow.intensity === currentIntensity && container && container.children.length > 0) {
-        return;
-      }
-
-      currentStyle = snow.style;
-      currentIntensity = snow.intensity || 90;
-
-      if (shouldRender()) {
-        build(currentStyle, currentIntensity);
-      } else {
-        clear();
-      }
-    }
-
-    function refresh() {
-      // Called when chat opens — rebuilds in case it was cleared while closed
-      if (currentStyle && shouldRender()) {
-        build(currentStyle, currentIntensity);
-      }
-    }
-
-    return { apply: apply, refresh: refresh, clear: clear };
-  })();
-
   // ============= STATE =============
   // Jackson Hole resort logo (mountain mark + JH wordmark + ®, 263x92), inlined for demo
   var SAMPLE_LOGO = 'data:image/jpeg;base64,' + '/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAAeAAD/4QMwaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSAxMC4wLWMwMDAgNzkuZDIwZTQ2NjMwLCAyMDI1LzEyLzA5LTAyOjExOjIzICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjcuNSAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OUU4OUExNEI0MTg2MTFGMUIwMjQ5NzBCREZGMTdDMjIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OUU4OUExNEM0MTg2MTFGMUIwMjQ5NzBCREZGMTdDMjIiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo5RTg5QTE0OTQxODYxMUYxQjAyNDk3MEJERkYxN0MyMiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo5RTg5QTE0QTQxODYxMUYxQjAyNDk3MEJERkYxN0MyMiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pv/uAA5BZG9iZQBkwAAAAAH/2wCEABALCwsMCxAMDBAXDw0P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';
@@ -321,14 +139,6 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     cornerRadius: 7,
     effectMode: 'radiate',    // 'none' | 'shadow' | 'glow' | 'radiate'
     effectIntensity: 65,      // 0-100, percentage of max effect strength
-    snowfall: {
-      enabled: false,         // master on/off
-      style: 'realistic',     // 'realistic' | 'crystalline' | 'storm'
-      intensity: 90,          // 20-200, flake count
-      showOnMobile: true,
-      pauseWhenIdle: true,
-      respectReducedMotion: true  // a11y-locked, always true
-    },
     color: '#a41e23',
     chatHeaderColor: '#ffffff',
     widgetName: 'Jackson Hole Support',
@@ -508,45 +318,6 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     var intensitySlider = $('effectIntensity');
     if (intensitySlider && document.activeElement !== intensitySlider) intensitySlider.value = String(state.effectIntensity);
     if ($('effectIntensityReadout')) $('effectIntensityReadout').textContent = state.effectIntensity;
-
-    // ============= SNOWFALL EFFECT =============
-    // Sync style cards (primary + overflow) — only one is checked at a time.
-    var snow = state.snowfall || {};
-    setToggle('toggleSnowEnabled', !!snow.enabled);
-    // Dim/disable the rest of the snowfall controls when master toggle is off
-    var snowControls = $('snowfallControls');
-    if (snowControls) snowControls.setAttribute('data-disabled', String(!snow.enabled));
-    document.querySelectorAll('.snow-card').forEach(function(c) {
-      var checked = c.dataset.value === snow.style;
-      c.setAttribute('data-checked', String(checked));
-      var input = c.querySelector('input[type="radio"]');
-      if (input) input.checked = checked;
-    });
-    // Intensity slider + readout
-    var snowSlider = $('snowfallIntensity');
-    if (snowSlider && document.activeElement !== snowSlider) snowSlider.value = String(snow.intensity);
-    if ($('snowfallIntensityReadout')) $('snowfallIntensityReadout').textContent = snow.intensity;
-    // Behavior toggles
-    setToggle('toggleSnowMobile', !!snow.showOnMobile);
-    setToggle('toggleSnowPause', !!snow.pauseWhenIdle);
-    setToggle('toggleSnowReducedMotion', true); // always locked on
-    // Push snowfall config to chat surface via data attributes for the runtime
-    // (the snowfall engine reads these to render the actual overlay).
-    // When disabled, set style to 'none' so CSS kill switch and engine both stop.
-    var effectiveStyle = snow.enabled ? (snow.style || 'realistic') : 'none';
-    if (canvas) {
-      canvas.setAttribute('data-snow-style', effectiveStyle);
-      canvas.setAttribute('data-snow-intensity', String(snow.intensity || 90));
-      canvas.setAttribute('data-snow-mobile', snow.showOnMobile ? 'true' : 'false');
-      canvas.setAttribute('data-snow-idle-pause', snow.pauseWhenIdle ? 'true' : 'false');
-    }
-    // Run the engine — builds/rebuilds the actual flakes inside the chat surface
-    SnowEngine.apply({
-      style: effectiveStyle,
-      intensity: snow.intensity,
-      showOnMobile: snow.showOnMobile,
-      pauseWhenIdle: snow.pauseWhenIdle
-    });
 
     // Logo
     if (state.logoUrl) {
@@ -1185,32 +956,6 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     render();
   });
 
-  // ============= SNOWFALL HANDLERS =============
-  // Style card clicks (3 primary styles)
-  document.querySelectorAll('.snow-card').forEach(function(card) {
-    card.addEventListener('click', function() {
-      state.snowfall.style = card.dataset.value;
-      render();
-    });
-  });
-  // Intensity slider
-  $('snowfallIntensity').addEventListener('input', function(e) {
-    var v = parseInt(e.target.value, 10);
-    if (isNaN(v)) return;
-    state.snowfall.intensity = Math.max(20, Math.min(200, v));
-    render();
-  });
-  // Behavior toggles (reduced motion is locked, no handler needed)
-  bindToggle('toggleSnowEnabled',
-    function(){ return state.snowfall.enabled; },
-    function(v){ state.snowfall.enabled = v; });
-  bindToggle('toggleSnowMobile',
-    function(){ return state.snowfall.showOnMobile; },
-    function(v){ state.snowfall.showOnMobile = v; });
-  bindToggle('toggleSnowPause',
-    function(){ return state.snowfall.pauseWhenIdle; },
-    function(v){ state.snowfall.pauseWhenIdle = v; });
-
   $('widgetName').addEventListener('input', function(e){ state.widgetName = e.target.value; render(); });
   $('inputPlaceholder').addEventListener('input', function(e){ state.inputPlaceholder = e.target.value; render(); });
   $('welcomeText').addEventListener('input', function(e){ state.welcomeText = e.target.value; render(); });
@@ -1342,15 +1087,11 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
       if (window.gsbChatPreview && typeof window.gsbChatPreview.refreshData === 'function') {
         window.gsbChatPreview.refreshData();
       }
-      // Refresh snowfall (in case it was cleared while chat was closed)
-      SnowEngine.refresh();
     } else {
       document.body.classList.remove('modal-open');
       if (window.gsbChatPreview && typeof window.gsbChatPreview.closeChat === 'function') {
         window.gsbChatPreview.closeChat();
       }
-      // Clear snowfall when chat closes — saves CPU
-      SnowEngine.clear();
     }
   }
 
@@ -1541,8 +1282,7 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
       typography: state.typography,
       // Forward-compatible — preview will read these when updated:
       effectMode: state.effectMode,
-      effectIntensity: state.effectIntensity,
-      snowfall: state.snowfall
+      effectIntensity: state.effectIntensity
     };
   }
 
