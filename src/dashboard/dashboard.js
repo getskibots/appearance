@@ -6,7 +6,7 @@
 // BotScrew-aligned config mapper (drop-in contract). See docs/botscrew-widget-settings.md.
 import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/widget-config.js';
 // Google Fonts typography: catalog + dynamic loader + searchable picker.
-import { loadFont, fontStack } from '../shared/fonts/font-loader.js';
+import { loadFont, loadPreview, fontStack } from '../shared/fonts/font-loader.js';
 import { createFontPicker } from './font-picker.js';
 import FONT_CATALOG from '../shared/fonts/google-fonts.json';
 
@@ -595,11 +595,19 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // Reflect the current selection in the pickers (trigger label + face).
     if (bodyPicker) bodyPicker.sync();
     if (displayPicker) displayPicker.sync();
-    // Sync preset highlights — active when both body+display match the preset.
+    // Sync preset highlights + the "Now using" anchor. The active pairing is the
+    // matching preset's name, or "Custom" when fine-tuned off every preset.
+    var activePreset = null;
     document.querySelectorAll('#fontPresets .font-preset').forEach(function(p) {
       var matches = p.dataset.body === typo.bodyFont && p.dataset.display === typo.displayFont;
       p.setAttribute('data-active', String(matches));
+      if (matches) activePreset = p.querySelector('.font-preset__name').textContent;
     });
+    if ($('typoNowBadge')) {
+      $('typoNowBadge').textContent = activePreset || 'Custom';
+      $('typoNowBadge').setAttribute('data-custom', activePreset ? 'false' : 'true');
+    }
+    if ($('typoNowFonts')) $('typoNowFonts').textContent = typo.bodyFont + ' · ' + typo.displayFont;
 
     // Sync text size slider + label + presets
     if (document.activeElement !== $('textSizeSlider')) {
@@ -1226,6 +1234,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       render();
     });
   });
+  // Preload preview faces so the preset tiles render their Aa samples in-font.
+  ['Inter', 'Playfair Display', 'DM Sans', 'Fraunces', 'Montserrat', 'Oswald', 'Lato', 'Lora'].forEach(loadPreview);
   // Text size slider + presets
   $('textSizeSlider').addEventListener('input', function(e) {
     state.typography.textScale = parseFloat(e.target.value);
