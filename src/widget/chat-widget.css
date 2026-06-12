@@ -744,7 +744,7 @@ body[data-variant="full"] .gsb-chat-left-column {
   justify-content: center;
   background: linear-gradient(135deg, #2c4060 0%, #1a2638 100%);
   color: rgba(255,255,255,0.6);
-  font-size: 12px;
+  font-size: calc(12px * var(--gsb-text-scale, 1));
 }
 
 .gsb-webcam-live {
@@ -792,7 +792,7 @@ body[data-variant="full"] .gsb-chat-left-column {
   display: flex;
   justify-content: space-between;
   align-items: end;
-  font-size: 12px;
+  font-size: calc(12px * var(--gsb-text-scale, 1));
   z-index: 2;
 }
 
@@ -800,7 +800,7 @@ body[data-variant="full"] .gsb-chat-left-column {
 
 .gsb-webcam-meta .updated {
   color: rgba(255,255,255,0.75);
-  font-size: 10px;
+  font-size: calc(10px * var(--gsb-text-scale, 1));
   letter-spacing: 0.02em;
   text-transform: none;
 }
@@ -829,7 +829,7 @@ body[data-variant="full"] .gsb-chat-left-column {
   border-radius: 12px;
   background: #fff;
   overflow: hidden;
-  font-size: 12px;
+  font-size: calc(12px * var(--gsb-text-scale, 1));
   flex: 0 0 auto;
 }
 
@@ -840,7 +840,7 @@ body[data-variant="full"] .gsb-chat-left-column {
   padding: 10px 14px;
   background: var(--jh-surface);
   border-bottom: 1px solid var(--jh-border);
-  font-size: 10px;
+  font-size: calc(10px * var(--gsb-text-scale, 1));
   font-weight: 700;
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -941,7 +941,7 @@ body[data-variant="full"] .gsb-chat-left-column {
 .gsb-conditions-source {
   padding: 7px 14px;
   background: var(--jh-surface);
-  font-size: 9px;
+  font-size: calc(9px * var(--gsb-text-scale, 1));
   color: var(--jh-ink-soft);
   text-align: center;
   letter-spacing: 0.06em;
@@ -1399,7 +1399,7 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
 .gsb-voice-mode__title {
   font-family: var(--serif);
   font-style: italic;
-  font-size: 14px;
+  font-size: calc(14px * var(--gsb-text-scale, 1));
   font-weight: 500;
   color: rgba(255,255,255,0.7);
   letter-spacing: 0.02em;
@@ -1516,7 +1516,7 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
 
 /* Status label below orb */
 .gsb-voice-mode__status {
-  font-size: 13px;
+  font-size: calc(13px * var(--gsb-text-scale, 1));
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1600,7 +1600,7 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
 .gsb-voice-mode__btn {
   padding: 14px 24px;
   font-family: inherit;
-  font-size: 12px;
+  font-size: calc(12px * var(--gsb-text-scale, 1));
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1640,7 +1640,7 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
   gap: 6px;
   align-items: center;
   width: 100%;            /* fill the stage so items clamp to the panel width */
-  font-size: 11px;
+  font-size: calc(11px * var(--gsb-text-scale, 1));
   color: rgba(255,255,255,0.45);
   text-align: center;
   margin-top: 8px;
@@ -1667,7 +1667,7 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
   color: #fff;
   padding: 10px 16px;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: calc(12px * var(--gsb-text-scale, 1));
   font-weight: 500;
   z-index: 200;
   box-shadow: 0 8px 24px rgba(0,0,0,0.3);
