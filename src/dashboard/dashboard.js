@@ -165,6 +165,13 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // Flow / AI Action (placeholder — recentUpdateFlow holds the selected flow id).
     recentUpdateSource: 'manual',
     recentUpdateFlow: '',
+    // Hero slot at the top of the open chat (Webcams & featured image card).
+    // source: 'webcam' (live cam / feed) | 'featured' (Appearance-owned image) | 'none'.
+    hero: {
+      source: 'webcam',
+      webcam: { url: '', label: 'Cody Bowl' },
+      featuredImage: { url: '', caption: '', link: '' }
+    },
     ctaText: 'Need help?',
     bubbleStyle: 'slidein',
     customIconUrl: null,
@@ -420,6 +427,46 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       if (seasonTitle) seasonTitle.textContent = state.updateLabel || 'Season update';
       if ($('gsbSeasonText')) $('gsbSeasonText').textContent = bannerBody;
     }
+
+    // ============= HERO (Webcams & featured image) =============
+    var hero = state.hero;
+    var heroEl = $('gsbHero');
+    if (heroEl) {
+      heroEl.setAttribute('data-hero-source', hero.source);
+      var heroStation = $('gsbHeroStation');
+      function setHeroImg(url) {
+        var i = heroEl.querySelector('.gsb-webcam-img');
+        if (!i) { i = document.createElement('img'); i.className = 'gsb-webcam-img'; i.alt = ''; heroEl.insertBefore(i, heroEl.firstChild); }
+        i.src = url;
+        var fb = heroEl.querySelector('.gsb-webcam-fallback'); if (fb) fb.style.display = 'none';
+      }
+      if (hero.source === 'featured') {
+        if (hero.featuredImage.url) setHeroImg(hero.featuredImage.url);
+        if (heroStation) heroStation.textContent = hero.featuredImage.caption || '';
+        heroEl.setAttribute('data-hero-managed', 'true');
+      } else if (hero.source === 'webcam') {
+        if (hero.webcam.url) { setHeroImg(hero.webcam.url); heroEl.setAttribute('data-hero-managed', 'true'); }
+        else heroEl.removeAttribute('data-hero-managed');
+        if (heroStation) heroStation.textContent = hero.webcam.label || 'Webcam';
+      } else {
+        // 'none' — hidden via CSS; flag managed so the live feed doesn't repopulate.
+        heroEl.setAttribute('data-hero-managed', 'true');
+      }
+    }
+    // Reflect the source toggle + show the matching control group.
+    var heroBtns = document.querySelectorAll('#heroSourceSegmented [data-hero-source]');
+    for (var hi = 0; hi < heroBtns.length; hi++) {
+      var hon = heroBtns[hi].getAttribute('data-hero-source') === hero.source;
+      heroBtns[hi].setAttribute('data-active', String(hon));
+      heroBtns[hi].setAttribute('aria-checked', String(hon));
+    }
+    if ($('heroWebcamGroup')) $('heroWebcamGroup').style.display = hero.source === 'webcam' ? '' : 'none';
+    if ($('heroFeaturedGroup')) $('heroFeaturedGroup').style.display = hero.source === 'featured' ? '' : 'none';
+    if ($('webcamUrl') && document.activeElement !== $('webcamUrl')) $('webcamUrl').value = hero.webcam.url;
+    if ($('webcamLabel') && document.activeElement !== $('webcamLabel')) $('webcamLabel').value = hero.webcam.label;
+    if ($('featuredImageUrl') && document.activeElement !== $('featuredImageUrl')) $('featuredImageUrl').value = hero.featuredImage.url.indexOf('data:') === 0 ? '' : hero.featuredImage.url;
+    if ($('featuredCaption') && document.activeElement !== $('featuredCaption')) $('featuredCaption').value = hero.featuredImage.caption;
+    if ($('featuredLink') && document.activeElement !== $('featuredLink')) $('featuredLink').value = hero.featuredImage.link;
     // Target the visible chat composer (#gsbComposerInput); fall back to the old
     // hidden #composerInput alias only if the real input isn't present.
     var composerEl = $('gsbComposerInput') || $('composerInput');
@@ -726,6 +773,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // last saved snapshot, so collapsed cards still signal what's been edited.
     var ACC_CARD_FIELDS = {
       identity: ['logoUrl','logoMaxHeight','cornerRadius','effectMode','effectIntensity','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText','updateLabel','recentUpdate','recentUpdateSource','recentUpdateFlow'],
+      media: ['hero'],
       launcher: ['bubbleStyle','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','statusPillFeatures','ctaText'],
       typography: ['typography'],
       panel: ['layoutVariant','blurredBackground'],
@@ -1039,6 +1087,32 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     btn.addEventListener('click', function(){ state.recentUpdateSource = btn.getAttribute('data-update-source'); render(); });
   });
   $('updateFlow').addEventListener('change', function(e){ state.recentUpdateFlow = e.target.value; render(); });
+
+  // ============= HERO (Webcams & featured image) WIRING =============
+  document.querySelectorAll('#heroSourceSegmented [data-hero-source]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      state.hero.source = btn.getAttribute('data-hero-source');
+      render();
+      // Returning to a feed-driven webcam (no manual URL) — repopulate from the
+      // live feed so a previously-shown featured image doesn't linger.
+      if (state.hero.source === 'webcam' && !state.hero.webcam.url &&
+          window.gsbChatPreview && typeof window.gsbChatPreview.refreshData === 'function') {
+        window.gsbChatPreview.refreshData();
+      }
+    });
+  });
+  $('webcamUrl').addEventListener('input', function(e){ state.hero.webcam.url = e.target.value; render(); });
+  $('webcamLabel').addEventListener('input', function(e){ state.hero.webcam.label = e.target.value; render(); });
+  $('featuredImageUrl').addEventListener('input', function(e){ state.hero.featuredImage.url = e.target.value; render(); });
+  $('featuredCaption').addEventListener('input', function(e){ state.hero.featuredImage.caption = e.target.value; render(); });
+  $('featuredLink').addEventListener('input', function(e){ state.hero.featuredImage.link = e.target.value; render(); });
+  $('featuredImageFile').addEventListener('change', function(e){
+    var f = e.target.files && e.target.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function(){ state.hero.featuredImage.url = reader.result; render(); };
+    reader.readAsDataURL(f);
+  });
   $('ctaText').addEventListener('input', function(e){
     // Glyph-aware cap at 24 user-visible chars (so 🎿 counts as 1, not 2).
     // Note: maxlength was removed from the HTML input because it counts
@@ -1359,6 +1433,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       recentUpdate: state.recentUpdate,
       recentUpdateSource: state.recentUpdateSource,
       recentUpdateFlow: state.recentUpdateFlow,
+      hero: state.hero,
       realtimeVoice: state.realtimeVoice,
       ctaText: state.ctaText,
       bubbleStyle: state.bubbleStyle,

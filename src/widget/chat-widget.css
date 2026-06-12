@@ -805,6 +805,13 @@ body[data-variant="full"] .gsb-chat-left-column {
   text-transform: none;
 }
 
+/* Hero source (Webcams & featured image card). A featured image isn't "live", so
+   drop the LIVE badge + "Updated" stamp; 'none' hides the hero region entirely. */
+.gsb-chat-hero[data-hero-source="featured"] .gsb-webcam-live,
+.gsb-chat-hero[data-hero-source="featured"] .gsb-webcam-meta .updated { display: none; }
+.gsb-chat-hero[data-hero-source="featured"] .gsb-webcam-meta:not(:has(.station-name:not(:empty))) { display: none; }
+.gsb-chat-hero[data-hero-source="none"] { display: none; }
+
 /* WELCOME LINE */
 .gsb-welcome {
   /* Bottom padding 0 so the gap to the next block (Season banner / Conditions)

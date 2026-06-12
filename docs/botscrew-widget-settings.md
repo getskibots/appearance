@@ -63,6 +63,12 @@ interface GsbAppearance {
   recentUpdateSource: 'manual' | 'flow';      // source of the Season Update content
   recentUpdateFlow: string;                   // selected Flow / AI Action id (when source==='flow'; placeholder)
   realtimeVoice: boolean;                      // show the hands-free Voice Mode feature in the chat
+  /** The hero slot at the top of the open chat (Webcams & featured image card). */
+  hero: {
+    source: 'webcam' | 'featured' | 'none';
+    webcam: { url: string; label: string };               // url blank = use the live conditions feed
+    featuredImage: { url: string; caption: string; link: string };  // Appearance-owned
+  };
   ctaText: string;
   bubbleStyle: 'traditional' | 'custom' | 'enhanced' | 'slidein';
   customIconUrl: string | null;
@@ -128,6 +134,7 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `recentUpdate` | string | "The 2025/26 ski season…" | Season Update banner body; **blank hides the banner**. Manual copy wins over the live weather feed (`data-manual-update`) |
 | `recentUpdateSource` | enum | `manual` | Where the Season Update content comes from: `manual` (typed copy) or `flow` (a BotScrew Flow / AI Action). **Partner-facing label is "Automatic"** — "flow" is kept out of the UI as jargon |
 | `recentUpdateFlow` | string | `''` | Selected Flow / AI Action id when `recentUpdateSource === 'flow'`. **Placeholder** — the picker is wired in the UI but live flow output is not yet consumed |
+| `hero` | object | `{source:'webcam', webcam:{url:'', label:'Cody Bowl'}, featuredImage:{url:'', caption:'', link:''}}` | The hero image area at the top of the open chat. `source` picks **Webcam** (manual URL or, if blank, the live conditions feed), **Featured image** (Appearance-owned: image + caption + optional link), or **None** (hide the hero). Single webcam for now — multi-cam is the separately-quoted extension |
 | `realtimeVoice` | boolean | `true` | Behavior toggle. When `false`, the chat hides the hands-free Voice Mode button + overlay (`body[data-voice="off"]`). The dictation mic is a separate feature, unaffected |
 | `ctaText` | string | `Need help?` | Launcher CTA label (≤24 glyphs) |
 | `bubbleStyle` | enum | `slidein` | Launcher style: traditional/custom/enhanced/slidein |

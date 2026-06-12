@@ -381,8 +381,12 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
       }
     }
 
-    // Webcam — use first available cam
-    if (data.webcams && data.webcams.webcams && data.webcams.webcams.length > 0) {
+    // Webcam — use first available cam. Skip when the Appearance dashboard manages
+    // the hero (featured image, 'none', or a manually-set webcam URL).
+    var heroSrcAttr = $('gsbHero') && $('gsbHero').getAttribute('data-hero-source');
+    var heroManaged = $('gsbHero') && $('gsbHero').getAttribute('data-hero-managed') === 'true';
+    if (data.webcams && data.webcams.webcams && data.webcams.webcams.length > 0 &&
+        !heroManaged && (!heroSrcAttr || heroSrcAttr === 'webcam')) {
       var cam = data.webcams.webcams[0];
       var heroEl = $('gsbHero');
       if (heroEl) {

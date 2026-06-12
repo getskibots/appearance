@@ -346,6 +346,65 @@
             </div><!-- /.card-grid -->
             </section>
 
+            <!-- WEBCAMS & FEATURED IMAGE: the hero slot at the top of the open chat -->
+            <section class="section acc-card" data-acc-id="media">
+              <button type="button" class="acc-head" aria-expanded="false">
+                <span class="acc-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-5L6 20"/></svg></span>
+                <span class="acc-head__titles">
+                  <span class="acc-head__title">Webcams &amp; featured image</span>
+                  <span class="acc-head__desc">The live cam or image shown at the top of the chat</span>
+                </span>
+                <span class="acc-head__dot" aria-hidden="true"></span>
+                <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+
+              <!-- Hero source: what fills the image area at the top of the open chat -->
+              <div class="field">
+                <label class="field__label">Hero source</label>
+                <p class="field__hint" style="margin-top:0;margin-bottom:12px">What fills the image area at the very top of the open chat.</p>
+                <div class="segmented" id="heroSourceSegmented" role="radiogroup" aria-label="Hero source" style="max-width:420px">
+                  <button type="button" data-hero-source="webcam" data-active="true" role="radio" aria-checked="true">Webcam</button>
+                  <button type="button" data-hero-source="featured" data-active="false" role="radio" aria-checked="false">Featured image</button>
+                  <button type="button" data-hero-source="none" data-active="false" role="radio" aria-checked="false">None</button>
+                </div>
+              </div>
+
+              <!-- Webcam fields -->
+              <div id="heroWebcamGroup">
+                <div class="field">
+                  <label class="field__label" for="webcamUrl">Webcam URL</label>
+                  <p class="field__hint" style="margin-top:0;margin-bottom:8px">A still-image or live snapshot URL — it refreshes automatically with an "Updated" stamp and a LIVE badge. Leave blank to use the live conditions feed.</p>
+                  <input class="input" type="url" id="webcamUrl" placeholder="https://…/webcam.jpg" style="max-width:360px" />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="webcamLabel">Location label</label>
+                  <input class="input" type="text" id="webcamLabel" value="Cody Bowl" placeholder="e.g. Summit cam" style="max-width:360px" />
+                </div>
+              </div>
+
+              <!-- Featured image fields -->
+              <div id="heroFeaturedGroup" style="display:none">
+                <div class="field">
+                  <label class="field__label" for="featuredImageUrl">Image</label>
+                  <p class="field__hint" style="margin-top:0;margin-bottom:8px">Paste an image URL or upload a file. Wide / landscape images fill the hero best.</p>
+                  <input class="input" type="url" id="featuredImageUrl" placeholder="https://…/feature.jpg" style="max-width:360px" />
+                  <div class="logo-actions" style="margin-top:8px">
+                    <button class="btn" type="button" onclick="document.getElementById('featuredImageFile').click()">Upload image</button>
+                    <input type="file" id="featuredImageFile" accept="image/png,image/jpeg,image/webp,image/svg+xml" style="display:none" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="featuredCaption">Caption</label>
+                  <input class="input" type="text" id="featuredCaption" placeholder="e.g. Opening day — Dec 6" style="max-width:360px" />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="featuredLink">Link <span style="color:var(--ink-muted);font-weight:400">(optional)</span></label>
+                  <p class="field__hint" style="margin-top:0;margin-bottom:8px">Where the image goes when a guest taps it.</p>
+                  <input class="input" type="url" id="featuredLink" placeholder="https://…" style="max-width:360px" />
+                </div>
+              </div>
+            </section>
+
             <!-- LAUNCHER: Bubble style + Status pill features -->
             <section class="section acc-card" data-acc-id="launcher">
               <button type="button" class="acc-head" aria-expanded="false">
