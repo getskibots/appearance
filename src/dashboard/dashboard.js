@@ -169,7 +169,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // source: 'webcam' (live cam / feed) | 'featured' (Appearance-owned image) | 'none'.
     hero: {
       source: 'webcam',
-      webcam: { url: '', label: 'Cody Bowl' },
+      webcam: { url: 'https://cams.jacksonhole.com/webcam/codybowl.jpg', label: 'Cody Bowl' },
       featuredImage: { url: '', caption: '', link: '' }
     },
     ctaText: 'Need help?',
