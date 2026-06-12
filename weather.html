@@ -496,6 +496,34 @@
     .season-row__sub { flex-basis: 100%; }
   }
 
+  /* ===================== CONDITIONS CELL (icon + label, mirrors the widget) ===================== */
+  .status-cell .v.is-cond,
+  .chat-mock-cond-v.is-cond {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .status-cell .v.is-cond { align-items: flex-start; }
+  .chat-mock-cond-v.is-cond { align-items: center; }
+  .status-cell .v.is-cond .cond-icon,
+  .chat-mock-cond-v.is-cond .cond-icon {
+    font-size: 18px;
+    line-height: 1;
+  }
+  .status-cell .v.is-cond .cond-label,
+  .chat-mock-cond-v.is-cond .cond-label {
+    align-self: stretch;
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.15;
+    color: var(--text);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .chat-mock-cond-v.is-cond .cond-label { text-align: center; }
+
   /* ===================== READINGS + CHAT PREVIEW LAYOUT ===================== */
   .readings-and-preview {
     display: grid;
@@ -3443,7 +3471,11 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
   const MUTED = '<span class="muted">—</span>';
   const vTemp     = t   => t != null ? `${t}<small>°F</small>` : MUTED;
   const vWind     = cur => cur && cur.wind_speed != null ? `${cur.wind_speed}<small>mph ${cur.wind_dir_label || ''}</small>` : MUTED;
-  const vCond     = cur => cur && cur.conditions_label ? `${cur.icon_emoji ? cur.icon_emoji + ' ' : ''}${cur.conditions_label}` : MUTED;
+  const vCond     = cur => {
+    if (!(cur && cur.conditions_label)) return '<span class="cond-label">—</span>';
+    const icon = cur.icon_emoji ? `<span class="cond-icon">${cur.icon_emoji}</span>` : '';
+    return `${icon}<span class="cond-label">${cur.conditions_label}</span>`;
+  };
   const vSnowLvl  = cur => cur && cur.snow_level != null ? `${cur.snow_level.toLocaleString()}<small>ft</small>` : MUTED;
   const vUV       = cur => cur && cur.uv != null ? `${cur.uv}` : MUTED;
   const vPop      = m   => { const p = m?.forecast_current?.pop ?? m?.forecast_hourly?.find(h => h.pop != null)?.pop; return p != null ? `${Math.round(p * 100)}<small>%</small>` : MUTED; };
@@ -3456,7 +3488,7 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
       return [
         { k: 'Temp',          v: vTemp(b?.temp) },
         { k: 'Feels like',    v: vTemp(b?.apparent_temp) },
-        { k: 'Conditions',    v: vCond(b), small: true },
+        { k: 'Conditions',    v: vCond(b), cond: true },
         { k: 'Wind',          v: vWind(b) },
         { k: 'UV index',      v: vUV(b) },
         { k: 'Precip chance', v: vPop(baseModel) },
@@ -3467,7 +3499,7 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
     if (s) cells.push({ k: 'Summit temp', v: vTemp(s?.temp) });
     cells.push(
       { k: s ? 'Summit wind' : 'Wind', v: vWind(s || b) },
-      { k: 'Conditions',  v: vCond(b), small: true },
+      { k: 'Conditions',  v: vCond(b), cond: true },
       { k: 'Snowfall 5d', v: vSnowfall(baseModel) },
       { k: 'Snow level',  v: vSnowLvl(b) },
     );
@@ -3487,7 +3519,7 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
       grid.style.gridTemplateColumns = '';
       grid.innerHTML = cells.map(c =>
         `<div class="status-cell"><div class="k">${c.k}</div>` +
-        `<div class="v"${c.small ? ' style="font-size:14px;padding-top:4px;"' : ''}>${c.v}</div></div>`
+        `<div class="v${c.cond ? ' is-cond' : ''}">${c.v}</div></div>`
       ).join('');
     }
 
@@ -3496,7 +3528,7 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
       cond.style.gridTemplateColumns = '';
       cond.innerHTML = cells.map(c =>
         `<div class="chat-mock-cond-cell"><div class="chat-mock-cond-k">${c.k}</div>` +
-        `<div class="chat-mock-cond-v${c.small ? ' small' : ''}">${c.v}</div></div>`
+        `<div class="chat-mock-cond-v${c.cond ? ' is-cond' : ''}">${c.v}</div></div>`
       ).join('');
     }
   }
