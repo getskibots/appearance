@@ -64,6 +64,40 @@ export function wmoToConditions(wmo, dayPeriod) {
   };
 }
 
+// ---- monochrome condition icons -----------------------------------------
+// Thin-stroke SVG line icons (no color — stroke: currentColor, so they inherit
+// the card's ink). Keyed by conditions_id; sun/clear swap to a moon at night.
+// Sized by the consuming CSS (.cond-icon svg / .h-icon svg).
+const ICON_WRAP = (inner) =>
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg>`;
+
+const SUN     = '<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/>';
+const MOON    = '<path d="M20.5 14.1A8.5 8.5 0 1 1 9.9 3.5a7 7 0 0 0 10.6 10.6z"/>';
+const CLOUD   = '<path d="M17.5 19H7a4.5 4.5 0 1 1 .9-8.9A6 6 0 0 1 19.5 12a3.5 3.5 0 0 1-2 7z"/>';
+const SUN_SM  = '<circle cx="7.5" cy="7" r="2.4"/><path d="M7.5 2.8v1.2M2.8 7H4M11 7h1.2M4.2 3.7l.9.9M10.8 3.7l-.9.9"/>';
+const RAIN    = '<path d="M8.5 19.5l-.8 2M12.5 19.5l-.8 2M16.5 19.5l-.8 2"/>';
+const SNOW    = '<path d="M8.5 20h.01M12.5 21.5h.01M16.5 20h.01M10.5 22.5h.01M14.5 22.5h.01"/>';
+const BOLT    = '<path d="M12.5 18.5l-2.2 3.4h3l-2.2 3.4"/>';
+const FOGLINE = '<path d="M5.5 21h7M9.5 23.2h7" opacity="0.65"/>';
+
+export function conditionIcon(conditionsId, dayPeriod) {
+  const night = dayPeriod === 'night';
+  switch (conditionsId) {
+    case 14:                                   // Sunny / Clear
+    case 11:                                   // Mostly Sunny / Mostly Clear
+      return ICON_WRAP(night ? MOON : SUN);
+    case 12:                                   // Partly Cloudy
+      return ICON_WRAP((night ? '' : SUN_SM) + CLOUD);
+    case 10: return ICON_WRAP(CLOUD);          // Cloudy
+    case 13: return ICON_WRAP(CLOUD + FOGLINE);// Fog / Mostly Cloudy
+    case 17: return ICON_WRAP(CLOUD + RAIN);   // Rain / Drizzle / Showers
+    case 15: return ICON_WRAP(CLOUD + SNOW);   // Snow
+    case 16: return ICON_WRAP(CLOUD + BOLT);   // Storms
+    case 18: return ICON_WRAP(CLOUD + RAIN + SNOW); // Freezing mix
+    default: return ICON_WRAP(CLOUD);
+  }
+}
+
 // ---- date helpers -------------------------------------------------------
 function localTimeLabel(iso, tz) {
   if (!iso) return '';

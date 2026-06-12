@@ -6,7 +6,7 @@
 // Omni-sourced Jackson Hole knowledge (official resort links + curated guidance).
 // Snapshot ported from omni/src/data/parent.ts — see src/widget/knowledge/.
 import { JH_KNOWLEDGE, topicLink } from './knowledge/jackson-hole.js';
-import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
+import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
 
 /* =========================================================================
    PRODUCTION-FIDELITY CHAT MODULE
@@ -255,7 +255,7 @@ import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
     function wind(c)  { return c && c.wind_speed != null ? c.wind_speed + '<span class="unit">mph ' + (c.wind_dir_label || '') + '</span>' : DASH; }
     function cond(c)  {
       if (!(c && c.conditions_label)) return '<span class="cond-label">' + DASH + '</span>';
-      return (c.icon_emoji ? '<span class="cond-icon">' + c.icon_emoji + '</span>' : '') +
+      return '<span class="cond-icon">' + conditionIcon(c.conditions_id, c.day_period) + '</span>' +
              '<span class="cond-label">' + c.conditions_label + '</span>';
     }
     function snowLvl(c){ return c && c.snow_level != null ? c.snow_level.toLocaleString() + '<span class="unit">ft</span>' : DASH; }

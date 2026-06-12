@@ -497,18 +497,31 @@
   }
 
   /* ===================== CONDITIONS CELL (icon + label, mirrors the widget) ===================== */
+  /* Cells center on both axes so variable-width values stay balanced. */
+  .status-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
   .status-cell .v.is-cond,
   .chat-mock-cond-v.is-cond {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 3px;
   }
-  .status-cell .v.is-cond { align-items: flex-start; }
-  .chat-mock-cond-v.is-cond { align-items: center; }
   .status-cell .v.is-cond .cond-icon,
   .chat-mock-cond-v.is-cond .cond-icon {
-    font-size: 18px;
-    line-height: 1;
+    line-height: 0;
+    color: var(--text);
+  }
+  .status-cell .v.is-cond .cond-icon svg,
+  .chat-mock-cond-v.is-cond .cond-icon svg {
+    width: 18px;
+    height: 18px;
+    display: block;
   }
   .status-cell .v.is-cond .cond-label,
   .chat-mock-cond-v.is-cond .cond-label {
@@ -517,12 +530,15 @@
     font-weight: 600;
     line-height: 1.15;
     color: var(--text);
+    text-align: center;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .chat-mock-cond-v.is-cond .cond-label { text-align: center; }
+  /* Hourly strip icons (same mono set, smaller) */
+  .hourly-cell .h-icon { line-height: 0; color: var(--text); }
+  .hourly-cell .h-icon svg { width: 15px; height: 15px; display: inline-block; }
 
   /* ===================== READINGS + CHAT PREVIEW LAYOUT ===================== */
   .readings-and-preview {
@@ -2936,7 +2952,7 @@
 <script type="module">
 // Live conditions come from the shared Open-Meteo adapter (same module the chat
 // widget uses) so the dashboard preview and production widget can never drift.
-import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js';
+import { fetchOpenMeteo, conditionIcon, mToFt, ftToM } from './src/shared/weather/open-meteo.js';
 
 (function(){
   const SOURCES = {
@@ -3473,7 +3489,7 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
   const vWind     = cur => cur && cur.wind_speed != null ? `${cur.wind_speed}<small>mph ${cur.wind_dir_label || ''}</small>` : MUTED;
   const vCond     = cur => {
     if (!(cur && cur.conditions_label)) return '<span class="cond-label">—</span>';
-    const icon = cur.icon_emoji ? `<span class="cond-icon">${cur.icon_emoji}</span>` : '';
+    const icon = `<span class="cond-icon">${conditionIcon(cur.conditions_id, cur.day_period)}</span>`;
     return `${icon}<span class="cond-label">${cur.conditions_label}</span>`;
   };
   const vSnowLvl  = cur => cur && cur.snow_level != null ? `${cur.snow_level.toLocaleString()}<small>ft</small>` : MUTED;
@@ -3563,7 +3579,7 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
       hourlyRow.innerHTML = hours.map(h => `
         <div class="hourly-cell ${h.day_period === 'night' ? 'night' : ''}">
           <div class="h-time">${h.display_at_local_label}</div>
-          <div class="h-icon">${h.icon_emoji || '·'}</div>
+          <div class="h-icon">${conditionIcon(h.conditions_id, h.day_period)}</div>
           <div class="h-temp">${h.temp != null ? h.temp + '°' : '—'}</div>
           <div class="h-pop ${(h.pop || 0) === 0 ? 'zero' : ''}">${h.pop != null ? Math.round(h.pop * 100) + '%' : '—'}</div>
         </div>

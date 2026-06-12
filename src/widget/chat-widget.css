@@ -870,6 +870,13 @@ body[data-variant="full"] .gsb-chat-left-column {
   border-right: 1px solid var(--jh-border);
   border-bottom: 1px solid var(--jh-border);
   min-height: 64px;
+  /* Center label + value on both axes so variable-width values (7mph ENE vs
+     14mph WNW) and wrapped condition labels stay visually balanced. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .gsb-conditions-cell:nth-child(3n) { border-right: none; }
@@ -903,15 +910,20 @@ body[data-variant="full"] .gsb-chat-left-column {
 .gsb-conditions-cell .value.is-cond {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 3px;
   font-family: inherit;
   font-size: inherit;
   min-width: 0;
 }
 .gsb-conditions-cell .value.is-cond .cond-icon {
-  font-size: calc(18px * var(--gsb-text-scale, 1));
-  line-height: 1;
+  line-height: 0;
+  color: var(--jh-ink);
+}
+.gsb-conditions-cell .value.is-cond .cond-icon svg {
+  width: calc(20px * var(--gsb-text-scale, 1));
+  height: calc(20px * var(--gsb-text-scale, 1));
+  display: block;
 }
 .gsb-conditions-cell .value.is-cond .cond-label {
   align-self: stretch;
