@@ -204,3 +204,34 @@ when you click **Save changes** (and hydrates from it on reload). Inspect it in 
 ```js
 JSON.parse(localStorage.getItem('gsb_widget_settings'))
 ```
+
+## React integration — what drops in vs what's a port
+
+BotScrew's admin is React; this build is framework-free vanilla. Those are two
+different integration stories, so here's the honest map.
+
+**Framework-agnostic — `import` straight into React, no DOM-framework coupling.**
+These are pure functions or self-contained DOM helpers; wrap them in hooks/effects.
+
+| Module | What it does | Drop-in |
+|---|---|---|
+| `src/shared/widget-config.js` | `to`/`fromBotscrewWidgetSettings` — **this contract's mapper** | ✅ pure |
+| `src/shared/weather/open-meteo.js` | Open-Meteo adapter → normalized model (°F/mph) | ✅ pure |
+| `src/shared/webcam.js` | webcam URL classification (`detectWebcamKind`/`webcamRender`/`embedUrl`/poster) | ✅ pure |
+| `src/shared/webcam-render.js` | renders any cam (img / iframe / video+hls.js) into an element | ✅ DOM helper |
+| `src/shared/image-compress.js` | client-side resize + compress (Canvas) — `optimizeImage`/`optimizeCrop` | ✅ Canvas |
+| `src/shared/logo.js` | bulletproof logo validate (magic-byte sniff, HEIC reject, decode-verify) + alpha-preserving optimize | ✅ Canvas |
+| `src/shared/fonts/font-loader.js` + `google-fonts.json` | Google Fonts dynamic loader + catalog | ✅ DOM helper |
+
+**The embeddable widget — `src/widget/` — vanilla, and should *stay* vanilla.** It
+mounts on the *resort's* site via a script tag; requiring React on a customer's page
+is a liability, not a feature.
+
+**The Appearance dashboard UI — `src/dashboard/` — a React port, not a drop-in.** It's
+imperative DOM (a `render()` that sets CSS vars/data-attrs, the font picker, the crop
+editor, the accordion). BotScrew **rebuilds this as React components**, but it's a
+*guided* rebuild, not from scratch: our build is the pixel-precise spec, the plain CSS
+is already value-matched to their Bootstrap look (radii/spacing/shadows pulled from
+their bundle), and the controls just read/write the **exact shape this doc defines**.
+The crop/optimize/webcam/weather/font logic above ports as-is, so their components are
+thin shells over it.

@@ -486,7 +486,6 @@
 /* =========================================================================
    ACCORDION CARDS — each Appearance section is a collapsible card.
    ========================================================================= */
-.acc-toolbar { display: flex; justify-content: flex-end; margin-bottom: 12px; }
 .acc-toolbar__btn {
   background: transparent; border: 0; cursor: pointer; font: inherit;
   font-size: 13px; color: var(--accent);
@@ -595,34 +594,6 @@
   border-radius: 999px;
   color: var(--accent);
   background: color-mix(in srgb, var(--accent) 12%, #fff);
-}
-
-/* Detected-kind badge under the Webcam URL field — honest about what v1 renders. */
-.webcam-kind {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-  max-width: 360px;
-}
-.webcam-kind__tag {
-  flex: none;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: 999px;
-  color: var(--ink-soft);
-  background: color-mix(in srgb, var(--ink-soft) 12%, #fff);
-}
-.webcam-kind__note { font-size: 12px; line-height: 1.4; color: var(--ink-muted); }
-.webcam-kind[data-status="live"] .webcam-kind__tag {
-  color: #1c7a43; background: color-mix(in srgb, #1c7a43 12%, #fff);
-}
-.webcam-kind[data-status="blocked"] .webcam-kind__tag {
-  color: #ba7517; background: color-mix(in srgb, #ba7517 14%, #fff);
 }
 
 /* Webcams & featured image card: controls left, live hero preview right. */
