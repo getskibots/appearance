@@ -222,9 +222,66 @@ import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
         });
       }
 
+      // Full normalized models, kept for the season-aware conditions card.
+      data.weatherModel = {
+        base: baseRes.value,
+        summit: (coords.summit && results[1] && results[1].status === 'fulfilled') ? results[1].value : null
+      };
+
       setDataStatus('live', 'Live weather · Open-Meteo');
       renderAllData();
     });
+  }
+
+  // ============= SEASON-AWARE CONDITIONS CARD =============
+  // seasonMode rides in the same config the coords come from (set on the Weather tab).
+  function resolveSeasonMode() {
+    function read(cfg) { return cfg && cfg.seasonMode; }
+    var s = read(window.gsbWeatherConfig);
+    if (!s) {
+      try { s = read(JSON.parse(localStorage.getItem('gsb-weather-config-v1') || '{}')); }
+      catch (e) {}
+    }
+    return s === 'summer' ? 'summer' : 'winter';
+  }
+
+  // The 6 cells per season — same map as the Weather dashboard's preview. Returns
+  // [{ k: label, v: valueHTML }]. Retires the old snow-depth/season-total cells.
+  function omSeasonCells(mode, baseModel, summitModel) {
+    var b = baseModel && baseModel.forecast_current;
+    var s = summitModel && summitModel.forecast_current;
+    var DASH = '—';
+    function temp(t)  { return t != null ? t + '<span class="unit">°F</span>' : DASH; }
+    function wind(c)  { return c && c.wind_speed != null ? c.wind_speed + '<span class="unit">mph ' + (c.wind_dir_label || '') + '</span>' : DASH; }
+    function cond(c)  { return c && c.conditions_label ? (c.icon_emoji ? c.icon_emoji + ' ' : '') + c.conditions_label : DASH; }
+    function snowLvl(c){ return c && c.snow_level != null ? c.snow_level.toLocaleString() + '<span class="unit">ft</span>' : DASH; }
+    function uv(c)    { return c && c.uv != null ? String(c.uv) : DASH; }
+    function pop(m)   {
+      var p = (m && m.forecast_current && m.forecast_current.pop);
+      if (p == null && m && m.forecast_hourly) { var h = m.forecast_hourly.filter(function(x){ return x.pop != null; })[0]; p = h && h.pop; }
+      return p != null ? Math.round(p * 100) + '<span class="unit">%</span>' : DASH;
+    }
+    function snowfall(m){ var v = m && m.forecast_snow_summary && m.forecast_snow_summary[0] && m.forecast_snow_summary[0].precip_snow; return v != null ? v + '<span class="unit">in</span>' : DASH; }
+
+    if (mode === 'summer') {
+      return [
+        { k: 'Temp',       v: temp(b && b.temp) },
+        { k: 'Feels Like', v: temp(b && b.apparent_temp) },
+        { k: 'Conditions', v: cond(b) },
+        { k: 'Wind',       v: wind(b) },
+        { k: 'UV Index',   v: uv(b) },
+        { k: 'Precip',     v: pop(baseModel) }
+      ];
+    }
+    var cells = [{ k: 'Base Temp', v: temp(b && b.temp) }];
+    if (s) cells.push({ k: 'Summit Temp', v: temp(s && s.temp) });
+    cells.push(
+      { k: s ? 'Summit Wind' : 'Wind', v: wind(s || b) },
+      { k: 'Conditions',  v: cond(b) },
+      { k: 'Snowfall 5d', v: snowfall(baseModel) },
+      { k: 'Snow Level',  v: snowLvl(b) }
+    );
+    return cells;
   }
 
   // ============= RENDER DATA INTO UI =============
@@ -281,25 +338,21 @@ import { fetchOpenMeteo } from '../shared/weather/open-meteo.js';
       safeSet('launcherTemp', fmt(weather.base.temperature.value) + '<span class="gsb-launcher-weather__unit">°F</span>');
     }
 
-    // Conditions table inside chat
-    if (weather.base && weather.base.temperature) {
-      safeSet('cellBaseTemp', fmt(weather.base.temperature.value) + '<span class="unit">°F</span>');
+    // Conditions card — season-aware grid (Winter/Summer), Open-Meteo driven.
+    // Replaces the old fixed cells and retires the leftover snow cells (24h/season/depth).
+    var condGrid = document.querySelector('.gsb-conditions-grid');
+    if (condGrid) {
+      var wm = data.weatherModel || {};
+      var cells = omSeasonCells(resolveSeasonMode(), wm.base, wm.summit);
+      condGrid.innerHTML = cells.map(function(c) {
+        return '<div class="gsb-conditions-cell"><div class="label">' + c.k + '</div>' +
+               '<div class="value">' + c.v + '</div></div>';
+      }).join('');
     }
-    if (weather.tramSummit && weather.tramSummit.temperature) {
-      safeSet('cellSummitTemp', fmt(weather.tramSummit.temperature.value) + '<span class="unit">°F</span>');
-    }
-    var midMountain = data.snow.snow && data.snow.snow.midMountain;
-    if (midMountain && midMountain.newSnowLast24H) {
-      safeSet('cellSnow24', fmt(midMountain.newSnowLast24H.value, '0') + '<span class="unit">"</span>');
-    }
-    if (weather.tramSummit && weather.tramSummit.wind) {
-      safeSet('cellWind', fmt(weather.tramSummit.wind.value) + '<span class="unit">mph</span>');
-    }
-    if (snowSummit && snowSummit.seasonTotalSnow) {
-      safeSet('cellSeasonTotal', fmt(snowSummit.seasonTotalSnow.value) + '<span class="unit">"</span>');
-    }
-    if (snowSummit && snowSummit.totalSnowDepth) {
-      safeSet('cellSnowDepth', fmt(snowSummit.totalSnowDepth.value) + '<span class="unit">"</span>');
+    // Source label reflects Open-Meteo once live data is in.
+    if (data.weatherModel) {
+      var srcEl = document.querySelector('.gsb-conditions-source');
+      if (srcEl) srcEl.textContent = 'Source · Open-Meteo';
     }
 
     // Conditions timestamp
