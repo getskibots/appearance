@@ -26,7 +26,9 @@ export async function optimizeImage(file, opts) {
   let w = Math.max(1, Math.round(sw * scale));
   let h = Math.max(1, Math.round(sh * scale));
 
-  const mime = supportsWebp() ? 'image/webp' : 'image/jpeg';
+  // Logos need transparency: prefer WebP (alpha), fall back to PNG (alpha) — never
+  // JPEG, which would flatten to a white box. Photos use JPEG as the fallback.
+  const mime = supportsWebp() ? 'image/webp' : (cfg.preserveAlpha ? 'image/png' : 'image/jpeg');
   let quality = cfg.quality;
   let blob = await encode(src, w, h, mime, quality);
 

@@ -11,6 +11,7 @@ import { detectWebcamKind, webcamKindMeta, webcamPoster } from '../shared/webcam
 import { renderWebcamHero, clearWebcamHero } from '../shared/webcam-render.js';
 import { optimizeImage, formatBytes } from '../shared/image-compress.js';
 import { startFeaturedCrop } from './featured-crop.js';
+import { processLogo } from '../shared/logo.js';
 import { createFontPicker } from './font-picker.js';
 import FONT_CATALOG from '../shared/fonts/google-fonts.json';
 
@@ -867,37 +868,28 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   $('logoFile').addEventListener('change', function(e) {
     var f = e.target.files && e.target.files[0];
     if (!f) return;
-    var reader = new FileReader();
-    reader.onload = function() {
-      var url = reader.result;
-      var img = new Image();
-      img.onload = function() {
-        var warnings = [];
-        if (/jpeg|jpg/.test(f.type)) warnings.push('JPEGs aren\'t recommended — they can\'t have a transparent background, so a PNG or SVG will sit cleaner on the chat header.');
-        if (img.naturalWidth < 240) warnings.push('Logo is narrower than 240px — may look soft on retina.');
-        if (img.naturalWidth > 2000) warnings.push('Logo is wider than 2000px — consider downsizing.');
-        if (f.size > 200 * 1024) warnings.push('File is over 200KB — most logos compress under 50KB.');
-        var ratio = img.naturalWidth / img.naturalHeight;
-        if (ratio < 0.9 && state.logoMaxHeight === 44) warnings.push('This looks like a vertical/tall logo. Consider bumping max-height to 80px.');
-
-        $('logoInfo').innerHTML =
-          '<div class="logo-info__row"><span class="logo-info__label">Format:</span><span class="logo-info__value">' + (f.type.split('/')[1] || 'unknown').toUpperCase() + '</span></div>' +
-          '<div class="logo-info__row"><span class="logo-info__label">Source:</span><span class="logo-info__value">' + img.naturalWidth + ' × ' + img.naturalHeight + '</span></div>' +
-          '<div class="logo-info__row"><span class="logo-info__label">Size:</span><span class="logo-info__value">' + Math.round(f.size/1024) + ' KB</span></div>';
-
-        if (warnings.length) {
-          $('logoWarn').innerHTML = warnings.map(function(w){ return '• ' + w; }).join('<br>');
-          $('logoWarn').setAttribute('data-show','true');
-        } else {
-          $('logoWarn').removeAttribute('data-show');
-        }
-
-        state.logoUrl = url;
-        render();
-      };
-      img.src = url;
-    };
-    reader.readAsDataURL(f);
+    e.target.value = ''; // allow re-selecting the same file after a rejection
+    var warn = $('logoWarn');
+    function showWarn(html, on){ warn.innerHTML = html; if (on) warn.setAttribute('data-show','true'); else warn.removeAttribute('data-show'); }
+    showWarn('<span style="opacity:.7">Checking image…</span>', true);
+    processLogo(f).then(function(res){
+      // Validation failed — keep the previous logo, tell them exactly why.
+      if (!res.ok) { showWarn('• ' + res.message, true); return; }
+      state.logoUrl = res.dataUrl;
+      var fmt = res.mime === 'image/svg+xml' ? 'SVG'
+        : res.mime === 'image/webp' ? 'WebP'
+        : res.mime === 'image/png' ? 'PNG'
+        : (res.type || 'image').toUpperCase();
+      var dims = (res.width && res.height) ? (res.width + ' × ' + res.height) : 'vector';
+      var sizeStr = formatBytes(res.bytes) + (res.originalBytes && res.originalBytes > res.bytes * 1.25 ? ' (from ' + formatBytes(res.originalBytes) + ')' : '');
+      $('logoInfo').innerHTML =
+        '<div class="logo-info__row"><span class="logo-info__label">Format:</span><span class="logo-info__value">' + fmt + '</span></div>' +
+        '<div class="logo-info__row"><span class="logo-info__label">Source:</span><span class="logo-info__value">' + dims + '</span></div>' +
+        '<div class="logo-info__row"><span class="logo-info__label">Size:</span><span class="logo-info__value">' + sizeStr + '</span></div>';
+      if (res.warnings && res.warnings.length) showWarn(res.warnings.map(function(w){ return '• ' + w; }).join('<br>'), true);
+      else showWarn('', false);
+      render();
+    }).catch(function(){ showWarn('• Something went wrong reading that file. Try a PNG or SVG.', true); });
   });
 
   $('removeLogoBtn').addEventListener('click', function() {
