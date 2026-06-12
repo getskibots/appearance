@@ -5,9 +5,22 @@
 
 // BotScrew-aligned config mapper (drop-in contract). See docs/botscrew-widget-settings.md.
 import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/widget-config.js';
+// Google Fonts typography: catalog + dynamic loader + searchable picker.
+import { loadFont, fontStack } from '../shared/fonts/font-loader.js';
+import { createFontPicker } from './font-picker.js';
+import FONT_CATALOG from '../shared/fonts/google-fonts.json';
 
 (function() {
   'use strict';
+
+  // ============= FONT CATALOG (Google Fonts) =============
+  // Lookup by family for category + available weights; curated shortlists are the
+  // picker's default "Popular for resorts" view (search covers the full catalog).
+  var FONT_BY_NAME = {};
+  FONT_CATALOG.forEach(function(e) { FONT_BY_NAME[e.f] = e; });
+  var CURATED_BODY = ['Inter', 'Poppins', 'Montserrat', 'Lato', 'Work Sans', 'Nunito Sans', 'DM Sans', 'Open Sans', 'Raleway', 'Mulish', 'Source Sans 3', 'Roboto'];
+  var CURATED_DISPLAY = ['Playfair Display', 'Merriweather', 'Lora', 'Fraunces', 'Cormorant', 'Oswald', 'Bebas Neue', 'Archivo', 'DM Serif Display', 'Libre Baskerville'];
+  var bodyPicker = null, displayPicker = null;
 
   // ============= COLOR HELPERS =============
   function hexToRgb(hex) {
@@ -561,18 +574,17 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
 
     // ============= TYPOGRAPHY =============
     var typo = state.typography;
-    // Coerce any saved-state references to fonts we no longer ship into the
-    // current curated set. Protects against stale localStorage / state with
-    // legacy font names from before the font simplification.
-    var validBodyFonts = ['Inter', 'DM Sans', 'System'];
-    var validDisplayFonts = ['Playfair Display', 'DM Serif Display', 'Merriweather'];
-    if (validBodyFonts.indexOf(typo.bodyFont) === -1) typo.bodyFont = 'Inter';
-    if (validDisplayFonts.indexOf(typo.displayFont) === -1) typo.displayFont = 'Playfair Display';
-
-    var bodyStack = typo.bodyFont === 'System'
-      ? "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-      : "'" + typo.bodyFont + "', -apple-system, sans-serif";
-    var displayStack = "'" + typo.displayFont + "', Georgia, serif";
+    // Body/display are free-form Google family names. Look up category + available
+    // weights from the catalog; fall back gracefully for unknown/legacy values.
+    var bodyEntry = FONT_BY_NAME[typo.bodyFont];
+    var displayEntry = FONT_BY_NAME[typo.displayFont];
+    var bodyStack = fontStack(typo.bodyFont, bodyEntry && bodyEntry.c)
+      || "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    var displayStack = fontStack(typo.displayFont, (displayEntry && displayEntry.c) || 'se')
+      || "Georgia, serif";
+    // Pull the actual faces from Google on demand — only the two fonts in use.
+    loadFont(typo.bodyFont, bodyEntry && bodyEntry.w);
+    loadFont(typo.displayFont, displayEntry && displayEntry.w);
     // Set on :root so they cascade to BOTH the launcher (outside canvas) AND
     // the chat surface (inside canvas). Setting on canvas leaves the launcher
     // out of the cascade since it's a sibling, not a descendant.
@@ -580,18 +592,10 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
     document.documentElement.style.setProperty('--gsb-display-font', displayStack);
     document.documentElement.style.setProperty('--gsb-text-scale', String(typo.textScale));
 
-    // Sync card highlights
-    document.querySelectorAll('#bodyFontGrid .font-card').forEach(function(c) {
-      c.setAttribute('data-checked', String(c.dataset.value === typo.bodyFont));
-      var input = c.querySelector('input');
-      if (input) input.checked = c.dataset.value === typo.bodyFont;
-    });
-    document.querySelectorAll('#displayFontGrid .font-card').forEach(function(c) {
-      c.setAttribute('data-checked', String(c.dataset.value === typo.displayFont));
-      var input = c.querySelector('input');
-      if (input) input.checked = c.dataset.value === typo.displayFont;
-    });
-    // Sync preset highlights — match if both body+display match the preset
+    // Reflect the current selection in the pickers (trigger label + face).
+    if (bodyPicker) bodyPicker.sync();
+    if (displayPicker) displayPicker.sync();
+    // Sync preset highlights — active when both body+display match the preset.
     document.querySelectorAll('#fontPresets .font-preset').forEach(function(p) {
       var matches = p.dataset.body === typo.bodyFont && p.dataset.display === typo.displayFont;
       p.setAttribute('data-active', String(matches));
@@ -1205,17 +1209,15 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
   });
 
   // ============= TYPOGRAPHY WIRING =============
-  document.querySelectorAll('#bodyFontGrid .font-card').forEach(function(card) {
-    card.addEventListener('click', function() {
-      state.typography.bodyFont = card.dataset.value;
-      render();
-    });
+  bodyPicker = createFontPicker({
+    root: $('bodyFontPicker'), kind: 'body', catalog: FONT_CATALOG, curated: CURATED_BODY,
+    getValue: function() { return state.typography.bodyFont; },
+    onSelect: function(fam) { state.typography.bodyFont = fam; render(); }
   });
-  document.querySelectorAll('#displayFontGrid .font-card').forEach(function(card) {
-    card.addEventListener('click', function() {
-      state.typography.displayFont = card.dataset.value;
-      render();
-    });
+  displayPicker = createFontPicker({
+    root: $('displayFontPicker'), kind: 'display', catalog: FONT_CATALOG, curated: CURATED_DISPLAY,
+    getValue: function() { return state.typography.displayFont; },
+    onSelect: function(fam) { state.typography.displayFont = fam; render(); }
   });
   document.querySelectorAll('#fontPresets .font-preset').forEach(function(preset) {
     preset.addEventListener('click', function() {

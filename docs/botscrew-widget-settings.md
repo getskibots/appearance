@@ -75,8 +75,8 @@ interface GsbAppearance {
   effectIntensity: number;                   // 0–100
   statusPillFeatures: { liveAgent: boolean; weather: boolean; needHelpCta: boolean };
   typography: {
-    bodyFont: 'Inter' | 'DM Sans' | 'System';
-    displayFont: 'Playfair Display' | 'DM Serif Display' | 'Merriweather';
+    bodyFont: string;                        // Google Fonts family name, e.g. "Inter", "Montserrat"
+    displayFont: string;                     // Google Fonts family name, e.g. "Playfair Display"
     textScale: number;                       // e.g. 0.9 | 1.0 | 1.1
   };
   embedSearch: {
@@ -140,7 +140,7 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `effectMode` | enum | `radiate` | Depth effect: none/shadow/glow/radiate |
 | `effectIntensity` | number | `65` | Depth strength 0–100 |
 | `statusPillFeatures` | object | `{liveAgent,weather,needHelpCta:true}` | Status-pill toggles |
-| `typography` | object | `{Inter, Playfair Display, 1.0}` | Body/display fonts + text scale |
+| `typography` | object | `{Inter, Playfair Display, 1.0}` | Body/display fonts + text scale. **`bodyFont`/`displayFont` are Google Fonts family names** (any of the ~1,800-family catalog). The embed must load the saved families from Google Fonts (`<link href="…css2?family=…">`) — the dashboard does this via `src/shared/fonts/font-loader.js`, which the widget loader can reuse |
 | `embedSearch` | object | see schema | Embeddable search-bar config |
 | `embedButton` | object | see schema | Embeddable magnifying-glass button config |
 

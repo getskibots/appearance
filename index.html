@@ -6,7 +6,9 @@
 <title>GetSkiBots — Agent Widget · Appearance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=DM+Serif+Display:ital,wght@0,400;1,400&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+<!-- Preload only the defaults (Inter/Playfair) + Roboto (launcher temp glyphs); every
+     other Google Font loads on demand via src/shared/fonts/font-loader.js when picked. -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
 <!-- Shared design tokens + base reset (extracted from the original inline <style>).
      Loaded before the remaining inline styles to preserve cascade order. -->
 <link rel="stylesheet" href="/src/shared/tokens.css" />
@@ -557,7 +559,7 @@
                 <span class="acc-head__dot" aria-hidden="true"></span>
                 <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
               </button>
-              <p class="section__sub">Pick the fonts that match your resort's brand. Body font is used for messages, UI, and chips. Display font is used for the welcome line and headings inside the chat.</p>
+              <p class="section__sub">Match your resort's brand. Start with a ready-made pairing, or set the body and heading fonts yourself — every Google Font is searchable, and changes apply live on the right.</p>
 
               <!-- Preset pairings -->
               <div class="field">
@@ -582,47 +584,15 @@
               <!-- Body font picker -->
               <div class="field">
                 <label class="field__label">Body font</label>
-                <p class="field__hint" style="margin-top:0;margin-bottom:12px">Used for chat messages, UI text, buttons, and chips.</p>
-                <div class="font-grid" id="bodyFontGrid">
-                  <label class="font-card" data-checked="true" data-value="Inter">
-                    <input type="radio" name="bodyFont" value="Inter" checked />
-                    <span class="font-card__sample" style="font-family:'Inter',sans-serif">Aa</span>
-                    <span class="font-card__name">Inter</span>
-                  </label>
-                  <label class="font-card" data-value="DM Sans">
-                    <input type="radio" name="bodyFont" value="DM Sans" />
-                    <span class="font-card__sample" style="font-family:'DM Sans',sans-serif">Aa</span>
-                    <span class="font-card__name">DM Sans</span>
-                  </label>
-                  <label class="font-card" data-value="System">
-                    <input type="radio" name="bodyFont" value="System" />
-                    <span class="font-card__sample" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Aa</span>
-                    <span class="font-card__name">System default</span>
-                  </label>
-                </div>
+                <p class="field__hint" style="margin-top:0;margin-bottom:10px">Messages, buttons, and chips — choose a clean, legible sans-serif.</p>
+                <div id="bodyFontPicker"></div>
               </div>
 
               <!-- Display font picker -->
               <div class="field">
                 <label class="field__label">Display font</label>
-                <p class="field__hint" style="margin-top:0;margin-bottom:12px">Used for the welcome line and headings inside the chat surface.</p>
-                <div class="font-grid" id="displayFontGrid">
-                  <label class="font-card" data-checked="true" data-value="Playfair Display">
-                    <input type="radio" name="displayFont" value="Playfair Display" checked />
-                    <span class="font-card__sample" style="font-family:'Playfair Display',serif"><em>Aa</em></span>
-                    <span class="font-card__name">Playfair Display</span>
-                  </label>
-                  <label class="font-card" data-value="DM Serif Display">
-                    <input type="radio" name="displayFont" value="DM Serif Display" />
-                    <span class="font-card__sample" style="font-family:'DM Serif Display',serif">Aa</span>
-                    <span class="font-card__name">DM Serif</span>
-                  </label>
-                  <label class="font-card" data-value="Merriweather">
-                    <input type="radio" name="displayFont" value="Merriweather" />
-                    <span class="font-card__sample" style="font-family:'Merriweather',serif">Aa</span>
-                    <span class="font-card__name">Merriweather</span>
-                  </label>
-                </div>
+                <p class="field__hint" style="margin-top:0;margin-bottom:10px">The welcome line and headings inside the chat — pick one with character.</p>
+                <div id="displayFontPicker"></div>
               </div>
 
               <!-- Text size slider -->

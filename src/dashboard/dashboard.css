@@ -588,6 +588,120 @@
   background: color-mix(in srgb, var(--accent) 12%, #fff);
 }
 
+/* =========================================================================
+   FONT PICKER — searchable Google Fonts chooser (Typography card).
+   Inline-expanding (the accordion card clips floating popovers).
+   ========================================================================= */
+.fontpick { max-width: 360px; }
+
+.fontpick__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.fontpick__trigger:hover { border-color: var(--accent); }
+.fontpick[data-open="true"] .fontpick__trigger {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, #fff);
+}
+.fontpick__current {
+  font-size: 19px;
+  line-height: 1.2;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fontpick__chev { flex: none; color: var(--ink-muted); transition: transform 0.18s ease; }
+.fontpick[data-open="true"] .fontpick__chev { transform: rotate(180deg); }
+
+/* Collapsible panel */
+.fontpick__panel {
+  display: none;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(20, 40, 80, 0.08);
+  overflow: hidden;
+}
+.fontpick[data-open="true"] .fontpick__panel { display: block; }
+
+.fontpick__search {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+}
+.fontpick__search::placeholder { color: var(--ink-muted); }
+
+.fontpick__hint {
+  padding: 8px 12px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.fontpick__list { max-height: 248px; overflow-y: auto; padding: 2px 0; }
+
+.fontpick__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+}
+.fontpick__row:hover { background: var(--surface-2); }
+.fontpick__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 16px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fontpick__tag {
+  flex: none;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.fontpick__check { flex: none; color: var(--accent); visibility: hidden; }
+.fontpick__row[data-checked="true"] .fontpick__check { visibility: visible; }
+.fontpick__row[data-checked="true"] .fontpick__name { font-weight: 600; }
+
+.fontpick__empty { padding: 14px 12px; font-size: 13px; color: var(--ink-muted); }
+.fontpick__foot {
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--ink-muted);
+  background: var(--surface-2);
+}
+
 .field {
   margin-bottom: 18px;
 }
