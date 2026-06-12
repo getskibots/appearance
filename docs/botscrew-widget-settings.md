@@ -66,7 +66,14 @@ interface GsbAppearance {
   /** The hero slot at the top of the open chat (Webcams & featured image card). */
   hero: {
     source: 'webcam' | 'featured' | 'none';
-    webcam: { url: string; label: string };               // url blank = use the live conditions feed
+    webcam: {
+      url: string;            // any cam URL; blank = use the live conditions feed
+      label: string;
+      kind: 'image' | 'mjpeg' | 'unknown' | 'hls' | 'dash' | 'mp4' | 'youtube' | 'vimeo'
+          | 'roundshot' | 'panomax' | 'feratel' | 'bergfex' | 'earthcam' | 'hdontap'
+          | 'windy' | 'brownrice' | 'rtsp' | 'rtmp';   // auto-detected delivery type
+      poster: string;         // best-effort still for non-image kinds (e.g. YouTube thumb)
+    };
     featuredImage: { url: string; caption: string; link: string };  // Appearance-owned
   };
   ctaText: string;
@@ -134,7 +141,7 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `recentUpdate` | string | "The 2025/26 ski season…" | Season Update banner body; **blank hides the banner**. Manual copy wins over the live weather feed (`data-manual-update`) |
 | `recentUpdateSource` | enum | `manual` | Where the Season Update content comes from: `manual` (typed copy) or `flow` (a BotScrew Flow / AI Action). **Partner-facing label is "Automatic"** — "flow" is kept out of the UI as jargon |
 | `recentUpdateFlow` | string | `''` | Selected Flow / AI Action id when `recentUpdateSource === 'flow'`. **Placeholder** — the picker is wired in the UI but live flow output is not yet consumed |
-| `hero` | object | `{source:'webcam', webcam:{url:'', label:'Cody Bowl'}, featuredImage:{url:'', caption:'', link:''}}` | The hero image area at the top of the open chat. `source` picks **Webcam** (manual URL or, if blank, the live conditions feed), **Featured image** (Appearance-owned: image + caption + optional link), or **None** (hide the hero). Single webcam for now — multi-cam is the separately-quoted extension |
+| `hero` | object | `{source:'webcam', webcam:{url:'…codybowl.jpg', label:'Cody Bowl', kind:'image', poster:''}, featuredImage:{…}}` | The hero image area at the top of the open chat. `source` = **Webcam** (any cam URL, or blank → live conditions feed), **Featured image** (Appearance-owned), or **None**. `webcam.kind` is **auto-detected** (`src/shared/webcam.js`) so the payload captures *every* cam type; **v1 renders `image`/`mjpeg` (and tries `unknown`) in an `<img>`**, defers stream/iframe/360 kinds to a poster + "Open ↗" fallback, and warns on `rtsp`/`rtmp` (un-playable in-browser). Adding a renderer later needs **no schema change**. Single webcam for now — multi-cam is the separately-quoted extension |
 | `realtimeVoice` | boolean | `true` | Behavior toggle. When `false`, the chat hides the hands-free Voice Mode button + overlay (`body[data-voice="off"]`). The dictation mic is a separate feature, unaffected |
 | `ctaText` | string | `Need help?` | Launcher CTA label (≤24 glyphs) |
 | `bubbleStyle` | enum | `slidein` | Launcher style: traditional/custom/enhanced/slidein |

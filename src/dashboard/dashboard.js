@@ -7,6 +7,7 @@
 import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/widget-config.js';
 // Google Fonts typography: catalog + dynamic loader + searchable picker.
 import { loadFont, loadPreview, fontStack } from '../shared/fonts/font-loader.js';
+import { detectWebcamKind, webcamRender, webcamKindMeta, webcamPoster } from '../shared/webcam.js';
 import { createFontPicker } from './font-picker.js';
 import FONT_CATALOG from '../shared/fonts/google-fonts.json';
 
@@ -169,7 +170,10 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // source: 'webcam' (live cam / feed) | 'featured' (Appearance-owned image) | 'none'.
     hero: {
       source: 'webcam',
-      webcam: { url: 'https://cams.jacksonhole.com/webcam/codybowl.jpg', label: 'Cody Bowl' },
+      // kind = auto-detected delivery type (image/mjpeg/hls/youtube/roundshot/rtsp/…);
+      // poster = best-effort still for non-image kinds. Stored so future renderers
+      // need no schema change.
+      webcam: { url: 'https://cams.jacksonhole.com/webcam/codybowl.jpg', label: 'Cody Bowl', kind: 'image', poster: '' },
       featuredImage: { url: '', caption: '', link: '' }
     },
     ctaText: 'Need help?',
@@ -434,23 +438,75 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     if (heroEl) {
       heroEl.setAttribute('data-hero-source', hero.source);
       var heroStation = $('gsbHeroStation');
-      function setHeroImg(url) {
+      function heroImgEl() {
         var i = heroEl.querySelector('.gsb-webcam-img');
         if (!i) { i = document.createElement('img'); i.className = 'gsb-webcam-img'; i.alt = ''; heroEl.insertBefore(i, heroEl.firstChild); }
-        i.src = url;
-        var fb = heroEl.querySelector('.gsb-webcam-fallback'); if (fb) fb.style.display = 'none';
+        return i;
       }
+      function heroFallbackEl() {
+        var f = heroEl.querySelector('.gsb-webcam-fallback');
+        if (!f) { f = document.createElement('div'); f.className = 'gsb-webcam-fallback'; heroEl.insertBefore(f, heroEl.firstChild); }
+        return f;
+      }
+      function showHeroImage(url) {
+        var i = heroImgEl(); i.style.display = ''; i.onerror = null; i.src = url;
+        var f = heroEl.querySelector('.gsb-webcam-fallback'); if (f) f.style.display = 'none';
+      }
+      // Non-renderable kinds: poster (if any) + an Open-live-cam affordance so the
+      // cam is still useful in v1 rather than a broken image.
+      function showHeroFallback(cam, blocked) {
+        var i = heroEl.querySelector('.gsb-webcam-img'); if (i) i.style.display = 'none';
+        var f = heroFallbackEl(); f.style.display = '';
+        f.style.cssText = cam.poster
+          ? "background-image:linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.6)),url('" + cam.poster + "');background-size:cover;background-position:center;"
+          : '';
+        var meta = webcamKindMeta(cam.kind || detectWebcamKind(cam.url));
+        f.innerHTML = '<span class="gsb-webcam-fallback__kind">' + meta.label + '</span>' +
+          (blocked
+            ? '<span class="gsb-webcam-fallback__note">Live video isn’t supported in-browser yet</span>'
+            : '<a class="gsb-webcam-fallback__open" href="' + (cam.url || '#') + '" target="_blank" rel="noopener">Open live cam ↗</a>');
+      }
+
       if (hero.source === 'featured') {
-        if (hero.featuredImage.url) setHeroImg(hero.featuredImage.url);
+        if (hero.featuredImage.url) showHeroImage(hero.featuredImage.url);
         if (heroStation) heroStation.textContent = hero.featuredImage.caption || '';
         heroEl.setAttribute('data-hero-managed', 'true');
       } else if (hero.source === 'webcam') {
-        if (hero.webcam.url) { setHeroImg(hero.webcam.url); heroEl.setAttribute('data-hero-managed', 'true'); }
-        else heroEl.removeAttribute('data-hero-managed');
-        if (heroStation) heroStation.textContent = hero.webcam.label || 'Webcam';
+        var cam = hero.webcam;
+        if (cam.url) {
+          var mode = webcamRender(cam.kind || detectWebcamKind(cam.url));
+          if (mode === 'image') {
+            showHeroImage(cam.url);
+          } else if (mode === 'attempt') {
+            // Load-as-image-first: try it; if it can't be an image, fall back.
+            var im = heroImgEl(); im.style.display = '';
+            im.onerror = function() { showHeroFallback(cam, false); };
+            im.src = cam.url;
+            var f0 = heroEl.querySelector('.gsb-webcam-fallback'); if (f0) f0.style.display = 'none';
+          } else {
+            showHeroFallback(cam, mode === 'blocked');
+          }
+          heroEl.setAttribute('data-hero-managed', 'true');
+        } else {
+          heroEl.removeAttribute('data-hero-managed'); // blank → live conditions feed
+        }
+        if (heroStation) heroStation.textContent = cam.label || 'Webcam';
       } else {
         // 'none' — hidden via CSS; flag managed so the live feed doesn't repopulate.
         heroEl.setAttribute('data-hero-managed', 'true');
+      }
+    }
+    // Detected-kind badge under the Webcam URL field (honest about what renders).
+    var kindBadge = $('webcamKindBadge');
+    if (kindBadge) {
+      if (hero.source === 'webcam' && hero.webcam.url) {
+        var km = webcamKindMeta(hero.webcam.kind || detectWebcamKind(hero.webcam.url));
+        kindBadge.style.display = '';
+        kindBadge.setAttribute('data-status', km.status);
+        $('webcamKindTag').textContent = km.label;
+        $('webcamKindNote').textContent = km.note;
+      } else {
+        kindBadge.style.display = 'none';
       }
     }
     // Reflect the source toggle + show the matching control group.
@@ -1101,7 +1157,13 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       }
     });
   });
-  $('webcamUrl').addEventListener('input', function(e){ state.hero.webcam.url = e.target.value; render(); });
+  $('webcamUrl').addEventListener('input', function(e){
+    var v = e.target.value;
+    state.hero.webcam.url = v;
+    state.hero.webcam.kind = detectWebcamKind(v);
+    state.hero.webcam.poster = webcamPoster(v, state.hero.webcam.kind);
+    render();
+  });
   $('webcamLabel').addEventListener('input', function(e){ state.hero.webcam.label = e.target.value; render(); });
   $('featuredImageUrl').addEventListener('input', function(e){ state.hero.featuredImage.url = e.target.value; render(); });
   $('featuredCaption').addEventListener('input', function(e){ state.hero.featuredImage.caption = e.target.value; render(); });

@@ -740,12 +740,39 @@ body[data-variant="full"] .gsb-chat-left-column {
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 4px;
+  text-align: center;
+  padding: 0 16px;
   background: linear-gradient(135deg, #2c4060 0%, #1a2638 100%);
   color: rgba(255,255,255,0.6);
   font-size: calc(12px * var(--gsb-text-scale, 1));
 }
+/* Affordance for un-rendered cam kinds (HLS/iframe/360/blocked): poster + open link. */
+.gsb-webcam-fallback__kind {
+  font-size: calc(11px * var(--gsb-text-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.92);
+}
+.gsb-webcam-fallback__note {
+  font-size: calc(11px * var(--gsb-text-scale, 1));
+  color: rgba(255,255,255,0.7);
+}
+.gsb-webcam-fallback__open {
+  margin-top: 6px;
+  font-size: calc(12px * var(--gsb-text-scale, 1));
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  padding: 6px 13px;
+  border: 1px solid rgba(255,255,255,0.45);
+  border-radius: 999px;
+}
+.gsb-webcam-fallback__open:hover { background: rgba(255,255,255,0.14); }
 
 .gsb-webcam-live {
   position: absolute;

@@ -375,6 +375,10 @@
                   <label class="field__label" for="webcamUrl">Webcam URL</label>
                   <p class="field__hint" style="margin-top:0;margin-bottom:8px">A still-image or live snapshot URL — it refreshes automatically with an "Updated" stamp and a LIVE badge. Leave blank to use the live conditions feed.</p>
                   <input class="input" type="url" id="webcamUrl" value="https://cams.jacksonhole.com/webcam/codybowl.jpg" placeholder="https://…/webcam.jpg" style="max-width:360px" />
+                  <div class="webcam-kind" id="webcamKindBadge" data-status="live" style="display:none">
+                    <span class="webcam-kind__tag" id="webcamKindTag"></span>
+                    <span class="webcam-kind__note" id="webcamKindNote"></span>
+                  </div>
                 </div>
                 <div class="field">
                   <label class="field__label" for="webcamLabel">Location label</label>
