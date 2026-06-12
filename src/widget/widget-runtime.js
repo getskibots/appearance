@@ -450,14 +450,14 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     var seasonBanner = findIn(rightCol, '.gsb-season-banner') || findIn(leftCol, '.gsb-season-banner');
     var conditions = findIn(rightCol, '.gsb-conditions') || findIn(leftCol, '.gsb-conditions');
 
-    // Clear left column to rebuild fresh order
+    // Left column = the visual / weather side: hero, season banner, conditions.
     leftCol.innerHTML = '';
     if (hero) leftCol.appendChild(hero);
-    if (welcome) leftCol.appendChild(welcome);
     if (seasonBanner) leftCol.appendChild(seasonBanner);
     if (conditions) leftCol.appendChild(conditions);
-    // (Left-column agent status pill removed — TBD where the Online/AI Concierge
-    //  status belongs; the chat-header status element still carries it.)
+    // The welcome greeting moves to the RIGHT (conversation) column at the top — it
+    // anchors the chat and frees vertical room for the weather card on the left.
+    if (welcome) rightCol.insertBefore(welcome, rightCol.firstChild);
   }
 
   function moveContentToRightColumn() {

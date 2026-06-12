@@ -891,7 +891,8 @@ body[data-variant="full"] .gsb-chat-left-column {
 .gsb-conditions {
   margin: 14px 20px;
   border: 1px solid var(--jh-border);
-  border-radius: 12px;
+  /* Follow the master Corner radius (capped) so in-chat cards match the surface. */
+  border-radius: min(var(--gsb-radius, 12px), 12px);
   background: #fff;
   overflow: hidden;
   font-size: calc(12px * var(--gsb-text-scale, 1));
@@ -1023,7 +1024,8 @@ body[data-variant="full"] .gsb-chat-left-column {
   background: color-mix(in srgb, var(--brand) 5%, #fff);
   border: 1px solid color-mix(in srgb, var(--brand) 16%, #fff);
   border-left: 3px solid var(--brand);
-  border-radius: 8px;
+  /* Follow the master Corner radius (capped) so in-chat cards match the surface. */
+  border-radius: min(var(--gsb-radius, 8px), 12px);
   font-size: calc(12px * var(--gsb-text-scale, 1));
   line-height: 1.5;
   color: var(--jh-ink);
@@ -1065,22 +1067,17 @@ body[data-variant="full"] .gsb-chat-left-column {
 
 body.gsb-conversation-started .gsb-chips { display: none; }
 
-/* Full-panel conversation intro — frames the starter chips so the right column has a
-   warm entry point + breathing room instead of an abrupt empty void. Full panel only;
-   hidden once the conversation starts (the chips give way to messages). */
-.gsb-conversation-intro { display: none; padding: 26px 20px 2px; flex: 0 0 auto; }
+/* Full-panel conversation intro — a quiet "Suggested questions" eyebrow over the
+   chips (the welcome greeting, moved into this column, does the warm greeting).
+   Full panel only; hidden once the conversation starts. */
+.gsb-conversation-intro { display: none; padding: 18px 20px 0; flex: 0 0 auto; }
 body[data-variant="full"] .gsb-conversation-intro { display: block; }
 body[data-variant="full"].gsb-conversation-started .gsb-conversation-intro { display: none; }
-.gsb-conversation-intro__title {
-  margin: 0;
-  font-family: var(--serif);
-  font-size: calc(20px * var(--gsb-text-scale, 1));
-  line-height: 1.3;
-  color: var(--jh-ink);
-}
-.gsb-conversation-intro__hint {
-  margin: 6px 0 0;
-  font-size: calc(13px * var(--gsb-text-scale, 1));
+.gsb-conversation-intro__eyebrow {
+  font-size: calc(10px * var(--gsb-text-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--jh-ink-soft);
 }
 
