@@ -711,13 +711,9 @@
   border: 1px solid var(--border);
   border-radius: 8px;
 }
-.typo-now__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
 .typo-now__eyebrow {
+  display: block;
+  margin-bottom: 8px;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -749,13 +745,13 @@
 }
 .typo-now__row {
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;            /* bottom-align so the badge+fonts group sits low */
   justify-content: space-between;
-  gap: 12px;
-  margin-top: 4px;
+  gap: 16px;
 }
+.typo-now__sample { min-width: 0; }
 .typo-now__body {
-  min-width: 0;
+  margin-top: 4px;
   font-family: var(--gsb-body-font, 'Inter', -apple-system, sans-serif);
   font-size: 13px;
   color: var(--ink-soft);
@@ -763,7 +759,16 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.typo-now__fonts { flex: none; font-size: 11px; color: var(--ink-muted); }
+/* Badge + font names grouped tightly at the bottom-right (no longer floating). */
+.typo-now__meta {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  text-align: right;
+}
+.typo-now__fonts { font-size: 11px; color: var(--ink-muted); }
 
 .field {
   margin-bottom: 18px;
