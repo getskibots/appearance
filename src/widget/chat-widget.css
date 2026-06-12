@@ -1065,6 +1065,25 @@ body[data-variant="full"] .gsb-chat-left-column {
 
 body.gsb-conversation-started .gsb-chips { display: none; }
 
+/* Full-panel conversation intro — frames the starter chips so the right column has a
+   warm entry point + breathing room instead of an abrupt empty void. Full panel only;
+   hidden once the conversation starts (the chips give way to messages). */
+.gsb-conversation-intro { display: none; padding: 26px 20px 2px; flex: 0 0 auto; }
+body[data-variant="full"] .gsb-conversation-intro { display: block; }
+body[data-variant="full"].gsb-conversation-started .gsb-conversation-intro { display: none; }
+.gsb-conversation-intro__title {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: calc(20px * var(--gsb-text-scale, 1));
+  line-height: 1.3;
+  color: var(--jh-ink);
+}
+.gsb-conversation-intro__hint {
+  margin: 6px 0 0;
+  font-size: calc(13px * var(--gsb-text-scale, 1));
+  color: var(--jh-ink-soft);
+}
+
 /* =========================================================================
    MOBILE KEYBOARD-UP CHROME COLLAPSE
    When the user focuses the composer on a phone, the keyboard rises and
