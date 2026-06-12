@@ -577,15 +577,16 @@
 }
 
 /* Typing-indicator tiles (Behavior card) — each tile plays its real animation,
-   see-before-you-pick (demos reuse the widget's gsb-typing-* classes/keyframes). */
-.typing-tiles { display: flex; gap: 10px; max-width: 420px; }
+   see-before-you-pick (demos reuse the widget's gsb-typing-* classes/keyframes).
+   Sits as the row's right-side control, mirroring where the toggles live. */
+.typing-tiles { display: flex; gap: 8px; flex: 0 0 auto; }
 .typing-tile {
-  flex: 1 1 0;
+  width: 86px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 14px 10px 10px;
+  gap: 6px;
+  padding: 10px 8px 8px;
   background: #fff;
   border: 1.5px solid var(--border-strong);
   border-radius: 8px;
