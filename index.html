@@ -393,8 +393,10 @@
                       <input class="input" type="url" id="featuredImageUrl" placeholder="https://…/feature.jpg" style="width:100%" />
                       <div class="logo-actions" style="margin-top:8px">
                         <button class="btn" type="button" onclick="document.getElementById('featuredImageFile').click()">Upload image</button>
-                        <input type="file" id="featuredImageFile" accept="image/png,image/jpeg,image/webp,image/svg+xml" style="display:none" />
+                        <input type="file" id="featuredImageFile" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" style="display:none" />
                       </div>
+                      <p class="field__hint" style="margin-top:6px">Big photos are resized &amp; compressed automatically — partners can upload straight from their phone.</p>
+                      <div class="img-optim" id="featuredImageInfo" style="display:none"></div>
                     </div>
                     <div class="field">
                       <label class="field__label" for="featuredCaption">Caption</label>

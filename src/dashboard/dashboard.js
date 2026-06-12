@@ -9,6 +9,7 @@ import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/
 import { loadFont, loadPreview, fontStack } from '../shared/fonts/font-loader.js';
 import { detectWebcamKind, webcamKindMeta, webcamPoster } from '../shared/webcam.js';
 import { renderWebcamHero, clearWebcamHero } from '../shared/webcam-render.js';
+import { optimizeImage, formatBytes } from '../shared/image-compress.js';
 import { createFontPicker } from './font-picker.js';
 import FONT_CATALOG from '../shared/fonts/google-fonts.json';
 
@@ -1142,9 +1143,27 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   $('featuredImageFile').addEventListener('change', function(e){
     var f = e.target.files && e.target.files[0];
     if (!f) return;
-    var reader = new FileReader();
-    reader.onload = function(){ state.hero.featuredImage.url = reader.result; render(); };
-    reader.readAsDataURL(f);
+    var info = $('featuredImageInfo');
+    function setInfo(text, status){ if (!info) return; info.textContent = text; info.style.display = ''; info.setAttribute('data-status', status || ''); }
+    // SVG is already vector/tiny — use as-is (rasterizing would lose scalability).
+    if (f.type === 'image/svg+xml') {
+      var rs = new FileReader();
+      rs.onload = function(){ state.hero.featuredImage.url = rs.result; setInfo('SVG · ' + formatBytes(f.size) + ' (used as-is)', 'ok'); render(); };
+      rs.readAsDataURL(f);
+      return;
+    }
+    setInfo('Optimizing…', '');
+    optimizeImage(f).then(function(out){
+      state.hero.featuredImage.url = out.dataUrl;
+      var fmt = out.mime === 'image/webp' ? 'WebP' : 'JPEG';
+      setInfo(formatBytes(f.size) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height + ' · ' + fmt, 'ok');
+      render();
+    }).catch(function(){
+      // Optimization unavailable — fall back to the original file.
+      var rf = new FileReader();
+      rf.onload = function(){ state.hero.featuredImage.url = rf.result; setInfo(formatBytes(f.size) + ' · original (couldn’t optimize)', 'warn'); render(); };
+      rf.readAsDataURL(f);
+    });
   });
   $('ctaText').addEventListener('input', function(e){
     // Glyph-aware cap at 24 user-visible chars (so 🎿 counts as 1, not 2).

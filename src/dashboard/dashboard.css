@@ -666,6 +666,16 @@
 }
 .hero-preview__chip[data-status="live"] { color: #1c7a43; background: color-mix(in srgb, #1c7a43 12%, #fff); }
 .hero-preview__chip[data-status="blocked"] { color: #ba7517; background: color-mix(in srgb, #ba7517 14%, #fff); }
+
+/* Featured-image optimizer feedback (e.g. "5.2 MB → 165 KB · 1600×900 · WebP"). */
+.img-optim {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-muted);
+}
+.img-optim[data-status="ok"] { color: #1c7a43; }
+.img-optim[data-status="warn"] { color: #ba7517; }
 @media (max-width: 1180px) {
   .media-grid { grid-template-columns: 1fr; }
   .media-grid__preview { max-width: 420px; }
