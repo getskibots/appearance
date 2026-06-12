@@ -88,7 +88,7 @@ export async function fetchOpenMeteo({ lat, lng, elevationFt = null, elevationM 
 
   const params = new URLSearchParams({
     latitude: lat, longitude: lng,
-    current: 'temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m,freezing_level_height',
+    current: 'temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m,freezing_level_height,uv_index',
     hourly: 'temperature_2m,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m,is_day,freezing_level_height',
     daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,snowfall_sum,wind_speed_10m_max,wind_direction_10m_dominant',
     temperature_unit: 'fahrenheit',
@@ -126,6 +126,7 @@ export async function fetchOpenMeteo({ lat, lng, elevationFt = null, elevationM 
     pop: null,
     precip_type: cond.precip_type,
     snow_level: snowLevelFt,
+    uv: c.uv_index != null ? Math.round(c.uv_index) : null,
     humidity: Math.round(c.relative_humidity_2m),
     pressure_mb: Math.round(c.pressure_msl),
     _native: { modelElevM: Math.round(data.elevation), userElevM: elevM != null ? Number(elevM) : null, timezone: data.timezone }

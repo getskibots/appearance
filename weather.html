@@ -446,6 +446,56 @@
     50% { opacity: 0.3; }
   }
 
+  /* ===================== SEASON MODE TOGGLE ===================== */
+  .season-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: #f7fafd;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    flex-wrap: wrap;
+  }
+  .season-row__label { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .season-row__title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+  }
+  .season-row__sub { font-size: 12px; color: var(--text-soft); }
+  .season-seg {
+    display: inline-flex;
+    background: #eef1f5;
+    border-radius: 8px;
+    padding: 3px;
+    flex: 0 0 auto;
+  }
+  .season-seg__btn {
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 7px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+  }
+  .season-seg__btn.is-active {
+    background: #fff;
+    color: var(--text);
+    box-shadow: 0 1px 3px rgba(20,30,50,.12);
+  }
+  @media (max-width: 640px) {
+    .season-row__sub { flex-basis: 100%; }
+  }
+
   /* ===================== READINGS + CHAT PREVIEW LAYOUT ===================== */
   .readings-and-preview {
     display: grid;
@@ -2626,6 +2676,17 @@
 
             </div><!-- /coords panel -->
 
+            <!-- Season mode — swaps the conditions card's 6 cells (Open-Meteo card only) -->
+            <div class="season-row">
+              <div class="season-row__label">
+                <span class="season-row__title">Conditions card</span>
+                <span class="season-row__sub" id="season-sub">Winter — base &amp; summit temps, summit wind, conditions, 5-day snowfall, snow level.</span>
+              </div>
+              <div class="season-seg" role="group" aria-label="Season mode">
+                <button type="button" class="season-seg__btn is-active" data-season="winter">❄ Winter</button>
+                <button type="button" class="season-seg__btn" data-season="summer">☀ Summer</button>
+              </div>
+            </div>
 
             <!-- Live readings + chat preview (side-by-side on desktop) -->
             <div class="readings-and-preview">
@@ -3371,63 +3432,97 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
   // -------------------------------------------------------------------
   // Render normalized model into the UI
   // -------------------------------------------------------------------
+  // ----- Season mode: which 6 cells the conditions card shows (Open-Meteo) -----
+  let seasonMode = 'winter';   // 'winter' | 'summer' — persisted in gsb-weather-config-v1
+  const SEASON_SUB = {
+    winter: 'Winter — base &amp; summit temps, summit wind, conditions, 5-day snowfall, snow level.',
+    summer: 'Summer — temp, feels-like, conditions, wind, UV index, precip chance.'
+  };
+
+  // Cell value formatters (return inner-HTML, or a muted dash when missing)
+  const MUTED = '<span class="muted">—</span>';
+  const vTemp     = t   => t != null ? `${t}<small>°F</small>` : MUTED;
+  const vWind     = cur => cur && cur.wind_speed != null ? `${cur.wind_speed}<small>mph ${cur.wind_dir_label || ''}</small>` : MUTED;
+  const vCond     = cur => cur && cur.conditions_label ? `${cur.icon_emoji ? cur.icon_emoji + ' ' : ''}${cur.conditions_label}` : MUTED;
+  const vSnowLvl  = cur => cur && cur.snow_level != null ? `${cur.snow_level.toLocaleString()}<small>ft</small>` : MUTED;
+  const vUV       = cur => cur && cur.uv != null ? `${cur.uv}` : MUTED;
+  const vPop      = m   => { const p = m?.forecast_current?.pop ?? m?.forecast_hourly?.find(h => h.pop != null)?.pop; return p != null ? `${Math.round(p * 100)}<small>%</small>` : MUTED; };
+  const vSnowfall = m   => { const s = m?.forecast_snow_summary?.[0]?.precip_snow; return s != null ? `${s}<small>in</small>` : MUTED; };
+
+  // The 6 cells per season → [{ k: label, v: valueHTML, small? }].
+  function seasonCells(mode, baseModel, summitModel) {
+    const b = baseModel?.forecast_current, s = summitModel?.forecast_current;
+    if (mode === 'summer') {
+      return [
+        { k: 'Temp',          v: vTemp(b?.temp) },
+        { k: 'Feels like',    v: vTemp(b?.apparent_temp) },
+        { k: 'Conditions',    v: vCond(b), small: true },
+        { k: 'Wind',          v: vWind(b) },
+        { k: 'UV index',      v: vUV(b) },
+        { k: 'Precip chance', v: vPop(baseModel) },
+      ];
+    }
+    // winter (default) — summit cells only when a summit is configured
+    const cells = [{ k: 'Base temp', v: vTemp(b?.temp) }];
+    if (s) cells.push({ k: 'Summit temp', v: vTemp(s?.temp) });
+    cells.push(
+      { k: s ? 'Summit wind' : 'Wind', v: vWind(s || b) },
+      { k: 'Conditions',  v: vCond(b), small: true },
+      { k: 'Snowfall 5d', v: vSnowfall(baseModel) },
+      { k: 'Snow level',  v: vSnowLvl(b) },
+    );
+    return cells;
+  }
+
+  // Rebuild BOTH the Live Readings grid and the chat-preview conditions grid from
+  // the active season's cell map. Called by renderModel + the season toggle.
+  function renderSeasonGrids(baseModel, summitModel) {
+    const cells = seasonCells(seasonMode, baseModel, summitModel);
+
+    const grid = document.getElementById('status-grid');
+    if (grid) {
+      // 6-cell = .status-grid-6 (default); 5-cell winter (no summit) = .no-summit.
+      // Class-based so the existing responsive media queries still apply.
+      grid.classList.toggle('no-summit', cells.length <= 5);
+      grid.style.gridTemplateColumns = '';
+      grid.innerHTML = cells.map(c =>
+        `<div class="status-cell"><div class="k">${c.k}</div>` +
+        `<div class="v"${c.small ? ' style="font-size:14px;padding-top:4px;"' : ''}>${c.v}</div></div>`
+      ).join('');
+    }
+
+    const cond = document.querySelector('.chat-mock-cond-grid');
+    if (cond) {
+      cond.style.gridTemplateColumns = '';
+      cond.innerHTML = cells.map(c =>
+        `<div class="chat-mock-cond-cell"><div class="chat-mock-cond-k">${c.k}</div>` +
+        `<div class="chat-mock-cond-v${c.small ? ' small' : ''}">${c.v}</div></div>`
+      ).join('');
+    }
+  }
+
+  // Apply a season: update the segmented control + explainer, re-render the grids
+  // from the last fetched model, and mark the config dirty (it's a saved setting).
+  function setSeason(mode) {
+    seasonMode = (mode === 'summer') ? 'summer' : 'winter';
+    document.querySelectorAll('.season-seg__btn').forEach(b =>
+      b.classList.toggle('is-active', b.dataset.season === seasonMode));
+    const sub = document.getElementById('season-sub');
+    if (sub) sub.innerHTML = SEASON_SUB[seasonMode];
+    const m = window.__lastWeatherModel;
+    if (m) renderSeasonGrids(m.base, m.summit);
+    if (typeof refreshSaveStatus === 'function') refreshSaveStatus();
+  }
+  document.querySelectorAll('.season-seg__btn').forEach(btn => {
+    btn.addEventListener('click', () => setSeason(btn.dataset.season));
+  });
+
   function renderModel(baseModel, summitModel, sourceName) {
-    // Pull display fields from the normalized current
     const baseCur = baseModel?.forecast_current;
     const summitCur = summitModel?.forecast_current;
 
-    const baseTempEl = document.getElementById('reading-base-temp');
-    const summitTempEl = document.getElementById('reading-summit-temp');
-    const summitCellEl = document.getElementById('reading-summit-cell');
-    const statusGridEl = document.getElementById('status-grid');
-    const condsEl = document.getElementById('reading-conditions');
-    const windEl = document.getElementById('reading-wind');
-    const snowLvlEl = document.getElementById('reading-snow-level');
-    const popEl = document.getElementById('reading-pop');
-
-    baseTempEl.innerHTML = baseCur?.temp != null ? `${baseCur.temp}<small>°F</small>` : `<span class="muted">—</span>`;
-
-    // Hide summit cell entirely when summit isn't configured (vs null data due to error)
-    const hasSummitData = summitCur && summitCur.temp != null;
-    if (summitModel == null) {
-      // Summit not configured at all — hide the cell, drop grid to 5 cols
-      summitCellEl.style.display = 'none';
-      statusGridEl.classList.add('no-summit');
-    } else {
-      // Summit is configured but may have null temp (data error)
-      summitCellEl.style.display = '';
-      statusGridEl.classList.remove('no-summit');
-      summitTempEl.innerHTML = hasSummitData ? `${summitCur.temp}<small>°F</small>` : `<span class="muted">—</span>`;
-    }
-
-    // Conditions label + emoji (if available)
-    const emoji = baseCur?.icon_emoji ? baseCur.icon_emoji + ' ' : '';
-    condsEl.innerHTML = baseCur?.conditions_label ? `${emoji}${baseCur.conditions_label}` : `<span class="muted">—</span>`;
-
-    if (baseCur?.wind_speed != null) {
-      const dirLabel = baseCur.wind_dir_label || '';
-      windEl.innerHTML = `${baseCur.wind_speed}<small>mph ${dirLabel}</small>`;
-    } else {
-      windEl.innerHTML = `<span class="muted">—</span>`;
-    }
-
-    // Snow level — only Open-Meteo provides this
-    if (baseCur?.snow_level != null) {
-      snowLvlEl.innerHTML = `${baseCur.snow_level.toLocaleString()}<small>ft</small>`;
-    } else {
-      snowLvlEl.innerHTML = `<span class="muted">—</span>`;
-    }
-
-    // POP — find the soonest hourly entry with a value, since current doesn't have it
-    const popValue = baseCur?.pop != null
-      ? baseCur.pop
-      : (baseModel?.forecast_hourly?.find(h => h.pop != null)?.pop);
-    if (popValue != null) {
-      const pct = Math.round(popValue * 100);
-      popEl.innerHTML = `${pct}<small>%</small>`;
-    } else {
-      popEl.innerHTML = `<span class="muted">—</span>`;
-    }
+    // Live Readings grid — season-driven (Winter/Summer cell map)
+    renderSeasonGrids(baseModel, summitModel);
 
     // Hourly strip
     const hourlyRow = document.getElementById('hourly-row');
@@ -3495,53 +3590,8 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
     if (greetEl) greetEl.textContent = resortName;
     if (footEl) footEl.textContent = resortName;
 
-    const setCell = (id, html) => {
-      const el = document.getElementById(id);
-      if (el) el.innerHTML = html;
-    };
-
-    // Base temp
-    setCell('chat-mock-base-temp',
-      baseCur?.temp != null ? `${baseCur.temp}<small>°F</small>` : `<span class="muted">—</span>`);
-
-    // Summit temp + cell visibility
-    const summitCellEl = document.getElementById('chat-mock-summit-cell');
-    const windSummitCellEl = document.getElementById('chat-mock-wind-summit-cell');
-    const condBlockEl = document.querySelector('.chat-mock-conditions');
-    if (hasSummit) {
-      summitCellEl.style.display = '';
-      windSummitCellEl.style.display = '';
-      if (condBlockEl) condBlockEl.classList.remove('no-summit');
-      setCell('chat-mock-summit-temp',
-        summitCur.temp != null ? `${summitCur.temp}<small>°F</small>` : `<span class="muted">—</span>`);
-      const summitWind = summitCur.wind_speed != null
-        ? `${summitCur.wind_speed}<small>mph ${summitCur.wind_dir_label || ''}</small>`
-        : `<span class="muted">—</span>`;
-      setCell('chat-mock-wind-summit', summitWind);
-    } else {
-      // No summit — drop both summit cells, grid auto-collapses to 2-col
-      summitCellEl.style.display = 'none';
-      windSummitCellEl.style.display = 'none';
-      if (condBlockEl) condBlockEl.classList.add('no-summit');
-    }
-
-    // Conditions (icon + label)
-    const condsHtml = baseCur?.conditions_label
-      ? `${baseCur.icon_emoji ? baseCur.icon_emoji + ' ' : ''}${baseCur.conditions_label}`
-      : `<span class="muted">—</span>`;
-    setCell('chat-mock-conditions', condsHtml);
-
-    // Wind base
-    const baseWind = baseCur?.wind_speed != null
-      ? `${baseCur.wind_speed}<small>mph ${baseCur.wind_dir_label || ''}</small>`
-      : `<span class="muted">—</span>`;
-    setCell('chat-mock-wind-base', baseWind);
-
-    // Snow level — when null, show em-dash (some sources don't expose it)
-    const snowLvlHtml = baseCur?.snow_level != null
-      ? `${baseCur.snow_level.toLocaleString()}<small>ft</small>`
-      : `<span class="muted">—</span>`;
-    setCell('chat-mock-snow-level', snowLvlHtml);
+    // The conditions grid (base/summit/wind/etc.) is rebuilt season-aware by
+    // renderSeasonGrids() — renderChatMock only owns the resort name + timestamp.
 
     // Updated timestamp
     const updatedEl = document.getElementById('chat-mock-updated');
@@ -3549,8 +3599,7 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
   }
 
   function setReadingsError(sourceInfo, healthText) {
-    const ids = ['reading-base-temp', 'reading-summit-temp', 'reading-conditions', 'reading-wind', 'reading-snow-level', 'reading-pop'];
-    ids.forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = '<span class="muted">—</span>'; });
+    renderSeasonGrids(null, null);   // clear all cells to muted dashes
     document.getElementById('hourly-row').innerHTML = '<div class="hourly-empty">No data available</div>';
     document.querySelector('[data-status="source-info"]').innerHTML = sourceInfo;
     const h = document.querySelector('[data-status="health"]');
@@ -3685,6 +3734,7 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
   // ----- Weather source ('om' = Open-Meteo, 'direct' = Resort Direct) -----
   let savedSource = 'om';
   let savedDirectUrl = '';
+  let savedSeason = 'winter';
   const DIRECT_URL_ID = 'direct-endpoint-url';
   const activeSource   = () => document.querySelector('.src-tab.active')?.dataset.src || 'om';
   const sourceLabel    = (s) => s === 'direct' ? 'Resort Direct' : 'Open-Meteo';
@@ -3717,6 +3767,7 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
   function isDirty() {
     if (!savedSnapshot) return false;
     if (activeSource() !== savedSource) return true;             // switched source
+    if (seasonMode !== savedSeason) return true;                 // switched winter/summer
     if (activeSource() === 'direct') return directUrlValue() !== (savedDirectUrl || '');
     const cur = readForm();
     return TRACKED_FIELDS.some(id => String(cur[id]).trim() !== String(savedSnapshot[id]).trim());
@@ -3847,6 +3898,8 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
         savedSnapshot = { ...parsed.values };
         savedSource = parsed.source === 'direct' ? 'direct' : 'om';
         savedDirectUrl = parsed.directUrl || '';
+        savedSeason = parsed.seasonMode === 'summer' ? 'summer' : 'winter';
+        seasonMode = savedSeason;
         const urlEl = document.getElementById(DIRECT_URL_ID);
         if (urlEl && savedDirectUrl) urlEl.value = savedDirectUrl;
         if (parsed.savedAt) lastSavedAt = parsed.savedAt;
@@ -3875,7 +3928,7 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
       return;
     }
 
-    const payload = { source, values, directUrl: directUrlValue(), savedAt: Date.now() };
+    const payload = { source, values, directUrl: directUrlValue(), seasonMode, savedAt: Date.now() };
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     } catch (e) {
@@ -3884,6 +3937,7 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
     savedSnapshot = { ...values };
     savedSource = source;
     savedDirectUrl = payload.directUrl;
+    savedSeason = seasonMode;
     lastSavedAt = payload.savedAt;
     saveBar.classList.add('saved-flash');
     setTimeout(() => saveBar.classList.remove('saved-flash'), 1800);
@@ -3903,6 +3957,7 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
   function discardNow() {
     if (!savedSnapshot) return;
     writeForm(savedSnapshot);
+    if (seasonMode !== savedSeason) setSeason(savedSeason);
     // Restore the saved source: flip back to its tab + its endpoint URL.
     const urlEl = document.getElementById(DIRECT_URL_ID);
     if (urlEl) urlEl.value = savedDirectUrl || urlEl.value;
@@ -4177,6 +4232,7 @@ import { fetchOpenMeteo, mToFt, ftToM } from './src/shared/weather/open-meteo.js
   // Initial load: read storage, populate form, restore the saved source, set status
   loadFromStorage();
   markSavedSourceTab();
+  setSeason(seasonMode);   // sync the Winter/Summer control + explainer to the saved season
 
   // Restore the saved source tab (Open-Meteo is already active by default)
   if (savedSource === 'direct') {
