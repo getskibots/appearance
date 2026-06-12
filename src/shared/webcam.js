@@ -51,12 +51,40 @@ export function detectWebcamKind(url) {
   return 'unknown';
 }
 
-// How the widget should treat a kind.
+// How the widget should render a kind — the tool to use.
+//   image  → <img>            (image, mjpeg)
+//   attempt→ <img> + onerror  (unknown / extension-less snapshot)
+//   iframe → <iframe> embed   (youtube, vimeo, roundshot, panomax, feratel, …)
+//   hls    → <video> + hls.js (.m3u8)
+//   video  → <video> native   (.mp4)
+//   open   → poster + Open ↗  (dash and anything we can't embed)
+//   blocked→ notice           (rtsp/rtmp — un-playable in a browser)
 export function webcamRender(kind) {
-  if (kind === 'image' || kind === 'mjpeg') return 'image';   // renders in <img>
-  if (kind === 'unknown') return 'attempt';                   // try <img>, fall back on error
-  if (kind === 'rtsp' || kind === 'rtmp') return 'blocked';   // browser can't play it
-  return 'embed';                                             // captured, deferred renderer
+  if (kind === 'image' || kind === 'mjpeg') return 'image';
+  if (kind === 'unknown') return 'attempt';
+  if (kind === 'hls') return 'hls';
+  if (kind === 'mp4') return 'video';
+  if (kind === 'dash') return 'open';
+  if (kind === 'rtsp' || kind === 'rtmp') return 'blocked';
+  return 'iframe'; // youtube/vimeo/roundshot/panomax/feratel/bergfex/windy/earthcam/brownrice
+}
+
+// The src to use in an <iframe> for an embeddable kind. YouTube/Vimeo get proper
+// player embeds; provider 360 pages frame directly. Returns null if we can't embed.
+export function embedUrl(url, kind) {
+  try {
+    if (kind === 'youtube') {
+      const id = youTubeId(url);
+      return id
+        ? 'https://www.youtube.com/embed/' + id + '?autoplay=1&mute=1&playsinline=1&rel=0&loop=1&playlist=' + id
+        : null; // a channel/streams URL has no video id — fall back to Open ↗
+    }
+    if (kind === 'vimeo') {
+      const m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+      return m ? 'https://player.vimeo.com/video/' + m[1] + '?autoplay=1&muted=1&loop=1' : url;
+    }
+  } catch (e) { /* ignore */ }
+  return url; // roundshot/panomax/feratel/bergfex/windy/earthcam/brownrice frame as-is
 }
 
 const KIND_LABEL = {
@@ -74,8 +102,10 @@ export function webcamKindMeta(kind) {
   const label = KIND_LABEL[kind] || 'Webcam';
   if (render === 'image') return { label, status: 'live', note: 'Renders live in the chat.' };
   if (render === 'attempt') return { label, status: 'try', note: 'We’ll try to render it as an image; if it can’t, the cam still opens in a new tab.' };
+  if (render === 'iframe') return { label, status: 'live', note: 'Embeds live in the chat. (Opens in a new tab if the provider blocks embedding.)' };
+  if (render === 'hls' || render === 'video') return { label, status: 'live', note: 'Plays live in the chat.' };
   if (render === 'blocked') return { label, status: 'blocked', note: 'Browsers can’t play this stream — transcode it to HLS to render. The URL is saved.' };
-  return { label, status: 'later', note: 'Captured — live rendering arrives in a later release. The URL is saved and guests can open it.' };
+  return { label, status: 'later', note: 'Captured — opens in a new tab; in-chat rendering arrives in a later release.' };
 }
 
 // Best-effort poster so even un-rendered cams show something.
