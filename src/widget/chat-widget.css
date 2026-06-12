@@ -708,14 +708,27 @@ body[data-variant="full"] .gsb-chat-left-column {
 }
 
 @media (max-width: 899px) {
+  /* Full panel on mobile: collapse the two panes into ONE scrollable flow.
+     Stacked panes each managing their own height let the content-height left
+     column (hero + season + conditions) squeeze the conversation column to
+     ~0px — chips and messages became invisible. Instead the chat body itself
+     scrolls and both columns flow at natural height, matching the unified
+     scroll model side/middle already use. */
   body[data-variant="full"] .gsb-chat-body {
     flex-direction: column;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   body[data-variant="full"] .gsb-chat-left-column {
     width: 100%;
     flex: 0 0 auto;
     border-right: none;
     border-bottom: 1px solid var(--jh-border);
+    overflow-y: visible;
+  }
+  body[data-variant="full"] .gsb-chat-right-column {
+    flex: 0 0 auto;
+    overflow-y: visible;
   }
 }
 
@@ -928,7 +941,9 @@ body[data-variant="full"] .gsb-chat-left-column {
 
 .gsb-conditions-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* minmax(0,…) lets tracks shrink below min-content — without it, wide values
+     ("43,286ft", "22mph W") blow the grid out the right edge on phones. */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .gsb-conditions-cell {
@@ -1002,6 +1017,13 @@ body[data-variant="full"] .gsb-chat-left-column {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Narrow screens: trim cell chrome so the big serif values fit their third. */
+@media (max-width: 480px) {
+  .gsb-conditions-cell { padding: 10px 6px; }
+  .gsb-conditions-cell .value { font-size: calc(19px * var(--gsb-text-scale, 1)); }
+  .gsb-conditions-cell .value .unit { font-size: calc(10px * var(--gsb-text-scale, 1)); }
 }
 
 .gsb-conditions-source {
