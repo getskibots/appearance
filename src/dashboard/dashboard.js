@@ -455,17 +455,29 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
         heroEl.setAttribute('data-hero-managed', 'true');
       }
     }
-    // Detected-kind badge under the Webcam URL field (honest about what renders).
-    var kindBadge = $('webcamKindBadge');
-    if (kindBadge) {
-      if (hero.source === 'webcam' && hero.webcam.url) {
-        var km = webcamKindMeta(hero.webcam.kind || detectWebcamKind(hero.webcam.url));
-        kindBadge.style.display = '';
-        kindBadge.setAttribute('data-status', km.status);
-        $('webcamKindTag').textContent = km.label;
-        $('webcamKindNote').textContent = km.note;
+    // Live preview in the card — renders the actual hero (cam/image) as you go,
+    // plus an honest kind chip ("Roundshot 360° · Renders live").
+    var preview = $('heroPreview'), previewChip = $('heroPreviewChip');
+    if (preview) {
+      var pcam = hero.source === 'featured'
+        ? { url: hero.featuredImage.url, kind: 'image', poster: '' }
+        : (hero.source === 'webcam' ? hero.webcam : null);
+      if (pcam && pcam.url) {
+        renderWebcamHero(preview, pcam);
+        preview.setAttribute('data-empty', 'false');
+        if (previewChip) {
+          var pm = webcamKindMeta(pcam.kind || detectWebcamKind(pcam.url));
+          var word = pm.status === 'live' ? 'Renders live'
+            : pm.status === 'blocked' ? 'Needs transcoding'
+            : pm.status === 'try' ? 'Will try to render' : 'Captured';
+          previewChip.style.display = '';
+          previewChip.setAttribute('data-status', pm.status);
+          $('heroPreviewKind').textContent = pm.label + ' · ' + word;
+        }
       } else {
-        kindBadge.style.display = 'none';
+        clearWebcamHero(preview);
+        preview.setAttribute('data-empty', 'true');
+        if (previewChip) previewChip.style.display = 'none';
       }
     }
     // Reflect the source toggle + show the matching control group.
