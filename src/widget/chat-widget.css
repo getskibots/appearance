@@ -1026,16 +1026,6 @@ body[data-variant="full"] .gsb-chat-left-column {
   .gsb-conditions-cell .value .unit { font-size: calc(10px * var(--gsb-text-scale, 1)); }
 }
 
-.gsb-conditions-source {
-  padding: 7px 14px;
-  background: var(--jh-surface);
-  font-size: calc(9px * var(--gsb-text-scale, 1));
-  color: var(--jh-ink-soft);
-  text-align: center;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
 /* SEASON / RECENT UPDATE BANNER — branded announcement card.
    Soft brand wash + a 3px brand left-accent bar + brand-deep eyebrow, so it ties
    to the resort's brand color (any hue) instead of the old amber/gold warning look.

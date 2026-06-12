@@ -353,11 +353,8 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
                '<div class="value' + (c.cond ? ' is-cond' : '') + '">' + c.v + '</div></div>';
       }).join('');
     }
-    // Source label reflects Open-Meteo once live data is in.
-    if (data.weatherModel) {
-      var srcEl = document.querySelector('.gsb-conditions-source');
-      if (srcEl) srcEl.textContent = 'Source · Open-Meteo';
-    }
+    // (Conditions-card source footer removed — no data-source attribution in the
+    //  guest-facing card; the Weather tab is where the source is configured.)
 
     // Conditions timestamp
     if (data.snow.respTimestamp) {
