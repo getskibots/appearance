@@ -428,11 +428,9 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
 
   // ============= CHAT INTERACTION =============
   function openChat() {
-    // body.modal-open is set by the dashboard's setOpen() — we just handle column placement
-    // For Full panel, clone hero/welcome/conditions into left column
-    if (body.dataset.variant === 'full') {
-      moveContentToLeftColumn();
-    }
+    // body.modal-open is set by the dashboard's setOpen() — we just (re)assert
+    // column placement for the current variant (idempotent).
+    applyColumnLayout();
   }
 
   function closeChat() {
@@ -485,21 +483,19 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
   }
 
   function setVariant(variant) {
-    var prev = body.dataset.variant;
     body.dataset.variant = variant;
+    applyColumnLayout();
+  }
 
-    // (variant pills no longer exist in dashboard — variant comes from Panel layout cards in the form)
-
-    // Reorganize content if needed
-    var isFull = variant === 'full';
-    var wasFull = prev === 'full';
-
-    if (isFull && !wasFull) {
-      // Only move if chat is open; otherwise wait until open
-      if (body.classList.contains('modal-open')) moveContentToLeftColumn();
-    } else if (!isFull && wasFull) {
-      moveContentToRightColumn();
-    }
+  // Place hero/welcome/season/conditions in the column the current variant needs
+  // (Full = left column, Side/Middle = right). Idempotent and order-independent,
+  // so a fresh load / auto-open can't strand content in the wrong column —
+  // previously the move only ran if the chat was already open when the variant
+  // changed, which left Full panels empty-on-the-left after a refresh.
+  function applyColumnLayout() {
+    if (!$('gsbLeftColumn') || !$('gsbRightColumn')) return;
+    if (body.dataset.variant === 'full') moveContentToLeftColumn();
+    else moveContentToRightColumn();
   }
 
   // ============= MESSAGE HANDLING =============
