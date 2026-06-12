@@ -1062,21 +1062,23 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     $('gsbVoiceOrb').setAttribute('data-state', state);
     $('gsbVoiceStatus').setAttribute('data-state', state);
 
+    // Guest-facing copy is invitation-voiced, not machine-state ("Listening" reads
+    // as surveillance). "Go ahead…" = your turn; the big button is the clear exit.
     var labels = {
-      idle: 'Tap to start',
-      listening: 'Listening',
+      idle: 'Tap to talk',
+      listening: 'Go ahead…',
       thinking: 'Thinking',
       speaking: 'Speaking'
     };
-    $('gsbVoiceStatus').textContent = labels[state] || 'Tap to start';
+    $('gsbVoiceStatus').textContent = labels[state] || 'Tap to talk';
 
     var btnLabels = {
-      idle: 'Tap to speak',
-      listening: 'Stop listening',
+      idle: 'Tap to talk',
+      listening: 'End voice chat',
       thinking: 'Thinking…',
       speaking: 'Skip'
     };
-    $('gsbVoiceMainBtnLabel').textContent = btnLabels[state] || 'Tap to speak';
+    $('gsbVoiceMainBtnLabel').textContent = btnLabels[state] || 'Tap to talk';
   }
 
   function setTranscript(text, kind) {
@@ -1206,10 +1208,10 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     if (state === 'idle') {
       startVoiceModeListening();
     } else if (state === 'listening') {
-      // Stop listening, force submit if there's content
-      if (voice.recognition) {
-        try { voice.recognition.stop(); } catch (e) {}
-      }
+      // The big button is the unambiguous exit ("End voice chat"). Closing flips
+      // fullModeActive, so the recognizer's onend guard discards rather than
+      // submits — silence already auto-submits in the happy path.
+      closeVoiceMode();
     } else if (state === 'speaking') {
       // Skip current speech, restart listening
       if (voice.ttsSupported) window.speechSynthesis.cancel();

@@ -788,8 +788,8 @@
 
               <div class="toggle-row toggle-row--standalone">
                 <div class="toggle-row__main">
-                  <div class="toggle-row__title">Realtime voice</div>
-                  <div class="toggle-row__desc">Show the hands-free voice button in the chat so guests can talk to the agent in real time. Turn off to hide it.</div>
+                  <div class="toggle-row__title">Voice chat</div>
+                  <div class="toggle-row__desc">Show the hands-free voice button so guests can talk with the agent out loud. Turn off to hide it.</div>
                 </div>
                 <button type="button" class="toggle" id="toggleVoice" role="switch" aria-checked="true"></button>
               </div>
@@ -924,7 +924,7 @@
                           </svg>
                         </button>
                         <!-- Swap: Voice Mode when empty, Send once you type (matches the chat composer) -->
-                        <button type="button" class="gsb-embed-search__voice" aria-label="Voice mode" title="Voice mode (opens chat)">
+                        <button type="button" class="gsb-embed-search__voice" aria-label="Voice chat" title="Voice chat (opens chat)">
                           <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
                             <rect x="1.5" y="6.5" width="1.6" height="3" rx="0.8" fill="currentColor"/>
                             <rect x="4" y="4" width="1.6" height="8" rx="0.8" fill="currentColor"/>
@@ -1283,7 +1283,7 @@
                           </svg>
                         </button>
                         <!-- Right action swaps: Voice Mode when the input is empty, Send (diagonal arrow) once you type -->
-                        <button class="gsb-composer-voice-mode" id="gsbVoiceModeBtn" data-supported="true" aria-label="Start hands-free voice mode" title="Voice mode">
+                        <button class="gsb-composer-voice-mode" id="gsbVoiceModeBtn" data-supported="true" aria-label="Start voice chat" title="Voice chat">
                           <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
                             <rect x="1.5" y="6.5" width="1.6" height="3" rx="0.8" fill="currentColor"/>
                             <rect x="4" y="4" width="1.6" height="8" rx="0.8" fill="currentColor"/>
@@ -1309,8 +1309,8 @@
                   <!-- FULL VOICE MODE OVERLAY (hands-free) -->
                   <div class="gsb-voice-mode-overlay" id="gsbVoiceModeOverlay" data-open="false">
                     <div class="gsb-voice-mode__head">
-                      <span class="gsb-voice-mode__title">Voice Mode</span>
-                      <button class="gsb-voice-mode__exit" id="gsbVoiceModeExit" aria-label="Exit voice mode">
+                      <span class="gsb-voice-mode__title">Voice chat</span>
+                      <button class="gsb-voice-mode__exit" id="gsbVoiceModeExit" aria-label="End voice chat">
                         <svg viewBox="0 0 16 16" fill="none">
                           <path d="M3 3l10 10M13 3l-10 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
                         </svg>
@@ -1323,7 +1323,7 @@
                           <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
                         </div>
                       </div>
-                      <div class="gsb-voice-mode__status" id="gsbVoiceStatus" data-state="idle">Tap to start</div>
+                      <div class="gsb-voice-mode__status" id="gsbVoiceStatus" data-state="idle">Tap to talk</div>
                       <div class="gsb-voice-mode__transcript" id="gsbVoiceTranscript"></div>
                       <div class="gsb-voice-mode__history" id="gsbVoiceHistory"></div>
                     </div>
@@ -1334,7 +1334,7 @@
                           <rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/>
                           <path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
                         </svg>
-                        <span id="gsbVoiceMainBtnLabel">Tap to speak</span>
+                        <span id="gsbVoiceMainBtnLabel">Tap to talk</span>
                       </button>
                     </div>
                   </div>

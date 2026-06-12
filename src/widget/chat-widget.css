@@ -1711,7 +1711,7 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
 }
 
 .gsb-voice-mode__transcript:empty::after {
-  content: "Speak when ready…";
+  content: "Just start talking — snow, lifts, dinner, anything.";
   color: rgba(255,255,255,0.3);
   font-size: calc(16px * var(--gsb-text-scale, 1));
   font-style: italic;
