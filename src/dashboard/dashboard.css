@@ -652,6 +652,27 @@
   font-size: 13px;
 }
 .hero-preview[data-empty="true"] .hero-preview__empty { display: flex; }
+/* Crop & reposition: the preview becomes a drag surface with a zoom slider. */
+.hero-preview.is-cropping { cursor: grab; touch-action: none; }
+.hero-preview.is-cropping:active { cursor: grabbing; }
+.crop-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  max-width: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;   /* let the preview catch the drag */
+}
+.crop-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+.crop-zoom { flex: 0 0 130px; }
+.crop-hint { font-size: 11px; color: var(--ink-muted); }
 .hero-preview__chip {
   margin-top: 8px;
   display: inline-flex;

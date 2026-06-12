@@ -10,6 +10,7 @@ import { loadFont, loadPreview, fontStack } from '../shared/fonts/font-loader.js
 import { detectWebcamKind, webcamKindMeta, webcamPoster } from '../shared/webcam.js';
 import { renderWebcamHero, clearWebcamHero } from '../shared/webcam-render.js';
 import { optimizeImage, formatBytes } from '../shared/image-compress.js';
+import { startFeaturedCrop } from './featured-crop.js';
 import { createFontPicker } from './font-picker.js';
 import FONT_CATALOG from '../shared/fonts/google-fonts.json';
 
@@ -24,6 +25,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   var CURATED_BODY = ['Inter', 'Poppins', 'Montserrat', 'Lato', 'Work Sans', 'Nunito Sans', 'DM Sans', 'Open Sans', 'Raleway', 'Mulish', 'Source Sans 3', 'Roboto'];
   var CURATED_DISPLAY = ['Playfair Display', 'Merriweather', 'Lora', 'Fraunces', 'Cormorant', 'Oswald', 'Bebas Neue', 'Archivo', 'DM Serif Display', 'Libre Baskerville'];
   var bodyPicker = null, displayPicker = null;
+  var cropController = null; // active featured-image crop editor (Webcams card)
+  function endFeaturedCrop() { if (cropController) { cropController.destroy(); cropController = null; } }
 
   // ============= COLOR HELPERS =============
   function hexToRgb(hex) {
@@ -457,9 +460,12 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       }
     }
     // Live preview in the card — renders the actual hero (cam/image) as you go,
-    // plus an honest kind chip ("Roundshot 360° · Renders live").
+    // plus an honest kind chip ("Roundshot 360° · Renders live"). While a featured
+    // image is being cropped, the crop editor owns the preview — don't fight it.
     var preview = $('heroPreview'), previewChip = $('heroPreviewChip');
-    if (preview) {
+    if (preview && hero.source === 'featured' && preview.querySelector('.crop-layer')) {
+      if (previewChip) previewChip.style.display = 'none';
+    } else if (preview) {
       var pcam = hero.source === 'featured'
         ? { url: hero.featuredImage.url, kind: 'image', poster: '' }
         : (hero.source === 'webcam' ? hero.webcam : null);
@@ -1120,6 +1126,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   document.querySelectorAll('#heroSourceSegmented [data-hero-source]').forEach(function(btn){
     btn.addEventListener('click', function(){
       state.hero.source = btn.getAttribute('data-hero-source');
+      if (state.hero.source !== 'featured') endFeaturedCrop();
       render();
       // Returning to a feed-driven webcam (no manual URL) — repopulate from the
       // live feed so a previously-shown featured image doesn't linger.
@@ -1137,7 +1144,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     render();
   });
   $('webcamLabel').addEventListener('input', function(e){ state.hero.webcam.label = e.target.value; render(); });
-  $('featuredImageUrl').addEventListener('input', function(e){ state.hero.featuredImage.url = e.target.value; render(); });
+  $('featuredImageUrl').addEventListener('input', function(e){ endFeaturedCrop(); state.hero.featuredImage.url = e.target.value; render(); });
   $('featuredCaption').addEventListener('input', function(e){ state.hero.featuredImage.caption = e.target.value; render(); });
   $('featuredLink').addEventListener('input', function(e){ state.hero.featuredImage.link = e.target.value; render(); });
   $('featuredImageFile').addEventListener('change', function(e){
@@ -1152,17 +1159,29 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       rs.readAsDataURL(f);
       return;
     }
-    setInfo('Optimizing…', '');
-    optimizeImage(f).then(function(out){
-      state.hero.featuredImage.url = out.dataUrl;
-      var fmt = out.mime === 'image/webp' ? 'WebP' : 'JPEG';
-      setInfo(formatBytes(f.size) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height + ' · ' + fmt, 'ok');
-      render();
-    }).catch(function(){
-      // Optimization unavailable — fall back to the original file.
-      var rf = new FileReader();
-      rf.onload = function(){ state.hero.featuredImage.url = rf.result; setInfo(formatBytes(f.size) + ' · original (couldn’t optimize)', 'warn'); render(); };
-      rf.readAsDataURL(f);
+    setInfo('Loading…', '');
+    endFeaturedCrop();
+    startFeaturedCrop({
+      previewEl: $('heroPreview'),
+      sliderEl: $('cropZoom'),
+      file: f,
+      onBake: function(out, origBytes){
+        state.hero.featuredImage.url = out.dataUrl;
+        var fmt = out.mime === 'image/webp' ? 'WebP' : 'JPEG';
+        setInfo(formatBytes(origBytes) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height + ' · ' + fmt, 'ok');
+        render();
+      }
+    }).then(function(ctrl){ cropController = ctrl; }).catch(function(){
+      // Crop editor unavailable — fall back to a plain resize+compress.
+      optimizeImage(f).then(function(out){
+        state.hero.featuredImage.url = out.dataUrl;
+        setInfo(formatBytes(f.size) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height, 'ok');
+        render();
+      }).catch(function(){
+        var rf = new FileReader();
+        rf.onload = function(){ state.hero.featuredImage.url = rf.result; render(); };
+        rf.readAsDataURL(f);
+      });
     });
   });
   $('ctaText').addEventListener('input', function(e){

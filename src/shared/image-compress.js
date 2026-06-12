@@ -44,8 +44,9 @@ export async function optimizeImage(file, opts) {
   return { dataUrl, blob, width: w, height: h, bytes: blob.size, mime };
 }
 
-function decode(file) {
-  // Respect EXIF orientation so portrait phone photos aren't sideways.
+// Decode a File to a drawable source (ImageBitmap or HTMLImageElement),
+// respecting EXIF orientation so portrait phone photos aren't sideways.
+export function decodeImage(file) {
   if (window.createImageBitmap) {
     return createImageBitmap(file, { imageOrientation: 'from-image' }).catch(function () {
       return createImageBitmap(file);
@@ -57,6 +58,39 @@ function decode(file) {
     img.onerror = reject;
     img.src = URL.createObjectURL(file);
   });
+}
+function decode(file) { return decodeImage(file); }
+
+/* Bake a crop into an optimized image. `spec` is the placement of the (already
+ * decoded) source over the output frame, in output-pixel space:
+ *   { outW, outH, dx, dy, dw, dh, maxBytes? }
+ * i.e. drawImage(src, dx, dy, dw, dh) onto an outW×outH canvas — only the frame
+ * is kept (that's the crop). Then re-encode under the byte budget. */
+export async function optimizeCrop(src, spec) {
+  const outW = spec.outW, outH = spec.outH;
+  const budget = spec.maxBytes || DEFAULTS.maxBytes;
+  const mime = supportsWebp() ? 'image/webp' : 'image/jpeg';
+  let quality = 0.82, w = outW, h = outH;
+  let blob = await drawEncode(src, w, h, spec, mime, quality);
+  let guard = 0;
+  while (blob.size > budget && guard < 10) {
+    if (quality > 0.5) quality = Math.round((quality - 0.1) * 100) / 100;
+    else { w = Math.round(w * 0.85); h = Math.round(h * 0.85); }
+    blob = await drawEncode(src, w, h, spec, mime, quality);
+    guard++;
+  }
+  const dataUrl = await blobToDataUrl(blob);
+  return { dataUrl, blob, width: w, height: h, bytes: blob.size, mime };
+}
+
+function drawEncode(src, w, h, spec, mime, quality) {
+  const canvas = document.createElement('canvas');
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingQuality = 'high';
+  const k = w / spec.outW; // guardrail may have scaled the output down
+  ctx.drawImage(src, spec.dx * k, spec.dy * k, spec.dw * k, spec.dh * k);
+  return new Promise(function (resolve) { canvas.toBlob(function (b) { resolve(b); }, mime, quality); });
 }
 
 function encode(src, w, h, mime, quality) {
