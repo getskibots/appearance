@@ -576,6 +576,41 @@
   .card-grid__col + .card-grid__col { margin-top: 24px; }
 }
 
+/* Typing-indicator tiles (Behavior card) — each tile plays its real animation,
+   see-before-you-pick (demos reuse the widget's gsb-typing-* classes/keyframes). */
+.typing-tiles { display: flex; gap: 10px; max-width: 420px; }
+.typing-tile {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 10px 10px;
+  background: #fff;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.typing-tile:hover { border-color: var(--accent); }
+.typing-tile[data-checked="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, #fff);
+}
+.typing-tile__demo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 18px;
+}
+.typing-tile__labeltext {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+.typing-tile__name { font-size: 12px; font-weight: 500; color: var(--ink); }
+
 /* Flow picker (placeholder source for the Recent update / Season Update card). */
 .flow-picker {
   display: flex;

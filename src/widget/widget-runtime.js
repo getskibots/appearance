@@ -823,9 +823,20 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     var msg = document.createElement('div');
     msg.className = 'gsb-msg gsb-msg--ai gsb-typing-indicator';
     msg.id = 'gsbTypingIndicator';
-    msg.innerHTML = '<span class="gsb-typing-dot"></span>'
-                  + '<span class="gsb-typing-dot"></span>'
-                  + '<span class="gsb-typing-dot"></span>';
+    // Style comes from Appearance (Behavior → Typing indicator): dots | orb | label.
+    var tStyle = document.body.getAttribute('data-typing-indicator') || 'dots';
+    if (tStyle === 'orb') {
+      msg.innerHTML = '<span class="gsb-typing-orb"></span>';
+    } else if (tStyle === 'label') {
+      var who = document.body.getAttribute('data-typing-label') || 'AI Concierge';
+      msg.innerHTML = '<span class="gsb-typing-name"></span>'
+                    + '<span class="gsb-typing-ellipsis"><span>.</span><span>.</span><span>.</span></span>';
+      msg.querySelector('.gsb-typing-name').textContent = who + ' is typing';
+    } else {
+      msg.innerHTML = '<span class="gsb-typing-dot"></span>'
+                    + '<span class="gsb-typing-dot"></span>'
+                    + '<span class="gsb-typing-dot"></span>';
+    }
     $('gsbMessages').appendChild(msg);
     body.classList.add('gsb-conversation-started');
     // Auto-scroll the typing indicator into view so the user immediately

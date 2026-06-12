@@ -202,6 +202,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     popupMessagePreview: false,
     askForRating: false,
     realtimeVoice: true,        // show the hands-free Voice Mode feature in the chat
+    typingIndicator: 'dots',    // dots | orb | label — the "AI is replying" animation
     disableTextInput: false,
     // Typography
     typography: {
@@ -535,6 +536,15 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // Realtime voice on/off → hides the hands-free Voice Mode button + overlay in the chat.
     canvas.setAttribute('data-voice', state.realtimeVoice ? 'on' : 'off');
     document.body.setAttribute('data-voice', state.realtimeVoice ? 'on' : 'off');
+
+    // Typing indicator style + the name the "label" variant types under.
+    document.body.setAttribute('data-typing-indicator', state.typingIndicator || 'dots');
+    document.body.setAttribute('data-typing-label', state.widgetName || 'AI Concierge');
+    document.querySelectorAll('#typingTiles .typing-tile').forEach(function(t) {
+      var on = t.getAttribute('data-value') === (state.typingIndicator || 'dots');
+      t.setAttribute('data-checked', String(on));
+      t.setAttribute('aria-checked', String(on));
+    });
     canvas.setAttribute('data-modal-blur', state.blurredBackground ? 'true' : 'false');
 
     // Swap chat header agent label: "AI Concierge" by default, "Agent Online" when liveAgent toggle is active
@@ -812,7 +822,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       launcher: ['bubbleStyle','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','statusPillFeatures','ctaText'],
       typography: ['typography'],
       panel: ['layoutVariant','blurredBackground'],
-      behavior: ['soundNotifications','popupMessagePreview','askForRating','realtimeVoice','disableTextInput'],
+      behavior: ['soundNotifications','popupMessagePreview','askForRating','realtimeVoice','typingIndicator','disableTextInput'],
       embed: ['embedSearch','embedButton']
     };
     Object.keys(ACC_CARD_FIELDS).forEach(function(id) {
@@ -1232,6 +1242,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   bindToggle('togglePopup', function(){ return state.popupMessagePreview; }, function(v){ state.popupMessagePreview = v; });
   bindToggle('toggleRating', function(){ return state.askForRating; }, function(v){ state.askForRating = v; });
   bindToggle('toggleVoice', function(){ return state.realtimeVoice; }, function(v){ state.realtimeVoice = v; });
+  document.querySelectorAll('#typingTiles .typing-tile').forEach(function(t){
+    t.addEventListener('click', function(){ state.typingIndicator = t.getAttribute('data-value'); render(); });
+  });
   bindToggle('toggleDisableInput', function(){ return state.disableTextInput; }, function(v){ state.disableTextInput = v; });
 
   launcher.addEventListener('click', function(){ setOpen(true); });
@@ -1498,6 +1511,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       recentUpdateFlow: state.recentUpdateFlow,
       hero: state.hero,
       realtimeVoice: state.realtimeVoice,
+      typingIndicator: state.typingIndicator,
       ctaText: state.ctaText,
       bubbleStyle: state.bubbleStyle,
       customIconUrl: state.customIconUrl,

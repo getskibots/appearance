@@ -1176,8 +1176,8 @@ body[data-variant="full"].gsb-conversation-started .gsb-conversation-intro { dis
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--jh-ink-soft, #8a8579);
-  opacity: 0.4;
+  background: var(--brand, #8a8579);
+  opacity: 0.35;
   animation: gsb-typing-pulse 1.4s ease-in-out infinite;
 }
 
@@ -1186,8 +1186,47 @@ body[data-variant="full"].gsb-conversation-started .gsb-conversation-intro { dis
 .gsb-typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes gsb-typing-pulse {
-  0%, 60%, 100% { opacity: 0.4; transform: translateY(0); }
+  0%, 60%, 100% { opacity: 0.35; transform: translateY(0); }
   30% { opacity: 1; transform: translateY(-3px); }
+}
+
+/* Orb variant — a small breathing brand orb, kin to the Voice Mode orb. */
+.gsb-typing-orb {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--brand) 55%, #fff), var(--brand) 70%);
+  animation: gsb-typing-breathe 1.6s ease-in-out infinite;
+}
+@keyframes gsb-typing-breathe {
+  0%, 100% { transform: scale(0.82); box-shadow: 0 0 0 0 rgba(var(--brand-rgb, 164,30,35), 0.35); }
+  50%      { transform: scale(1);    box-shadow: 0 0 0 7px rgba(var(--brand-rgb, 164,30,35), 0); }
+}
+
+/* Label variant — "{Widget name} is typing…" with a softly stepping ellipsis. */
+.gsb-typing-name {
+  font-size: calc(12px * var(--gsb-text-scale, 1));
+  font-style: italic;
+  color: var(--jh-ink-soft);
+}
+.gsb-typing-ellipsis { display: inline-flex; margin-left: 1px; }
+.gsb-typing-ellipsis span {
+  font-size: calc(12px * var(--gsb-text-scale, 1));
+  font-style: italic;
+  color: var(--jh-ink-soft);
+  opacity: 0.25;
+  animation: gsb-typing-ellipsis 1.4s ease-in-out infinite;
+}
+.gsb-typing-ellipsis span:nth-child(2) { animation-delay: 0.2s; }
+.gsb-typing-ellipsis span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes gsb-typing-ellipsis {
+  0%, 60%, 100% { opacity: 0.25; }
+  30% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gsb-typing-dot, .gsb-typing-orb, .gsb-typing-ellipsis span { animation: none; opacity: 0.7; }
 }
 
 /* COMPOSER */
