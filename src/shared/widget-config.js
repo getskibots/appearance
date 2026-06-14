@@ -1,6 +1,6 @@
 /* BotScrew widget-settings mapper — the single source of truth for "drop-in"
  * alignment between this dashboard's flat `state` and BotScrew's real
- * `widgetSettings` shape (reverse-engineered from the live admin bundle, see
+ * `widgetSettings` shape (designed to match BotScrew's existing widget settings, see
  * docs/botscrew-widget-settings.md).
  *
  * BotScrew stores appearance per language under `languageConfigs[<lang>]`, plus

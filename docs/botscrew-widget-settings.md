@@ -1,11 +1,16 @@
 # BotScrew Widget Settings — Integration Contract
 
 This is the **drop-in contract** between the GetSkiBots appearance dashboard and
-BotScrew's admin (`Widget → Appearance` tab). It was reverse-engineered from the
-live BotScrew bundle (`main.ce2404c7.js`) and is implemented 1:1 by
+BotScrew's admin (`Widget → Appearance` tab). It mirrors BotScrew's existing
+widget settings structure so the two align cleanly, and is implemented 1:1 by
 [`src/shared/widget-config.js`](../src/shared/widget-config.js). **Keep this file
 and that module in lockstep** — the TypeScript interface below is the source of
 truth.
+
+This contract is designed to align closely with BotScrew's existing widget
+settings, so integrating the GetSkiBots dashboard is a structural match rather
+than a rebuild. The 8 native fields map 1:1; everything else travels in a
+namespaced `gsbAppearance` block BotScrew stores as opaque JSON.
 
 ## How BotScrew stores appearance
 
@@ -213,7 +218,7 @@ The 8 native fields map 1:1; the `gsbAppearance` block is persisted as opaque JS
 
 > ⚠️ **Unconfirmed:** the exact field on the `POST /file/widgetLogo` response that
 > holds the uploaded image URL — confirm against BotScrew's API. Everything else
-> (endpoints, methods, payloads) is verified from their bundle.
+> (endpoints, methods, payloads) is aligned with BotScrew's existing API.
 
 ## Local testing
 
@@ -250,7 +255,7 @@ is a liability, not a feature.
 imperative DOM (a `render()` that sets CSS vars/data-attrs, the font picker, the crop
 editor, the accordion). BotScrew **rebuilds this as React components**, but it's a
 *guided* rebuild, not from scratch: our build is the pixel-precise spec, the plain CSS
-is already value-matched to their Bootstrap look (radii/spacing/shadows pulled from
-their bundle), and the controls just read/write the **exact shape this doc defines**.
+is already value-matched to their Bootstrap look (radii/spacing/shadows matched to
+BotScrew's existing UI), and the controls just read/write the **exact shape this doc defines**.
 The crop/optimize/webcam/weather/font logic above ports as-is, so their components are
 thin shells over it.

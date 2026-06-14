@@ -494,7 +494,7 @@
 .acc-toolbar__btn:hover { text-decoration: underline; }
 
 /* A .section that is also .acc-card becomes an elevated, collapsible card.
-   Matches BotScrew's Integrations-page card signature (pulled from their bundle):
+   Matches BotScrew's Integrations-page card signature:
    10px radius, white surface, no hard border, soft `4px 4px 29px` shadow.
    BotScrew tints theirs with brand blue (19,69,186); we use a neutral cool
    shadow (our 20,40,80 token hue) so the shadow stays hue-free, not brand-red.
