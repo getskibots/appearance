@@ -3149,7 +3149,7 @@
   animation: gsb-ai-spark 2.5s ease-in-out infinite;
 }
 @keyframes gsb-ai-spark {
-  0%, 100% { opacity: 0.55; transform: scale(0.82); }
+  0%, 100% { opacity: 0.65; transform: scale(0.9); }
   50%      { opacity: 1;    transform: scale(1); }
 }
 @media (prefers-reduced-motion: reduce) {
