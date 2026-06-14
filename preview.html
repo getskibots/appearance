@@ -38,9 +38,19 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     color: var(--ink);
     background: var(--surface);
-    border-top: 3px solid var(--brand);   /* subtle brand tie at the very top */
     -webkit-font-smoothing: antialiased;
   }
+
+  /* ---- Demo bar (clearly frames this as a demo, not a live resort site) ---- */
+  .demo-banner {
+    display: flex; align-items: center; justify-content: center; gap: 9px;
+    background: #11243a; color: rgba(255,255,255,0.90);
+    border-bottom: 2px solid var(--brand);
+    font-size: 13px; line-height: 1.3; padding: 9px 16px; text-align: center;
+  }
+  .demo-banner strong { color: #fff; font-weight: 700; letter-spacing: .01em; }
+  .demo-banner__spark { width: 15px; height: 15px; color: var(--brand); flex: 0 0 auto; }
+  @media (max-width: 560px) { .demo-banner { font-size: 12px; padding: 8px 12px; } }
   a { color: inherit; text-decoration: none; }
   img { display: block; }
 
@@ -193,6 +203,28 @@
   .band__eyebrow { font-size: 12.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--brand); }
   .band h2 { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: clamp(26px, 4vw, 38px); margin: 10px 0 14px; }
   .band p { font-size: 16px; line-height: 1.6; color: var(--ink-soft); max-width: 60ch; margin: 0 auto; }
+  /* Three-launch-points explainer */
+  .lp-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 30px; }
+  .lp {
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: 9px;
+    padding: 30px 20px 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+  }
+  .lp__num {
+    position: absolute; top: -14px; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--brand); color: #fff; font-size: 13px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 5px 14px rgba(var(--brand-rgb), 0.40);
+  }
+  .lp__icon {
+    width: 50px; height: 50px; border-radius: 13px; background: rgba(var(--brand-rgb), 0.10);
+    color: var(--brand); display: inline-flex; align-items: center; justify-content: center; margin-top: 4px;
+  }
+  .lp__icon svg { width: 25px; height: 25px; }
+  .lp strong { font-size: 16px; }
+  .lp > span:last-child { font-size: 13.5px; color: var(--ink-soft); line-height: 1.4; }
+  .lp-note { margin-top: 24px; font-size: 15px; color: var(--ink-soft); }
+  .lp-note strong { color: var(--brand); font-weight: 700; }
+  @media (max-width: 640px) { .lp-row { grid-template-columns: 1fr; gap: 22px; } }
 
   /* ---------------- Footer ---------------- */
   .site-footer {
@@ -204,23 +236,36 @@
 
   /* ---------------- Demo control (clearly a preview tool) ---------------- */
   .demo-ctrl {
-    position: fixed; left: 16px; bottom: 16px; z-index: 60;
-    display: flex; align-items: center; gap: 8px;
-    background: rgba(22,32,46,0.86); color: #fff; backdrop-filter: blur(8px);
-    padding: 7px 9px 7px 13px; border-radius: 999px; box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-    font-size: 11px;
+    position: fixed; left: 18px; bottom: 18px; z-index: 60;
+    display: flex; flex-direction: column; gap: 8px;
+    background: rgba(17,36,58,0.95); color: #fff; backdrop-filter: blur(10px);
+    padding: 13px 15px 14px; border-radius: 16px;
+    box-shadow: 0 14px 36px rgba(0,0,0,0.34); border: 1px solid rgba(255,255,255,0.10);
   }
-  .demo-ctrl__label { font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
-  .demo-ctrl__seg { display: inline-flex; background: rgba(255,255,255,0.12); border-radius: 999px; overflow: hidden; }
+  .demo-ctrl__label { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .72; }
+  .demo-ctrl__seg { display: inline-flex; background: rgba(255,255,255,0.10); border-radius: 999px; overflow: hidden; }
   .demo-ctrl__seg button {
-    appearance: none; border: 0; background: transparent; color: rgba(255,255,255,0.7);
-    font: inherit; font-weight: 600; padding: 6px 11px; cursor: pointer; text-transform: capitalize;
+    appearance: none; border: 0; background: transparent; color: rgba(255,255,255,0.78);
+    font: inherit; font-size: 13px; font-weight: 600; padding: 9px 18px; cursor: pointer;
+    transition: background .15s, color .15s;
   }
+  .demo-ctrl__seg button:hover { color: #fff; }
   .demo-ctrl__seg button[aria-pressed="true"] { background: var(--brand); color: #fff; }
+  .demo-ctrl__hint { font-size: 11px; opacity: .58; }
+  @media (max-width: 560px) {
+    .demo-ctrl { left: 12px; bottom: 12px; padding: 11px 12px; }
+    .demo-ctrl__seg button { padding: 8px 14px; font-size: 12.5px; }
+  }
 </style>
 </head>
 
 <body>
+
+  <!-- Demo framing — signals this is a Get Ski Bots demo, not a live resort site -->
+  <div class="demo-banner">
+    <svg class="demo-banner__spark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 C12.4 8.2 13.8 9.6 19 10 C13.8 10.4 12.4 11.8 12 17 C11.6 11.8 10.2 10.4 5 10 C10.2 9.6 11.6 8.2 12 3 Z"/></svg>
+    <span><strong>Demo</strong> — imagine this on your homepage. Try the search bar or the chat to see your AI assistant in action.</span>
+  </div>
 
   <!-- ============================= HEADER ============================= -->
   <header class="site-header">
@@ -244,7 +289,6 @@
           <path d="M10 5.9 C10.37 8.51 11.49 9.63 14.1 10 C11.49 10.37 10.37 11.49 10 14.1 C9.63 11.49 8.51 10.37 5.9 10 C8.51 9.63 9.63 8.51 10 5.9 Z" fill="currentColor" stroke="none"/>
         </svg>
       </button>
-      <button class="btn-brand btn-brand--book" type="button">Buy Lift Tickets</button>
     </div>
   </header>
 
@@ -257,8 +301,8 @@
     </svg>
     <div class="hero__inner">
       <span class="hero__eyebrow">Plan your visit</span>
-      <h1 class="hero__title">Your perfect day on the mountain starts here</h1>
-      <p class="hero__sub">Tickets, lessons, live conditions, and trip planning — just ask. Our assistant answers in seconds.</p>
+      <h1 class="hero__title">Ask the mountain anything.</h1>
+      <p class="hero__sub">Tickets, lessons, lift status, live conditions, lodging — instant answers, any time, right here.</p>
 
       <!-- ENTRY POINT #2 — hero search bar -->
       <form class="hero-search" id="heroSearch" role="search">
@@ -317,9 +361,35 @@
 
   <!-- ============================== BAND ============================== -->
   <section class="band">
-    <div class="band__eyebrow">Questions? Just ask.</div>
-    <h2>Everything you need to know, in one conversation</h2>
-    <p>From "what should I wear?" to "is the gondola running?" — tap the assistant any time. It's on every page, ready to help you plan and make the most of your day on the mountain.</p>
+    <div class="band__eyebrow">Try the assistant</div>
+    <h2>Three ways to launch the chat</h2>
+    <div class="lp-row">
+      <div class="lp">
+        <span class="lp__num">1</span>
+        <span class="lp__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="10" cy="10" r="6" stroke-width="1.8"/><path d="M14.5 14.5 L20 20" stroke-width="1.8" stroke-linecap="round"/><path d="M10 5.9 C10.37 8.51 11.49 9.63 14.1 10 C11.49 10.37 10.37 11.49 10 14.1 C9.63 11.49 8.51 10.37 5.9 10 C8.51 9.63 9.63 8.51 10 5.9 Z" fill="currentColor" stroke="none"/></svg>
+        </span>
+        <strong>Header search icon</strong>
+        <span>The magnifying glass, top-right</span>
+      </div>
+      <div class="lp">
+        <span class="lp__num">2</span>
+        <span class="lp__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8" width="19" height="8" rx="4"/><circle cx="7.5" cy="12" r="1.9"/><path d="M11 11.5h7M11 13.5h4.5"/></svg>
+        </span>
+        <strong>Homepage search bar</strong>
+        <span>Type a question in the hero above</span>
+      </div>
+      <div class="lp">
+        <span class="lp__num">3</span>
+        <span class="lp__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2h-6l-4 4v-4H6a2 2 0 01-2-2V6z"/></svg>
+        </span>
+        <strong>Chat bubble</strong>
+        <span>The launcher, bottom-right corner</span>
+      </div>
+    </div>
+    <p class="lp-note">All three open the <strong>same AI assistant</strong> — go ahead, try one.</p>
   </section>
 
   <!-- ============================= FOOTER ============================= -->
@@ -490,12 +560,13 @@
 
   <!-- Demo-only layout control -->
   <div class="demo-ctrl" role="group" aria-label="Preview panel layout">
-    <span class="demo-ctrl__label">Layout</span>
+    <span class="demo-ctrl__label">Try a panel layout</span>
     <span class="demo-ctrl__seg">
-      <button type="button" data-variant="side" aria-pressed="true">side</button>
-      <button type="button" data-variant="middle" aria-pressed="false">middle</button>
-      <button type="button" data-variant="full" aria-pressed="false">full</button>
+      <button type="button" data-variant="side" aria-pressed="true">Side</button>
+      <button type="button" data-variant="middle" aria-pressed="false">Middle</button>
+      <button type="button" data-variant="full" aria-pressed="false">Full</button>
     </span>
+    <span class="demo-ctrl__hint">Opens the chat in that layout ↗</span>
   </div>
 
   <!-- Shared widget runtime -->
@@ -588,6 +659,7 @@
       btn.addEventListener('click', function() {
         if (api()) api().setVariant(btn.dataset.variant);
         switchBtns.forEach(function(b) { b.setAttribute('aria-pressed', String(b === btn)); });
+        openChat();   // open the chat so the chosen layout is immediately visible
       });
     });
   </script>
