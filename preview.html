@@ -31,6 +31,10 @@
     --surface:    #ffffff;
     --surface-2:  #f6f8fb;
     --page-radius: 16px;
+    /* GetSkiBots demo-chrome palette — OUR brand (matches getskibots.com + the
+       backend dashboard), deliberately NOT the resort's var(--brand). */
+    --gsb-deck:   #13263f;  /* deep GSB navy deck background */
+    --gsb-blue:   #2a7dc0;  /* GSB accent blue (dashboard sidebar / brochure) */
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
@@ -51,9 +55,9 @@
        site. A brand-accent bottom edge + shadow define the seam. ---- */
   .preview-bars {
     position: relative; z-index: 70;
-    background: #12161e;
+    background: var(--gsb-deck);
     box-shadow: 0 10px 26px rgba(8,12,20,0.30);
-    border-bottom: 2px solid var(--brand);
+    border-bottom: 2px solid var(--gsb-blue);
   }
   .pbar {
     display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
@@ -66,7 +70,7 @@
   .pbar__wordmark img { height: 18px; width: auto; display: block; filter: brightness(0) invert(1); }
   .pbar__badge {
     font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
-    color: #fff; background: var(--brand); padding: 3px 9px; border-radius: 999px;
+    color: #fff; background: var(--gsb-blue); padding: 3px 9px; border-radius: 999px;
   }
   .pbar__label { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.50); white-space: nowrap; }
   #layoutSeg, .pbar__controls { margin-left: auto; }
@@ -78,10 +82,10 @@
     cursor: pointer; white-space: nowrap; transition: background .15s, color .15s;
   }
   .pbar__seg button:hover { color: rgba(255,255,255,0.92); }
-  .pbar__seg button[aria-pressed="true"] { background: var(--brand); color: #fff; }
+  .pbar__seg button[aria-pressed="true"] { background: var(--gsb-blue); color: #fff; }
   .pbar__toggle { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.72); cursor: pointer; white-space: nowrap; }
   .pbar__toggle input { appearance: none; -webkit-appearance: none; width: 34px; height: 19px; border-radius: 999px; background: rgba(255,255,255,0.22); position: relative; cursor: pointer; transition: background .15s; flex: 0 0 auto; }
-  .pbar__toggle input:checked { background: var(--brand); }
+  .pbar__toggle input:checked { background: var(--gsb-blue); }
   .pbar__toggle input::after { content: ''; position: absolute; top: 2px; left: 2px; width: 15px; height: 15px; border-radius: 50%; background: #fff; transition: transform .15s; }
   .pbar__toggle input:checked::after { transform: translateX(15px); }
   .pbar__color { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.72); white-space: nowrap; }
