@@ -573,6 +573,12 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       $('backgroundImageUrl').value = (state.backgroundImage && state.backgroundImage.indexOf('data:') === 0) ? '' : (state.backgroundImage || '');
     }
     if ($('backgroundImageClear')) $('backgroundImageClear').style.display = state.backgroundImage ? 'inline-flex' : 'none';
+    // Thumbnail so the upload is visibly confirmed (the photo only shows on the demo).
+    var bgPrev = $('backgroundImagePreview');
+    if (bgPrev) {
+      if (state.backgroundImage) { bgPrev.src = state.backgroundImage; bgPrev.style.display = 'block'; }
+      else { bgPrev.removeAttribute('src'); bgPrev.style.display = 'none'; }
+    }
     // Text-over-photo control — only relevant when a background image is set.
     if ($('bgTextModeRow')) $('bgTextModeRow').style.display = state.backgroundImage ? '' : 'none';
     document.querySelectorAll('#bgTextModeSeg [data-bg-text]').forEach(function(b){

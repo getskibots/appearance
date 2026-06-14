@@ -788,6 +788,11 @@
   text-transform: uppercase;
   color: var(--ink-muted);
 }
+.bg-image-preview {
+  display: block; width: 100%; max-width: 340px; aspect-ratio: 16 / 9;
+  object-fit: cover; border-radius: 8px; border: 1px solid var(--border);
+  margin-top: 10px; background: #0d1420;
+}
 .hero-preview-wrap { position: relative; }
 .hero-preview__clear {
   position: absolute; top: 8px; right: 8px; z-index: 3;
