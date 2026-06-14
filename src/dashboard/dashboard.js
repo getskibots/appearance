@@ -1007,8 +1007,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       launcher: ['bubbleStyle','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','statusPillFeatures','ctaText'],
       typography: ['typography'],
       panel: ['layoutVariant','blurredBackground'],
-      effects: ['animationStyle','effectMode','effectIntensity','snowfall'],
-      behavior: ['soundNotifications','popupMessagePreview','askForRating','realtimeVoice','typingIndicator','disableTextInput'],
+      effects: ['animationStyle','effectMode','effectIntensity','snowfall','typingIndicator'],
+      behavior: ['soundNotifications','popupMessagePreview','askForRating','realtimeVoice','disableTextInput'],
       embed: ['embedSearch','embedButton']
     };
     Object.keys(ACC_CARD_FIELDS).forEach(function(id) {

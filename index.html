@@ -608,7 +608,7 @@
                 <span class="acc-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg></span>
                 <span class="acc-head__titles">
                   <span class="acc-head__title">Animations &amp; effects</span>
-                  <span class="acc-head__desc">Open animation, depth, and ambient snowfall</span>
+                  <span class="acc-head__desc">Open animation, typing indicator, depth, and snowfall</span>
                 </span>
                 <span class="acc-head__dot" aria-hidden="true"></span>
                 <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
@@ -633,6 +633,26 @@
                     <span class="anim-card__demo anim-card__demo--fade"><span class="anim-card__panel"></span></span>
                     <span class="anim-card__name">Fade</span>
                     <span class="anim-card__sub">Quiet, editorial</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Typing indicator (the reply-in-progress animation) — relocated from Behavior -->
+              <div class="field">
+                <label class="field__label">Typing indicator</label>
+                <p class="field__hint" style="margin-top:0;margin-bottom:12px">What guests see while a reply is being written.</p>
+                <div class="typing-tiles" id="typingTiles" role="radiogroup" aria-label="Typing indicator style">
+                  <button type="button" class="typing-tile" data-value="dots" data-checked="true" role="radio" aria-checked="true">
+                    <span class="typing-tile__demo"><span class="gsb-typing-dot"></span><span class="gsb-typing-dot"></span><span class="gsb-typing-dot"></span></span>
+                    <span class="typing-tile__name">Dots</span>
+                  </button>
+                  <button type="button" class="typing-tile" data-value="orb" data-checked="false" role="radio" aria-checked="false">
+                    <span class="typing-tile__demo"><span class="gsb-typing-orb"></span></span>
+                    <span class="typing-tile__name">Orb</span>
+                  </button>
+                  <button type="button" class="typing-tile" data-value="label" data-checked="false" role="radio" aria-checked="false">
+                    <span class="typing-tile__demo"><span class="typing-tile__labeltext">is typing</span><span class="gsb-typing-ellipsis"><span>.</span><span>.</span><span>.</span></span></span>
+                    <span class="typing-tile__name">Typing…</span>
                   </button>
                 </div>
               </div>
@@ -922,29 +942,6 @@
                   <div class="toggle-row__desc">Show the hands-free voice button so guests can talk with the agent out loud. Turn off to hide it.</div>
                 </div>
                 <button type="button" class="toggle" id="toggleVoice" role="switch" aria-checked="true"></button>
-              </div>
-
-              <!-- Typing indicator style — laid out like the other Behavior rows:
-                   title + description left, the control (three tiles) right. -->
-              <div class="toggle-row toggle-row--standalone">
-                <div class="toggle-row__main">
-                  <div class="toggle-row__title">Typing indicator</div>
-                  <div class="toggle-row__desc">What guests see while a reply is being written.</div>
-                </div>
-                <div class="typing-tiles" id="typingTiles" role="radiogroup" aria-label="Typing indicator style">
-                  <button type="button" class="typing-tile" data-value="dots" data-checked="true" role="radio" aria-checked="true">
-                    <span class="typing-tile__demo"><span class="gsb-typing-dot"></span><span class="gsb-typing-dot"></span><span class="gsb-typing-dot"></span></span>
-                    <span class="typing-tile__name">Dots</span>
-                  </button>
-                  <button type="button" class="typing-tile" data-value="orb" data-checked="false" role="radio" aria-checked="false">
-                    <span class="typing-tile__demo"><span class="gsb-typing-orb"></span></span>
-                    <span class="typing-tile__name">Orb</span>
-                  </button>
-                  <button type="button" class="typing-tile" data-value="label" data-checked="false" role="radio" aria-checked="false">
-                    <span class="typing-tile__demo"><span class="typing-tile__labeltext">is typing</span><span class="gsb-typing-ellipsis"><span>.</span><span>.</span><span>.</span></span></span>
-                    <span class="typing-tile__name">Typing…</span>
-                  </button>
-                </div>
               </div>
               <div class="toggle-row toggle-row--standalone">
                 <div class="toggle-row__main">
