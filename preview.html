@@ -714,19 +714,26 @@
     // URL hash (#cfg=, cross-device) or localStorage (same origin) and merge it
     // over the JH defaults above. No sync → the page stays the JH demo.
     function readSyncedConfig() {
+      var fromLS = null, fromHash = null;
+      try { var raw = localStorage.getItem('gsb_preview_config'); if (raw) fromLS = JSON.parse(raw); } catch (e) {}
       try {
         var m = (location.hash || '').match(/cfg=([^&]+)/);
         if (m) {
           var b64 = m[1].replace(/-/g, '+').replace(/_/g, '/');
           b64 += '==='.slice((b64.length + 3) % 4);
-          return JSON.parse(decodeURIComponent(escape(atob(b64))));
+          fromHash = JSON.parse(decodeURIComponent(escape(atob(b64))));
         }
-      } catch (e) { /* fall through to localStorage */ }
-      try {
-        var raw = localStorage.getItem('gsb_preview_config');
-        if (raw) return JSON.parse(raw);
       } catch (e) {}
-      return null;
+      if (!fromHash) return fromLS;
+      // The Live Preview hash carries the latest settings but STRIPS big data: assets
+      // (uploaded logo + background image) — they're too large for a URL. Backfill them
+      // from same-origin localStorage when it's the same resort (matching widgetName),
+      // so an uploaded logo/background still shows on the demo.
+      if (fromLS && fromLS.widgetName === fromHash.widgetName) {
+        if (fromHash.logoUrl == null && fromLS.logoUrl != null) fromHash.logoUrl = fromLS.logoUrl;
+        if (fromHash.backgroundImage == null && fromLS.backgroundImage != null) fromHash.backgroundImage = fromLS.backgroundImage;
+      }
+      return fromHash;
     }
     function mergeSynced(synced) {
       if (!synced) return;
