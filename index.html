@@ -152,7 +152,7 @@
                 <span class="acc-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.5 6 10.5a6 6 0 0 1-12 0C6 9.5 12 3 12 3z"/></svg></span>
                 <span class="acc-head__titles">
                   <span class="acc-head__title">Identity &amp; branding</span>
-                  <span class="acc-head__desc">Logo, colors, corner radius, depth, name, placeholder, welcome</span>
+                  <span class="acc-head__desc">Logo, colors, corner radius, name, placeholder, welcome</span>
                 </span>
                 <span class="acc-head__dot" aria-hidden="true"></span>
                 <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
@@ -228,32 +228,6 @@
                   </div>
                 </div>
               </div>
-
-              <!-- Depth effect (shadow / glow / none) -->
-              <div class="field">
-                <label class="field__label">Depth effect</label>
-                <p class="field__hint" style="margin-top:0;margin-bottom:12px">Adds visual lift around the chat panel, launcher pill, and embeddable elements. Pick one style and tune intensity.</p>
-                <div style="max-width:420px">
-                  <div class="segmented" id="effectModeSegmented" role="radiogroup" aria-label="Depth effect style">
-                    <button type="button" data-effect-mode="none" data-active="false" role="radio" aria-checked="false">None</button>
-                    <button type="button" data-effect-mode="shadow" data-active="false" role="radio" aria-checked="false">Shadow</button>
-                    <button type="button" data-effect-mode="glow" data-active="false" role="radio" aria-checked="false">Glow</button>
-                    <button type="button" data-effect-mode="radiate" data-active="true" role="radio" aria-checked="true">Radiate</button>
-                  </div>
-                  <div class="slider-row" id="effectIntensityRow" style="margin-top:12px">
-                    <div class="slider-row__slider">
-                      <input type="range" id="effectIntensity" min="0" max="100" step="5" value="65" />
-                      <div class="slider-row__ticks">
-                        <span>Subtle</span><span></span><span>Standard</span><span></span><span>Strong</span>
-                      </div>
-                    </div>
-                    <div class="slider-row__readout">
-                      <span id="effectIntensityReadout">65</span><span style="color:var(--ink-muted);font-size:13px">%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
 
               </div><!-- /.card-grid__col (Logo & shape) -->
 
@@ -660,6 +634,31 @@
                     <span class="anim-card__name">Fade</span>
                     <span class="anim-card__sub">Quiet, editorial</span>
                   </button>
+                </div>
+              </div>
+
+              <!-- Depth effect (shadow / glow / radiate) — relocated from Identity -->
+              <div class="field">
+                <label class="field__label">Depth effect</label>
+                <p class="field__hint" style="margin-top:0;margin-bottom:12px">Adds visual lift around the chat panel, launcher pill, and embeddable elements. Pick one style and tune intensity.</p>
+                <div style="max-width:420px">
+                  <div class="segmented" id="effectModeSegmented" role="radiogroup" aria-label="Depth effect style">
+                    <button type="button" data-effect-mode="none" data-active="false" role="radio" aria-checked="false">None</button>
+                    <button type="button" data-effect-mode="shadow" data-active="false" role="radio" aria-checked="false">Shadow</button>
+                    <button type="button" data-effect-mode="glow" data-active="false" role="radio" aria-checked="false">Glow</button>
+                    <button type="button" data-effect-mode="radiate" data-active="true" role="radio" aria-checked="true">Radiate</button>
+                  </div>
+                  <div class="slider-row" id="effectIntensityRow" style="margin-top:12px">
+                    <div class="slider-row__slider">
+                      <input type="range" id="effectIntensity" min="0" max="100" step="5" value="65" />
+                      <div class="slider-row__ticks">
+                        <span>Subtle</span><span></span><span>Standard</span><span></span><span>Strong</span>
+                      </div>
+                    </div>
+                    <div class="slider-row__readout">
+                      <span id="effectIntensityReadout">65</span><span style="color:var(--ink-muted);font-size:13px">%</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>

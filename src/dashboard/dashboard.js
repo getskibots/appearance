@@ -826,12 +826,12 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // Per-accordion-card dirty dots — flag any card whose fields differ from the
     // last saved snapshot, so collapsed cards still signal what's been edited.
     var ACC_CARD_FIELDS = {
-      identity: ['logoUrl','logoMaxHeight','cornerRadius','effectMode','effectIntensity','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText','updateLabel','recentUpdate','recentUpdateSource','recentUpdateFlow'],
+      identity: ['logoUrl','logoMaxHeight','cornerRadius','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText','updateLabel','recentUpdate','recentUpdateSource','recentUpdateFlow'],
       media: ['hero'],
       launcher: ['bubbleStyle','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','statusPillFeatures','ctaText'],
       typography: ['typography'],
       panel: ['layoutVariant','blurredBackground'],
-      effects: ['animationStyle'],
+      effects: ['animationStyle','effectMode','effectIntensity'],
       behavior: ['soundNotifications','popupMessagePreview','askForRating','realtimeVoice','typingIndicator','disableTextInput'],
       embed: ['embedSearch','embedButton']
     };
