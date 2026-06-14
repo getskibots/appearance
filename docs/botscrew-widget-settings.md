@@ -183,8 +183,8 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `snowfall` | object | `{enabled:false, style:'realistic', intensity:90, showOnMobile:true, pauseWhenIdle:true, respectReducedMotion:true}` | **Animations & effects card.** Ambient snowfall overlay on the chat surface. **Off by default** (heaviest, continuous effect). `style` realistic/crystalline/storm; `intensity` 20–200 flakes; behavior toggles for mobile, idle-pause, and reduced-motion (a11y-locked on) |
 | `statusPillFeatures` | object | `{liveAgent,weather,needHelpCta:true}` | Status-pill toggles |
 | `typography` | object | `{Inter, Playfair Display, 1.0}` | Body/display fonts + text scale. **`bodyFont`/`displayFont` are Google Fonts family names** (any of the ~1,800-family catalog). The embed must load the saved families from Google Fonts (`<link href="…css2?family=…">`) — the dashboard does this via `src/shared/fonts/font-loader.js`, which the widget loader can reuse |
-| `embedSearch` | object | see schema | Embeddable search-bar config |
-| `embedButton` | object | see schema | Embeddable magnifying-glass button config |
+| `embedSearch` | object | see schema | Embeddable search-bar config. Drives the **shippable `.gsb-embed-search` component** (in `chat-widget.css`) via `--gsb-search-*` (radius/border/width/max-width) — sparkle on the left, chat-composer-style mic + Voice/Send on the right. The dashboard preview and the demo hero search use the *same* component |
+| `embedButton` | object | see schema | Embeddable magnifying-glass button config (the standalone search button), driven via `--gsb-embed-btn-*` |
 
 ## What BotScrew's backend needs to do
 

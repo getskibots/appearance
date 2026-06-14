@@ -76,7 +76,8 @@ src/
     dashboard.js        Dashboard logic: state, render(), save/load, all controls
   widget/
     apply-config.js     applyWidgetConfig() — the single faithful config→DOM path (demo + embed)
-    chat-widget.css     Widget styling
+    chat-widget.css     Widget styling + the shippable embeddable search-bar component
+                        (.gsb-embed-search) shared by the dashboard preview AND the demo
     widget-runtime.js   The chat widget runtime (interim umbrella module)
     knowledge/
       jackson-hole.js   Demo knowledge base (Jackson Hole)

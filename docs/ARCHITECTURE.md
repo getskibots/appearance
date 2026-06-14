@@ -58,6 +58,16 @@ demo both apply config; `applyWidgetConfig` keeps them at parity so the demo is
 pixel-faithful and the eventual embed reuses one function. The demo-only background
 photo rides here too (`--gsb-bg-image` + `body[data-bg-image]` / `[data-bg-text]`).
 
+**Embeddable search bar** — a real shippable component (`.gsb-embed-search`, in
+`chat-widget.css`), driven by `--gsb-search-*`. The dashboard preview and the demo hero
+search render the *same* component (the demo adds an `is-hero` size variant), so the
+hero search is faithful, not a re-creation.
+
+**Launcher auto-hide on scroll** — both the dashboard and the demo slide the launcher
+away on scroll-down and reveal it on scroll-up/idle (driven by `autoHideOnScroll` +
+`data-slide-state`). The demo's below-the-fold section gives the page something to scroll.
+A shared-CSS fix stops the `radiate` pulse while hidden so the slide-off transform wins.
+
 (Ambient snowfall is a live effect — configured in the **Animations & effects** card,
 rendered on the chat surface by the shared `src/shared/snow-engine.js` engine that
 **both** the dashboard preview and the demo import. Off by default since it animates
