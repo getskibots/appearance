@@ -55,6 +55,7 @@ function toGsbAppearance(state) {
     autoHideOnScroll: state.autoHideOnScroll,
     layoutVariant: state.layoutVariant,
     animationStyle: state.animationStyle,
+    snowfall: state.snowfall,
     blurredBackground: state.blurredBackground,
     effectMode: state.effectMode,
     effectIntensity: state.effectIntensity,

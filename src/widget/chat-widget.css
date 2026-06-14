@@ -1,7 +1,76 @@
 /* GetSkiBots — Chat widget (embeddable) styles.
    Extracted verbatim from the original single-file index.html <style>.
-   Covers the launcher, chat surface, and voice mode.
+   Covers the launcher, chat surface, voice mode, and snowfall overlay.
    Loaded by the dashboard preview and (later) shippable as a standalone bundle. */
+
+/* =========================================================================
+   SNOWFALL OVERLAY — applied to the chat surface (real, not preview-card).
+   The .gsb-snowfall container sits absolutely inside .gsb-chat covering the
+   full surface. The runtime engine populates it with .gsb-snow-flake /
+   .gsb-snow-crystal / .gsb-snow-streak elements based on the chosen style.
+   ========================================================================= */
+.gsb-snowfall {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 90;
+  /* Lighten blend: flakes only BRIGHTEN content, never darken/obscure it. */
+  mix-blend-mode: lighten;
+}
+/* Kill switch when the canvas attr is missing / empty / 'none'. */
+.preview-canvas:not([data-snow-style]) .gsb-snowfall,
+.preview-canvas[data-snow-style=""] .gsb-snowfall,
+.preview-canvas[data-snow-style="none"] .gsb-snowfall { display: none; }
+
+.gsb-snow-flake {
+  position: absolute;
+  top: -20px;
+  background: radial-gradient(circle, rgba(255,255,255,0.95) 30%, rgba(255,255,255,0) 100%);
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.gsb-snow-crystal {
+  position: absolute;
+  top: -20px;
+  background-image:
+    linear-gradient(0deg,   transparent 47%, #fff 47%, #fff 53%, transparent 53%),
+    linear-gradient(60deg,  transparent 47%, #fff 47%, #fff 53%, transparent 53%),
+    linear-gradient(120deg, transparent 47%, #fff 47%, #fff 53%, transparent 53%);
+  filter: drop-shadow(0 0 3px rgba(255,255,255,0.65));
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.gsb-snow-streak {
+  position: absolute;
+  top: -20px;
+  width: 1.5px;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,0.95), transparent);
+  border-radius: 1px;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transform: rotate(20deg);
+}
+@keyframes gsb-snow-fall {
+  0%   { transform: translate3d(0, 0, 0); opacity: 0; }
+  10%  { opacity: var(--flake-opacity, 0.85); }
+  90%  { opacity: var(--flake-opacity, 0.85); }
+  100% { transform: translate3d(var(--flake-drift, 8px), var(--flake-distance, 600px), 0); opacity: 0; }
+}
+@keyframes gsb-snow-fall-storm {
+  0%   { transform: translate3d(0, 0, 0) rotate(20deg); opacity: 0; }
+  10%  { opacity: var(--flake-opacity, 0.95); }
+  90%  { opacity: var(--flake-opacity, 0.95); }
+  100% { transform: translate3d(var(--flake-drift, -40px), var(--flake-distance, 600px), 0) rotate(20deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gsb-snow-flake, .gsb-snow-crystal, .gsb-snow-streak { animation: none !important; opacity: 0.4; }
+}
+.preview-canvas[data-snow-static="true"] .gsb-snow-flake,
+.preview-canvas[data-snow-static="true"] .gsb-snow-crystal,
+.preview-canvas[data-snow-static="true"] .gsb-snow-streak { animation: none !important; opacity: 0.4; }
+
 /* =========================================================================
    CHAT WIDGET (rendered inside preview canvas)
    ========================================================================= */
