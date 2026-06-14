@@ -134,10 +134,18 @@
     min-height: calc(100vh - 150px);   /* fills below the control bars + header — nothing past the fold */
     display: flex; align-items: flex-start; justify-content: center;
     text-align: center; padding: 15vh 24px 0;   /* content sits in the upper third (rule of thirds) */
-    background: linear-gradient(180deg, #f8f4ed 0%, #f1e9dc 100%);
+    /* Brand-tinted near-white: a whisper of the resort's brand so the page
+       harmonizes with ANY brand color (cool for blue resorts, warm for red). */
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--brand) 3%, #ffffff) 0%,
+      color-mix(in srgb, var(--brand) 9%, #f7f7f6) 100%);
     color: var(--ink);
   }
   .hero__mountains { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 38%; }
+  /* Mountains follow the same brand tint, progressively stronger toward the front. */
+  .hero__mountains path:nth-of-type(1) { fill: color-mix(in srgb, var(--brand) 8%, #ffffff); }
+  .hero__mountains path:nth-of-type(2) { fill: color-mix(in srgb, var(--brand) 13%, #ffffff); }
+  .hero__mountains path:nth-of-type(3) { fill: color-mix(in srgb, var(--brand) 18%, #ffffff); }
   .hero__inner { position: relative; z-index: 2; max-width: 720px; width: 100%; }
   .hero__eyebrow {
     display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .18em;
@@ -151,8 +159,44 @@
     font-size: clamp(15px, 2.1vw, 19px); line-height: 1.5; color: var(--ink-soft);
     max-width: 46ch; margin: 0 auto 28px;
   }
-  .hero-hint { margin-top: 22px; font-size: 13.5px; color: var(--ink-faint); }
-  .hero-hint strong { color: var(--ink-soft); font-weight: 600; }
+  /* Numbered legend — ties to the on-page pins (same number, same brand chip). */
+  .entry-legend { margin-top: 26px; display: inline-flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 9px 14px; }
+  .entry-legend__title { font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); }
+  .entry-legend__items { display: inline-flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .entry-legend__item { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: var(--ink-soft); background: #fff; border: 1px solid var(--line); padding: 5px 13px 5px 6px; border-radius: 999px; box-shadow: 0 2px 8px rgba(16,32,56,0.05); }
+  .entry-num { width: 20px; height: 20px; border-radius: 50%; background: var(--brand); color: #fff; font-size: 12px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+
+  /* On-page pins — numbered badges placed at each entry point (positions via JS). */
+  .entry-pin {
+    position: fixed; z-index: 60; width: 27px; height: 27px; border-radius: 50%;
+    background: var(--brand); color: #fff; font-weight: 800; font-size: 13.5px;
+    display: none; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(8,16,30,0.28); pointer-events: none;
+    transform: translate(-50%, -50%);
+  }
+  .entry-pin::before {
+    content: ''; position: absolute; inset: -5px; border-radius: 50%;
+    border: 2px solid var(--brand); animation: entryPinPulse 2.1s ease-out infinite;
+  }
+  @keyframes entryPinPulse { 0% { transform: scale(.75); opacity: .7; } 100% { transform: scale(1.9); opacity: 0; } }
+  body.modal-open .entry-pin { display: none !important; }
+  @media (prefers-reduced-motion: reduce) { .entry-pin::before { animation: none; opacity: .35; } }
+
+  /* Sticky "Book a Demo" CTA — GetSkiBots' ask to the prospect. Dark ink so it
+     reads as demo chrome (not a resort button) and never clashes with the brand. */
+  .demo-cta {
+    position: fixed; left: 24px; bottom: 24px; z-index: 65;
+    display: inline-flex; align-items: center; gap: 9px;
+    background: #14181f; color: #fff; font-weight: 700; font-size: 14px;
+    padding: 12px 18px; border-radius: 999px;
+    box-shadow: 0 10px 30px rgba(8,16,30,0.30);
+    transition: transform .12s, box-shadow .15s, background .15s;
+  }
+  .demo-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 38px rgba(8,16,30,0.40); background: #1d2430; }
+  .demo-cta:active { transform: translateY(0); }
+  .demo-cta svg { width: 17px; height: 17px; flex: 0 0 auto; }
+  body.modal-open[data-variant="full"] .demo-cta { display: none; }
+  @media (max-width: 520px) { .demo-cta { left: 16px; bottom: 16px; padding: 10px 14px; font-size: 13px; } }
 
   /* Entry point #2 — hero search bar */
   .hero-search {
@@ -348,10 +392,28 @@
         </button>
       </form>
 
-      <!-- conversation-starter pills removed for now (kept the hero uncluttered) -->
-      <p class="hero-hint">Three ways to ask: this search bar, the <strong>search icon</strong> up top, or the <strong>chat</strong> — bottom-right.</p>
+      <!-- Numbered legend — matches the on-page pins (1 search icon · 2 search bar · 3 chat) -->
+      <div class="entry-legend" aria-label="Three ways to start a chat">
+        <span class="entry-legend__title">Three ways to start a chat</span>
+        <span class="entry-legend__items">
+          <span class="entry-legend__item"><span class="entry-num">1</span> Search icon</span>
+          <span class="entry-legend__item"><span class="entry-num">2</span> Search bar</span>
+          <span class="entry-legend__item"><span class="entry-num">3</span> Chat bubble</span>
+        </span>
+      </div>
     </div>
   </section>
+
+  <!-- Demo annotation pins — placed at each entry point by JS (placePins) -->
+  <div class="entry-pin" id="entryPin1"><span>1</span></div>
+  <div class="entry-pin" id="entryPin2"><span>2</span></div>
+  <div class="entry-pin" id="entryPin3"><span>3</span></div>
+
+  <!-- Sticky CTA — GetSkiBots booking a demo with the prospect -->
+  <a class="demo-cta" id="bookDemoCta" href="https://calendly.com/get-ski-bots/guest-service-glow-up" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span>Book a Demo</span>
+  </a>
 
   <!-- Single-screen demo: features / launch-points band / footer removed — nothing below the fold -->
 
@@ -669,6 +731,29 @@
       if (heroInput) heroInput.value = '';
     });
 
+    // ----- Demo annotation pins: numbered badges anchored to each entry point.
+    //       Positions are computed from each anchor's rect (re-run on resize). -----
+    function placePins() {
+      var map = [
+        ['entryPin1', searchIcon, 'right'],  // header search icon → upper-right corner
+        ['entryPin2', heroSearch, 'right'],  // hero search bar    → upper-right corner
+        ['entryPin3', launcher,   'left']    // chat launcher      → upper-left corner
+      ];
+      map.forEach(function(m) {
+        var pin = document.getElementById(m[0]);
+        if (!pin || !m[1]) return;
+        var r = m[1].getBoundingClientRect();
+        if (!r.width || !r.height) { pin.style.display = 'none'; return; }
+        pin.style.left = (m[2] === 'left' ? r.left : r.right) + 'px';
+        pin.style.top = r.top + 'px';
+        pin.style.display = body.classList.contains('modal-open') ? 'none' : 'flex';
+      });
+    }
+    placePins();
+    window.addEventListener('resize', placePins);
+    window.addEventListener('scroll', placePins, { passive: true });
+    setTimeout(placePins, 250);                                   // after layout settles
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(placePins);
 
     // Close / backdrop (runtime also binds these to its own closeChat for voice exit)
     var closeBtn = document.getElementById('gsbChatClose');
