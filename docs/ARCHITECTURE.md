@@ -100,6 +100,12 @@ One shared adapter, two consumers:
 Coordinate resolution order (widget): `window.gsbWeatherConfig` →
 `localStorage["gsb-weather-config-v1"]` → Jackson Hole defaults.
 
+`weather.html` is a **two-card accordion** — **Open-Meteo** (the active source: coords +
+optional summit, a Location Detail panel, live readings + chat preview, a ⚡ Live-preview
+toggle) and **Resort Direct** (a "Coming soon" placeholder). The saved config is
+**source-aware** — `gsb-weather-config-v1` stores `source: 'open-meteo' | 'resort-direct'`
+and restores the saved source's card (✓-marked) on load.
+
 **What's live vs snapshot:**
 
 | Field | Source | Live? |
@@ -108,9 +114,10 @@ Coordinate resolution order (widget): `window.gsbWeatherConfig` →
 | Snow 24h, season total, depth | resort `snow.json` (CORS-blocked) | ❌ baked snapshot |
 
 Open-Meteo provides current weather + snowfall forecast, but **not** resort snow
-depth or season totals. Making those live needs either a server-side proxy of the
-resort feed or the resort's own endpoint (the field-mapper in `weather.html`
-captures that mapping; consuming it in the widget is open work).
+depth or season totals. Making those live needs the resort's own feed (Resort Direct).
+The prototype field-mapper was removed and Resort Direct is now a "Coming soon" card —
+the full feed audit (7 shape families, CORS split, OpenSnow = our schema) and build plan
+live in [`RESORT-DIRECT-FEEDS.md`](./RESORT-DIRECT-FEEDS.md).
 
 ---
 

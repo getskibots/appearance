@@ -11,6 +11,7 @@ separates the **embeddable chat widget** from the **admin appearance dashboard**
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Code + runtime model, config flow, how to extend |
 | [`docs/BUILD-STATUS.md`](docs/BUILD-STATUS.md) | What's done vs pending (where the build is) |
 | [`docs/botscrew-widget-settings.md`](docs/botscrew-widget-settings.md) | The BotScrew data contract (authoritative) |
+| [`docs/RESORT-DIRECT-FEEDS.md`](docs/RESORT-DIRECT-FEEDS.md) | Resort-feed audit + Resort Direct build plan |
 
 ## Apps
 
@@ -18,7 +19,8 @@ separates the **embeddable chat widget** from the **admin appearance dashboard**
   widget per resort).
 - **`preview.html`** — a standalone live preview of the widget on a Jackson Hole
   resort-site mock.
-- **`weather.html`** — resort coordinate + "own feed" weather config tab.
+- **`weather.html`** — weather config tab: **Open-Meteo** (active) + **Resort Direct**
+  (coming soon), as a two-card accordion. Source-aware save, live readings + chat preview.
 
 ## Develop
 

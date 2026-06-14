@@ -54,7 +54,7 @@ No env vars, no secrets, no backend required. Everything runs client-side.
 ```
 index.html              Appearance dashboard (admin UI)
 preview.html            Standalone widget preview on a resort-site mock
-weather.html            Weather/coordinate config tab (+ "own feed" field mapper)
+weather.html            Weather config tab — Open-Meteo (active) + Resort Direct (coming soon) accordion
 vite.config.js          Multi-page build config (3 entries)
 
 src/
@@ -79,6 +79,7 @@ docs/
   ARCHITECTURE.md             Code + runtime model, how to extend
   BUILD-STATUS.md             What's done vs pending (where the build is)
   botscrew-widget-settings.md Data contract (authoritative)
+  RESORT-DIRECT-FEEDS.md      Resort-feed audit (7 shape families) + Resort Direct build plan
 
 scripts/                Byte-faithful extraction tooling (refactor provenance)
 ```
@@ -130,7 +131,9 @@ These four items are the seam between "what GSB built" and "what BotScrew wires"
 
 4. **Config injection the widget already honors today:**
    - `window.gsbWeatherConfig` — resort coordinates (base/summit lat/lng/elev).
-   - `localStorage["gsb-weather-config-v1"]` — what the Weather tab saves.
+   - `localStorage["gsb-weather-config-v1"]` — what the Weather tab saves. **Source-aware:**
+     also stores `source: 'open-meteo' | 'resort-direct'` (Resort Direct is parked → effectively
+     always Open-Meteo today).
    - Falls back to Jackson Hole defaults so nothing renders empty.
 
 ---
@@ -155,3 +158,4 @@ These four items are the seam between "what GSB built" and "what BotScrew wires"
 - **Integrating into BotScrew admin** → [`botscrew-widget-settings.md`](./botscrew-widget-settings.md)
 - **Understanding / modifying the code** → [`ARCHITECTURE.md`](./ARCHITECTURE.md)
 - **Knowing what's done vs left** → [`BUILD-STATUS.md`](./BUILD-STATUS.md)
+- **Building Resort Direct (own-feed) support** → [`RESORT-DIRECT-FEEDS.md`](./RESORT-DIRECT-FEEDS.md)

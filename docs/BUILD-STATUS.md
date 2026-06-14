@@ -47,11 +47,14 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
 - **4.2 Live conditions block** — ✅ ~70%. Card built; base/summit temp + wind
   **live via Open-Meteo**; the snow figures (24h / season total / depth) are
   **leftover resort-feed cells with no Open-Meteo source** (static fallback) and are
-  slated to be retired. A **Winter/Summer mode toggle** is designed (winter = base/summit
-  temp, wind, conditions, 5-day snowfall, snow level; summer = temp, feels-like,
-  conditions, wind, UV, precip) but **not yet built** — paused while the Open-Meteo
-  integration is reworked into the Weather page. Also open: a "turn off conditions"
-  toggle and the Season Update banner's left-column agent-status pill was removed.
+  slated to be retired. A **Winter/Summer mode toggle** is **built on the Weather config
+  page** (`weather.html`, Open-Meteo card): one season cell-map swaps both the Live Readings
+  grid and the chat-preview card — winter = base/summit temp, summit wind, conditions, 5-day
+  snowfall, snow level; summer = temp, feels-like, conditions, wind, UV index, precip.
+  `seasonMode` persists in `gsb-weather-config-v1`. **Remaining:** wire the same season swap
+  into the *production* widget conditions card (`widget-runtime.js` `cell*` still shows the
+  leftover snow cells). Scoped to Open-Meteo on purpose; Resort Direct defines its own season
+  handling when built. Also open: a "turn off conditions" toggle.
 
 ### 5 · Appearance tab — ✅ ~95% (the heaviest pre-build)
 - **5.1 Identity & branding** ✅ — logo upload (JPEG now **accepted with a warning**,
@@ -75,11 +78,19 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
   ask-for-rating, disable text input.
 
 ### 6 · Widget integrations
-- **6.1 Weather (Open-Meteo)** ✅ ~75% — coords (base + optional summit), live
-  readings preview, widget preview, launcher temp. Default source, works today.
-- **6.2 Weather (own endpoint)** 🟡 ~75% — the field-mapper UI exists in
-  `weather.html` ("point at any JSON, map fields, poll 15 min"); the widget actually
-  consuming a mapped resort feed + per-bot wiring is open.
+- **6.1 Weather (Open-Meteo)** ✅ ~85% — coords (base + optional summit), live readings,
+  chat preview, widget launcher temp. The Weather tab is now a **two-card accordion**
+  (Open-Meteo = active, Resort Direct = coming soon) matching the Appearance accordion;
+  **source-aware save** (`gsb-weather-config-v1.source`, restored on load, ✓-marked active
+  card); a **Location Detail** panel (reverse-geocoded place, model-DEM elevation, base↔summit
+  distance, sign-flip/elevation validation); a **⚡ Live preview** toggle (instant debounced
+  fetch as you type, without saving). Works today.
+- **6.2 Weather (Resort Direct / own endpoint)** ⬜ **coming soon** — the prototype 3-step
+  field-mapper was **removed**; Resort Direct is a tidy "Coming soon" card. The real design
+  (paste URL → auto-detect one of 7 feed-shape families → auto-map → save, with a server-side
+  poller for the CORS-blocked half) is fully captured in
+  [`RESORT-DIRECT-FEEDS.md`](./RESORT-DIRECT-FEEDS.md). Big finding: **OpenSnow already returns
+  our normalized model**, so it's a near-zero-mapping second source.
 - **6.3 Webcam v1** ⬜ ~18% — hero image + fallback only. Multi-cam carousel,
   URL auto-detect (still/YouTube/fallback), type badges, per-cam label/timestamp
   admin are **not** built.
@@ -115,9 +126,8 @@ across all features + auth + the embed.
 - **Voice** (mic dictation, TTS, hands-free Voice Mode) is built in the widget and now
   has a dashboard control — **Behavior → Realtime voice** hides the hands-free Voice
   Mode when off. Full conversational voice still needs a backend to mint realtime keys.
-- **Winter/Summer mode** — designed (see §4.2) to replace the off-season-nonsensical
-  snow cells with mode-appropriate Open-Meteo insights; not yet built. Open-Meteo is
-  being reworked into the Weather page first.
+- **Winter/Summer mode** — ✅ built on the Weather config page (see §4.2); the remaining
+  piece is wiring the same season swap into the production widget conditions card.
 - **Season Update "Automatic" source** — the source toggle + data-source picker are
   wired in the UI as a placeholder; consuming a live BotScrew Flow / AI Action output
   (rendered into the banner) is open work. Manual copy works today.
