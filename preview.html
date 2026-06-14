@@ -3,127 +3,324 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Widget Preview · Jackson Hole · Get Ski Bots</title>
+<title>Widget Preview · Resort Homepage · Get Ski Bots</title>
 
-<!-- Fonts (the JH demo pairing — Inter body / Playfair display) -->
+<!-- Fonts (Inter body / Playfair display — the JH demo pairing) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
 
-<!-- Shared widget core — the SAME tokens + stylesheet the real widget ships.
-     No dashboard.css here: this page is the widget on a resort-site mock, not the admin. -->
+<!-- Shared widget core — the SAME tokens + stylesheet the real widget ships. -->
 <link rel="stylesheet" href="/src/shared/tokens.css" />
 <link rel="stylesheet" href="/src/shared/reset.css" />
 <link rel="stylesheet" href="/src/widget/chat-widget.css" />
 
 <style>
-  /* All widget theming (brand color, radius, fonts, content, data-attributes) is
-     applied at runtime by applyWidgetConfig() in the module below — the same function
-     the dashboard and the real embed use. tokens.css carries the JH brand defaults;
-     this page only styles the resort-site MOCK around the widget. */
-
+  /* =====================================================================
+     RESORT-HOMEPAGE MOCK — a thoughtfully-designed, RESORT-AGNOSTIC page so
+     a prospect sees their brand + their widget in a believable site. The
+     resort's logo + brand color (var(--brand)) do the personalizing; copy
+     stays generic to cover ~80% of resorts. All widget + search-component
+     accents pull from the appearance config via applyWidgetConfig().
+     ===================================================================== */
+  :root {
+    --ink:        #16202e;
+    --ink-soft:   #4c5666;
+    --ink-faint:  #8a93a3;
+    --line:       #e7e9ee;
+    --surface:    #ffffff;
+    --surface-2:  #f6f8fb;
+    --page-radius: 16px;
+  }
+  * { box-sizing: border-box; }
   html, body { margin: 0; }
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    color: #1d2640;
-    background: #ffffff;
-    min-height: 100vh;
+    color: var(--ink);
+    background: var(--surface);
+    -webkit-font-smoothing: antialiased;
   }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; }
 
-  /* ---- Resort-site mock (just a backdrop so the widget has context) ---- */
+  /* ---------------- Header ---------------- */
   .site-header {
     position: sticky; top: 0; z-index: 50;
-    display: flex; align-items: center; gap: 16px;
-    padding: 14px 24px;
-    background: #ffffff;
-    border-bottom: 1px solid #e5e2dc;
+    display: flex; align-items: center; gap: 28px;
+    height: 66px; padding: 0 28px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: saturate(140%) blur(8px);
+    border-bottom: 1px solid var(--line);
   }
-  .site-brand {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-weight: 700; font-size: 20px; letter-spacing: 0.02em;
-    color: #1a1a1a; white-space: nowrap;
+  .site-logo { height: 36px; width: auto; max-width: 180px; object-fit: contain; }
+  .site-logo-fallback {
+    font-family: 'Playfair Display', Georgia, serif; font-weight: 700;
+    font-size: 19px; letter-spacing: 0.02em; color: var(--ink);
   }
-  .site-nav { display: flex; gap: 20px; margin-left: 8px; }
-  .site-nav a { color: #4a4a4a; text-decoration: none; font-size: 14px; font-weight: 500; }
-  .site-nav a:hover { color: #a41e23; }
-  @media (max-width: 720px) { .site-nav { display: none; } }
+  .site-nav { display: flex; gap: 26px; }
+  .site-nav a { font-size: 14.5px; font-weight: 500; color: var(--ink-soft); transition: color .15s; }
+  .site-nav a:hover { color: var(--brand); }
+  .site-actions { margin-left: auto; display: flex; align-items: center; gap: 12px; }
 
-  /* Panel-layout switcher (testing control) */
-  .variant-switch {
-    margin-left: auto;
-    display: inline-flex; gap: 0;
-    border: 1px solid #d9d4cc; border-radius: 999px; overflow: hidden;
-    background: #f7f5f1;
+  /* Entry point #1 — header search icon (magnifying glass) */
+  .icon-btn {
+    appearance: none; border: 1px solid var(--line); background: var(--surface);
+    width: 40px; height: 40px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--ink-soft); cursor: pointer; transition: border-color .15s, color .15s, transform .1s;
   }
-  .variant-switch button {
-    appearance: none; border: 0; background: transparent;
-    padding: 7px 14px; font-size: 12px; font-weight: 600; letter-spacing: 0.03em;
-    color: #6a6a6a; cursor: pointer; text-transform: uppercase;
-  }
-  .variant-switch button[aria-pressed="true"] { background: #a41e23; color: #fff; }
-  @media (max-width: 420px) { .variant-switch button { padding: 7px 11px; } }
+  .icon-btn:hover { border-color: var(--brand); color: var(--brand); }
+  .icon-btn:active { transform: scale(.94); }
+  .icon-btn svg { width: 19px; height: 19px; }
 
-  /* Hero so the page isn't empty behind the chat */
-  .site-hero {
-    min-height: 78vh;
-    display: flex; flex-direction: column; justify-content: center;
-    padding: 48px 24px;
+  .btn-brand {
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--brand); color: var(--enhanced-fg, #fff);
+    font-weight: 600; font-size: 14px; letter-spacing: .01em;
+    padding: 10px 18px; border-radius: 999px; white-space: nowrap;
+    transition: background .15s, transform .1s;
+  }
+  .btn-brand:hover { background: var(--brand-deep); }
+  .btn-brand:active { transform: scale(.97); }
+
+  @media (max-width: 860px) { .site-nav { display: none; } .site-header { gap: 14px; } }
+  @media (max-width: 520px) { .btn-brand--book { display: none; } }
+
+  /* ---------------- Hero ---------------- */
+  .hero {
+    position: relative; overflow: hidden;
+    min-height: 88vh; display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 80px 24px 120px;
     background:
-      linear-gradient(180deg, rgba(15,30,55,0.55), rgba(15,30,55,0.25)),
-      linear-gradient(160deg, #6ea2d8 0%, #cfe0f2 55%, #f3f7fc 100%);
+      radial-gradient(120% 90% at 50% -10%, #2b5d93 0%, #1d456e 38%, #12314f 100%);
     color: #fff;
   }
-  .site-hero h1 {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: clamp(28px, 6vw, 52px); font-weight: 700; margin: 0 0 12px; max-width: 14ch;
-    text-shadow: 0 2px 18px rgba(0,0,0,0.25);
+  .hero__mountains { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 42%; }
+  .hero__inner { position: relative; z-index: 2; max-width: 760px; width: 100%; }
+  .hero__eyebrow {
+    display: inline-block; font-size: 12.5px; font-weight: 700; letter-spacing: .18em;
+    text-transform: uppercase; color: #bcd6f2; margin-bottom: 18px;
   }
-  .site-hero p { font-size: clamp(15px, 2.5vw, 19px); max-width: 46ch; margin: 0; opacity: 0.95; }
-  .site-hint {
-    margin-top: 28px; font-size: 13px; font-weight: 600; letter-spacing: 0.04em;
-    text-transform: uppercase; opacity: 0.9;
+  .hero__title {
+    font-family: 'Playfair Display', Georgia, serif; font-weight: 800;
+    font-size: clamp(34px, 6vw, 60px); line-height: 1.05; margin: 0 0 16px;
+    text-shadow: 0 4px 30px rgba(0,0,0,0.28);
   }
+  .hero__sub {
+    font-size: clamp(16px, 2.2vw, 20px); line-height: 1.5; opacity: .92;
+    max-width: 48ch; margin: 0 auto 30px;
+  }
+
+  /* Entry point #2 — hero search bar */
+  .hero-search {
+    display: flex; align-items: center; gap: 8px;
+    max-width: 580px; margin: 0 auto; padding: 7px 7px 7px 18px;
+    background: #fff; border-radius: 999px;
+    box-shadow: 0 18px 50px rgba(8,22,40,0.30);
+  }
+  .hero-search__spark { display: inline-flex; color: var(--brand); flex: 0 0 auto; }
+  .hero-search__spark svg { width: 20px; height: 20px; }
+  .hero-search__input {
+    flex: 1 1 auto; border: 0; outline: 0; background: transparent;
+    font-family: inherit; font-size: 16px; color: var(--ink); padding: 10px 4px;
+  }
+  .hero-search__input::placeholder { color: var(--ink-faint); }
+  .hero-search__btn {
+    flex: 0 0 auto; appearance: none; border: 0; cursor: pointer;
+    width: 44px; height: 44px; border-radius: 50%; background: var(--brand);
+    color: var(--enhanced-fg, #fff);
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background .15s, transform .1s;
+  }
+  .hero-search__btn:hover { background: var(--brand-deep); }
+  .hero-search__btn:active { transform: scale(.94); }
+  .hero-search__btn svg { width: 20px; height: 20px; }
+
+  /* Conversation-starter pills under the hero search */
+  .hero-pills { display: flex; flex-wrap: wrap; gap: 9px; justify-content: center; margin-top: 18px; }
+  .hero-pill {
+    appearance: none; cursor: pointer;
+    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.28);
+    color: #fff; font-family: inherit; font-size: 13.5px; font-weight: 500;
+    padding: 8px 15px; border-radius: 999px; backdrop-filter: blur(4px);
+    transition: background .15s, border-color .15s;
+  }
+  .hero-pill:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.55); }
+
+  /* ---------------- Feature cards ---------------- */
+  .features {
+    max-width: 1120px; margin: -64px auto 0; position: relative; z-index: 3;
+    padding: 0 24px; display: grid; gap: 20px;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .feature {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--page-radius);
+    padding: 24px; box-shadow: 0 10px 30px rgba(16,32,56,0.06);
+    transition: transform .18s, box-shadow .18s;
+  }
+  .feature:hover { transform: translateY(-4px); box-shadow: 0 18px 44px rgba(16,32,56,0.12); }
+  .feature__icon {
+    width: 46px; height: 46px; border-radius: 12px; margin-bottom: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(var(--brand-rgb), 0.10); color: var(--brand);
+  }
+  .feature__icon svg { width: 24px; height: 24px; }
+  .feature h3 { font-size: 16.5px; font-weight: 700; margin: 0 0 6px; }
+  .feature p { font-size: 14px; line-height: 1.5; color: var(--ink-soft); margin: 0 0 14px; }
+  .feature__link { font-size: 13.5px; font-weight: 600; color: var(--brand); }
+  @media (max-width: 980px) { .features { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .features { grid-template-columns: 1fr; margin-top: -40px; } }
+
+  /* ---------------- Plan band ---------------- */
+  .band { max-width: 1120px; margin: 96px auto; padding: 0 24px; text-align: center; }
+  .band__eyebrow { font-size: 12.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--brand); }
+  .band h2 { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: clamp(26px, 4vw, 38px); margin: 10px 0 14px; }
+  .band p { font-size: 16px; line-height: 1.6; color: var(--ink-soft); max-width: 60ch; margin: 0 auto; }
+
+  /* ---------------- Footer ---------------- */
+  .site-footer {
+    margin-top: 40px; padding: 40px 24px; border-top: 1px solid var(--line);
+    background: var(--surface-2); color: var(--ink-faint); font-size: 13.5px;
+    display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: center; justify-content: center;
+  }
+  .site-footer a:hover { color: var(--brand); }
+
+  /* ---------------- Demo control (clearly a preview tool) ---------------- */
+  .demo-ctrl {
+    position: fixed; left: 16px; bottom: 16px; z-index: 60;
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(22,32,46,0.86); color: #fff; backdrop-filter: blur(8px);
+    padding: 7px 9px 7px 13px; border-radius: 999px; box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    font-size: 11px;
+  }
+  .demo-ctrl__label { font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
+  .demo-ctrl__seg { display: inline-flex; background: rgba(255,255,255,0.12); border-radius: 999px; overflow: hidden; }
+  .demo-ctrl__seg button {
+    appearance: none; border: 0; background: transparent; color: rgba(255,255,255,0.7);
+    font: inherit; font-weight: 600; padding: 6px 11px; cursor: pointer; text-transform: capitalize;
+  }
+  .demo-ctrl__seg button[aria-pressed="true"] { background: var(--brand); color: #fff; }
 </style>
 </head>
 
-<!-- The widget's data-attributes + CSS vars are set by applyWidgetConfig() (the module
-     at the bottom). The layout switcher then updates data-variant via
-     gsbChatPreview.setVariant(). -->
 <body>
 
-  <!-- ============================ RESORT-SITE MOCK ============================ -->
+  <!-- ============================= HEADER ============================= -->
   <header class="site-header">
-    <span class="site-brand">JACKSON HOLE</span>
+    <a href="#" aria-label="Home">
+      <img class="site-logo" id="siteLogo" alt="" onerror="this.style.display='none';document.getElementById('siteLogoFallback').style.display='inline'" />
+      <span class="site-logo-fallback" id="siteLogoFallback" style="display:none">Your Resort</span>
+    </a>
     <nav class="site-nav">
-      <a href="#">Tickets</a>
+      <a href="#">Tickets &amp; Passes</a>
       <a href="#">Lifts &amp; Trails</a>
-      <a href="#">Lessons</a>
+      <a href="#">Lessons &amp; Rentals</a>
       <a href="#">Lodging</a>
+      <a href="#">Plan Your Visit</a>
     </nav>
-    <div class="variant-switch" role="group" aria-label="Chat panel layout">
-      <button type="button" data-variant="side" aria-pressed="true">Side</button>
-      <button type="button" data-variant="middle" aria-pressed="false">Middle</button>
-      <button type="button" data-variant="full" aria-pressed="false">Full</button>
+    <div class="site-actions">
+      <!-- ENTRY POINT #1 — header search icon -->
+      <button class="icon-btn" id="siteSearchIcon" type="button" aria-label="Search the mountain">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle cx="10" cy="10" r="6" stroke-width="1.8"/>
+          <path d="M14.5 14.5 L20 20" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M10 5.9 C10.37 8.51 11.49 9.63 14.1 10 C11.49 10.37 10.37 11.49 10 14.1 C9.63 11.49 8.51 10.37 5.9 10 C8.51 9.63 9.63 8.51 10 5.9 Z" fill="currentColor" stroke="none"/>
+        </svg>
+      </button>
+      <button class="btn-brand btn-brand--book" type="button">Buy Lift Tickets</button>
     </div>
   </header>
 
-  <main class="site-hero">
-    <h1>Your day on the mountain starts here</h1>
-    <p>Tickets, lessons, lift status, and live conditions — ask our assistant anything.</p>
-    <div class="site-hint">Tap the launcher (bottom-right) to open the chat →</div>
-  </main>
+  <!-- ============================== HERO ============================== -->
+  <section class="hero">
+    <svg class="hero__mountains" viewBox="0 0 1440 320" preserveAspectRatio="none" aria-hidden="true">
+      <path fill="#ffffff" fill-opacity="0.08" d="M0,230 L260,90 L470,210 L700,70 L930,200 L1160,90 L1360,200 L1440,150 L1440,320 L0,320 Z"/>
+      <path fill="#ffffff" fill-opacity="0.16" d="M0,265 L210,150 L430,255 L640,130 L880,255 L1090,150 L1300,255 L1440,200 L1440,320 L0,320 Z"/>
+      <path fill="#ffffff" fill-opacity="0.95" d="M0,300 L190,235 L380,300 L560,230 L770,300 L1000,240 L1230,300 L1440,255 L1440,320 L0,320 Z"/>
+    </svg>
+    <div class="hero__inner">
+      <span class="hero__eyebrow">Plan your visit</span>
+      <h1 class="hero__title">Your perfect day on the mountain starts here</h1>
+      <p class="hero__sub">Tickets, lessons, live conditions, and trip planning — just ask. Our assistant answers in seconds.</p>
+
+      <!-- ENTRY POINT #2 — hero search bar -->
+      <form class="hero-search" id="heroSearch" role="search">
+        <span class="hero-search__spark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="10" cy="10" r="6" stroke-width="1.8"/>
+            <path d="M14.5 14.5 L20 20" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M10 5.9 C10.37 8.51 11.49 9.63 14.1 10 C11.49 10.37 10.37 11.49 10 14.1 C9.63 11.49 8.51 10.37 5.9 10 C8.51 9.63 9.63 8.51 10 5.9 Z" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <input class="hero-search__input" id="heroSearchInput" type="text" placeholder="Ask anything about your visit…" aria-label="Ask about your visit" />
+        <button class="hero-search__btn" type="submit" aria-label="Ask">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="10" cy="10" r="6" stroke-width="2"/>
+            <path d="M14.5 14.5 L20 20" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </form>
+
+      <div class="hero-pills" id="heroPills">
+        <button class="hero-pill" type="button" data-q="What do lift tickets cost?">What do lift tickets cost?</button>
+        <button class="hero-pill" type="button" data-q="Where should beginners ski?">Where should beginners ski?</button>
+        <button class="hero-pill" type="button" data-q="Are the lifts open today?">Are the lifts open today?</button>
+        <button class="hero-pill" type="button" data-q="Do you have lessons for kids?">Lessons for kids?</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ FEATURES ============================ -->
+  <section class="features">
+    <div class="feature">
+      <span class="feature__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v4a2 2 0 000 4v4H3v-4a2 2 0 000-4V7z"/><path d="M15 7v14"/></svg></span>
+      <h3>Tickets &amp; Passes</h3>
+      <p>Day tickets, multi-day deals, and season passes — find the right fit for your trip.</p>
+      <span class="feature__link">Explore tickets →</span>
+    </div>
+    <div class="feature">
+      <span class="feature__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19l7-14 4 8 2-3 3 9z"/></svg></span>
+      <h3>Lessons &amp; Rentals</h3>
+      <p>First-timer to expert — book lessons and gear so you're ready the moment you arrive.</p>
+      <span class="feature__link">Book a lesson →</span>
+    </div>
+    <div class="feature">
+      <span class="feature__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></span>
+      <h3>Lodging &amp; Stay</h3>
+      <p>Slopeside rooms to cozy cabins — stay close to first chair and après.</p>
+      <span class="feature__link">Find lodging →</span>
+    </div>
+    <div class="feature">
+      <span class="feature__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg></span>
+      <h3>Mountain Conditions</h3>
+      <p>Live weather, snowfall, lifts, and webcams — know before you go.</p>
+      <span class="feature__link">View conditions →</span>
+    </div>
+  </section>
+
+  <!-- ============================== BAND ============================== -->
+  <section class="band">
+    <div class="band__eyebrow">Questions? Just ask.</div>
+    <h2>Everything you need to know, in one conversation</h2>
+    <p>From "what should I wear?" to "is the gondola running?" — tap the assistant any time. It's on every page, ready to help you plan and make the most of your day on the mountain.</p>
+  </section>
+
+  <!-- ============================= FOOTER ============================= -->
+  <footer class="site-footer">
+    <a href="#">Tickets</a><a href="#">Lessons</a><a href="#">Lodging</a>
+    <a href="#">Trail Map</a><a href="#">Conditions</a><a href="#">Contact</a>
+    <span>© 2026 · A Get Ski Bots demo homepage</span>
+  </footer>
 
   <!-- ===================== GETSKIBOTS WIDGET (shared core) =====================
-       Markup is the widget's DOM contract — the IDs widget-runtime.js binds to.
-       Lifted from index.html's chat block, minus the dashboard's preview-canvas /
-       device-sim wrapper, so it renders against the REAL chat-widget.css media
-       queries (faithful mobile). ========================================= -->
+       Entry point #3. Markup is the widget's DOM contract; themed by
+       applyWidgetConfig(); renders against the real chat-widget.css. ========= -->
 
   <div class="gsb-backdrop" id="gsbBackdrop"></div>
 
   <div class="gsb-chat" id="gsbChat">
 
-    <!-- SNOWFALL OVERLAY (off by default; engine lives dashboard-side for now) -->
+    <!-- SNOWFALL OVERLAY -->
     <div class="gsb-snowfall" id="gsbSnowfall" aria-hidden="true"></div>
 
     <!-- HEADER -->
@@ -148,16 +345,11 @@
       </div>
     </div>
 
-    <!-- BODY (split for full panel, single column for side/middle) -->
+    <!-- BODY -->
     <div class="gsb-chat-body">
-
-      <!-- LEFT COLUMN (Full Panel only) -->
       <div class="gsb-chat-left-column" id="gsbLeftColumn"></div>
-
-      <!-- RIGHT COLUMN (always — conversation flow) -->
       <div class="gsb-chat-right-column" id="gsbRightColumn">
 
-        <!-- HERO WEBCAM -->
         <div class="gsb-chat-hero" id="gsbHero">
           <div class="gsb-webcam-fallback">Loading webcam…</div>
           <div class="gsb-webcam-live">Live</div>
@@ -167,67 +359,42 @@
           </div>
         </div>
 
-        <!-- WELCOME -->
         <div class="gsb-welcome">
           <p class="gsb-welcome-greeting" id="welcomeLine">Welcome to Jackson Hole, ask us anything, we're here to help.</p>
         </div>
 
-        <!-- SEASON BANNER -->
         <div class="gsb-season-banner" id="gsbSeasonBanner" style="display:none">
           <div class="gsb-season-banner__title">Season Update</div>
           <div id="gsbSeasonText">Loading season status…</div>
         </div>
 
-        <!-- CONDITIONS TABLE -->
         <div class="gsb-conditions">
           <div class="gsb-conditions-header">
             <span class="live-dot">Live Conditions</span>
             <span id="gsbConditionsTime">—</span>
           </div>
           <div class="gsb-conditions-grid">
-            <div class="gsb-conditions-cell">
-              <div class="label">Base Temp</div>
-              <div class="value" id="cellBaseTemp">—<span class="unit">°F</span></div>
-            </div>
-            <div class="gsb-conditions-cell">
-              <div class="label">Summit Temp</div>
-              <div class="value" id="cellSummitTemp">—<span class="unit">°F</span></div>
-            </div>
-            <div class="gsb-conditions-cell">
-              <div class="label">Snow 24h</div>
-              <div class="value" id="cellSnow24">—<span class="unit">"</span></div>
-            </div>
-            <div class="gsb-conditions-cell">
-              <div class="label">Wind Summit</div>
-              <div class="value" id="cellWind">—<span class="unit">mph</span></div>
-            </div>
-            <div class="gsb-conditions-cell">
-              <div class="label">Season Total</div>
-              <div class="value" id="cellSeasonTotal">—<span class="unit">"</span></div>
-            </div>
-            <div class="gsb-conditions-cell">
-              <div class="label">Snow Depth</div>
-              <div class="value" id="cellSnowDepth">—<span class="unit">"</span></div>
-            </div>
+            <div class="gsb-conditions-cell"><div class="label">Base Temp</div><div class="value" id="cellBaseTemp">—<span class="unit">°F</span></div></div>
+            <div class="gsb-conditions-cell"><div class="label">Summit Temp</div><div class="value" id="cellSummitTemp">—<span class="unit">°F</span></div></div>
+            <div class="gsb-conditions-cell"><div class="label">Snow 24h</div><div class="value" id="cellSnow24">—<span class="unit">"</span></div></div>
+            <div class="gsb-conditions-cell"><div class="label">Wind Summit</div><div class="value" id="cellWind">—<span class="unit">mph</span></div></div>
+            <div class="gsb-conditions-cell"><div class="label">Season Total</div><div class="value" id="cellSeasonTotal">—<span class="unit">"</span></div></div>
+            <div class="gsb-conditions-cell"><div class="label">Snow Depth</div><div class="value" id="cellSnowDepth">—<span class="unit">"</span></div></div>
           </div>
         </div>
 
-        <!-- FULL-PANEL CONVERSATION INTRO -->
         <div class="gsb-conversation-intro" aria-hidden="true">
           <span class="gsb-conversation-intro__eyebrow">Suggested questions</span>
         </div>
 
-        <!-- SUGGESTED CHIPS -->
         <div class="gsb-chips" id="gsbChips">
-          <button class="gsb-chip" data-q="What's the snow report today?">What's the snow report today?</button>
-          <button class="gsb-chip" data-q="Is the tram running?">Is the tram running?</button>
-          <button class="gsb-chip" data-q="How's parking this morning?">How's parking this morning?</button>
-          <button class="gsb-chip" data-q="When does summer season open?">When does summer season open?</button>
+          <button class="gsb-chip" data-q="What do lift tickets cost?">What do lift tickets cost?</button>
+          <button class="gsb-chip" data-q="Where should beginners ski?">Where should beginners ski?</button>
+          <button class="gsb-chip" data-q="Are the lifts open today?">Are the lifts open today?</button>
+          <button class="gsb-chip" data-q="Do you have lessons for kids?">Lessons for kids?</button>
         </div>
 
-        <!-- MESSAGES -->
         <div class="gsb-messages" id="gsbMessages"></div>
-
       </div>
     </div>
 
@@ -235,141 +402,96 @@
     <div class="gsb-composer">
       <div class="gsb-composer-row" id="gsbComposerRow" data-has-text="false">
         <input type="text" id="gsbComposerInput" placeholder="Ask me anything. Here to help!" />
-        <div class="gsb-composer-listening-bars" aria-hidden="true">
-          <span></span><span></span><span></span><span></span>
-        </div>
+        <div class="gsb-composer-listening-bars" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
         <div class="gsb-composer-actions">
           <button class="gsb-composer-mic" id="gsbComposerMic" data-listening="false" data-supported="true" aria-label="Tap to dictate" title="Tap to dictate">
-            <svg viewBox="0 0 24 24" fill="none">
-              <rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/>
-              <path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
           </button>
           <button class="gsb-composer-voice-mode" id="gsbVoiceModeBtn" data-supported="true" aria-label="Start voice chat" title="Voice chat">
-            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <rect x="1.5" y="6.5" width="1.6" height="3" rx="0.8" fill="currentColor"/>
-              <rect x="4" y="4" width="1.6" height="8" rx="0.8" fill="currentColor"/>
-              <rect x="6.5" y="2" width="1.6" height="12" rx="0.8" fill="currentColor"/>
-              <rect x="9" y="4" width="1.6" height="8" rx="0.8" fill="currentColor"/>
-              <rect x="11.5" y="6.5" width="1.6" height="3" rx="0.8" fill="currentColor"/>
-            </svg>
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="1.5" y="6.5" width="1.6" height="3" rx="0.8" fill="currentColor"/><rect x="4" y="4" width="1.6" height="8" rx="0.8" fill="currentColor"/><rect x="6.5" y="2" width="1.6" height="12" rx="0.8" fill="currentColor"/><rect x="9" y="4" width="1.6" height="8" rx="0.8" fill="currentColor"/><rect x="11.5" y="6.5" width="1.6" height="3" rx="0.8" fill="currentColor"/></svg>
           </button>
           <button class="gsb-composer-send" id="gsbComposerSend" aria-label="Send">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
         </div>
       </div>
     </div>
 
-    <!-- FOOTER -->
-    <div class="gsb-footer">
-      <span class="gsb-footer-mark">Powered by Get Ski Bots</span>
-    </div>
+    <div class="gsb-footer"><span class="gsb-footer-mark">Powered by Get Ski Bots</span></div>
 
-    <!-- FULL VOICE MODE OVERLAY (hands-free) -->
+    <!-- FULL VOICE MODE OVERLAY -->
     <div class="gsb-voice-mode-overlay" id="gsbVoiceModeOverlay" data-open="false">
       <div class="gsb-voice-mode__head">
         <span class="gsb-voice-mode__title">Voice chat</span>
         <button class="gsb-voice-mode__exit" id="gsbVoiceModeExit" aria-label="End voice chat">
-          <svg viewBox="0 0 16 16" fill="none">
-            <path d="M3 3l10 10M13 3l-10 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
+          <svg viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3l-10 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
         </button>
       </div>
-
       <div class="gsb-voice-mode__stage">
         <div class="gsb-voice-mode__orb" id="gsbVoiceOrb" data-state="idle">
-          <div class="gsb-voice-mode__bars">
-            <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-          </div>
+          <div class="gsb-voice-mode__bars"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
         </div>
         <div class="gsb-voice-mode__status" id="gsbVoiceStatus" data-state="idle">Tap to talk</div>
         <div class="gsb-voice-mode__transcript" id="gsbVoiceTranscript"></div>
         <div class="gsb-voice-mode__history" id="gsbVoiceHistory"></div>
       </div>
-
       <div class="gsb-voice-mode__controls">
         <button class="gsb-voice-mode__btn gsb-voice-mode__btn--primary" id="gsbVoiceMainBtn">
-          <svg viewBox="0 0 24 24" fill="none">
-            <rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/>
-            <path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
           <span id="gsbVoiceMainBtnLabel">Tap to talk</span>
         </button>
       </div>
     </div>
-
   </div>
 
-  <!-- Voice support toast -->
   <div class="gsb-voice-toast" id="gsbVoiceToast"></div>
 
-  <!-- Launcher (the runtime no longer self-binds this — the host wires it to openChat) -->
-  <button type="button" class="gsb-launcher" id="previewLauncher"
-          data-icon-style="enhanced"
-          data-show-weather="true"
-          data-show-cta="true">
-    <svg class="gsb-launcher-traditional-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M10 2.5L12.25 7.75L17.5 10L12.25 12.25L10 17.5L7.75 12.25L2.5 10L7.75 7.75Z"/>
-      <path d="M18 14.6L19.02 16.98L21.4 18L19.02 19.02L18 21.4L16.98 19.02L14.6 18L16.98 16.98Z"/>
-    </svg>
-
+  <!-- Launcher -->
+  <button type="button" class="gsb-launcher" id="previewLauncher" data-icon-style="enhanced" data-show-weather="true" data-show-cta="true">
+    <svg class="gsb-launcher-traditional-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 2.5L12.25 7.75L17.5 10L12.25 12.25L10 17.5L7.75 12.25L2.5 10L7.75 7.75Z"/><path d="M18 14.6L19.02 16.98L21.4 18L19.02 19.02L18 21.4L16.98 19.02L14.6 18L16.98 16.98Z"/></svg>
     <img class="gsb-launcher-custom-icon" id="customIconImg" alt="" style="display:none" />
-
     <div class="gsb-launcher__row">
       <div class="gsb-launcher-avatars">
-        <div class="gsb-launcher-avatar gsb-launcher-avatar-ai" aria-label="AI">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M10 2.5L12.25 7.75L17.5 10L12.25 12.25L10 17.5L7.75 12.25L2.5 10L7.75 7.75Z"/>
-            <path d="M18 14.6L19.02 16.98L21.4 18L19.02 19.02L18 21.4L16.98 19.02L14.6 18L16.98 16.98Z"/>
-          </svg>
-        </div>
-        <div class="gsb-launcher-avatar gsb-launcher-avatar-human" aria-label="Human agent">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 12a3 3 0 100-6 3 3 0 000 6zM6 19a6 6 0 0112 0H6z" fill="currentColor"/>
-          </svg>
-        </div>
+        <div class="gsb-launcher-avatar gsb-launcher-avatar-ai" aria-label="AI"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 2.5L12.25 7.75L17.5 10L12.25 12.25L10 17.5L7.75 12.25L2.5 10L7.75 7.75Z"/><path d="M18 14.6L19.02 16.98L21.4 18L19.02 19.02L18 21.4L16.98 19.02L14.6 18L16.98 16.98Z"/></svg></div>
+        <div class="gsb-launcher-avatar gsb-launcher-avatar-human" aria-label="Human agent"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 12a3 3 0 100-6 3 3 0 000 6zM6 19a6 6 0 0112 0H6z" fill="currentColor"/></svg></div>
       </div>
       <span class="gsb-launcher-microlabel"><span class="gsb-launcher-microlabel__dot" aria-hidden="true"></span>Online</span>
       <div class="gsb-launcher-divider"></div>
       <div class="gsb-launcher-weather">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="4" fill="currentColor"/>
-          <path d="M12 4v2M12 18v2M4 12h2M18 12h2M6.3 6.3l1.4 1.4M16.3 16.3l1.4 1.4M6.3 17.7l1.4-1.4M16.3 7.7l1.4-1.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><path d="M12 4v2M12 18v2M4 12h2M18 12h2M6.3 6.3l1.4 1.4M16.3 16.3l1.4 1.4M6.3 17.7l1.4-1.4M16.3 7.7l1.4-1.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
         <span class="gsb-launcher-weather__temp" id="launcherTemp">57<span class="gsb-launcher-weather__unit">°F</span></span>
       </div>
     </div>
     <div class="gsb-launcher-cta">
       <span class="gsb-cta-text">Need help?</span>
       <span class="gsb-cta-arrow" aria-hidden="true">→</span>
-      <span class="gsb-cta-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2h-5l-4 4v-4H6a2 2 0 01-2-2V6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-        </svg>
-      </span>
+      <span class="gsb-cta-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2h-5l-4 4v-4H6a2 2 0 01-2-2V6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
       <span class="gsb-cta-help-label">HELP</span>
     </div>
-
     <span class="gsb-launcher-agent-dot" aria-label="Live agent online" title="Live agent online"></span>
   </button>
 
-  <!-- Shared widget runtime (the SAME module the dashboard drives) -->
+  <!-- Demo-only layout control -->
+  <div class="demo-ctrl" role="group" aria-label="Preview panel layout">
+    <span class="demo-ctrl__label">Layout</span>
+    <span class="demo-ctrl__seg">
+      <button type="button" data-variant="side" aria-pressed="true">side</button>
+      <button type="button" data-variant="middle" aria-pressed="false">middle</button>
+      <button type="button" data-variant="full" aria-pressed="false">full</button>
+    </span>
+  </div>
+
+  <!-- Shared widget runtime -->
   <script type="module" src="/src/widget/widget-runtime.js"></script>
 
-  <!-- Host wiring: open via the launcher, and drive the layout switcher.
-       Both happen through the widget's public window.gsbChatPreview API. -->
+  <!-- Host wiring: theme via config, drive the three entry points + the switcher. -->
   <script type="module">
     import { applyWidgetConfig } from '/src/widget/apply-config.js';
     import jhLogo from '/src/assets/logo.png';
 
-    // The JH demo config the dashboard would normally push via render(). On a real
-    // embed this object comes from the resort's saved BotScrew config; here it's
-    // hardwired so preview.html renders an authentic Jackson Hole widget — proving
-    // the widget themes itself from one config object, no dashboard required.
-    applyWidgetConfig({
+    // The resort's config (JH for now). On a real embed this comes from the bot's
+    // BotScrew settings; here it's hardwired so the page wears Jackson Hole's brand.
+    var CONFIG = {
       color: '#a41e23',
       chatHeaderColor: '#ffffff',
       cornerRadius: 7,
@@ -388,39 +510,59 @@
       bubbleStyle: 'slidein',
       placement: { align: 'right', bottomSpacing: 32, sideSpacing: 32 },
       snowfall: { enabled: false, style: 'realistic' }
-    });
+    };
+    applyWidgetConfig(CONFIG);
+
+    // The site's own logo (upper-left) pulls the same bot logo.
+    var siteLogo = document.getElementById('siteLogo');
+    if (siteLogo) siteLogo.src = CONFIG.logoUrl;
 
     var body = document.body;
     var api = function() { return window.gsbChatPreview; };
 
-    // The runtime's openChat()/closeChat() deliberately DON'T toggle body.modal-open —
-    // that's the host's job (the dashboard does it in setOpen()). preview.html is the
-    // host here, so we own the open/close class; the runtime handles column layout + voice.
-    function openChat() {
-      body.classList.add('modal-open');
-      if (api()) api().openChat();
-    }
-    function closeChat() {
-      body.classList.remove('modal-open');
+    // Host owns body.modal-open (the runtime's open/close only handle layout + voice).
+    function openChat() { body.classList.add('modal-open'); if (api()) api().openChat(); }
+    function closeChat() { body.classList.remove('modal-open'); }
+    function openWithQuery(q) {
+      openChat();
+      q = (q || '').trim();
+      if (q && api() && api().handleQuery) api().handleQuery(q);
     }
 
+    // Entry point #3 — chat launcher
     var launcher = document.getElementById('previewLauncher');
-    if (launcher) launcher.addEventListener('click', openChat);
+    if (launcher) launcher.addEventListener('click', function() { openChat(); });
 
-    // The runtime already binds gsbChatClose + gsbBackdrop to its own closeChat (voice
-    // exit); we add the modal-open removal the host owns. Both listeners fire.
+    // Entry point #1 — header search icon
+    var searchIcon = document.getElementById('siteSearchIcon');
+    if (searchIcon) searchIcon.addEventListener('click', function() { openChat(); });
+
+    // Entry point #2 — hero search bar (submit passes the query into the chat)
+    var heroSearch = document.getElementById('heroSearch');
+    var heroInput = document.getElementById('heroSearchInput');
+    if (heroSearch) heroSearch.addEventListener('submit', function(e) {
+      e.preventDefault();
+      openWithQuery(heroInput && heroInput.value);
+      if (heroInput) heroInput.value = '';
+    });
+
+    // Hero starter pills
+    document.querySelectorAll('#heroPills .hero-pill').forEach(function(p) {
+      p.addEventListener('click', function() { openWithQuery(p.dataset.q); });
+    });
+
+    // Close / backdrop (runtime also binds these to its own closeChat for voice exit)
     var closeBtn = document.getElementById('gsbChatClose');
     if (closeBtn) closeBtn.addEventListener('click', closeChat);
     var backdrop = document.getElementById('gsbBackdrop');
     if (backdrop) backdrop.addEventListener('click', closeChat);
 
-    var switchBtns = document.querySelectorAll('.variant-switch button');
+    // Demo-only layout switcher
+    var switchBtns = document.querySelectorAll('.demo-ctrl__seg button');
     switchBtns.forEach(function(btn) {
       btn.addEventListener('click', function() {
         if (api()) api().setVariant(btn.dataset.variant);
-        switchBtns.forEach(function(b) {
-          b.setAttribute('aria-pressed', String(b === btn));
-        });
+        switchBtns.forEach(function(b) { b.setAttribute('aria-pressed', String(b === btn)); });
       });
     });
   </script>
