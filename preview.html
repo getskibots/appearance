@@ -399,9 +399,9 @@
       <div class="entry-legend" aria-label="Three ways to start a chat — tap to locate">
         <span class="entry-legend__title">Three ways to start a chat <span class="entry-legend__hint">· tap to locate</span></span>
         <span class="entry-legend__items">
-          <button type="button" class="entry-legend__item" data-pin="1" aria-pressed="false" title="Show me where"><span class="entry-num">1</span> Search icon</button>
-          <button type="button" class="entry-legend__item" data-pin="2" aria-pressed="false" title="Show me where"><span class="entry-num">2</span> Search bar</button>
-          <button type="button" class="entry-legend__item" data-pin="3" aria-pressed="false" title="Show me where"><span class="entry-num">3</span> Chat bubble</button>
+          <button type="button" class="entry-legend__item" data-pin="1" aria-pressed="false" title="Show me where"><span class="entry-num">1</span> Hero Search</button>
+          <button type="button" class="entry-legend__item" data-pin="2" aria-pressed="false" title="Show me where"><span class="entry-num">2</span> Chat Launcher</button>
+          <button type="button" class="entry-legend__item" data-pin="3" aria-pressed="false" title="Show me where"><span class="entry-num">3</span> Search Magnifying Glass</button>
         </span>
       </div>
     </div>
@@ -736,7 +736,7 @@
 
     // ----- Demo annotation pins: hidden by default. A legend chip reveals its
     //       pin (points at that entry), then it auto-fades — keeps the page clean. -----
-    var pinAnchors = { 1: searchIcon, 2: heroSearch, 3: launcher };
+    var pinAnchors = { 1: heroSearch, 2: launcher, 3: searchIcon };
     var pinHideTimer = null;
     function positionPin(num) {
       var pin = document.getElementById('entryPin' + num);
@@ -746,9 +746,9 @@
       if (!r.width || !r.height) return false;
       // Sit just OUTSIDE the element so the number never overlays it.
       var GAP = 20, x, y;
-      if (num === 1) { x = r.left + r.width / 2; y = r.bottom + GAP; }   // search icon → below
-      else if (num === 2) { x = r.right + GAP; y = r.top + r.height / 2; } // search bar → right
-      else { x = r.left - GAP; y = r.top + r.height / 2; }                // launcher → left
+      if (num === 1) { x = r.right + GAP; y = r.top + r.height / 2; }     // hero search → right
+      else if (num === 2) { x = r.left - GAP; y = r.top + r.height / 2; } // chat launcher → left
+      else { x = r.left + r.width / 2; y = r.bottom + GAP; }              // search glass → below
       x = Math.max(18, Math.min(x, window.innerWidth - 18));             // keep on-screen
       y = Math.max(18, Math.min(y, window.innerHeight - 18));
       pin.style.left = x + 'px';
