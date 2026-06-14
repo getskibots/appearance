@@ -67,24 +67,33 @@ made open/close a **host responsibility** before we knew about postMessage — i
 fits your model.
 
 ### 3c · Answers — the conversation channel
-`answerProvider` is a **streaming** channel, not one-shot Q&A: send a query → receive
-streamed chunks. Wire it to your socket:
+`answerProvider` is the seam the widget calls for conversation: send a query → render a
+**stream of chunks** (plus structured messages — buttons, quick replies, menus). It's a
+**streaming** channel, not one-shot Q&A.
 
+**The interface is the contract (ours); the implementation is yours.** The widget defines
+*what it expects* — a streaming provider it can drive and render. *How* that provider
+connects to your socket / ODIN is entirely on your side; we don't specify or constrain it.
+
+For reference, here's how your *current* client already does it — **illustrative, not a
+spec you must match**:
 - subscribe `/topic/messaging.{chatId}`
 - send `/app/widget/{publicIdentifier}/{chatId}`
-- bot frames are `type: "streamable_text"` with `stream.{action, index}` (START→APPEND→STOP→STORED),
+- bot frames: `type:"streamable_text"` with `stream.{action, index}` (START→APPEND→STOP→STORED),
   plus structured types (buttons, quick replies, menus).
 
-**Three adapters** make the swap provable and clean:
+**Adapters behind the seam:**
 
 | Adapter | Owner | Purpose |
 |---|---|---|
-| **Stub** (curated JH answers) | us | safe reference, always works |
-| **Live PoC** | us — *throwaway* | proves the seam end-to-end against your socket |
-| **Production** | **BotScrew** | your existing socket client → the seam |
+| **Stub** (curated JH answers) | us | reference; runs our standalone preview with no backend |
+| **Production** | **BotScrew** | your existing SockJS/STOMP client → the seam |
+| *Live PoC (optional)* | *us — throwaway* | *only if you want a pre-handoff live demo; it reverse-engineers your socket, so it's **not required** and not meant to ship* |
 
-You already own a working SockJS/STOMP client (it runs your current widget). Production
-isn't new plumbing — it's pointing that client at this one interface.
+You already own a working SockJS/STOMP client (it runs your current widget). Production isn't
+new plumbing — it's pointing that client at this one interface. And the **real live-answer
+demo already exists on your side** (`/widget-demo/{publicIdentifier}`) — swap in our widget
+and it gets live answers + the new UI for free.
 
 ---
 
