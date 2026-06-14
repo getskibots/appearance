@@ -166,19 +166,19 @@
   .entry-legend__items { display: inline-flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
   .entry-legend__item { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: var(--ink-soft); background: #fff; border: 1px solid var(--line); padding: 5px 13px 5px 6px; border-radius: 999px; box-shadow: 0 2px 8px rgba(16,32,56,0.05); cursor: pointer; appearance: none; font-family: inherit; transition: border-color .15s, color .15s, box-shadow .15s; }
   .entry-legend__item:hover, .entry-legend__item[aria-pressed="true"] { border-color: var(--brand); color: var(--ink); box-shadow: 0 4px 14px rgba(16,32,56,0.10); }
-  .entry-num { width: 20px; height: 20px; border-radius: 50%; background: var(--brand); color: #fff; font-size: 12px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .entry-num { width: 20px; height: 20px; border-radius: 50%; background: #6b7280; color: #fff; font-size: 12px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
 
   /* On-page pins — numbered badges placed at each entry point (positions via JS). */
   .entry-pin {
     position: fixed; z-index: 60; width: 27px; height: 27px; border-radius: 50%;
-    background: var(--brand); color: #fff; font-weight: 800; font-size: 13.5px;
+    background: #6b7280; color: #fff; font-weight: 800; font-size: 13.5px;
     display: none; align-items: center; justify-content: center;
     box-shadow: 0 4px 12px rgba(8,16,30,0.28); pointer-events: none;
     transform: translate(-50%, -50%);
   }
   .entry-pin::before {
     content: ''; position: absolute; inset: -5px; border-radius: 50%;
-    border: 2px solid var(--brand); animation: entryPinPulse 2.1s ease-out infinite;
+    border: 2px solid #6b7280; animation: entryPinPulse 2.1s ease-out infinite;
   }
   @keyframes entryPinPulse { 0% { transform: scale(.75); opacity: .7; } 100% { transform: scale(1.9); opacity: 0; } }
   .entry-pin.is-shown { display: flex; }
@@ -744,8 +744,15 @@
       if (!pin || !anchor) return false;
       var r = anchor.getBoundingClientRect();
       if (!r.width || !r.height) return false;
-      pin.style.left = (num === 3 ? r.left : r.right) + 'px';   // launcher → left corner
-      pin.style.top = r.top + 'px';
+      // Sit just OUTSIDE the element so the number never overlays it.
+      var GAP = 20, x, y;
+      if (num === 1) { x = r.left + r.width / 2; y = r.bottom + GAP; }   // search icon → below
+      else if (num === 2) { x = r.right + GAP; y = r.top + r.height / 2; } // search bar → right
+      else { x = r.left - GAP; y = r.top + r.height / 2; }                // launcher → left
+      x = Math.max(18, Math.min(x, window.innerWidth - 18));             // keep on-screen
+      y = Math.max(18, Math.min(y, window.innerHeight - 18));
+      pin.style.left = x + 'px';
+      pin.style.top = y + 'px';
       return true;
     }
     function clearPins() {
