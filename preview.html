@@ -17,15 +17,10 @@
 <link rel="stylesheet" href="/src/widget/chat-widget.css" />
 
 <style>
-  /* JH demo config the dashboard would normally push at runtime. tokens.css already
-     carries the brand defaults; we only nudge the corner radius to the JH value (7px)
-     and name the demo fonts. */
-  :root {
-    --gsb-radius: 7px;
-    --gsb-radius-sm: 4px;
-    --gsb-body-font: 'Inter';
-    --gsb-display-font: 'Playfair Display';
-  }
+  /* All widget theming (brand color, radius, fonts, content, data-attributes) is
+     applied at runtime by applyWidgetConfig() in the module below — the same function
+     the dashboard and the real embed use. tokens.css carries the JH brand defaults;
+     this page only styles the resort-site MOCK around the widget. */
 
   html, body { margin: 0; }
   body {
@@ -91,10 +86,10 @@
 </style>
 </head>
 
-<!-- The data-attributes the widget CSS reads are set here (the dashboard sets these
-     on <body> at runtime; for this static JH demo we hardwire the defaults). The
-     layout switcher updates data-variant via gsbChatPreview.setVariant(). -->
-<body data-variant="side" data-liveagent="on" data-typing-indicator="dots" data-voice="on" data-animation="scale">
+<!-- The widget's data-attributes + CSS vars are set by applyWidgetConfig() (the module
+     at the bottom). The layout switcher then updates data-variant via
+     gsbChatPreview.setVariant(). -->
+<body>
 
   <!-- ============================ RESORT-SITE MOCK ============================ -->
   <header class="site-header">
@@ -367,6 +362,34 @@
   <!-- Host wiring: open via the launcher, and drive the layout switcher.
        Both happen through the widget's public window.gsbChatPreview API. -->
   <script type="module">
+    import { applyWidgetConfig } from '/src/widget/apply-config.js';
+    import jhLogo from '/src/assets/logo.png';
+
+    // The JH demo config the dashboard would normally push via render(). On a real
+    // embed this object comes from the resort's saved BotScrew config; here it's
+    // hardwired so preview.html renders an authentic Jackson Hole widget — proving
+    // the widget themes itself from one config object, no dashboard required.
+    applyWidgetConfig({
+      color: '#a41e23',
+      chatHeaderColor: '#ffffff',
+      cornerRadius: 7,
+      logoMaxHeight: 44,
+      logoUrl: jhLogo,
+      widgetName: 'Jackson Hole Support',
+      welcomeText: "Welcome to Jackson Hole, ask us anything, we're here to help.",
+      inputPlaceholder: 'Ask me anything. Here to help!',
+      typography: { bodyFont: 'Inter', displayFont: 'Playfair Display', textScale: 1.0 },
+      layoutVariant: 'side',
+      animationStyle: 'scale',
+      typingIndicator: 'dots',
+      realtimeVoice: true,
+      blurredBackground: true,
+      statusPillFeatures: { liveAgent: true, weather: true, needHelpCta: true },
+      bubbleStyle: 'slidein',
+      placement: { align: 'right', bottomSpacing: 32, sideSpacing: 32 },
+      snowfall: { enabled: false, style: 'realistic' }
+    });
+
     var body = document.body;
     var api = function() { return window.gsbChatPreview; };
 
