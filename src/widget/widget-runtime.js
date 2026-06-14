@@ -807,11 +807,14 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     ));
 
     setTimeout(function() {
-      hideTypingIndicator();
-      appendMessage(aiResponse, 'ai');
-      if (voice.outputEnabled && !voice.fullModeActive) {
-        speak(aiResponse);
-      }
+      // Fade the indicator out first, then ease the answer in — a gentle hand-off
+      // instead of yanking the dots and popping the full answer in instantly.
+      hideTypingIndicator(function() {
+        appendMessage(aiResponse, 'ai');
+        if (voice.outputEnabled && !voice.fullModeActive) {
+          speak(aiResponse);
+        }
+      });
     }, calculatedDelay);
 
     return aiResponse;
@@ -846,9 +849,15 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     });
   }
 
-  function hideTypingIndicator() {
+  function hideTypingIndicator(onDone) {
     var ti = document.getElementById('gsbTypingIndicator');
-    if (ti && ti.parentNode) ti.parentNode.removeChild(ti);
+    if (!ti) { if (onDone) onDone(); return; }
+    // Fade out (~150ms), then remove and continue — gives the dots-→-answer beat.
+    ti.classList.add('gsb-typing-out');
+    setTimeout(function() {
+      if (ti.parentNode) ti.parentNode.removeChild(ti);
+      if (onDone) onDone();
+    }, 160);
   }
 
   // ============= VOICE: SPEECH RECOGNITION + SYNTHESIS =============

@@ -1243,6 +1243,19 @@ body[data-variant="full"].gsb-conversation-started .gsb-conversation-intro { dis
   font-size: calc(13px * var(--gsb-text-scale, 1));
   line-height: 1.5;
   word-wrap: break-word;
+  /* Gentle entrance — the bubble eases up into place instead of popping in,
+     so the answer doesn't land with a hard "BOOM" after the typing indicator. */
+  animation: gsb-msg-in 300ms ease-out both;
+}
+@keyframes gsb-msg-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* Typing indicator fades out (set by hideTypingIndicator) for a smooth hand-off
+   to the answer, rather than snapping away. */
+.gsb-typing-indicator.gsb-typing-out {
+  opacity: 0;
+  transition: opacity 150ms ease;
 }
 
 .gsb-msg--ai {
