@@ -3140,6 +3140,22 @@
 .gsb-embed-button[data-icon-weight="bold"] svg circle,
 .gsb-embed-button[data-icon-weight="bold"] svg line { stroke-width: 2.4; }
 
+/* AI sparkle nested in the search lens — a filled accent (constant regardless of
+   icon-weight, which only strokes the magnifier frame) with a gentle "alive" shimmer. */
+.gsb-embed-button svg .gsb-ai-spark {
+  fill: currentColor;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: gsb-ai-spark 2.5s ease-in-out infinite;
+}
+@keyframes gsb-ai-spark {
+  0%, 100% { opacity: 0.55; transform: scale(0.82); }
+  50%      { opacity: 1;    transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gsb-embed-button svg .gsb-ai-spark { animation: none; opacity: 1; transform: none; }
+}
+
 /* Below the hero: a section explaining the standalone button */
 .embed-mock-section {
   padding: 28px 22px;
