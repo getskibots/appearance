@@ -196,7 +196,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       featuredImage: { url: '', caption: '', link: '' }
     },
     ctaText: 'Need help?',
-    bubbleStyle: 'slidein',
+    // Showcase default: the Status pill is the richest launcher (avatars + live agent +
+    // weather + CTA), so a fresh appearance tab demonstrates the most for BotScrew.
+    bubbleStyle: 'enhanced',
     customIconUrl: null,
     customIconSize: 56,         // px diameter of the custom launcher (the image fills it)
     slideState: 'visible',

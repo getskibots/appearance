@@ -269,3 +269,30 @@ end-to-end by the demo. Only the **config source** swaps — from the prototype 
 per-bot `/widget/info/{botId}` load keyed off the URL's `publicIdentifier`. This is the
 same per-bot-ID wiring called out for every other feature (see
 [`BUILD-STATUS.md`](./BUILD-STATUS.md) → per-bot-ID wiring).
+
+### Showcase defaults (what the demo + fresh appearance tab ship with)
+
+The defaults are chosen to **light up the most config→widget mappings at once**, so a
+BotScrew engineer can see each setting doing something. They're a *showcase*, not the most
+conservative production preset:
+
+| Area | Default | Why |
+|---|---|---|
+| Launcher style | **Status pill** (`enhanced`) | The only style that shows avatars + live-agent + weather + CTA together — most visible in one glance |
+| Status-pill features | **all on** (live agent, weather, "Need help?" CTA) | So the pill isn't bare; every element is demonstrated |
+| Depth effect | **Radiate** (intensity 65) | Demonstrates the depth-effect system + draws the eye to the launcher |
+| Auto-hide on scroll | **on** | Shows the slide-away (down hides, up/idle reveals) |
+| Placement | **Right, 32 / 32** | Conventional |
+| Layout | **Side panel** | Most "embedded widget" feel; the demo bar flips Middle/Full live |
+| Hero (chat top) | **Webcam** (live cam) | Demonstrates the live-data/webcam integration |
+| Season Update | **populated** (manual source) | Banner visible; shows the manual-vs-flow toggle |
+| Typing / voice | **dots / realtime voice on** | Conversation polish |
+| Typography | **Inter + Playfair** | The font-pairing system |
+| Search bar / button | pill radius · fixed 480 · round brand button | Embeddable-component styling |
+
+**Deliberately off** (each is a "turn it on to see it" toggle, not a sensible always-on):
+`snowfall` (heaviest continuous effect), `disableTextInput`, custom launcher icon.
+
+> ⚠️ **Demo-only fields:** `backgroundImage` and `bgTextMode` theme the *demo page*
+> (`preview.html`), **not** the widget — the widget doesn't consume them yet (reserved for
+> an optional Chat UI background later). Don't map them to widget behavior.
