@@ -119,13 +119,17 @@ These four items are the seam between "what GSB built" and "what BotScrew wires"
    on save, in the shape defined by the [contract](./botscrew-widget-settings.md).
    The mapper (`src/shared/widget-config.js`) already emits/ingests that exact shape.
 
-2. **Appearance application to a real embedded widget.** Right now the **dashboard**
-   applies styling via `render()`. `preview.html` now mounts the **shared widget core**
-   (`chat-widget.css` + `widget-runtime.js`) standalone on a resort-site mock — proving
-   the widget runs outside the dashboard against the real CSS (faithful mobile) — but
-   it's fed **static JH demo config** (tokens defaults + hardwired `data-` attributes).
-   A standalone embed that reads the saved `gsbAppearance` + native fields and styles
-   itself from them is still open work.
+2. **Appearance application to a real embedded widget.** ✅ `preview.html` now styles the
+   widget **entirely from a config object** via `applyWidgetConfig` — every appearance-tab
+   field maps to the Chat UI (color, fonts, layout, launcher + depth effect + CTA, Season
+   Update banner, webcam/featured hero, snowfall, voice, embed components). The dashboard's
+   **Live Preview** button feeds it the live config (`localStorage` + a `#cfg=` URL hash;
+   an open tab live-updates via the `storage` event — see
+   [INTEGRATION.md §10](./INTEGRATION.md)). What production swaps in: select the bot by
+   `publicIdentifier` in the URL (the existing
+   `…/widget-demo/{publicIdentifier}?isTestMode=true` structure) and load
+   `GET /widget/info/{botId}` into `applyWidgetConfig` instead of the prototype
+   localStorage/hash sync. **Same render layer — only the config *source* changes.**
 
 3. **Embed loader.** The dashboard's Install tab sketches the embed shape
    (`<div data-gsb-search></div>`, `<div data-gsb-search-button></div>`, the chat

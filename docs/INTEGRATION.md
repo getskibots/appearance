@@ -200,3 +200,66 @@ The widget is a **drop-in replacement for the iframe's chat app.** The loader, l
 postMessage protocol, socket, flows, and config API are all **untouched.** The net new work
 on our side — streaming/structured message rendering behind the `answerProvider` seam — is
 already on the build plan ([`BUILD-STATUS.md`](./BUILD-STATUS.md)).
+
+---
+
+## 10 · The demo preview page & Live Preview wiring
+
+[`preview.html`](../preview.html) is a **resort-agnostic homepage mock** with the widget
+embedded — the surface sales shows a prospect ("here is your site with our assistant on
+it"). It is also what the dashboard's **Live Preview** button opens.
+
+### What it proves (all faithful — every pixel from config)
+
+The widget is themed **entirely** by `applyWidgetConfig(config)`
+([`src/widget/apply-config.js`](../src/widget/apply-config.js)) from one `CONFIG` object —
+nothing widget-related is hand-built. Every appearance-tab field maps to the Chat UI:
+
+- brand color, logo, corner radius, fonts (Inter body / Playfair display, true weights)
+- layout variant (side / middle / full), panel-open animation, blurred background
+- launcher style (simple / status-pill / slide-in / custom icon), depth effect
+  (glow / radiate / shadow), CTA copy, slide-in state, status-pill features
+- Season Update banner (`updateLabel` + `recentUpdate`), webcam / featured-image hero
+- snowfall (on/off + style + intensity) — the engine is shared at
+  [`src/shared/snow-engine.js`](../src/shared/snow-engine.js) so the dashboard preview and
+  the demo render snow from one source and **can't drift**
+- typing indicator, realtime voice, disable-text-input, embeddable search bar + button
+
+Three entry points — header search icon, hero search bar, chat launcher — all open the
+same chat; a search submit injects the query as the first message. Two on-page control
+bars let a resort play with color / launcher style / live-agent live (each mutates
+`CONFIG` and re-applies).
+
+### How config reaches the page TODAY — prototype only
+
+The dashboard syncs its current state to `localStorage['gsb_preview_config']` (debounced)
+and encodes it into the Live Preview link as a URL hash (`preview.html#cfg=<base64>`).
+`preview.html` reads the hash first (cross-device shareable links), then same-origin
+`localStorage`, merges over the JH defaults, and applies. An open preview tab also
+live-updates via the `storage` event.
+
+> ⚠️ **This localStorage / hash sync is a single-tenant, same-origin demo mechanism. It is
+> NOT how production selects a bot.** It exists so the prototype's Live Preview works with
+> no backend.
+
+### How it must be wired in production — per bot instance
+
+The live admin already has a per-bot preview at:
+
+```
+https://bots.getskitickets.com/widget-demo/{publicIdentifier}?isTestMode=true
+# e.g. bot 43 (Jackson Hole):
+https://bots.getskitickets.com/widget-demo/776bd241-fbc3-4e17-92c7-8af31e84e6dd?isTestMode=true
+```
+
+Production wiring **replaces the localStorage / hash hand-off with bot selection by
+`publicIdentifier` in the URL**: the config comes from `GET /widget/info/{botId}` (§4) fed
+straight into `applyWidgetConfig` — no localStorage, no hash. Same render layer, real
+per-bot config; `isTestMode=true` is the existing flag for the admin-facing (non-public)
+preview.
+
+**Net:** the `applyWidgetConfig(config)` seam (§3a) is already production-ready and proven
+end-to-end by the demo. Only the **config source** swaps — from the prototype sync to the
+per-bot `/widget/info/{botId}` load keyed off the URL's `publicIdentifier`. This is the
+same per-bot-ID wiring called out for every other feature (see
+[`BUILD-STATUS.md`](./BUILD-STATUS.md) → per-bot-ID wiring).

@@ -69,7 +69,8 @@ it is not yet a production mount/init API.
                 │            └─▶ localStorage["gsb_widget_settings"]   (durable, BotScrew shape)
                 │
                 └─ change ▶ buildLivePreviewConfig(state)
-                             └─▶ localStorage["gsb_preview_config"]    (sharable.link live preview)
+                             └─▶ localStorage["gsb_preview_config"]    (demo preview: preview.html)
+                                  + Live Preview button → preview.html#cfg=<base64>
 
  on load ──▶ fromBotscrewWidgetSettings(localStorage["gsb_widget_settings"])
               └─▶ merged over DEFAULTS ──▶ state
@@ -80,8 +81,11 @@ it is not yet a production mount/init API.
   `fromBotscrewWidgetSettings(settings)`.
 - **`gsb_widget_settings`** — the durable config, written by the **Save button**,
   hydrated on startup. This is the object BotScrew should persist per bot.
-- **`gsb_preview_config`** — a subset auto-written on every change, only for the
-  sharable.link live-preview page. Not the source of truth.
+- **`gsb_preview_config`** — a subset auto-written on every change, read by the demo
+  preview page (`preview.html`) via same-origin `localStorage` or the Live Preview
+  button's `#cfg=` URL hash. Not the source of truth, and a **prototype** hand-off:
+  production selects the bot by `publicIdentifier` in the URL and loads
+  `/widget/info/{botId}` instead (see [INTEGRATION.md §10](./INTEGRATION.md)).
 
 To wire per-bot persistence: replace the `localStorage` read on load with
 `GET /bot/{botId}/widget`, and the `localStorage` write in the Save handler with
