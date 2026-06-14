@@ -788,6 +788,18 @@
   text-transform: uppercase;
   color: var(--ink-muted);
 }
+.hero-preview-wrap { position: relative; }
+.hero-preview__clear {
+  position: absolute; top: 8px; right: 8px; z-index: 3;
+  width: 30px; height: 30px; border-radius: 8px; border: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(13, 20, 32, 0.62); color: #fff; cursor: pointer;
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  transition: background .15s, transform .1s;
+}
+.hero-preview__clear:hover { background: var(--danger, #c43f3f); }
+.hero-preview__clear:active { transform: scale(.92); }
+.hero-preview__clear svg { width: 16px; height: 16px; }
 .hero-preview {
   position: relative;
   aspect-ratio: 16 / 9;

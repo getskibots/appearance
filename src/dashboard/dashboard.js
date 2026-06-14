@@ -542,6 +542,15 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
         if (previewChip) previewChip.style.display = 'none';
       }
     }
+    // Trash button — shown when the current source actually has an image to clear.
+    var heroClearBtn = $('heroClearBtn');
+    if (heroClearBtn) {
+      var hasHeroImg = (hero.source === 'featured' && !!hero.featuredImage.url) ||
+                       (hero.source === 'webcam' && !!hero.webcam.url);
+      var cropping = preview && preview.querySelector('.crop-layer');
+      heroClearBtn.style.display = (hasHeroImg && !cropping) ? '' : 'none';
+    }
+
     // Reflect the source toggle + show the matching control group.
     var heroBtns = document.querySelectorAll('#heroSourceSegmented [data-hero-source]');
     for (var hi = 0; hi < heroBtns.length; hi++) {
@@ -1223,6 +1232,20 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   });
   $('webcamLabel').addEventListener('input', function(e){ state.hero.webcam.label = e.target.value; render(); });
   $('featuredImageUrl').addEventListener('input', function(e){ endFeaturedCrop(); state.hero.featuredImage.url = e.target.value; render(); });
+  // Trash button — clears the image for the current hero source (state change flows
+  // to the dashboard preview, the Save button, and the demo page via sync).
+  if ($('heroClearBtn')) $('heroClearBtn').addEventListener('click', function(){
+    endFeaturedCrop();
+    if (state.hero.source === 'featured') {
+      state.hero.featuredImage.url = '';
+      if ($('featuredImageInfo')) $('featuredImageInfo').style.display = 'none';
+      if ($('featuredImageFile')) $('featuredImageFile').value = '';
+    } else if (state.hero.source === 'webcam') {
+      state.hero.webcam.url = '';
+      state.hero.webcam.poster = '';
+    }
+    render();
+  });
   $('featuredCaption').addEventListener('input', function(e){ state.hero.featuredImage.caption = e.target.value; render(); });
   $('featuredLink').addEventListener('input', function(e){ state.hero.featuredImage.link = e.target.value; render(); });
   $('featuredImageFile').addEventListener('change', function(e){
