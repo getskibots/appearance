@@ -12,6 +12,8 @@
  * added here once and every surface picks them up.
  */
 
+import { renderWebcamHero, clearWebcamHero } from '../shared/webcam-render.js';
+
 /* ---- color helpers (kept in sync with the dashboard's COLOR HELPERS) ---- */
 function hexToRgb(hex) {
   var m = /^#?([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})$/i.exec(hex);
@@ -109,9 +111,11 @@ export function applyWidgetConfig(config) {
   /* ---- Hands-free voice on/off ---- */
   body.setAttribute('data-voice', config.realtimeVoice === false ? 'off' : 'on');
 
-  /* ---- Ambient snowfall style (engine, when present, reads this) ---- */
+  /* ---- Ambient snowfall style (engine, when present, reads this) ----
+     Reflect the effective style: 'none' when the effect is disabled, so the
+     CSS kill-switch + engine both see the off state (mirrors the dashboard). */
   var snow = config.snowfall || {};
-  if (snow.style) body.setAttribute('data-snow-style', snow.style);
+  body.setAttribute('data-snow-style', snow.enabled ? (snow.style || 'realistic') : 'none');
 
   /* ---- Launcher attributes ---- */
   var launcher = document.querySelector('.gsb-launcher');
@@ -122,6 +126,14 @@ export function applyWidgetConfig(config) {
     launcher.setAttribute('data-show-cta', (pill.needHelpCta && isPill) ? 'true' : 'false');
     if (place.align) launcher.setAttribute('data-align', place.align === 'left' ? 'left' : 'right');
     launcher.setAttribute('data-custom-icon', config.customIconUrl ? 'true' : 'false');
+    // Slide-in launcher peek/visible state.
+    if (config.slideState) launcher.setAttribute('data-slide-state', config.slideState);
+    // Custom launcher icon image (shown only in the 'custom' bubble style).
+    var customIconImg = document.getElementById('customIconImg');
+    if (customIconImg) {
+      if (config.customIconUrl) { customIconImg.src = config.customIconUrl; customIconImg.style.display = ''; }
+      else { customIconImg.removeAttribute('src'); customIconImg.style.display = 'none'; }
+    }
   }
 
   /* ---- Embeddable components (hero search bar + standalone search button) ----
@@ -209,12 +221,15 @@ export function applyWidgetConfig(config) {
     if (h.source) heroEl.setAttribute('data-hero-source', h.source);
     var station = document.getElementById('gsbHeroStation');
     if (h.source === 'featured') {
+      // Appearance-owned still image — render it here (the runtime only draws cams).
+      if (h.featuredImage && h.featuredImage.url) renderWebcamHero(heroEl, { url: h.featuredImage.url, kind: 'image', poster: '' });
+      else clearWebcamHero(heroEl);
       if (station) station.textContent = (h.featuredImage && h.featuredImage.caption) || '';
       heroEl.setAttribute('data-hero-managed', 'true');
     } else if (h.source === 'none') {
       heroEl.setAttribute('data-hero-managed', 'true');
     } else if (station && h.webcam && h.webcam.label) {
-      station.textContent = h.webcam.label; // 'webcam' — runtime renders the cam
+      station.textContent = h.webcam.label; // 'webcam' — runtime renders the live cam
     }
   }
 

@@ -522,6 +522,7 @@
   <script type="module">
     import { applyWidgetConfig } from '/src/widget/apply-config.js';
     import { JH_LOGO } from '/src/shared/sample-logo.js';
+    import { createSnowEngine } from '/src/shared/snow-engine.js';
 
     // The resort's config (JH for now). On a real embed this comes from the bot's
     // BotScrew settings; here it's hardwired so the page wears Jackson Hole's brand.
@@ -559,12 +560,32 @@
       ctaText: 'Need help?',
       customIconUrl: null,
       customIconSize: 56,
+      slideState: 'visible',
+      autoHideOnScroll: { enhanced: true, slidein: true, custom: true },
       placement: { align: 'right', bottomSpacing: 32, sideSpacing: 32 },
-      snowfall: { enabled: false, style: 'realistic' },
+      // Behavioral toggles (not part of the open Chat UI render — host/runtime concerns).
+      soundNotifications: true,
+      popupMessagePreview: false,
+      askForRating: false,
+      snowfall: { enabled: false, style: 'realistic', intensity: 90, showOnMobile: true, pauseWhenIdle: true },
       embedSearch: { borderRadius: 999, borderThickness: 1.5, width: 'fixed', placeholder: 'Ask anything about your visit…' },
       embedButton: { size: 44, shape: 'round', background: 'brand', iconWeight: 'regular', label: '' }
     };
     applyWidgetConfig(CONFIG);
+
+    // Ambient snowfall — same shared engine the appearance tab uses, driven by
+    // CONFIG.snowfall so the effect carries over to the demo chat surface.
+    var snowEngine = createSnowEngine('gsbSnowfall');
+    function applySnow() {
+      var s = CONFIG.snowfall || {};
+      snowEngine.apply({
+        style: s.enabled ? (s.style || 'realistic') : 'none',
+        intensity: s.intensity,
+        showOnMobile: s.showOnMobile !== false,
+        pauseWhenIdle: s.pauseWhenIdle !== false
+      });
+    }
+    applySnow();
 
     // The site's own logo (upper-left) pulls the same bot logo.
     var siteLogo = document.getElementById('siteLogo');
