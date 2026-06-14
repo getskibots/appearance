@@ -193,7 +193,7 @@ export function applyWidgetConfig(config) {
      feed leaves it alone; blank hides the banner. Matches the dashboard render(). */
   var seasonBanner = document.getElementById('gsbSeasonBanner');
   if (seasonBanner && (config.updateLabel != null || config.recentUpdate != null || config.recentUpdateSource != null)) {
-    var flowLabels = { 'realtime-conditions': 'Get Realtime Conditions', 'operations-hours': 'Get Operations & Hours', 'ecommerce': 'Get Ecommerce', 'events-alerts': 'Get Events & Alerts' };
+    var flowLabels = { 'operations': 'Get Operations', 'conditions': 'Get Conditions', 'ecommerce': 'Get Ecommerce', 'events': 'Get Events', 'alerts': 'Get Alerts' };
     var manualUpd = config.recentUpdateSource !== 'flow';
     var sShow, sBody;
     if (!manualUpd) {
