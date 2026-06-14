@@ -46,36 +46,47 @@
     display: flex; flex-direction: column;
   }
 
-  /* ---- Preview control bars (demo signal + live appearance controls) ---- */
-  .preview-bars { position: relative; z-index: 70; }
+  /* ---- Demo control deck — a dark toolbar that clearly wraps the resort-site
+       preview below, so the two rows read as GetSkiBots demo tooling, not the
+       site. A brand-accent bottom edge + shadow define the seam. ---- */
+  .preview-bars {
+    position: relative; z-index: 70;
+    background: #12161e;
+    box-shadow: 0 10px 26px rgba(8,12,20,0.30);
+    border-bottom: 2px solid var(--brand);
+  }
   .pbar {
     display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
-    padding: 9px 22px; background: #fff; border-bottom: 1px solid var(--line);
+    padding: 9px 22px; background: transparent;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
   }
-  .pbar--alt { background: #fafbfc; }
+  .pbar--alt { background: rgba(255,255,255,0.03); border-bottom: 0; }
+  .pbar__wordmark { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 800; color: #fff; letter-spacing: .01em; white-space: nowrap; }
+  .pbar__wordmark::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--brand); box-shadow: 0 0 0 3px rgba(var(--brand-rgb),0.25); }
   .pbar__badge {
     font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
     color: #fff; background: var(--brand); padding: 3px 9px; border-radius: 999px;
   }
-  .pbar__label { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); white-space: nowrap; }
+  .pbar__label { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.50); white-space: nowrap; }
   #layoutSeg, .pbar__controls { margin-left: auto; }
   .pbar__controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-  .pbar__seg { display: inline-flex; background: #eef1f5; border-radius: 999px; padding: 3px; }
+  .pbar__seg { display: inline-flex; background: rgba(255,255,255,0.08); border-radius: 999px; padding: 3px; }
   .pbar__seg button {
-    appearance: none; border: 0; background: transparent; color: var(--ink-soft);
+    appearance: none; border: 0; background: transparent; color: rgba(255,255,255,0.64);
     font: inherit; font-size: 12px; font-weight: 600; padding: 6px 13px; border-radius: 999px;
     cursor: pointer; white-space: nowrap; transition: background .15s, color .15s;
   }
+  .pbar__seg button:hover { color: rgba(255,255,255,0.92); }
   .pbar__seg button[aria-pressed="true"] { background: var(--brand); color: #fff; }
-  .pbar__toggle { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; color: var(--ink-soft); cursor: pointer; white-space: nowrap; }
-  .pbar__toggle input { appearance: none; -webkit-appearance: none; width: 34px; height: 19px; border-radius: 999px; background: #cdd4dd; position: relative; cursor: pointer; transition: background .15s; flex: 0 0 auto; }
+  .pbar__toggle { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.72); cursor: pointer; white-space: nowrap; }
+  .pbar__toggle input { appearance: none; -webkit-appearance: none; width: 34px; height: 19px; border-radius: 999px; background: rgba(255,255,255,0.22); position: relative; cursor: pointer; transition: background .15s; flex: 0 0 auto; }
   .pbar__toggle input:checked { background: var(--brand); }
   .pbar__toggle input::after { content: ''; position: absolute; top: 2px; left: 2px; width: 15px; height: 15px; border-radius: 50%; background: #fff; transition: transform .15s; }
   .pbar__toggle input:checked::after { transform: translateX(15px); }
-  .pbar__color { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--ink-soft); white-space: nowrap; }
+  .pbar__color { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.72); white-space: nowrap; }
   .pbar__color input { width: 26px; height: 26px; border: 0; border-radius: 50%; background: none; cursor: pointer; padding: 0; }
   .pbar__color input::-webkit-color-swatch-wrapper { padding: 0; }
-  .pbar__color input::-webkit-color-swatch { border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1px var(--border-strong, #cdd5e0); }
+  .pbar__color input::-webkit-color-swatch { border: 2px solid rgba(255,255,255,0.85); border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,0,0,0.35); }
   @media (max-width: 820px) {
     .pbar { padding: 8px 14px; gap: 9px; justify-content: center; }
     .pbar__label { display: none; }
@@ -370,6 +381,7 @@
        config; these controls just mutate that config object and re-apply it. -->
   <div class="preview-bars">
     <div class="pbar">
+      <span class="pbar__wordmark">GetSkiBots</span>
       <span class="pbar__badge">Demo</span>
       <span class="pbar__label">Preview · Layout</span>
       <div class="pbar__seg" id="layoutSeg">
