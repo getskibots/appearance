@@ -132,8 +132,8 @@
   .hero {
     position: relative; overflow: hidden;
     min-height: calc(100vh - 150px);   /* fills below the control bars + header — nothing past the fold */
-    display: flex; align-items: center; justify-content: center;
-    text-align: center; padding: 44px 24px 0;
+    display: flex; align-items: flex-start; justify-content: center;
+    text-align: center; padding: 15vh 24px 0;   /* content sits in the upper third (rule of thirds) */
     background: linear-gradient(180deg, #f8f4ed 0%, #f1e9dc 100%);
     color: var(--ink);
   }
@@ -328,8 +328,7 @@
     </svg>
     <div class="hero__inner">
       <span class="hero__eyebrow">Plan your visit</span>
-      <h1 class="hero__title">Ask the mountain anything.</h1>
-      <p class="hero__sub">Tickets, lessons, lift status, live conditions, lodging — instant answers, any time, right here.</p>
+      <h1 class="hero__title">Ask us anything</h1>
 
       <!-- ENTRY POINT #2 — hero search bar -->
       <form class="hero-search" id="heroSearch" role="search">
@@ -349,12 +348,7 @@
         </button>
       </form>
 
-      <div class="hero-pills" id="heroPills">
-        <button class="hero-pill" type="button" data-q="What do lift tickets cost?"><span class="hero-pill__spark">✦</span>What do lift tickets cost?</button>
-        <button class="hero-pill" type="button" data-q="Where should beginners ski?"><span class="hero-pill__spark">✦</span>Where should beginners ski?</button>
-        <button class="hero-pill" type="button" data-q="Are the lifts open today?"><span class="hero-pill__spark">✦</span>Are the lifts open today?</button>
-        <button class="hero-pill" type="button" data-q="Do you have lessons for kids?"><span class="hero-pill__spark">✦</span>Lessons for kids?</button>
-      </div>
+      <!-- conversation-starter pills removed for now (kept the hero uncluttered) -->
       <p class="hero-hint">Three ways to ask: this search bar, the <strong>search icon</strong> up top, or the <strong>chat</strong> — bottom-right.</p>
     </div>
   </section>
@@ -594,10 +588,6 @@
       if (heroInput) heroInput.value = '';
     });
 
-    // Hero starter pills
-    document.querySelectorAll('#heroPills .hero-pill').forEach(function(p) {
-      p.addEventListener('click', function() { openWithQuery(p.dataset.q); });
-    });
 
     // Close / backdrop (runtime also binds these to its own closeChat for voice exit)
     var closeBtn = document.getElementById('gsbChatClose');
