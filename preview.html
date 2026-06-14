@@ -274,15 +274,21 @@
   /* ---- Below-the-fold band: a simple "try it" section. Gives the page something
        to scroll, so the launcher's slide-away-on-scroll demo can actually run.
        The hero's mountains fade into this white band for an easy transition. ---- */
-  .demo-band { background: #ffffff; padding: 66px 24px 84px; text-align: center; }
-  .demo-band__inner { max-width: 680px; margin: 0 auto; }
+  .demo-band { background: #ffffff; padding: 64px 24px 80px; text-align: center; }
+  .demo-band__inner { max-width: 960px; margin: 0 auto; }
   .demo-band__eyebrow { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--brand); margin-bottom: 12px; }
-  .demo-band__title { font-family: 'Playfair Display', Georgia, serif; font-weight: 800; font-size: clamp(26px, 4vw, 40px); line-height: 1.1; color: var(--ink); margin: 0 0 10px; }
-  .demo-band__sub { font-size: clamp(15px, 2vw, 18px); line-height: 1.5; color: var(--ink-soft); margin: 0 auto 26px; max-width: 44ch; }
-  .demo-band__chips { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-  .demo-q { appearance: none; cursor: pointer; background: #fff; border: 1.5px solid var(--brand); color: var(--brand); font: inherit; font-size: 14px; font-weight: 600; padding: 10px 18px; border-radius: 999px; transition: background .15s, color .15s; }
-  .demo-q:hover { background: var(--brand); color: #fff; }
-  @media (max-width: 640px) { .demo-band { padding: 48px 18px 64px; } }
+  .demo-band__title { font-family: 'Playfair Display', Georgia, serif; font-weight: 800; font-size: clamp(26px, 4vw, 38px); line-height: 1.12; color: var(--ink); margin: 0 0 36px; }
+  /* 3 key benefits of the platform */
+  .demo-band__benefits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; text-align: left; }
+  .benefit__icon { width: 46px; height: 46px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; background: rgba(var(--brand-rgb), 0.10); color: var(--brand); margin-bottom: 14px; }
+  .benefit__icon svg { width: 24px; height: 24px; }
+  .benefit h3 { font-size: 17px; font-weight: 700; color: var(--ink); margin: 0 0 7px; }
+  .benefit p { font-size: 14.5px; line-height: 1.55; color: var(--ink-soft); margin: 0; }
+  @media (max-width: 720px) {
+    .demo-band { padding: 48px 18px 64px; }
+    .demo-band__benefits { grid-template-columns: 1fr; gap: 22px; text-align: center; }
+    .benefit__icon { margin-left: auto; margin-right: auto; }
+  }
   /* The shared widget CSS locks html/body scroll at <=900px (for the fullscreen
      mobile chat). On the demo the PAGE must scroll when the chat is closed — re-enable
      it, and only re-lock while the chat is open. */
@@ -492,18 +498,34 @@
     </div>
   </section>
 
-  <!-- Simple below-the-fold band: gives the page scroll (so the launcher slides away
-       on scroll) and lets the prospect try a real question. -->
+  <!-- Below-the-fold band: 3 key benefits of the platform. Also gives the page scroll
+       (so the launcher slides away on scroll). -->
   <section class="demo-band">
     <div class="demo-band__inner">
-      <span class="demo-band__eyebrow">Try it yourself</span>
-      <h2 class="demo-band__title">Real guest questions, answered in seconds</h2>
-      <p class="demo-band__sub">Tap one below — your guests get the same instant answer, any hour of the day.</p>
-      <div class="demo-band__chips">
-        <button type="button" class="demo-q" data-q="How much are lift tickets?">How much are lift tickets?</button>
-        <button type="button" class="demo-q" data-q="Are the lifts open today?">Are the lifts open today?</button>
-        <button type="button" class="demo-q" data-q="Do you have lessons for kids?">Lessons for kids?</button>
-        <button type="button" class="demo-q" data-q="Where should we stay?">Where should we stay?</button>
+      <span class="demo-band__eyebrow">Why GetSkiBots</span>
+      <h2 class="demo-band__title">One assistant for every guest question</h2>
+      <div class="demo-band__benefits">
+        <div class="benefit">
+          <span class="benefit__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 1.8"/></svg>
+          </span>
+          <h3>24/7 instant answers</h3>
+          <p>Resolve the bulk of guest questions automatically — tickets, conditions, lodging — any hour, no hold time.</p>
+        </div>
+        <div class="benefit">
+          <span class="benefit__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+          </span>
+          <h3>One platform, every channel</h3>
+          <p>Chat, voice, SMS, and social, unified — the same trusted answer wherever guests reach out.</p>
+        </div>
+        <div class="benefit">
+          <span class="benefit__icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9L12 2.5z"/></svg>
+          </span>
+          <h3>Trained on your resort</h3>
+          <p>Replies from your own data, in your brand voice — with a smooth handoff to a live agent when needed.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -913,10 +935,6 @@
     setDemoChrome();
     window.addEventListener('resize', setDemoChrome);
 
-    // Below-the-fold band — each example question opens the chat with that query.
-    document.querySelectorAll('.demo-q').forEach(function(b) {
-      b.addEventListener('click', function() { openWithQuery(b.getAttribute('data-q')); });
-    });
 
     // Launcher auto-hide on scroll — same behavior as the appearance tab: scrolling
     // down slides the launcher out of the way; scrolling up (or a pause) brings it
