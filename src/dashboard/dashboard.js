@@ -197,6 +197,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     placement: { align: 'right', bottomSpacing: 32, sideSpacing: 32 },
     statusPillFeatures: { liveAgent: true, weather: true, needHelpCta: true },
     layoutVariant: 'side',
+    animationStyle: 'scale', // 'scale' | 'slide' | 'fade' — how the panel opens
     blurredBackground: true,
     soundNotifications: true,
     popupMessagePreview: false,
@@ -537,6 +538,14 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     canvas.setAttribute('data-voice', state.realtimeVoice ? 'on' : 'off');
     document.body.setAttribute('data-voice', state.realtimeVoice ? 'on' : 'off');
 
+    // Panel open animation (Animations & effects → Panel motion).
+    document.body.setAttribute('data-animation', state.animationStyle || 'scale');
+    document.querySelectorAll('#animStyleCards .anim-card').forEach(function(c) {
+      var on = c.getAttribute('data-value') === (state.animationStyle || 'scale');
+      c.setAttribute('data-checked', String(on));
+      c.setAttribute('aria-checked', String(on));
+    });
+
     // Typing indicator style + the name the "label" variant types under.
     document.body.setAttribute('data-typing-indicator', state.typingIndicator || 'dots');
     document.body.setAttribute('data-typing-label', state.widgetName || 'AI Concierge');
@@ -822,6 +831,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       launcher: ['bubbleStyle','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','statusPillFeatures','ctaText'],
       typography: ['typography'],
       panel: ['layoutVariant','blurredBackground'],
+      effects: ['animationStyle'],
       behavior: ['soundNotifications','popupMessagePreview','askForRating','realtimeVoice','typingIndicator','disableTextInput'],
       embed: ['embedSearch','embedButton']
     };
@@ -1245,6 +1255,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   document.querySelectorAll('#typingTiles .typing-tile').forEach(function(t){
     t.addEventListener('click', function(){ state.typingIndicator = t.getAttribute('data-value'); render(); });
   });
+  document.querySelectorAll('#animStyleCards .anim-card').forEach(function(c){
+    c.addEventListener('click', function(){ state.animationStyle = c.getAttribute('data-value'); render(); });
+  });
   bindToggle('toggleDisableInput', function(){ return state.disableTextInput; }, function(v){ state.disableTextInput = v; });
 
   launcher.addEventListener('click', function(){ setOpen(true); });
@@ -1516,6 +1529,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       bubbleStyle: state.bubbleStyle,
       customIconUrl: state.customIconUrl,
       layoutVariant: state.layoutVariant,
+      animationStyle: state.animationStyle,
       statusPillFeatures: state.statusPillFeatures,
       typography: state.typography,
       // Forward-compatible — preview will read these when updated:

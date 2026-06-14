@@ -54,6 +54,7 @@ function toGsbAppearance(state) {
     slideState: state.slideState,
     autoHideOnScroll: state.autoHideOnScroll,
     layoutVariant: state.layoutVariant,
+    animationStyle: state.animationStyle,
     blurredBackground: state.blurredBackground,
     effectMode: state.effectMode,
     effectIntensity: state.effectIntensity,

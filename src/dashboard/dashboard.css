@@ -612,6 +612,76 @@
 }
 .typing-tile__name { font-size: 12px; font-weight: 500; color: var(--ink); }
 
+/* Panel-motion cards (Animations & effects) — each plays a looping mini-preview
+   of its actual motion (scale from corner / slide up / fade in). */
+.anim-cards { display: flex; gap: 10px; max-width: 480px; }
+.anim-card {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 12px 10px 10px;
+  background: #fff;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.anim-card:hover { border-color: var(--accent); }
+.anim-card[data-checked="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, #fff);
+}
+.anim-card__demo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.anim-card__panel {
+  position: absolute;
+  background: var(--accent);
+  border-radius: 4px;
+}
+.anim-card__demo--scale .anim-card__panel {
+  right: 14%; bottom: 14%; width: 48%; height: 56%;
+  transform-origin: bottom right;
+  animation: anim-demo-scale 2.6s ease-in-out infinite;
+}
+.anim-card__demo--slide .anim-card__panel {
+  left: 26%; right: 26%; bottom: 0; height: 64%;
+  animation: anim-demo-slide 2.6s ease-in-out infinite;
+}
+.anim-card__demo--fade .anim-card__panel {
+  left: 26%; right: 26%; bottom: 16%; height: 52%;
+  animation: anim-demo-fade 2.6s ease-in-out infinite;
+}
+@keyframes anim-demo-scale {
+  0%, 10% { transform: scale(0.2); opacity: 0; }
+  32%, 68% { transform: scale(1); opacity: 1; }
+  90%, 100% { transform: scale(0.2); opacity: 0; }
+}
+@keyframes anim-demo-slide {
+  0%, 10% { transform: translateY(115%); }
+  32%, 68% { transform: translateY(0); }
+  90%, 100% { transform: translateY(115%); }
+}
+@keyframes anim-demo-fade {
+  0%, 10% { opacity: 0; transform: translateY(22%); }
+  32%, 68% { opacity: 1; transform: translateY(0); }
+  90%, 100% { opacity: 0; transform: translateY(22%); }
+}
+.anim-card__name { font-size: 13px; font-weight: 500; color: var(--ink); }
+.anim-card__sub { font-size: 11px; color: var(--ink-muted); text-align: center; line-height: 1.3; }
+@media (prefers-reduced-motion: reduce) {
+  .anim-card__panel { animation: none !important; opacity: 1; transform: none; }
+}
+
 /* Flow picker (placeholder source for the Recent update / Season Update card). */
 .flow-picker {
   display: flex;

@@ -574,6 +574,36 @@ body.modal-open[data-variant="full"] .gsb-chat {
 }
 
 /* =========================================================================
+   PANEL OPEN ANIMATION — body[data-animation]. Default "scale" is the per-variant
+   transforms above (grows from the bottom-right launcher origin, 500ms). Slide and
+   Fade override the transform while preserving each variant's resting POSITION
+   (middle stays centered via its translate(-50%,-50%)). More specific than the
+   variant rules, so they win. Mobile (≤900px) has its own block further down,
+   where every variant is edge-to-edge so plain translateY is used.
+   ========================================================================= */
+/* SLIDE — rises from the bottom edge (translateY), no scale. 420ms. */
+body[data-animation="slide"] .gsb-chat {
+  transition: transform 420ms var(--ease-launch), opacity 420ms var(--ease-launch), box-shadow 240ms ease;
+}
+body[data-animation="slide"][data-variant="side"] .gsb-chat,
+body[data-animation="slide"][data-variant="full"] .gsb-chat { transform: translateY(100%); }
+body[data-animation="slide"][data-variant="middle"] .gsb-chat { transform: translate(-50%, calc(-50% + 100%)); }
+body.modal-open[data-animation="slide"][data-variant="side"] .gsb-chat,
+body.modal-open[data-animation="slide"][data-variant="full"] .gsb-chat { transform: translateY(0); }
+body.modal-open[data-animation="slide"][data-variant="middle"] .gsb-chat { transform: translate(-50%, -50%); }
+
+/* FADE — opacity + a small 8px rise, no scale. 300ms ease-out. */
+body[data-animation="fade"] .gsb-chat {
+  transition: opacity 300ms ease-out, transform 300ms ease-out, box-shadow 240ms ease;
+}
+body[data-animation="fade"][data-variant="side"] .gsb-chat,
+body[data-animation="fade"][data-variant="full"] .gsb-chat { transform: translateY(8px); }
+body[data-animation="fade"][data-variant="middle"] .gsb-chat { transform: translate(-50%, calc(-50% + 8px)); }
+body.modal-open[data-animation="fade"][data-variant="side"] .gsb-chat,
+body.modal-open[data-animation="fade"][data-variant="full"] .gsb-chat { transform: translateY(0); }
+body.modal-open[data-animation="fade"][data-variant="middle"] .gsb-chat { transform: translate(-50%, -50%); }
+
+/* =========================================================================
    CHAT HEADER
    ========================================================================= */
 .gsb-chat-header {
@@ -1981,6 +2011,23 @@ body[data-variant="full"] .gsb-agent-status-feature {
   body.modal-open .gsb-launcher {
     display: none;
   }
+
+  /* Panel motion on mobile: every variant is edge-to-edge here (no centering
+     translate), so Slide / Fade use plain translateY. Variant-qualified to match
+     the desktop rules' specificity and win (later in source order). Scale keeps
+     the edge-to-edge scale(0.96) above. */
+  body[data-animation="slide"][data-variant="side"] .gsb-chat,
+  body[data-animation="slide"][data-variant="middle"] .gsb-chat,
+  body[data-animation="slide"][data-variant="full"] .gsb-chat { transform: translateY(100%); }
+  body.modal-open[data-animation="slide"][data-variant="side"] .gsb-chat,
+  body.modal-open[data-animation="slide"][data-variant="middle"] .gsb-chat,
+  body.modal-open[data-animation="slide"][data-variant="full"] .gsb-chat { transform: translateY(0); }
+  body[data-animation="fade"][data-variant="side"] .gsb-chat,
+  body[data-animation="fade"][data-variant="middle"] .gsb-chat,
+  body[data-animation="fade"][data-variant="full"] .gsb-chat { transform: translateY(8px); }
+  body.modal-open[data-animation="fade"][data-variant="side"] .gsb-chat,
+  body.modal-open[data-animation="fade"][data-variant="middle"] .gsb-chat,
+  body.modal-open[data-animation="fade"][data-variant="full"] .gsb-chat { transform: translateY(0); }
 }
 
 @media (max-width: 720px) {
