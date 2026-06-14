@@ -61,8 +61,9 @@
     border-bottom: 1px solid rgba(255,255,255,0.08);
   }
   .pbar--alt { background: rgba(255,255,255,0.03); border-bottom: 0; }
-  .pbar__wordmark { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 800; color: #fff; letter-spacing: .01em; white-space: nowrap; }
-  .pbar__wordmark::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--brand); box-shadow: 0 0 0 3px rgba(var(--brand-rgb),0.25); }
+  .pbar__wordmark { display: inline-flex; align-items: center; }
+  /* GSB lockup rendered white for the dark deck (brightness(0) invert(1) monochromes it). */
+  .pbar__wordmark img { height: 18px; width: auto; display: block; filter: brightness(0) invert(1); }
   .pbar__badge {
     font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
     color: #fff; background: var(--brand); padding: 3px 9px; border-radius: 999px;
@@ -381,7 +382,7 @@
        config; these controls just mutate that config object and re-apply it. -->
   <div class="preview-bars">
     <div class="pbar">
-      <span class="pbar__wordmark">GetSkiBots</span>
+      <span class="pbar__wordmark"><img src="/src/assets/logo.png" alt="Get Ski Bots" /></span>
       <span class="pbar__badge">Demo</span>
       <span class="pbar__label">Preview · Layout</span>
       <div class="pbar__seg" id="layoutSeg">
