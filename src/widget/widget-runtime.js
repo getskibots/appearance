@@ -475,6 +475,11 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     if (welcome && chips) rightCol.insertBefore(welcome, chips);
     if (seasonBanner && chips) rightCol.insertBefore(seasonBanner, chips);
     if (conditions && chips) rightCol.insertBefore(conditions, chips);
+    // Keep the "Suggested questions" intro anchored to its chips (it labels them).
+    // The inserts above land content just before chips, which would otherwise strand
+    // the intro at the top of the column in full-panel mobile.
+    var intro = rightCol.querySelector('.gsb-conversation-intro');
+    if (intro && chips) rightCol.insertBefore(intro, chips);
 
     leftCol.innerHTML = '';
   }

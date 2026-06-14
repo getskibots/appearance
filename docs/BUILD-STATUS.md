@@ -139,9 +139,11 @@ across all features + auth + the embed.
 
 ## Deferred / known gaps
 
-- `preview.html` still runs an **older inline copy** of the widget (not unified onto
-  `src/widget/widget-runtime.js`) — so it shows mock weather. Unifying it is the
-  proxy task for "a real embedded widget that consumes the saved config."
+- `preview.html` now mounts the **shared widget core** (`src/widget/widget-runtime.js`
+  + `chat-widget.css`) on a resort-site mock — a faithful standalone render (real CSS
+  media queries, live Open-Meteo, a side/middle/full layout switcher). What remains:
+  feed it the **saved config** instead of static JH demo values — the proxy task for
+  "a real embedded widget that consumes the saved config."
 - **Voice** (mic dictation, TTS, hands-free Voice Mode) is built in the widget and now
   has a dashboard control — **Behavior → Realtime voice** hides the hands-free Voice
   Mode when off. Full conversational voice still needs a backend to mint realtime keys.

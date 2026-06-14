@@ -120,10 +120,12 @@ These four items are the seam between "what GSB built" and "what BotScrew wires"
    The mapper (`src/shared/widget-config.js`) already emits/ingests that exact shape.
 
 2. **Appearance application to a real embedded widget.** Right now the **dashboard**
-   applies styling via `render()`. A standalone embedded widget that reads the saved
-   `gsbAppearance` + native fields and renders itself is **not yet built**
-   (`preview.html` still runs an older inline copy of the widget). Unifying the
-   widget onto one core that consumes the config is open work.
+   applies styling via `render()`. `preview.html` now mounts the **shared widget core**
+   (`chat-widget.css` + `widget-runtime.js`) standalone on a resort-site mock — proving
+   the widget runs outside the dashboard against the real CSS (faithful mobile) — but
+   it's fed **static JH demo config** (tokens defaults + hardwired `data-` attributes).
+   A standalone embed that reads the saved `gsbAppearance` + native fields and styles
+   itself from them is still open work.
 
 3. **Embed loader.** The dashboard's Install tab sketches the embed shape
    (`<div data-gsb-search></div>`, `<div data-gsb-search-button></div>`, the chat
