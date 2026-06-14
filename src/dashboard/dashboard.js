@@ -1862,9 +1862,10 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   setAccExpandAllLabel();
 
   render();
-  // Auto-open the chat preview on load so partners can immediately interact
-  // with the composer (without it, body.modal-open is never set and the chat
-  // surface stays pointer-events:none, making the input dead on click/type).
-  setOpen(true);
+  // Load with the chat preview CLOSED so partners land on the dashboard, not
+  // inside the open chat modal on every (re)load. The launcher, Live Preview
+  // button, and embed search/button each call setOpen(true), which sets
+  // body.modal-open so the composer is fully interactive whenever it's opened.
+  setOpen(false);
 })();
 
