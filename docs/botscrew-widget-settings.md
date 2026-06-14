@@ -84,9 +84,18 @@ interface GsbAppearance {
   slideState: 'visible' | 'hidden';
   autoHideOnScroll: { enhanced: boolean; slidein: boolean; custom: boolean };  // per-style slide-away-on-scroll
   layoutVariant: 'side' | 'middle' | 'full';
+  animationStyle: 'scale' | 'slide' | 'fade'; // panel open animation (default 'scale')
   blurredBackground: boolean;
-  effectMode: 'none' | 'shadow' | 'glow' | 'radiate';
+  effectMode: 'none' | 'shadow' | 'glow' | 'radiate';   // Animations & effects card
   effectIntensity: number;                   // 0–100
+  snowfall: {                                // ambient snowfall overlay (default off)
+    enabled: boolean;
+    style: 'realistic' | 'crystalline' | 'storm';
+    intensity: number;                       // 20–200 (flake count)
+    showOnMobile: boolean;
+    pauseWhenIdle: boolean;
+    respectReducedMotion: boolean;           // a11y-locked, always true
+  };
   statusPillFeatures: { liveAgent: boolean; weather: boolean; needHelpCta: boolean };
   typography: {
     bodyFont: string;                        // Google Fonts family name, e.g. "Inter", "Montserrat"
@@ -132,6 +141,12 @@ interface WidgetSettings {
 These have **no native BotScrew field**. BotScrew persists the block verbatim; the
 GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 
+> The **Animations & effects** card's fields — `animationStyle`, `effectMode` /
+> `effectIntensity` (depth), and `snowfall` — are all opaque-JSON like the rest of
+> `gsbAppearance`: **zero BotScrew backend change**. Any saved config from before
+> these fields existed still loads identically (absent → DEFAULTS, e.g.
+> `animationStyle` → `scale`, `snowfall.enabled` → `false`).
+
 | Field | Type | Default | Controls |
 |---|---|---|---|
 | `logoMaxHeight` | number (px) | `44` | Header logo cap height |
@@ -152,9 +167,11 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `slideState` | enum | `visible` | Slide-in pill shown/hidden |
 | `autoHideOnScroll` | object | `{enhanced:true, slidein:true, custom:true}` | Per-style auto-hide-on-scroll (Status pill, Slide-in pill, Custom; on by default) |
 | `layoutVariant` | enum | `side` | Panel layout: side/middle/full |
+| `animationStyle` | enum | `scale` | **Animations & effects card.** Panel open animation: `scale` (grows from the launcher — current default behavior), `slide` (rises from the bottom edge), `fade` (opacity + small rise). Drives `body[data-animation]`; absent → `scale` |
 | `blurredBackground` | boolean | `true` | Backdrop blur when open |
-| `effectMode` | enum | `radiate` | Depth effect: none/shadow/glow/radiate |
+| `effectMode` | enum | `radiate` | **Animations & effects card.** Depth effect: none/shadow/glow/radiate |
 | `effectIntensity` | number | `65` | Depth strength 0–100 |
+| `snowfall` | object | `{enabled:false, style:'realistic', intensity:90, showOnMobile:true, pauseWhenIdle:true, respectReducedMotion:true}` | **Animations & effects card.** Ambient snowfall overlay on the chat surface. **Off by default** (heaviest, continuous effect). `style` realistic/crystalline/storm; `intensity` 20–200 flakes; behavior toggles for mobile, idle-pause, and reduced-motion (a11y-locked on) |
 | `statusPillFeatures` | object | `{liveAgent,weather,needHelpCta:true}` | Status-pill toggles |
 | `typography` | object | `{Inter, Playfair Display, 1.0}` | Body/display fonts + text scale. **`bodyFont`/`displayFont` are Google Fonts family names** (any of the ~1,800-family catalog). The embed must load the saved families from Google Fonts (`<link href="…css2?family=…">`) — the dashboard does this via `src/shared/fonts/font-loader.js`, which the widget loader can reuse |
 | `embedSearch` | object | see schema | Embeddable search-bar config |
