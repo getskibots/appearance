@@ -140,4 +140,88 @@ export function applyWidgetConfig(config) {
     setVar('--gsb-embed-btn-fg', eb.background === 'brand' ? 'var(--enhanced-fg, #fff)' : 'var(--brand)');
   }
   if (eb.iconWeight) setVar('--gsb-embed-btn-stroke', eb.iconWeight === 'thin' ? '1.4' : (eb.iconWeight === 'bold' ? '2.4' : '1.8'));
+
+  /* ---- Depth effect (launcher box-shadow + radiate/glow pulse) ----
+     Mirrors the dashboard render(): one --gsb-depth-effect value the launcher +
+     embed surfaces share, plus the launcher's data-effect-mode and pulse strength.
+     'radiate'/'none' keep the box-shadow transparent (the launcher pulse owns it). */
+  if (config.effectMode) {
+    var fxI = Math.max(0, Math.min(100, config.effectIntensity || 0)) / 100;
+    var depth;
+    if (config.effectMode === 'shadow') {
+      var sLift = Math.round(8 + fxI * 24), sB1 = Math.round(30 + fxI * 50), sB2 = Math.round(6 + fxI * 14);
+      depth = '0 ' + sLift + 'px ' + sB1 + 'px rgba(23,19,15,' + (0.06 + fxI * 0.20).toFixed(3) + '), '
+            + '0 4px ' + sB2 + 'px rgba(23,19,15,' + (0.03 + fxI * 0.07).toFixed(3) + ')';
+    } else if (config.effectMode === 'glow') {
+      var gSpread = Math.round(fxI * 24), gBlur = Math.round(20 + fxI * 40), gSoft = Math.round(40 + fxI * 60);
+      var gOp = (0.20 + fxI * 0.45).toFixed(3), gSoftOp = (0.10 + fxI * 0.20).toFixed(3);
+      depth = '0 0 0 ' + gSpread + 'px rgba(var(--brand-rgb), ' + gOp + '), '
+            + '0 0 ' + gBlur + 'px rgba(var(--brand-rgb), ' + gOp + '), '
+            + '0 8px ' + gSoft + 'px rgba(var(--brand-rgb), ' + gSoftOp + ')';
+    } else {
+      depth = '0 0 0 transparent';
+    }
+    setVar('--gsb-depth-effect', depth);
+    if (launcher) {
+      launcher.setAttribute('data-effect-mode', config.effectMode);
+      launcher.style.setProperty('--gsb-radiate-strength', String(0.4 + fxI * 1.2));
+      launcher.style.setProperty('--gsb-glow-strength', String(fxI));
+    }
+  }
+  if (config.customIconSize != null) setVar('--gsb-custom-launcher-size', config.customIconSize + 'px');
+
+  /* ---- Launcher CTA text (the "Need help?" pill copy) ---- */
+  if (launcher && config.ctaText != null) {
+    var ctaEl = launcher.querySelector('.gsb-cta-text');
+    if (ctaEl) ctaEl.textContent = config.ctaText || 'Need help?';
+  }
+
+  /* ---- Season Update banner — Appearance-owned copy (updateLabel + recentUpdate).
+     Manual copy (or a Flow stub) is flagged data-manual-update so the live weather
+     feed leaves it alone; blank hides the banner. Matches the dashboard render(). */
+  var seasonBanner = document.getElementById('gsbSeasonBanner');
+  if (seasonBanner && (config.updateLabel != null || config.recentUpdate != null || config.recentUpdateSource != null)) {
+    var flowLabels = { 'snow-report': 'Daily snow report', 'lift-status': 'Lift & terrain status', 'events': 'Events & happenings' };
+    var manualUpd = config.recentUpdateSource !== 'flow';
+    var sShow, sBody;
+    if (!manualUpd) {
+      var fName = flowLabels[config.recentUpdateFlow];
+      sShow = !!fName;
+      sBody = fName ? ('Live updates from “' + fName + '” will appear here.') : '';
+    } else {
+      sShow = !!(config.recentUpdate && config.recentUpdate.trim());
+      sBody = config.recentUpdate || '';
+    }
+    seasonBanner.style.display = sShow ? 'block' : 'none';
+    seasonBanner.setAttribute('data-manual-update', sShow ? 'true' : 'false');
+    var sTitle = seasonBanner.querySelector('.gsb-season-banner__title');
+    if (sTitle && config.updateLabel != null) sTitle.textContent = config.updateLabel || 'Season update';
+    var sText = document.getElementById('gsbSeasonText');
+    if (sText) sText.textContent = sBody;
+  }
+
+  /* ---- Hero (webcam / featured image) source + station caption ----
+     The webcam image itself is drawn by the widget runtime; here we set the
+     source + managed flags it honors, plus the station label from config. */
+  var heroEl = document.getElementById('gsbHero');
+  if (heroEl && config.hero) {
+    var h = config.hero;
+    if (h.source) heroEl.setAttribute('data-hero-source', h.source);
+    var station = document.getElementById('gsbHeroStation');
+    if (h.source === 'featured') {
+      if (station) station.textContent = (h.featuredImage && h.featuredImage.caption) || '';
+      heroEl.setAttribute('data-hero-managed', 'true');
+    } else if (h.source === 'none') {
+      heroEl.setAttribute('data-hero-managed', 'true');
+    } else if (station && h.webcam && h.webcam.label) {
+      station.textContent = h.webcam.label; // 'webcam' — runtime renders the cam
+    }
+  }
+
+  /* ---- Disable text input (composer becomes read-only) ---- */
+  var composerInput = document.getElementById('gsbComposerInput');
+  if (composerInput && config.disableTextInput != null) {
+    composerInput.disabled = !!config.disableTextInput;
+    body.setAttribute('data-input-disabled', config.disableTextInput ? 'true' : 'false');
+  }
 }

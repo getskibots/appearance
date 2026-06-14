@@ -8,7 +8,7 @@
 <!-- Fonts (Inter body / Playfair display — the JH demo pairing) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <!-- Shared widget core — the SAME tokens + stylesheet the real widget ships. -->
 <link rel="stylesheet" href="/src/shared/tokens.css" />
@@ -531,17 +531,34 @@
       cornerRadius: 7,
       logoMaxHeight: 44,
       logoUrl: JH_LOGO,
+      effectMode: 'radiate',
+      effectIntensity: 65,
       widgetName: 'Jackson Hole Support',
       welcomeText: "Welcome to Jackson Hole, ask us anything, we're here to help.",
       inputPlaceholder: 'Ask me anything. Here to help!',
+      // Season Update banner (Appearance-owned copy, manual source).
+      updateLabel: 'Season update',
+      recentUpdate: "The 2025/26 ski season has wrapped. The Aerial Tram reopens for summer sightseeing on May 16th, with the gondolas joining June 6th.",
+      recentUpdateSource: 'manual',
+      recentUpdateFlow: '',
+      // Hero slot at the top of the open chat (webcam by default).
+      hero: {
+        source: 'webcam',
+        webcam: { url: 'https://cams.jacksonhole.com/webcam/codybowl.jpg', label: 'Cody Bowl', kind: 'image', poster: '' },
+        featuredImage: { url: '', caption: '', link: '' }
+      },
       typography: { bodyFont: 'Inter', displayFont: 'Playfair Display', textScale: 1.0 },
       layoutVariant: 'side',
       animationStyle: 'scale',
       typingIndicator: 'dots',
       realtimeVoice: true,
+      disableTextInput: false,
       blurredBackground: true,
       statusPillFeatures: { liveAgent: true, weather: true, needHelpCta: true },
       bubbleStyle: 'enhanced',
+      ctaText: 'Need help?',
+      customIconUrl: null,
+      customIconSize: 56,
       placement: { align: 'right', bottomSpacing: 32, sideSpacing: 32 },
       snowfall: { enabled: false, style: 'realistic' },
       embedSearch: { borderRadius: 999, borderThickness: 1.5, width: 'fixed', placeholder: 'Ask anything about your visit…' },
