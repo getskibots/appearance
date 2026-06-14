@@ -395,6 +395,15 @@
                       </button>
                     </div>
                     <div class="img-optim" id="backgroundImageInfo" style="display:none"></div>
+                    <!-- Hero text treatment over the photo — Light (default) or Dark. -->
+                    <div class="field" id="bgTextModeRow" style="display:none;margin-top:12px;margin-bottom:0">
+                      <label class="field__label">Text over photo</label>
+                      <p class="field__hint" style="margin-top:0;margin-bottom:8px">Light suits most photos (dark overlay + white text); pick Dark for light / airy images.</p>
+                      <div class="segmented" id="bgTextModeSeg" role="radiogroup" aria-label="Hero text over photo">
+                        <button type="button" data-bg-text="light" data-active="true" role="radio" aria-checked="true">Light text</button>
+                        <button type="button" data-bg-text="dark" data-active="false" role="radio" aria-checked="false">Dark text</button>
+                      </div>
+                    </div>
                   </div>
 
                 </div>

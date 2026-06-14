@@ -71,6 +71,7 @@ export function applyWidgetConfig(config) {
     document.documentElement.style.removeProperty('--gsb-bg-image');
     body.setAttribute('data-bg-image', 'false');
   }
+  body.setAttribute('data-bg-text', config.bgTextMode === 'dark' ? 'dark' : 'light');
 
   /* ---- Launcher placement (popup + open panel inherit it) ---- */
   var place = config.placement || {};

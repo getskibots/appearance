@@ -40,6 +40,7 @@ function toGsbAppearance(state) {
     cornerRadius: state.cornerRadius,
     chatHeaderColor: state.chatHeaderColor,
     backgroundImage: state.backgroundImage,
+    bgTextMode: state.bgTextMode,
     welcomeText: state.welcomeText,
     updateLabel: state.updateLabel,
     recentUpdate: state.recentUpdate,

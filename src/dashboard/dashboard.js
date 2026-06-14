@@ -173,6 +173,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     chatHeaderColor: '#ffffff',
     // Demo/preview page background photo (and, later, an optional Chat UI bg).
     backgroundImage: '',
+    bgTextMode: 'light', // 'light' | 'dark' — hero text treatment over a bg photo
     widgetName: 'Jackson Hole Support',
     inputPlaceholder: 'Ask me anything. Here to help!',
     welcomeText: "Welcome to Jackson Hole, ask us anything, we're here to help.",
@@ -572,6 +573,13 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       $('backgroundImageUrl').value = (state.backgroundImage && state.backgroundImage.indexOf('data:') === 0) ? '' : (state.backgroundImage || '');
     }
     if ($('backgroundImageClear')) $('backgroundImageClear').style.display = state.backgroundImage ? 'inline-flex' : 'none';
+    // Text-over-photo control — only relevant when a background image is set.
+    if ($('bgTextModeRow')) $('bgTextModeRow').style.display = state.backgroundImage ? '' : 'none';
+    document.querySelectorAll('#bgTextModeSeg [data-bg-text]').forEach(function(b){
+      var on = b.getAttribute('data-bg-text') === (state.bgTextMode || 'light');
+      b.setAttribute('data-active', String(on));
+      b.setAttribute('aria-checked', String(on));
+    });
     // Target the visible chat composer (#gsbComposerInput); fall back to the old
     // hidden #composerInput alias only if the real input isn't present.
     var composerEl = $('gsbComposerInput') || $('composerInput');
@@ -1279,6 +1287,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     if ($('backgroundImageFile')) $('backgroundImageFile').value = '';
     render();
   });
+  document.querySelectorAll('#bgTextModeSeg [data-bg-text]').forEach(function(btn){
+    btn.addEventListener('click', function(){ state.bgTextMode = btn.getAttribute('data-bg-text'); render(); });
+  });
   $('featuredImageFile').addEventListener('change', function(e){
     var f = e.target.files && e.target.files[0];
     if (!f) return;
@@ -1636,6 +1647,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     return {
       logoUrl: state.logoUrl,
       backgroundImage: state.backgroundImage,
+      bgTextMode: state.bgTextMode,
       logoMaxHeight: state.logoMaxHeight,
       cornerRadius: state.cornerRadius,
       color: state.color,
