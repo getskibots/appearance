@@ -151,11 +151,15 @@ export function applyWidgetConfig(config) {
      preview, the demo homepage, or a real on-site embed — follows the appearance
      config. Markup/placeholder is page-specific; these vars carry the styling. */
   var es = config.embedSearch || {};
+  // The .gsb-embed-search component reads --gsb-search-* (same names the dashboard sets).
   // Radius: cap at the pill value (>=100 → fully round), matching the dashboard.
-  if (es.borderRadius != null) setVar('--gsb-embed-search-radius', (es.borderRadius >= 100 ? 999 : es.borderRadius) + 'px');
-  if (es.borderThickness != null) setVar('--gsb-embed-search-border', es.borderThickness + 'px');
-  // Width: hug = shrink to content, fixed = 480px cap, full = unconstrained.
-  if (es.width) setVar('--gsb-embed-search-maxw', es.width === 'hug' ? 'max-content' : (es.width === 'full' ? 'none' : '480px'));
+  if (es.borderRadius != null) setVar('--gsb-search-radius', (es.borderRadius >= 100 ? 999 : es.borderRadius) + 'px');
+  if (es.borderThickness != null) setVar('--gsb-search-border', es.borderThickness + 'px');
+  // Width: hug = shrink to content; fixed = 480px cap; full = unconstrained.
+  if (es.width) {
+    setVar('--gsb-search-width', es.width === 'hug' ? 'auto' : '100%');
+    setVar('--gsb-search-maxwidth', es.width === 'hug' ? 'none' : (es.width === 'full' ? 'none' : '480px'));
+  }
 
   var eb = config.embedButton || {};
   if (eb.size != null) setVar('--gsb-embed-btn-size', eb.size + 'px');

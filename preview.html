@@ -104,7 +104,7 @@
     .pbar__controls { gap: 9px 12px; }
     .hero { padding: 6vh 18px 0; }
     .hero__eyebrow { margin-bottom: 12px; }
-    .hero-search { max-width: 100%; }
+    .gsb-embed-search.is-hero { max-width: 100%; }
     .entry-legend { margin-top: 18px; gap: 6px 9px; }
     .entry-legend__title { width: 100%; }
     .entry-legend__item { font-size: 12.5px; padding: 5px 11px 5px 5px; }
@@ -186,7 +186,7 @@
      mountains drop out. Text auto-adapts back to dark when no image is set. */
   body[data-bg-image="true"] .hero__mountains { display: none; }
   /* Lift the foreground UI off the photo so it reads as distinct, popping cards. */
-  body[data-bg-image="true"] .hero-search { box-shadow: 0 22px 55px rgba(0,0,0,0.45); }
+  body[data-bg-image="true"] .gsb-embed-search.is-hero { box-shadow: 0 22px 55px rgba(0,0,0,0.45); }
   body[data-bg-image="true"] .entry-legend__item { box-shadow: 0 6px 18px rgba(0,0,0,0.28); }
   body[data-bg-image="true"] .demo-cta { box-shadow: 0 14px 36px rgba(0,0,0,0.45); }
 
@@ -291,35 +291,20 @@
     body.modal-open { overflow: hidden !important; height: 100dvh !important; }
   }
 
-  /* Entry point #2 — hero search bar */
-  .hero-search {
-    display: flex; align-items: center; gap: 8px;
-    /* Width follows the embeddable-search config (hug / fixed 480px / full). */
-    max-width: var(--gsb-embed-search-maxw, 480px); margin: 0 auto; padding: 7px 7px 7px 18px;
-    background: #fff; border-radius: var(--gsb-embed-search-radius, 999px);
-    border: var(--gsb-embed-search-border, 0px) solid #e9e6df;
-    box-shadow: 0 18px 50px rgba(8,22,40,0.30);
+  /* Entry point #2 — the real embeddable search component (.gsb-embed-search, shared
+     CSS), with a hero variant: centered, lifted, and scaled up a touch for the hero.
+     Width/radius/border follow the embedSearch config via --gsb-search-* (set by
+     applyWidgetConfig), exactly like the appearance tab. */
+  .gsb-embed-search.is-hero {
+    margin: 0 auto;
+    box-shadow: 0 18px 50px rgba(8,22,40,0.30), 0 1px 2px rgba(23,19,15,0.06);
+    padding: 6px 7px 6px 14px;
   }
-  .hero-search__spark { display: inline-flex; color: var(--brand); flex: 0 0 auto; }
-  .hero-search__spark svg { width: 20px; height: 20px; }
-  .hero-search__input {
-    flex: 1 1 auto; border: 0; outline: 0; background: transparent;
-    font-family: inherit; font-size: 16px; color: var(--ink); padding: 10px 4px;
-  }
-  .hero-search__input::placeholder { color: var(--ink-faint); }
-  .hero-search__btn {
-    flex: 0 0 auto; appearance: none; border: 0; cursor: pointer;
-    width: var(--gsb-embed-btn-size, 44px); height: var(--gsb-embed-btn-size, 44px);
-    border-radius: var(--gsb-embed-btn-radius, 50%);
-    background: var(--gsb-embed-btn-bg, var(--brand));
-    color: var(--gsb-embed-btn-fg, var(--enhanced-fg, #fff));
-    display: inline-flex; align-items: center; justify-content: center;
-    transition: filter .15s, transform .1s;
-  }
-  .hero-search__btn:hover { filter: brightness(0.93); }
-  .hero-search__btn:active { transform: scale(.94); }
-  .hero-search__btn svg { width: 20px; height: 20px; }
-  .hero-search__btn svg circle, .hero-search__btn svg path { stroke-width: var(--gsb-embed-btn-stroke, 2); }
+  .gsb-embed-search.is-hero .gsb-embed-search__sparkle svg { width: 20px; height: 20px; }
+  .gsb-embed-search.is-hero .gsb-embed-search__input { font-size: 16px; padding: 11px 6px; }
+  .gsb-embed-search.is-hero .gsb-embed-search__send,
+  .gsb-embed-search.is-hero .gsb-embed-search__voice { width: 42px; height: 42px; }
+  .gsb-embed-search.is-hero .gsb-embed-search__mic { width: 38px; height: 38px; }
 
   /* Conversation-starter pills under the hero search */
   .hero-pills { display: flex; flex-wrap: wrap; gap: 9px; justify-content: center; margin-top: 18px; }
@@ -467,21 +452,26 @@
       <span class="hero__eyebrow">Plan your visit</span>
       <h1 class="hero__title">Your perfect day starts here</h1>
 
-      <!-- ENTRY POINT #2 — hero search bar -->
-      <form class="hero-search" id="heroSearch" role="search">
-        <span class="hero-search__spark" aria-hidden="true">
+      <!-- ENTRY POINT #2 — hero search bar (the real embeddable component, shared CSS) -->
+      <form class="gsb-embed-search is-hero" id="heroSearch" data-has-text="false" role="search" autocomplete="off">
+        <span class="gsb-embed-search__sparkle" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/>
             <path d="M19 14l.7 2.1L22 17l-2.3.9L19 20l-.7-2.1L16 17l2.3-.9L19 14z"/>
           </svg>
         </span>
-        <input class="hero-search__input" id="heroSearchInput" type="text" placeholder="Ask anything about your visit…" aria-label="Ask about your visit" />
-        <button class="hero-search__btn" type="submit" aria-label="Ask">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <circle cx="10" cy="10" r="6" stroke-width="2"/>
-            <path d="M14.5 14.5 L20 20" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
+        <input type="text" class="gsb-embed-search__input" id="heroSearchInput" placeholder="Ask anything about your visit…" aria-label="Ask about your visit" />
+        <div class="gsb-embed-search__actions">
+          <button type="button" class="gsb-embed-search__mic" id="heroSearchMic" aria-label="Tap to dictate" title="Tap to dictate">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
+          </button>
+          <button type="button" class="gsb-embed-search__voice" id="heroSearchVoice" aria-label="Voice chat" title="Voice chat">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="1.5" y="6.5" width="1.6" height="3" rx="0.8" fill="currentColor"/><rect x="4" y="4" width="1.6" height="8" rx="0.8" fill="currentColor"/><rect x="6.5" y="2" width="1.6" height="12" rx="0.8" fill="currentColor"/><rect x="9" y="4" width="1.6" height="8" rx="0.8" fill="currentColor"/><rect x="11.5" y="6.5" width="1.6" height="3" rx="0.8" fill="currentColor"/></svg>
+          </button>
+          <button type="submit" class="gsb-embed-search__send" aria-label="Send">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18L18 6M18 6H9M18 6V15"/></svg>
+          </button>
+        </div>
       </form>
 
       <!-- Numbered legend — matches the on-page pins (1 search icon · 2 search bar · 3 chat) -->
@@ -837,14 +827,27 @@
     var searchIcon = document.getElementById('siteSearchIcon');
     if (searchIcon) searchIcon.addEventListener('click', function() { openChat(); });
 
-    // Entry point #2 — hero search bar (submit passes the query into the chat)
+    // Entry point #2 — hero search bar (the real .gsb-embed-search component).
     var heroSearch = document.getElementById('heroSearch');
     var heroInput = document.getElementById('heroSearchInput');
-    if (heroSearch) heroSearch.addEventListener('submit', function(e) {
-      e.preventDefault();
-      openWithQuery(heroInput && heroInput.value);
-      if (heroInput) heroInput.value = '';
-    });
+    if (heroSearch && heroInput) {
+      // Voice/Send swap: mirror the chat composer — show Send once there's text.
+      heroInput.addEventListener('input', function() {
+        heroSearch.setAttribute('data-has-text', heroInput.value.trim() ? 'true' : 'false');
+      });
+      // Submit (Enter or the Send button) → open the chat with the typed query.
+      heroSearch.addEventListener('submit', function(e) {
+        e.preventDefault();
+        openWithQuery(heroInput.value);
+        heroInput.value = '';
+        heroSearch.setAttribute('data-has-text', 'false');
+      });
+      // Mic (dictate) + Voice mode both just open the chat in this demo.
+      var heroMic = document.getElementById('heroSearchMic');
+      var heroVoice = document.getElementById('heroSearchVoice');
+      if (heroMic) heroMic.addEventListener('click', function() { openChat(); });
+      if (heroVoice) heroVoice.addEventListener('click', function() { openChat(); });
+    }
 
     // ----- Demo annotation pins: hidden by default. A legend chip reveals its
     //       pin (points at that entry), then it auto-fades — keeps the page clean. -----
