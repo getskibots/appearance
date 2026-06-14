@@ -484,7 +484,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
         bannerBody = state.recentUpdate || '';
       }
       seasonBanner.style.display = bannerShow ? 'block' : 'none';
-      seasonBanner.setAttribute('data-manual-update', bannerShow ? 'true' : 'false');
+      // Always claim the banner so the widget runtime's hardcoded demo season copy
+      // can never leak in. Blank manual text simply hides it (no stale filler).
+      seasonBanner.setAttribute('data-manual-update', 'true');
       var seasonTitle = seasonBanner.querySelector('.gsb-season-banner__title');
       if (seasonTitle) seasonTitle.textContent = state.updateLabel || 'Season update';
       if ($('gsbSeasonText')) $('gsbSeasonText').textContent = bannerBody;

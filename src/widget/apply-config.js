@@ -205,7 +205,9 @@ export function applyWidgetConfig(config) {
       sBody = config.recentUpdate || '';
     }
     seasonBanner.style.display = sShow ? 'block' : 'none';
-    seasonBanner.setAttribute('data-manual-update', sShow ? 'true' : 'false');
+    // Always claim the banner so the widget runtime's hardcoded demo season copy
+    // can never leak in. Blank manual text simply hides it (no stale filler).
+    seasonBanner.setAttribute('data-manual-update', 'true');
     var sTitle = seasonBanner.querySelector('.gsb-season-banner__title');
     if (sTitle && config.updateLabel != null) sTitle.textContent = config.updateLabel || 'Season update';
     var sText = document.getElementById('gsbSeasonText');
