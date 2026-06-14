@@ -160,7 +160,7 @@
 
               <div class="card-grid">
               <div class="card-grid__col">
-                <p class="card-grid__group">Logo &amp; shape</p>
+                <p class="card-grid__group">Logo &amp; color</p>
 
               <!-- Logo -->
               <div class="field">
@@ -188,51 +188,6 @@
                 <div class="logo-warn" id="logoWarn"></div>
                 <span class="field__hint">PNG with transparent background or SVG. Trim whitespace flush to artwork edges. JPEGs not recommended.</span>
               </div>
-
-              <!-- Logo max-height -->
-              <div class="field">
-                <label class="field__label" for="logoMaxHeight">Logo max-height</label>
-                <div class="max-height-row">
-                  <input class="input" type="number" id="logoMaxHeight" min="32" max="96" step="1" value="44" style="width:80px" />
-                  <span style="color:var(--ink-muted);font-size:13px">px</span>
-                  <div class="max-height-presets" role="group" aria-label="Common heights">
-                    <button type="button" data-preset="44">44</button>
-                    <button type="button" data-preset="60">60</button>
-                    <button type="button" data-preset="80">80</button>
-                  </div>
-                </div>
-                <span class="field__hint">Default 44px works for most horizontal lockups. Bump to 60–80px for vertical or stacked logos.</span>
-              </div>
-
-              <!-- Corner radius (master) -->
-              <div class="field">
-                <label class="field__label" for="cornerRadius">Corner radius</label>
-                <p class="field__hint" style="margin-top:0;margin-bottom:12px">Master rounding applied to the launcher pills, slide-in pill, and chat surface so they all match.</p>
-                <div style="max-width:360px">
-                  <div class="slider-row">
-                    <div class="slider-row__slider">
-                      <input type="range" id="cornerRadius" min="0" max="28" step="1" value="7" />
-                      <div class="slider-row__ticks">
-                        <span>0</span><span>7</span><span>14</span><span>21</span><span>28</span>
-                      </div>
-                    </div>
-                    <div class="slider-row__readout">
-                      <span id="cornerRadiusReadout">7</span><span style="color:var(--ink-muted);font-size:13px">px</span>
-                    </div>
-                  </div>
-                  <div class="radius-presets" role="group" aria-label="Corner radius presets" style="display:flex;gap:8px;margin-top:10px">
-                    <button type="button" data-radius-preset="0">Square</button>
-                    <button type="button" data-radius-preset="12">Soft</button>
-                    <button type="button" data-radius-preset="18">Standard</button>
-                    <button type="button" data-radius-preset="24">Pill</button>
-                  </div>
-                </div>
-              </div>
-
-              </div><!-- /.card-grid__col (Logo & shape) -->
-
-              <div class="card-grid__col">
-                <p class="card-grid__group">Color &amp; copy</p>
 
               <!-- Brand Color -->
               <div class="field">
@@ -264,6 +219,26 @@
                 </div>
                 <span class="field__hint">Background of the chat header bar across all panel layouts. Default white keeps the resort logo legible.</span>
               </div>
+
+              <!-- Logo max-height -->
+              <div class="field">
+                <label class="field__label" for="logoMaxHeight">Logo max-height</label>
+                <div class="max-height-row">
+                  <input class="input" type="number" id="logoMaxHeight" min="32" max="96" step="1" value="44" style="width:80px" />
+                  <span style="color:var(--ink-muted);font-size:13px">px</span>
+                  <div class="max-height-presets" role="group" aria-label="Common heights">
+                    <button type="button" data-preset="44">44</button>
+                    <button type="button" data-preset="60">60</button>
+                    <button type="button" data-preset="80">80</button>
+                  </div>
+                </div>
+                <span class="field__hint">Default 44px works for most horizontal lockups. Bump to 60–80px for vertical or stacked logos.</span>
+              </div>
+
+              </div><!-- /.card-grid__col (Logo & color) -->
+
+              <div class="card-grid__col">
+                <p class="card-grid__group">Copy &amp; shape</p>
 
               <!-- Widget Name -->
               <div class="field">
@@ -314,7 +289,32 @@
                 <label class="field__label" for="inputPlaceholder">Input placeholder</label>
                 <input class="input" type="text" id="inputPlaceholder" value="Ask me anything. Here to help!" style="max-width:360px" />
               </div>
-              </div><!-- /.card-grid__col (Color & copy) -->
+
+              <!-- Corner radius (master) -->
+              <div class="field">
+                <label class="field__label" for="cornerRadius">Corner radius</label>
+                <p class="field__hint" style="margin-top:0;margin-bottom:12px">Master rounding applied to the launcher pills, slide-in pill, and chat surface so they all match.</p>
+                <div style="max-width:360px">
+                  <div class="slider-row">
+                    <div class="slider-row__slider">
+                      <input type="range" id="cornerRadius" min="0" max="28" step="1" value="7" />
+                      <div class="slider-row__ticks">
+                        <span>0</span><span>7</span><span>14</span><span>21</span><span>28</span>
+                      </div>
+                    </div>
+                    <div class="slider-row__readout">
+                      <span id="cornerRadiusReadout">7</span><span style="color:var(--ink-muted);font-size:13px">px</span>
+                    </div>
+                  </div>
+                  <div class="radius-presets" role="group" aria-label="Corner radius presets" style="display:flex;gap:8px;margin-top:10px">
+                    <button type="button" data-radius-preset="0">Square</button>
+                    <button type="button" data-radius-preset="12">Soft</button>
+                    <button type="button" data-radius-preset="18">Standard</button>
+                    <button type="button" data-radius-preset="24">Pill</button>
+                  </div>
+                </div>
+              </div>
+              </div><!-- /.card-grid__col (Copy & shape) -->
             </div><!-- /.card-grid -->
             </section>
 
