@@ -162,8 +162,10 @@
   /* Numbered legend — ties to the on-page pins (same number, same brand chip). */
   .entry-legend { margin-top: 26px; display: inline-flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 9px 14px; }
   .entry-legend__title { font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); }
+  .entry-legend__hint { font-weight: 600; letter-spacing: .04em; opacity: .85; }
   .entry-legend__items { display: inline-flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-  .entry-legend__item { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: var(--ink-soft); background: #fff; border: 1px solid var(--line); padding: 5px 13px 5px 6px; border-radius: 999px; box-shadow: 0 2px 8px rgba(16,32,56,0.05); }
+  .entry-legend__item { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: var(--ink-soft); background: #fff; border: 1px solid var(--line); padding: 5px 13px 5px 6px; border-radius: 999px; box-shadow: 0 2px 8px rgba(16,32,56,0.05); cursor: pointer; appearance: none; font-family: inherit; transition: border-color .15s, color .15s, box-shadow .15s; }
+  .entry-legend__item:hover, .entry-legend__item[aria-pressed="true"] { border-color: var(--brand); color: var(--ink); box-shadow: 0 4px 14px rgba(16,32,56,0.10); }
   .entry-num { width: 20px; height: 20px; border-radius: 50%; background: var(--brand); color: #fff; font-size: 12px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
 
   /* On-page pins — numbered badges placed at each entry point (positions via JS). */
@@ -179,6 +181,7 @@
     border: 2px solid var(--brand); animation: entryPinPulse 2.1s ease-out infinite;
   }
   @keyframes entryPinPulse { 0% { transform: scale(.75); opacity: .7; } 100% { transform: scale(1.9); opacity: 0; } }
+  .entry-pin.is-shown { display: flex; }
   body.modal-open .entry-pin { display: none !important; }
   @media (prefers-reduced-motion: reduce) { .entry-pin::before { animation: none; opacity: .35; } }
 
@@ -393,12 +396,12 @@
       </form>
 
       <!-- Numbered legend — matches the on-page pins (1 search icon · 2 search bar · 3 chat) -->
-      <div class="entry-legend" aria-label="Three ways to start a chat">
-        <span class="entry-legend__title">Three ways to start a chat</span>
+      <div class="entry-legend" aria-label="Three ways to start a chat — tap to locate">
+        <span class="entry-legend__title">Three ways to start a chat <span class="entry-legend__hint">· tap to locate</span></span>
         <span class="entry-legend__items">
-          <span class="entry-legend__item"><span class="entry-num">1</span> Search icon</span>
-          <span class="entry-legend__item"><span class="entry-num">2</span> Search bar</span>
-          <span class="entry-legend__item"><span class="entry-num">3</span> Chat bubble</span>
+          <button type="button" class="entry-legend__item" data-pin="1" aria-pressed="false" title="Show me where"><span class="entry-num">1</span> Search icon</button>
+          <button type="button" class="entry-legend__item" data-pin="2" aria-pressed="false" title="Show me where"><span class="entry-num">2</span> Search bar</button>
+          <button type="button" class="entry-legend__item" data-pin="3" aria-pressed="false" title="Show me where"><span class="entry-num">3</span> Chat bubble</button>
         </span>
       </div>
     </div>
@@ -706,7 +709,7 @@
     var api = function() { return window.gsbChatPreview; };
 
     // Host owns body.modal-open (the runtime's open/close only handle layout + voice).
-    function openChat() { body.classList.add('modal-open'); if (api()) api().openChat(); }
+    function openChat() { body.classList.add('modal-open'); if (typeof clearPins === 'function') clearPins(); if (api()) api().openChat(); }
     function closeChat() { body.classList.remove('modal-open'); }
     function openWithQuery(q) {
       openChat();
@@ -731,29 +734,44 @@
       if (heroInput) heroInput.value = '';
     });
 
-    // ----- Demo annotation pins: numbered badges anchored to each entry point.
-    //       Positions are computed from each anchor's rect (re-run on resize). -----
-    function placePins() {
-      var map = [
-        ['entryPin1', searchIcon, 'right'],  // header search icon → upper-right corner
-        ['entryPin2', heroSearch, 'right'],  // hero search bar    → upper-right corner
-        ['entryPin3', launcher,   'left']    // chat launcher      → upper-left corner
-      ];
-      map.forEach(function(m) {
-        var pin = document.getElementById(m[0]);
-        if (!pin || !m[1]) return;
-        var r = m[1].getBoundingClientRect();
-        if (!r.width || !r.height) { pin.style.display = 'none'; return; }
-        pin.style.left = (m[2] === 'left' ? r.left : r.right) + 'px';
-        pin.style.top = r.top + 'px';
-        pin.style.display = body.classList.contains('modal-open') ? 'none' : 'flex';
-      });
+    // ----- Demo annotation pins: hidden by default. A legend chip reveals its
+    //       pin (points at that entry), then it auto-fades — keeps the page clean. -----
+    var pinAnchors = { 1: searchIcon, 2: heroSearch, 3: launcher };
+    var pinHideTimer = null;
+    function positionPin(num) {
+      var pin = document.getElementById('entryPin' + num);
+      var anchor = pinAnchors[num];
+      if (!pin || !anchor) return false;
+      var r = anchor.getBoundingClientRect();
+      if (!r.width || !r.height) return false;
+      pin.style.left = (num === 3 ? r.left : r.right) + 'px';   // launcher → left corner
+      pin.style.top = r.top + 'px';
+      return true;
     }
-    placePins();
-    window.addEventListener('resize', placePins);
-    window.addEventListener('scroll', placePins, { passive: true });
-    setTimeout(placePins, 250);                                   // after layout settles
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(placePins);
+    function clearPins() {
+      [1, 2, 3].forEach(function(n) { var p = document.getElementById('entryPin' + n); if (p) p.classList.remove('is-shown'); });
+      document.querySelectorAll('.entry-legend__item').forEach(function(b) { b.setAttribute('aria-pressed', 'false'); });
+    }
+    function revealPin(num) {
+      num = +num;
+      if (pinHideTimer) clearTimeout(pinHideTimer);
+      var pin = document.getElementById('entryPin' + num);
+      var already = pin && pin.classList.contains('is-shown');
+      clearPins();
+      if (already) return;                                       // second tap toggles it off
+      if (!positionPin(num)) return;
+      pin.classList.add('is-shown');
+      var btn = document.querySelector('.entry-legend__item[data-pin="' + num + '"]');
+      if (btn) btn.setAttribute('aria-pressed', 'true');
+      pinHideTimer = setTimeout(clearPins, 3500);                // auto-hide so nothing lingers
+    }
+    document.querySelectorAll('.entry-legend__item').forEach(function(btn) {
+      btn.addEventListener('click', function() { revealPin(btn.getAttribute('data-pin')); });
+    });
+    // Keep any shown pin glued to its anchor on resize.
+    window.addEventListener('resize', function() {
+      [1, 2, 3].forEach(function(n) { if (document.getElementById('entryPin' + n).classList.contains('is-shown')) positionPin(n); });
+    });
 
     // Close / backdrop (runtime also binds these to its own closeChat for voice exit)
     var closeBtn = document.getElementById('gsbChatClose');
