@@ -128,30 +128,31 @@
   @media (max-width: 860px) { .site-nav { display: none; } .site-header { gap: 14px; } }
   @media (max-width: 520px) { .btn-brand--book { display: none; } }
 
-  /* ---------------- Hero ---------------- */
+  /* ---------------- Hero (light, single-screen) ---------------- */
   .hero {
     position: relative; overflow: hidden;
-    min-height: 88vh; display: flex; align-items: center; justify-content: center;
-    text-align: center; padding: 80px 24px 120px;
-    background:
-      radial-gradient(120% 90% at 50% -10%, #2b5d93 0%, #1d456e 38%, #12314f 100%);
-    color: #fff;
+    min-height: calc(100vh - 150px);   /* fills below the control bars + header — nothing past the fold */
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 44px 24px 0;
+    background: linear-gradient(180deg, #f8f4ed 0%, #f1e9dc 100%);
+    color: var(--ink);
   }
-  .hero__mountains { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 42%; }
-  .hero__inner { position: relative; z-index: 2; max-width: 760px; width: 100%; }
+  .hero__mountains { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 38%; }
+  .hero__inner { position: relative; z-index: 2; max-width: 720px; width: 100%; }
   .hero__eyebrow {
-    display: inline-block; font-size: 12.5px; font-weight: 700; letter-spacing: .18em;
-    text-transform: uppercase; color: #bcd6f2; margin-bottom: 18px;
+    display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--brand); margin-bottom: 16px;
   }
   .hero__title {
     font-family: 'Playfair Display', Georgia, serif; font-weight: 800;
-    font-size: clamp(34px, 6vw, 60px); line-height: 1.05; margin: 0 0 16px;
-    text-shadow: 0 4px 30px rgba(0,0,0,0.28);
+    font-size: clamp(34px, 6vw, 58px); line-height: 1.05; margin: 0 0 14px; color: var(--ink);
   }
   .hero__sub {
-    font-size: clamp(16px, 2.2vw, 20px); line-height: 1.5; opacity: .92;
-    max-width: 48ch; margin: 0 auto 30px;
+    font-size: clamp(15px, 2.1vw, 19px); line-height: 1.5; color: var(--ink-soft);
+    max-width: 46ch; margin: 0 auto 28px;
   }
+  .hero-hint { margin-top: 22px; font-size: 13.5px; color: var(--ink-faint); }
+  .hero-hint strong { color: var(--ink-soft); font-weight: 600; }
 
   /* Entry point #2 — hero search bar */
   .hero-search {
@@ -187,13 +188,14 @@
   /* Conversation-starter pills under the hero search */
   .hero-pills { display: flex; flex-wrap: wrap; gap: 9px; justify-content: center; margin-top: 18px; }
   .hero-pill {
-    appearance: none; cursor: pointer;
-    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.28);
-    color: #fff; font-family: inherit; font-size: 13.5px; font-weight: 500;
-    padding: 8px 15px; border-radius: 999px; backdrop-filter: blur(4px);
-    transition: background .15s, border-color .15s;
+    appearance: none; cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+    background: #fff; border: 1px solid var(--line);
+    color: var(--ink-soft); font-family: inherit; font-size: 13.5px; font-weight: 500;
+    padding: 8px 15px; border-radius: 999px; box-shadow: 0 2px 8px rgba(16,32,56,0.05);
+    transition: border-color .15s, color .15s, box-shadow .15s;
   }
-  .hero-pill:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.55); }
+  .hero-pill:hover { border-color: var(--brand); color: var(--ink); box-shadow: 0 4px 14px rgba(16,32,56,0.08); }
+  .hero-pill__spark { color: var(--brand); font-size: 11px; }
 
   /* ---------------- Feature cards ---------------- */
   .features {
@@ -320,9 +322,9 @@
   <!-- ============================== HERO ============================== -->
   <section class="hero">
     <svg class="hero__mountains" viewBox="0 0 1440 320" preserveAspectRatio="none" aria-hidden="true">
-      <path fill="#ffffff" fill-opacity="0.08" d="M0,230 L260,90 L470,210 L700,70 L930,200 L1160,90 L1360,200 L1440,150 L1440,320 L0,320 Z"/>
-      <path fill="#ffffff" fill-opacity="0.16" d="M0,265 L210,150 L430,255 L640,130 L880,255 L1090,150 L1300,255 L1440,200 L1440,320 L0,320 Z"/>
-      <path fill="#ffffff" fill-opacity="0.95" d="M0,300 L190,235 L380,300 L560,230 L770,300 L1000,240 L1230,300 L1440,255 L1440,320 L0,320 Z"/>
+      <path fill="#ece3d2" d="M0,230 L260,90 L470,210 L700,70 L930,200 L1160,90 L1360,200 L1440,150 L1440,320 L0,320 Z"/>
+      <path fill="#e4d8c2" d="M0,265 L210,150 L430,255 L640,130 L880,255 L1090,150 L1300,255 L1440,200 L1440,320 L0,320 Z"/>
+      <path fill="#dccdb2" d="M0,300 L190,235 L380,300 L560,230 L770,300 L1000,240 L1230,300 L1440,255 L1440,320 L0,320 Z"/>
     </svg>
     <div class="hero__inner">
       <span class="hero__eyebrow">Plan your visit</span>
@@ -348,81 +350,17 @@
       </form>
 
       <div class="hero-pills" id="heroPills">
-        <button class="hero-pill" type="button" data-q="What do lift tickets cost?">What do lift tickets cost?</button>
-        <button class="hero-pill" type="button" data-q="Where should beginners ski?">Where should beginners ski?</button>
-        <button class="hero-pill" type="button" data-q="Are the lifts open today?">Are the lifts open today?</button>
-        <button class="hero-pill" type="button" data-q="Do you have lessons for kids?">Lessons for kids?</button>
+        <button class="hero-pill" type="button" data-q="What do lift tickets cost?"><span class="hero-pill__spark">✦</span>What do lift tickets cost?</button>
+        <button class="hero-pill" type="button" data-q="Where should beginners ski?"><span class="hero-pill__spark">✦</span>Where should beginners ski?</button>
+        <button class="hero-pill" type="button" data-q="Are the lifts open today?"><span class="hero-pill__spark">✦</span>Are the lifts open today?</button>
+        <button class="hero-pill" type="button" data-q="Do you have lessons for kids?"><span class="hero-pill__spark">✦</span>Lessons for kids?</button>
       </div>
+      <p class="hero-hint">Three ways to ask: this search bar, the <strong>search icon</strong> up top, or the <strong>chat</strong> — bottom-right.</p>
     </div>
   </section>
 
-  <!-- ============================ FEATURES ============================ -->
-  <section class="features">
-    <div class="feature">
-      <span class="feature__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v4a2 2 0 000 4v4H3v-4a2 2 0 000-4V7z"/><path d="M15 7v14"/></svg></span>
-      <h3>Tickets &amp; Passes</h3>
-      <p>Day tickets, multi-day deals, and season passes — find the right fit for your trip.</p>
-      <span class="feature__link">Explore tickets →</span>
-    </div>
-    <div class="feature">
-      <span class="feature__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19l7-14 4 8 2-3 3 9z"/></svg></span>
-      <h3>Lessons &amp; Rentals</h3>
-      <p>First-timer to expert — book lessons and gear so you're ready the moment you arrive.</p>
-      <span class="feature__link">Book a lesson →</span>
-    </div>
-    <div class="feature">
-      <span class="feature__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></span>
-      <h3>Lodging &amp; Stay</h3>
-      <p>Slopeside rooms to cozy cabins — stay close to first chair and après.</p>
-      <span class="feature__link">Find lodging →</span>
-    </div>
-    <div class="feature">
-      <span class="feature__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg></span>
-      <h3>Mountain Conditions</h3>
-      <p>Live weather, snowfall, lifts, and webcams — know before you go.</p>
-      <span class="feature__link">View conditions →</span>
-    </div>
-  </section>
+  <!-- Single-screen demo: features / launch-points band / footer removed — nothing below the fold -->
 
-  <!-- ============================== BAND ============================== -->
-  <section class="band">
-    <div class="band__eyebrow">Try the assistant</div>
-    <h2>Three ways to launch the chat</h2>
-    <div class="lp-row">
-      <div class="lp">
-        <span class="lp__num">1</span>
-        <span class="lp__icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="10" cy="10" r="6" stroke-width="1.8"/><path d="M14.5 14.5 L20 20" stroke-width="1.8" stroke-linecap="round"/><path d="M10 5.9 C10.37 8.51 11.49 9.63 14.1 10 C11.49 10.37 10.37 11.49 10 14.1 C9.63 11.49 8.51 10.37 5.9 10 C8.51 9.63 9.63 8.51 10 5.9 Z" fill="currentColor" stroke="none"/></svg>
-        </span>
-        <strong>Header search icon</strong>
-        <span>The magnifying glass, top-right</span>
-      </div>
-      <div class="lp">
-        <span class="lp__num">2</span>
-        <span class="lp__icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8" width="19" height="8" rx="4"/><circle cx="7.5" cy="12" r="1.9"/><path d="M11 11.5h7M11 13.5h4.5"/></svg>
-        </span>
-        <strong>Homepage search bar</strong>
-        <span>Type a question in the hero above</span>
-      </div>
-      <div class="lp">
-        <span class="lp__num">3</span>
-        <span class="lp__icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2h-6l-4 4v-4H6a2 2 0 01-2-2V6z"/></svg>
-        </span>
-        <strong>Chat bubble</strong>
-        <span>The launcher, bottom-right corner</span>
-      </div>
-    </div>
-    <p class="lp-note">All three open the <strong>same AI assistant</strong> — go ahead, try one.</p>
-  </section>
-
-  <!-- ============================= FOOTER ============================= -->
-  <footer class="site-footer">
-    <a href="#">Tickets</a><a href="#">Lessons</a><a href="#">Lodging</a>
-    <a href="#">Trail Map</a><a href="#">Conditions</a><a href="#">Contact</a>
-    <span>© 2026 · A Get Ski Bots demo homepage</span>
-  </footer>
 
   <!-- ===================== GETSKIBOTS WIDGET (shared core) =====================
        Entry point #3. Markup is the widget's DOM contract; themed by
