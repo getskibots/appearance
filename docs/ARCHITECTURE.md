@@ -50,8 +50,9 @@ chat-module / knowledge-base / data / voice). Responsibilities:
   hands-free Voice Mode is gated by **Behavior → Realtime voice** (`body[data-voice]`);
   the dictation mic is independent.
 
-(The snowfall effect was removed from the active build and parked under
-`_parked/snowfall/`; the widget no longer drives a snow engine.)
+(Ambient snowfall is a live effect — configured in the **Animations & effects**
+card and rendered on the chat surface, off by default since it animates
+continuously.)
 
 Public bridge: `window.gsbChatPreview = { openChat, closeChat, setVariant,
 refreshData, handleQuery }`. This exists for the **dashboard** to drive the preview —

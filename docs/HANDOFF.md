@@ -99,8 +99,9 @@ bridge on `window`:
    conditions card, the Season Update banner, message routing, and voice
    (toggleable via Behavior → Realtime voice). It exposes
    `window.gsbChatPreview` so the dashboard can drive open/close/variant/query.
-   (The snowfall effect was removed from the active build — parked under
-   `_parked/snowfall/` for later.)
+   (Ambient snowfall is a live effect, configured in the **Animations & effects**
+   card and rendered on the chat surface — off by default, since it animates
+   continuously.)
 3. **Persistence:** the Save button writes the config (in BotScrew shape) to
    `localStorage["gsb_widget_settings"]`; the dashboard hydrates from it on load.
 

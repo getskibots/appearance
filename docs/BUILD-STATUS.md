@@ -58,17 +58,19 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
 
 ### 5 · Appearance tab — ✅ ~95% (the heaviest pre-build)
 - **5.1 Identity & branding** ✅ — logo upload (JPEG now **accepted with a warning**,
-  no longer rejected), height, corner radius (launcher + panel), depth effect, header
+  no longer rejected), height, corner radius (launcher + panel), header
   color, widget name, placeholder, welcome message, plus the **Recent update** control
-  that feeds the chat's Season Update banner (Write-it-myself / Automatic source toggle;
-  the Automatic "data source" picker is a wired-but-not-live placeholder). Laid out as a
+  that feeds the chat's Season Update banner (Write-it-myself / Get-live-updates source
+  toggle; the Get-live-updates "data source" picker is a wired-but-not-live placeholder).
+  Laid out as a
   two-column card.
 - **5.2 Launcher bubble** ✅ — all styles (simple/status pill/slide-in/custom), CTA
   text (≤24 glyphs), status-pill feature toggles, Save + live preview.
 - **5.3 Configurable icon style** 🟡 — styles done; business-hours auto live-agent not done.
-- **5.4 Snowfall** ⬜ **parked** — the full effect (realistic/crystalline/storm,
-  intensity, show-on-mobile, pause-when-idle, reduced-motion lock) was removed from the
-  active build and preserved verbatim under `_parked/snowfall/` for later reintegration.
+- **5.4 Animations & effects** ✅ — panel open animation (scale/slide/fade), typing
+  indicator (dots/orb/label), depth effect (none/shadow/glow/radiate), and ambient
+  snowfall (realistic/crystalline/storm, intensity, show-on-mobile, pause-when-idle,
+  reduced-motion lock) — snowfall **off by default**, the heaviest continuous effect.
 - **5.5 Search bar** ✅ — radius, thickness, width, placeholder, live preview.
 - **5.6 Search button** ✅ — size, shape, background, icon weight, label.
 - **5.7 Typography** ✅ — body font, display font, text scale.
