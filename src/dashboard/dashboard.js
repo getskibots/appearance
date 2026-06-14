@@ -239,7 +239,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       borderRadius: 999,        // px (999 = pill)
       borderThickness: 1.5,     // px
       width: 'fixed',           // 'hug' | 'fixed' | 'full'
-      placeholder: 'Ask anything about your visit…'
+      placeholder: 'Enter your question'
     },
     embedButton: {
       size: 44,                 // px
