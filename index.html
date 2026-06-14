@@ -380,6 +380,23 @@
                     </div>
                   </div>
 
+                  <!-- Demo background image — fills the demo/preview page background
+                       (and, down the road, an optional Chat UI background). -->
+                  <div class="field" style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px">
+                    <label class="field__label" for="backgroundImageUrl">Demo background image <span style="color:var(--ink-muted);font-weight:400">(optional)</span></label>
+                    <p class="field__hint" style="margin-top:0;margin-bottom:8px">Fills the background of the demo / preview page so it feels like a real resort site. Paste a wide photo URL or upload one.</p>
+                    <input class="input" type="url" id="backgroundImageUrl" placeholder="https://…/hero-photo.jpg" style="width:100%" />
+                    <div class="logo-actions" style="margin-top:8px">
+                      <button class="btn" type="button" onclick="document.getElementById('backgroundImageFile').click()">Upload image</button>
+                      <input type="file" id="backgroundImageFile" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" />
+                      <button class="btn" type="button" id="backgroundImageClear" style="display:none;align-items:center;gap:6px">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true"><path d="M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M6 7l1 12a2 2 0 002 2h6a2 2 0 002-2l1-12M10 11v6M14 11v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Remove
+                      </button>
+                    </div>
+                    <div class="img-optim" id="backgroundImageInfo" style="display:none"></div>
+                  </div>
+
                 </div>
 
                 <!-- Live preview: renders the actual hero (cam / image) as you configure it -->

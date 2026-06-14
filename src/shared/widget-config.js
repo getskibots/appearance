@@ -39,6 +39,7 @@ function toGsbAppearance(state) {
     logoMaxHeight: state.logoMaxHeight,
     cornerRadius: state.cornerRadius,
     chatHeaderColor: state.chatHeaderColor,
+    backgroundImage: state.backgroundImage,
     welcomeText: state.welcomeText,
     updateLabel: state.updateLabel,
     recentUpdate: state.recentUpdate,

@@ -63,6 +63,15 @@ export function applyWidgetConfig(config) {
   if (config.chatHeaderColor) setVar('--gsb-chat-header-bg', config.chatHeaderColor);
   if (config.logoMaxHeight != null) setVar('--logo-max-height', config.logoMaxHeight + 'px');
 
+  /* ---- Demo/page background image (the preview page now; optional Chat UI later) ---- */
+  if (config.backgroundImage) {
+    setVar('--gsb-bg-image', 'url("' + config.backgroundImage + '")');
+    body.setAttribute('data-bg-image', 'true');
+  } else {
+    document.documentElement.style.removeProperty('--gsb-bg-image');
+    body.setAttribute('data-bg-image', 'false');
+  }
+
   /* ---- Launcher placement (popup + open panel inherit it) ---- */
   var place = config.placement || {};
   if (place.bottomSpacing != null) setVar('--gsb-launcher-bottom', place.bottomSpacing + 'px');

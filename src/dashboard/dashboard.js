@@ -171,6 +171,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     effectIntensity: 65,      // 0-100, percentage of max effect strength
     color: '#a41e23',
     chatHeaderColor: '#ffffff',
+    // Demo/preview page background photo (and, later, an optional Chat UI bg).
+    backgroundImage: '',
     widgetName: 'Jackson Hole Support',
     inputPlaceholder: 'Ask me anything. Here to help!',
     welcomeText: "Welcome to Jackson Hole, ask us anything, we're here to help.",
@@ -565,6 +567,11 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     if ($('featuredImageUrl') && document.activeElement !== $('featuredImageUrl')) $('featuredImageUrl').value = hero.featuredImage.url.indexOf('data:') === 0 ? '' : hero.featuredImage.url;
     if ($('featuredCaption') && document.activeElement !== $('featuredCaption')) $('featuredCaption').value = hero.featuredImage.caption;
     if ($('featuredLink') && document.activeElement !== $('featuredLink')) $('featuredLink').value = hero.featuredImage.link;
+    // Demo background image — reflect the URL (hide data: blobs) + Remove visibility.
+    if ($('backgroundImageUrl') && document.activeElement !== $('backgroundImageUrl')) {
+      $('backgroundImageUrl').value = (state.backgroundImage && state.backgroundImage.indexOf('data:') === 0) ? '' : (state.backgroundImage || '');
+    }
+    if ($('backgroundImageClear')) $('backgroundImageClear').style.display = state.backgroundImage ? 'inline-flex' : 'none';
     // Target the visible chat composer (#gsbComposerInput); fall back to the old
     // hidden #composerInput alias only if the real input isn't present.
     var composerEl = $('gsbComposerInput') || $('composerInput');
@@ -1248,6 +1255,30 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   });
   $('featuredCaption').addEventListener('input', function(e){ state.hero.featuredImage.caption = e.target.value; render(); });
   $('featuredLink').addEventListener('input', function(e){ state.hero.featuredImage.link = e.target.value; render(); });
+
+  // ---- Demo background image (page bg now; optional Chat UI bg later) ----
+  $('backgroundImageUrl').addEventListener('input', function(e){ state.backgroundImage = e.target.value; render(); });
+  $('backgroundImageFile').addEventListener('change', function(e){
+    var f = e.target.files && e.target.files[0]; if (!f) return; e.target.value = '';
+    var info = $('backgroundImageInfo');
+    function setInfo(t, s){ if (!info) return; info.textContent = t; info.style.display = ''; info.setAttribute('data-status', s || ''); }
+    setInfo('Loading…', '');
+    optimizeImage(f).then(function(out){
+      state.backgroundImage = out.dataUrl;
+      setInfo(formatBytes(f.size) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height, 'ok');
+      render();
+    }).catch(function(){
+      var rf = new FileReader();
+      rf.onload = function(){ state.backgroundImage = rf.result; if (info) info.style.display = 'none'; render(); };
+      rf.readAsDataURL(f);
+    });
+  });
+  $('backgroundImageClear').addEventListener('click', function(){
+    state.backgroundImage = '';
+    if ($('backgroundImageInfo')) $('backgroundImageInfo').style.display = 'none';
+    if ($('backgroundImageFile')) $('backgroundImageFile').value = '';
+    render();
+  });
   $('featuredImageFile').addEventListener('change', function(e){
     var f = e.target.files && e.target.files[0];
     if (!f) return;
@@ -1604,6 +1635,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   function buildLivePreviewConfig() {
     return {
       logoUrl: state.logoUrl,
+      backgroundImage: state.backgroundImage,
       logoMaxHeight: state.logoMaxHeight,
       cornerRadius: state.cornerRadius,
       color: state.color,
@@ -1642,6 +1674,11 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       var lite = JSON.parse(json);
       if (lite.logoUrl && lite.logoUrl.indexOf('data:') === 0) {
         delete lite.logoUrl;
+      }
+      // Same for an uploaded background photo — too big for a URL hash (localStorage
+      // keeps the full value, so same-device viewing still gets it).
+      if (lite.backgroundImage && lite.backgroundImage.indexOf('data:') === 0) {
+        delete lite.backgroundImage;
       }
       var liteJson = JSON.stringify(lite);
       var b64 = btoa(unescape(encodeURIComponent(liteJson)));
