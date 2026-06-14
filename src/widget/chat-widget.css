@@ -763,6 +763,14 @@ body[data-liveagent="off"] .gsb-agent-status-header { display: none !important; 
 
 @media (max-width: 899px) {
   body[data-variant="full"] .gsb-agent-status-header { display: inline-flex; }
+  /* Mobile full panel collapses to a single column, so the header should match
+     the side/middle variants: center the logo and restore symmetric padding.
+     The desktop full-panel left-align (justify-content:flex-start; padding-left:
+     32px, below) put the logo on top of the absolute ONLINE pill on the left. */
+  body[data-variant="full"] .gsb-chat-header {
+    justify-content: center;
+    padding-left: 16px;
+  }
 }
 
 /* =========================================================================

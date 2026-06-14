@@ -491,9 +491,20 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
   // changed, which left Full panels empty-on-the-left after a refresh.
   function applyColumnLayout() {
     if (!$('gsbLeftColumn') || !$('gsbRightColumn')) return;
-    if (body.dataset.variant === 'full') moveContentToLeftColumn();
+    // The full-panel two-column split is a desktop affordance. On mobile the
+    // columns collapse to one, so render full like side/middle (single column,
+    // natural order: hero → welcome → season → conditions) — otherwise the
+    // welcome greeting strands below the season/conditions cards.
+    var isMobile = window.matchMedia('(max-width: 899px)').matches;
+    if (body.dataset.variant === 'full' && !isMobile) moveContentToLeftColumn();
     else moveContentToRightColumn();
   }
+
+  // Re-flow when crossing the mobile breakpoint so a rotate/resize doesn't
+  // strand full panel in the layout it first loaded in.
+  var __layoutMQ = window.matchMedia('(max-width: 899px)');
+  if (__layoutMQ.addEventListener) __layoutMQ.addEventListener('change', applyColumnLayout);
+  else if (__layoutMQ.addListener) __layoutMQ.addListener(applyColumnLayout);
 
   // ============= MESSAGE HANDLING =============
   function appendMessage(text, role) {
