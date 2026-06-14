@@ -123,4 +123,21 @@ export function applyWidgetConfig(config) {
     if (place.align) launcher.setAttribute('data-align', place.align === 'left' ? 'left' : 'right');
     launcher.setAttribute('data-custom-icon', config.customIconUrl ? 'true' : 'false');
   }
+
+  /* ---- Embeddable components (hero search bar + standalone search button) ----
+     Global CSS vars on :root, so any embed-component markup — the dashboard
+     preview, the demo homepage, or a real on-site embed — follows the appearance
+     config. Markup/placeholder is page-specific; these vars carry the styling. */
+  var es = config.embedSearch || {};
+  if (es.borderRadius != null) setVar('--gsb-embed-search-radius', es.borderRadius + 'px');
+  if (es.borderThickness != null) setVar('--gsb-embed-search-border', es.borderThickness + 'px');
+
+  var eb = config.embedButton || {};
+  if (eb.size != null) setVar('--gsb-embed-btn-size', eb.size + 'px');
+  if (eb.shape) setVar('--gsb-embed-btn-radius', eb.shape === 'square' ? '8px' : (eb.shape === 'pill' ? '999px' : '50%'));
+  if (eb.background) {
+    setVar('--gsb-embed-btn-bg', eb.background === 'white' ? '#ffffff' : (eb.background === 'transparent' ? 'transparent' : 'var(--brand)'));
+    setVar('--gsb-embed-btn-fg', eb.background === 'brand' ? 'var(--enhanced-fg, #fff)' : 'var(--brand)');
+  }
+  if (eb.iconWeight) setVar('--gsb-embed-btn-stroke', eb.iconWeight === 'thin' ? '1.4' : (eb.iconWeight === 'bold' ? '2.4' : '1.8'));
 }

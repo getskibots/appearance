@@ -38,6 +38,7 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     color: var(--ink);
     background: var(--surface);
+    border-top: 3px solid var(--brand);   /* subtle brand tie at the very top */
     -webkit-font-smoothing: antialiased;
   }
   a { color: inherit; text-decoration: none; }
@@ -62,16 +63,21 @@
   .site-nav a:hover { color: var(--brand); }
   .site-actions { margin-left: auto; display: flex; align-items: center; gap: 12px; }
 
-  /* Entry point #1 — header search icon (magnifying glass) */
+  /* Entry point #1 — header search icon = the standalone search button (embedButton),
+     so it follows that component's appearance config (size/shape/background/weight). */
   .icon-btn {
-    appearance: none; border: 1px solid var(--line); background: var(--surface);
-    width: 40px; height: 40px; border-radius: 50%;
+    appearance: none; border: 0; cursor: pointer;
+    width: var(--gsb-embed-btn-size, 40px); height: var(--gsb-embed-btn-size, 40px);
+    border-radius: var(--gsb-embed-btn-radius, 50%);
+    background: var(--gsb-embed-btn-bg, var(--brand));
+    color: var(--gsb-embed-btn-fg, #fff);
     display: inline-flex; align-items: center; justify-content: center;
-    color: var(--ink-soft); cursor: pointer; transition: border-color .15s, color .15s, transform .1s;
+    transition: filter .15s, transform .1s;
   }
-  .icon-btn:hover { border-color: var(--brand); color: var(--brand); }
+  .icon-btn:hover { filter: brightness(0.93); }
   .icon-btn:active { transform: scale(.94); }
   .icon-btn svg { width: 19px; height: 19px; }
+  .icon-btn svg circle, .icon-btn svg path { stroke-width: var(--gsb-embed-btn-stroke, 1.8); }
 
   .btn-brand {
     appearance: none; border: 0; cursor: pointer;
@@ -115,9 +121,12 @@
   .hero-search {
     display: flex; align-items: center; gap: 8px;
     max-width: 580px; margin: 0 auto; padding: 7px 7px 7px 18px;
-    background: #fff; border-radius: 999px;
+    background: #fff; border-radius: var(--gsb-embed-search-radius, 999px);
+    border: var(--gsb-embed-search-border, 0px) solid #e9e6df;
     box-shadow: 0 18px 50px rgba(8,22,40,0.30);
   }
+  .hero-search[data-width="full"] { max-width: none; }
+  .hero-search[data-width="hug"] { max-width: max-content; }
   .hero-search__spark { display: inline-flex; color: var(--brand); flex: 0 0 auto; }
   .hero-search__spark svg { width: 20px; height: 20px; }
   .hero-search__input {
@@ -127,14 +136,17 @@
   .hero-search__input::placeholder { color: var(--ink-faint); }
   .hero-search__btn {
     flex: 0 0 auto; appearance: none; border: 0; cursor: pointer;
-    width: 44px; height: 44px; border-radius: 50%; background: var(--brand);
-    color: var(--enhanced-fg, #fff);
+    width: var(--gsb-embed-btn-size, 44px); height: var(--gsb-embed-btn-size, 44px);
+    border-radius: var(--gsb-embed-btn-radius, 50%);
+    background: var(--gsb-embed-btn-bg, var(--brand));
+    color: var(--gsb-embed-btn-fg, var(--enhanced-fg, #fff));
     display: inline-flex; align-items: center; justify-content: center;
-    transition: background .15s, transform .1s;
+    transition: filter .15s, transform .1s;
   }
-  .hero-search__btn:hover { background: var(--brand-deep); }
+  .hero-search__btn:hover { filter: brightness(0.93); }
   .hero-search__btn:active { transform: scale(.94); }
   .hero-search__btn svg { width: 20px; height: 20px; }
+  .hero-search__btn svg circle, .hero-search__btn svg path { stroke-width: var(--gsb-embed-btn-stroke, 2); }
 
   /* Conversation-starter pills under the hero search */
   .hero-pills { display: flex; flex-wrap: wrap; gap: 9px; justify-content: center; margin-top: 18px; }
@@ -158,7 +170,7 @@
     padding: 24px; box-shadow: 0 10px 30px rgba(16,32,56,0.06);
     transition: transform .18s, box-shadow .18s;
   }
-  .feature:hover { transform: translateY(-4px); box-shadow: 0 18px 44px rgba(16,32,56,0.12); }
+  .feature:hover { transform: translateY(-4px); box-shadow: 0 18px 44px rgba(16,32,56,0.12); border-color: rgba(var(--brand-rgb), 0.35); }
   .feature__icon {
     width: 46px; height: 46px; border-radius: 12px; margin-bottom: 16px;
     display: inline-flex; align-items: center; justify-content: center;
@@ -172,7 +184,12 @@
   @media (max-width: 520px) { .features { grid-template-columns: 1fr; margin-top: -40px; } }
 
   /* ---------------- Plan band ---------------- */
-  .band { max-width: 1120px; margin: 96px auto; padding: 0 24px; text-align: center; }
+  .band {
+    max-width: 1040px; margin: 96px auto; padding: 56px 32px; text-align: center;
+    background: rgba(var(--brand-rgb), 0.04);          /* gentle brand wash */
+    border: 1px solid rgba(var(--brand-rgb), 0.10);
+    border-radius: 24px;
+  }
   .band__eyebrow { font-size: 12.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--brand); }
   .band h2 { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: clamp(26px, 4vw, 38px); margin: 10px 0 14px; }
   .band p { font-size: 16px; line-height: 1.6; color: var(--ink-soft); max-width: 60ch; margin: 0 auto; }
@@ -487,7 +504,7 @@
   <!-- Host wiring: theme via config, drive the three entry points + the switcher. -->
   <script type="module">
     import { applyWidgetConfig } from '/src/widget/apply-config.js';
-    import jhLogo from '/src/assets/logo.png';
+    import { JH_LOGO } from '/src/shared/sample-logo.js';
 
     // The resort's config (JH for now). On a real embed this comes from the bot's
     // BotScrew settings; here it's hardwired so the page wears Jackson Hole's brand.
@@ -496,7 +513,7 @@
       chatHeaderColor: '#ffffff',
       cornerRadius: 7,
       logoMaxHeight: 44,
-      logoUrl: jhLogo,
+      logoUrl: JH_LOGO,
       widgetName: 'Jackson Hole Support',
       welcomeText: "Welcome to Jackson Hole, ask us anything, we're here to help.",
       inputPlaceholder: 'Ask me anything. Here to help!',
@@ -509,13 +526,21 @@
       statusPillFeatures: { liveAgent: true, weather: true, needHelpCta: true },
       bubbleStyle: 'slidein',
       placement: { align: 'right', bottomSpacing: 32, sideSpacing: 32 },
-      snowfall: { enabled: false, style: 'realistic' }
+      snowfall: { enabled: false, style: 'realistic' },
+      embedSearch: { borderRadius: 999, borderThickness: 1.5, width: 'fixed', placeholder: 'Ask anything about your visit…' },
+      embedButton: { size: 44, shape: 'round', background: 'brand', iconWeight: 'regular', label: '' }
     };
     applyWidgetConfig(CONFIG);
 
     // The site's own logo (upper-left) pulls the same bot logo.
     var siteLogo = document.getElementById('siteLogo');
     if (siteLogo) siteLogo.src = CONFIG.logoUrl;
+
+    // Hero search bar reflects the embeddable-search config (placeholder + width).
+    var heroInputCfg = document.getElementById('heroSearchInput');
+    if (heroInputCfg && CONFIG.embedSearch.placeholder) heroInputCfg.placeholder = CONFIG.embedSearch.placeholder;
+    var heroFormCfg = document.getElementById('heroSearch');
+    if (heroFormCfg && CONFIG.embedSearch.width) heroFormCfg.setAttribute('data-width', CONFIG.embedSearch.width);
 
     var body = document.body;
     var api = function() { return window.gsbChatPreview; };
