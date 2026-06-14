@@ -2193,6 +2193,17 @@ body[data-variant="full"] .gsb-agent-status-feature {
 .gsb-launcher[data-align="left"][data-slide-state="hidden"] {
   transform: translateX(calc(-100% - 24px));
 }
+/* When sliding hidden, kill the radiate pulse (its !important keyframes animate
+   transform and would otherwise pin the launcher in place, so it never slides off).
+   Same specificity as the radiate rule but later in source → wins; with the
+   animation stopped, the translate-off transform applies. */
+.gsb-launcher[data-effect-mode="radiate"][data-slide-state="hidden"] {
+  animation: none !important;
+  transform: translateX(calc(100% + 24px));
+}
+.gsb-launcher[data-align="left"][data-effect-mode="radiate"][data-slide-state="hidden"] {
+  transform: translateX(calc(-100% - 24px));
+}
 
 /* =========================================================================
    VERTICAL SLIDE-IN PILL (data-icon-style="slidein")

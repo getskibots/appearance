@@ -44,11 +44,6 @@
     color: var(--ink);
     background: var(--surface);
     -webkit-font-smoothing: antialiased;
-    /* Flex column so the hero fills the space under the bars+header on ANY device
-       (no magic chrome-height number). The chat/backdrop/launcher are position:fixed,
-       so they sit outside this flow. svh avoids the mobile address-bar jump. */
-    min-height: 100vh; min-height: 100svh;
-    display: flex; flex-direction: column;
   }
 
   /* ---- Demo control deck — a GetSkiBots-blue toolbar (the backend dashboard's
@@ -172,7 +167,10 @@
   /* ---------------- Hero (light, single-screen) ---------------- */
   .hero {
     position: relative; overflow: hidden;
-    flex: 1 1 auto; min-height: 0;     /* fills the space below the bars+header (robust on every device) */
+    /* Fills the first screen (viewport minus the measured demo chrome) so the section
+       below sits past the fold — giving the launcher something to scroll against for
+       the slide-away demo. --demo-chrome (bars + header height) is measured in JS. */
+    min-height: calc(100svh - var(--demo-chrome, 150px));
     display: flex; align-items: flex-start; justify-content: center;
     text-align: center; padding: 15vh 24px 0;   /* content sits in the upper third (rule of thirds) */
     /* Brand-tinted near-white: a whisper of the resort's brand so the page
@@ -272,6 +270,26 @@
   .demo-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 38px rgba(8,16,30,0.38); background: #1d2430; }
   .demo-cta:active { transform: translateY(0); }
   .demo-cta svg { width: 17px; height: 17px; flex: 0 0 auto; }
+
+  /* ---- Below-the-fold band: a simple "try it" section. Gives the page something
+       to scroll, so the launcher's slide-away-on-scroll demo can actually run.
+       The hero's mountains fade into this white band for an easy transition. ---- */
+  .demo-band { background: #ffffff; padding: 66px 24px 84px; text-align: center; }
+  .demo-band__inner { max-width: 680px; margin: 0 auto; }
+  .demo-band__eyebrow { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--brand); margin-bottom: 12px; }
+  .demo-band__title { font-family: 'Playfair Display', Georgia, serif; font-weight: 800; font-size: clamp(26px, 4vw, 40px); line-height: 1.1; color: var(--ink); margin: 0 0 10px; }
+  .demo-band__sub { font-size: clamp(15px, 2vw, 18px); line-height: 1.5; color: var(--ink-soft); margin: 0 auto 26px; max-width: 44ch; }
+  .demo-band__chips { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .demo-q { appearance: none; cursor: pointer; background: #fff; border: 1.5px solid var(--brand); color: var(--brand); font: inherit; font-size: 14px; font-weight: 600; padding: 10px 18px; border-radius: 999px; transition: background .15s, color .15s; }
+  .demo-q:hover { background: var(--brand); color: #fff; }
+  @media (max-width: 640px) { .demo-band { padding: 48px 18px 64px; } }
+  /* The shared widget CSS locks html/body scroll at <=900px (for the fullscreen
+     mobile chat). On the demo the PAGE must scroll when the chat is closed — re-enable
+     it, and only re-lock while the chat is open. */
+  @media (max-width: 900px) {
+    html, body { overflow: visible !important; height: auto !important; }
+    body.modal-open { overflow: hidden !important; height: 100dvh !important; }
+  }
 
   /* Entry point #2 — hero search bar */
   .hero-search {
@@ -482,6 +500,22 @@
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         <span>Book a Demo</span>
       </a>
+    </div>
+  </section>
+
+  <!-- Simple below-the-fold band: gives the page scroll (so the launcher slides away
+       on scroll) and lets the prospect try a real question. -->
+  <section class="demo-band">
+    <div class="demo-band__inner">
+      <span class="demo-band__eyebrow">Try it yourself</span>
+      <h2 class="demo-band__title">Real guest questions, answered in seconds</h2>
+      <p class="demo-band__sub">Tap one below — your guests get the same instant answer, any hour of the day.</p>
+      <div class="demo-band__chips">
+        <button type="button" class="demo-q" data-q="How much are lift tickets?">How much are lift tickets?</button>
+        <button type="button" class="demo-q" data-q="Are the lifts open today?">Are the lifts open today?</button>
+        <button type="button" class="demo-q" data-q="Do you have lessons for kids?">Lessons for kids?</button>
+        <button type="button" class="demo-q" data-q="Where should we stay?">Where should we stay?</button>
+      </div>
     </div>
   </section>
 
@@ -865,6 +899,46 @@
     document.querySelectorAll('.site-header a').forEach(function(a) {
       a.addEventListener('click', function(e) { e.preventDefault(); });
     });
+
+    // Measure the demo chrome (bars + header) so the hero fills exactly the first
+    // screen and the band below sits past the fold.
+    function setDemoChrome() {
+      var bars = document.querySelector('.preview-bars');
+      var hdr = document.querySelector('.site-header');
+      var h = (bars ? bars.offsetHeight : 0) + (hdr ? hdr.offsetHeight : 0);
+      document.documentElement.style.setProperty('--demo-chrome', h + 'px');
+    }
+    setDemoChrome();
+    window.addEventListener('resize', setDemoChrome);
+
+    // Below-the-fold band — each example question opens the chat with that query.
+    document.querySelectorAll('.demo-q').forEach(function(b) {
+      b.addEventListener('click', function() { openWithQuery(b.getAttribute('data-q')); });
+    });
+
+    // Launcher auto-hide on scroll — same behavior as the appearance tab: scrolling
+    // down slides the launcher out of the way; scrolling up (or a pause) brings it
+    // back. Active only for styles that support it and when the chat is closed.
+    (function() {
+      function supportsAutoHide(s) { return s === 'enhanced' || s === 'slidein' || s === 'custom'; }
+      function autoHideActive() {
+        var ah = CONFIG.autoHideOnScroll || {};
+        return supportsAutoHide(CONFIG.bubbleStyle) && !!ah[CONFIG.bubbleStyle];
+      }
+      var lastY = window.scrollY || 0, idleTimer = null, TH = 6;
+      function setSlide(s) { if (launcher && launcher.getAttribute('data-slide-state') !== s) launcher.setAttribute('data-slide-state', s); }
+      function onScroll() {
+        if (!autoHideActive() || body.classList.contains('modal-open')) return;
+        var y = window.scrollY || window.pageYOffset || 0, d = y - lastY;
+        if (Math.abs(d) < TH) return;
+        setSlide(d > 0 ? 'hidden' : 'visible');   // down = hide, up = show
+        lastY = y;
+        if (idleTimer) clearTimeout(idleTimer);
+        idleTimer = setTimeout(function() { if (!body.classList.contains('modal-open')) setSlide('visible'); }, 1200);
+      }
+      // Direct (no rAF) — the work is trivial and this is robust everywhere.
+      window.addEventListener('scroll', onScroll, { passive: true });
+    })();
 
     // Close / backdrop (runtime also binds these to its own closeChat for voice exit)
     var closeBtn = document.getElementById('gsbChatClose');
