@@ -459,7 +459,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // Recent update → Season Update banner. Source = 'manual' (typed copy) or
     // 'flow' (placeholder: shows a stub line for the selected flow). Either way
     // we flag data-manual-update so the live weather feed leaves the banner alone.
-    var FLOW_LABELS = { 'snow-report': 'Daily snow report', 'lift-status': 'Lift & terrain status', 'events': 'Events & happenings' };
+    var FLOW_LABELS = { 'realtime-conditions': 'Get Realtime Conditions', 'operations-hours': 'Get Operations & Hours', 'ecommerce': 'Get Ecommerce', 'events-alerts': 'Get Events & Alerts' };
     var updateSource = state.recentUpdateSource === 'flow' ? 'flow' : 'manual';
     // Reflect the source toggle: segmented active state + which group is visible.
     var srcBtns = document.querySelectorAll('#updateSourceSegmented [data-update-source]');
