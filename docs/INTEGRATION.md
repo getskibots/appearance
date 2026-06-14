@@ -1,0 +1,193 @@
+# Widget Integration — BotScrew Drop-in Spec
+
+**Audience:** BotScrew engineering.
+**Purpose:** how the new GetSkiBots widget drops into BotScrew's existing embed —
+themed per-bot from the config you already store, answering via the ODIN socket you
+already run. Grounded in the live **bot 43 (Jackson Hole)** config + protocol.
+
+**One-line version:** our widget replaces the **chat app inside your iframe.** Everything
+around it — the loader, launcher bubble, greeting popup, postMessage, config API, socket,
+flows, ODIN — stays yours, unchanged.
+
+> Companion docs: the config field contract is in
+> [`botscrew-widget-settings.md`](./botscrew-widget-settings.md); orientation/run is in
+> [`HANDOFF.md`](./HANDOFF.md).
+
+---
+
+## 1 · The three roles
+
+The widget is a **render layer**. All per-resort content and behavior come from systems
+you already own — so the widget code is 100% resort-agnostic and JH is just "profile #1."
+
+| Role | Owner | Source |
+|---|---|---|
+| **Render** — the chat UI | GSB widget | resort-agnostic; themed by config |
+| **Config** — look + copy | BotScrew | `/widget/info/{botId}` (runtime) · `/private/bot/{id}/widget` (storage) |
+| **Conversation** — welcome, menus, answers | BotScrew Flows + ODIN | the socket |
+| **Host** — loader, launcher, open/close | BotScrew snippet + iframe | `script-chatbot.js` |
+
+---
+
+## 2 · The embed model — where the widget sits
+
+`script-chatbot.js` injects an **iframe**; the chat UI runs **inside** it. The snippet
+renders the **launcher bubble + greeting popup** on the host page and talks to the iframe
+via **postMessage**.
+
+```
+host page
+ ├─ snippet (script-chatbot.js)         ← BotScrew, unchanged
+ │   ├─ launcher bubble + greeting popup
+ │   ├─ background dim, mobile scroll-lock
+ │   └─ postMessage  ⇄  iframe
+ └─ <iframe>   ←  THE GSB WIDGET DROPS IN HERE
+       └─ chat UI: header, conversation, composer, voice
+```
+
+**Integration = swap the iframe's chat app for ours.** No change to the loader, the
+launcher, or the postMessage protocol. The launcher lives in the *snippet*, so our
+widget's own launcher is for standalone/demo only — in-embed, the snippet opens us.
+
+---
+
+## 3 · The seams (what you wire)
+
+Three clean injection points. The widget knows nothing else.
+
+### 3a · Config in
+`applyWidgetConfig(config)` ([`src/widget/apply-config.js`](../src/widget/apply-config.js))
+— a pure function that turns a config object into the widget's CSS variables,
+`data-` attributes, and content. Feed it the runtime config from `GET /widget/info/{botId}`.
+
+### 3b · Open / close / resize
+The widget exposes `openChat` / `closeChat`; the **host** drives them. In-embed, wire the
+snippet's existing postMessages (`toggle-widget`, `resize-widget`) to these. We deliberately
+made open/close a **host responsibility** before we knew about postMessage — it already
+fits your model.
+
+### 3c · Answers — the conversation channel
+`answerProvider` is a **streaming** channel, not one-shot Q&A: send a query → receive
+streamed chunks. Wire it to your socket:
+
+- subscribe `/topic/messaging.{chatId}`
+- send `/app/widget/{publicIdentifier}/{chatId}`
+- bot frames are `type: "streamable_text"` with `stream.{action, index}` (START→APPEND→STOP→STORED),
+  plus structured types (buttons, quick replies, menus).
+
+**Three adapters** make the swap provable and clean:
+
+| Adapter | Owner | Purpose |
+|---|---|---|
+| **Stub** (curated JH answers) | us | safe reference, always works |
+| **Live PoC** | us — *throwaway* | proves the seam end-to-end against your socket |
+| **Production** | **BotScrew** | your existing socket client → the seam |
+
+You already own a working SockJS/STOMP client (it runs your current widget). Production
+isn't new plumbing — it's pointing that client at this one interface.
+
+---
+
+## 4 · The config contract
+
+Two shapes, same data:
+
+- **Storage** (`/private/bot/{id}/widget`, what the admin saves): `languageConfigs.{lang}.*`
+  plus the global `isComposerInputEnabled`. Fields: `color`, `imageUrl`, `widgetName`,
+  `welcomeTitle`/`welcomeSubtitle`, `inputPlaceholder`, `conversationStartersSettings`,
+  `greetingMessagePopupSettings`, the `do*` flags, `isLoginName/EmailInputEnabled`,
+  `doEnableAttachments`.
+- **Runtime** (`/widget/info/{botId}`, what the widget consumes): the flattened settings
+  — `logo` (note: `imageUrl` in storage → `logo` at runtime), nested
+  `widgetSettings.{doEnableSoundNotifications, …}`, plus labels/`statusesLabels`/
+  `promptButtons`/`hasPersistentMenu`/`greetingMessagePopupSettings`.
+
+**Native vs `gsbAppearance`.** The native config has **no** `cornerRadius`,
+`chatHeaderColor`, `logoMaxHeight`, layout variant, typography, depth, snowfall, typing
+indicator, or voice. All of that visual richness rides in a namespaced **`gsbAppearance`**
+block (Option B — full table in [`botscrew-widget-settings.md`](./botscrew-widget-settings.md)).
+
+> **⚠️ The one open question to resolve.** The live bot-43 config has **no catch-all field**
+> for `gsbAppearance`. Confirm whether your widget config can persist an opaque JSON block
+> as-is (Option B = **zero backend change**) or needs **one JSON field added**. This is the
+> single decision that sets the integration-effort baseline.
+
+---
+
+## 5 · Content provenance — where every element comes from
+
+The crux of the whole integration: **don't wire the welcome (or menus) to config — they're
+conversation.**
+
+| Widget element | Source | Your component / endpoint |
+|---|---|---|
+| Brand color, logo, name, placeholder | **Config** | AppearanceTab · ColorSelector · LogoDropzone |
+| Corner radius, layout, typography, effects | **Config → `gsbAppearance`** | AppearanceTab (new controls) |
+| Launcher popup (logo, size, alignment, spacing) | **Config** | GreetingMessagePopupAppearanceSection |
+| **Welcome message** | **Flow atom** — *not* config | edited in Appearance, **stored in the atom** (`PUT /bot/{id}/atom`) |
+| Suggested questions / quick replies | **Flow / conversation-starters** | ConversationStartersTab · `/widget/{botId}/conversation-starters` |
+| Snow report, lift status, all answers | **Flow + ODIN** | the socket |
+| Conditions grid, webcam hero, season banner | **GSB enhancement** (Open-Meteo / webcam) | no BotScrew source — our addition |
+
+**Edit-surface ≠ storage.** Simple copy like the welcome can be *edited* in the Appearance
+tab while still *living* in the flow atom — a friendly field that writes to your atom API
+(`PUT /bot/{id}/atom`, per-language). Conversational *behavior* (menus, branching) stays in
+Flows. The test: **"is it just copy, or is it behavior?"**
+
+---
+
+## 6 · The conversation channel
+
+- **Authoring:** flows/atoms (`/bot/{id}/flow`, `/atom`) — your Flow editor. The widget
+  **never reads these.**
+- **Runtime:** the flow engine executes and **emits messages over the socket.** The widget
+  renders messages (streaming text + buttons + quick replies + menus). It consumes
+  *messages*, not flow definitions.
+- **Knowledge:** ODIN, linked per bot via `odinConfigs.projectId`. Backend-routed; the
+  widget only talks to your socket.
+
+Public widget API surface (the iframe app calls these): `/widget/info/{botId}`,
+`/widget/{botId}/conversation-starters`, `/widget/{botId}/persistentMenu`,
+`/widget/{botId}/greeting`, `/widget/{botId}/chat/{chatId}/action`,
+`/public/greeting-settings/{botId}`.
+
+---
+
+## 7 · Jackson Hole / bot 43 — the worked reference
+
+| Thing | Value |
+|---|---|
+| Bot id | `43` |
+| `publicIdentifier` (demo + socket key) | `776bd241-fbc3-4e17-92c7-8af31e84e6dd` |
+| `odinConfigs.projectId` (answers) | `66aa889e43c47120371b9636` |
+| Brand color | `#a41e23` |
+| Logo (`imageUrl`) | served from `/api/file/…` |
+| Demo page | `/widget-demo/{publicIdentifier}?isTestMode=true` (screenshot backdrop) |
+
+Prove the pipeline for bot 43; the other 100+ are the **same pipeline with a different bot
+id** — no per-resort code.
+
+---
+
+## 8 · Decisions for BotScrew
+
+1. **`gsbAppearance` persistence** — opaque-JSON field exists, or add one? (§4) *(the big one)*
+2. **Welcome edit surface** — expose in AppearanceTab, writing to the atom? (§5)
+3. **Rich-welcome handling** — text-only field + "managed in Flows" when a welcome has buttons?
+4. **Launcher in-embed** — confirmed: snippet's bubble stays; our launcher is standalone/demo only.
+
+---
+
+## 9 · Effort read
+
+**Low — most of it is your own plumbing, reused:**
+
+- **Config** → you have the API; feed `/widget/info/{botId}` to `applyWidgetConfig`.
+- **Open / close / resize** → your existing postMessage → our seam.
+- **Answers** → your existing socket client → our `answerProvider`.
+- **Welcome-in-Appearance** → a field → your existing atom API.
+
+The widget is a **drop-in replacement for the iframe's chat app.** The loader, launcher,
+postMessage protocol, socket, flows, and config API are all **untouched.** The net new work
+on our side — streaming/structured message rendering behind the `answerProvider` seam — is
+already on the build plan ([`BUILD-STATUS.md`](./BUILD-STATUS.md)).

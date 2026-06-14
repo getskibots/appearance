@@ -159,6 +159,7 @@ These four items are the seam between "what GSB built" and "what BotScrew wires"
 ## Where to go next
 
 - **Integrating into BotScrew admin** → [`botscrew-widget-settings.md`](./botscrew-widget-settings.md)
+- **Dropping the widget into your embed** (iframe/snippet, seams, provenance) → [`INTEGRATION.md`](./INTEGRATION.md)
 - **Understanding / modifying the code** → [`ARCHITECTURE.md`](./ARCHITECTURE.md)
 - **Knowing what's done vs left** → [`BUILD-STATUS.md`](./BUILD-STATUS.md)
 - **Building Resort Direct (own-feed) support** → [`RESORT-DIRECT-FEEDS.md`](./RESORT-DIRECT-FEEDS.md)
