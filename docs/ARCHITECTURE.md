@@ -44,14 +44,23 @@ chat-module / knowledge-base / data / voice). Responsibilities:
   via the shared adapter. Snow stats stay from the resort feed/fallback.
 - **Conditions card render** (`renderAllData`) — fills the `cell*` elements.
 - **Message routing** — keyword-based demo responses over the JH knowledge base.
-- **Season Update banner** — renders the manual "Recent update" copy; a non-empty
-  manual value sets `data-manual-update` so the live weather feed won't overwrite it.
+- **Season Update banner** — when config drives the banner (via `applyWidgetConfig`
+  or the dashboard `render`) it always sets `data-manual-update='true'`, so the
+  runtime's baked demo copy can never leak in: a set `recentUpdate` shows, a blank
+  one hides the banner.
 - **Voice** — Web Speech mic dictation, TTS read-aloud, hands-free Voice Mode. The
   hands-free Voice Mode is gated by **Behavior → Realtime voice** (`body[data-voice]`);
   the dictation mic is independent.
 
-(Ambient snowfall is a live effect — configured in the **Animations & effects**
-card and rendered on the chat surface, off by default since it animates
+**`src/widget/apply-config.js` — `applyWidgetConfig(config)`** is the single faithful
+config→DOM path (CSS vars + `data-` attrs + content). The dashboard `render` and the
+demo both apply config; `applyWidgetConfig` keeps them at parity so the demo is
+pixel-faithful and the eventual embed reuses one function. The demo-only background
+photo rides here too (`--gsb-bg-image` + `body[data-bg-image]` / `[data-bg-text]`).
+
+(Ambient snowfall is a live effect — configured in the **Animations & effects** card,
+rendered on the chat surface by the shared `src/shared/snow-engine.js` engine that
+**both** the dashboard preview and the demo import. Off by default since it animates
 continuously.)
 
 Public bridge: `window.gsbChatPreview = { openChat, closeChat, setVariant,

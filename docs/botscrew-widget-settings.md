@@ -62,6 +62,8 @@ interface GsbAppearance {
   logoMaxHeight: number;
   cornerRadius: number;
   chatHeaderColor: string;
+  backgroundImage: string;                    // demo-page background photo (URL or data: blob). Demo-only today (themes preview.html); reserved for an optional Chat UI background later
+  bgTextMode: 'light' | 'dark';               // demo-page hero text treatment over the bg photo (light = dark scrim + white text; dark = bright scrim + dark text)
   welcomeText: string;
   updateLabel: string;                        // eyebrow for the Season Update banner
   recentUpdate: string;                       // banner body; blank hides the banner
@@ -157,6 +159,8 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `logoMaxHeight` | number (px) | `44` | Header logo cap height |
 | `cornerRadius` | number (px) | `7` | Master rounding (launcher pills, chat surface) |
 | `chatHeaderColor` | hex | `#ffffff` | Chat header background |
+| `backgroundImage` | string | `''` | **Demo-page only today.** A background photo for the prospect demo (`preview.html`) so it feels like a real resort site — URL or an uploaded `data:` blob (optimized client-side like featured images; the blob is stripped from the share-link hash, kept in localStorage). Applied via `--gsb-bg-image` + `body[data-bg-image]`. **Reserved for an optional Chat UI background later** (the widget doesn't consume it yet) |
+| `bgTextMode` | enum | `light` | **Demo-page only.** Hero text treatment over `backgroundImage`: `light` (dark scrim + white text, suits most photos) or `dark` (bright scrim + dark text, for light/airy photos). Applied via `body[data-bg-text]` |
 | `welcomeText` | string | "Welcome to Jackson Hole…" | First greeting line |
 | `updateLabel` | string | `Season update` | Eyebrow label on the Season Update banner |
 | `recentUpdate` | string | "The 2025/26 ski season…" | Season Update banner body; **blank hides the banner**. Manual copy wins over the live weather feed (`data-manual-update`) |

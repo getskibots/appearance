@@ -61,9 +61,13 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
   no longer rejected), height, corner radius (launcher + panel), header
   color, widget name, placeholder, welcome message, plus the **Recent update** control
   that feeds the chat's Season Update banner (Write-it-myself / Get-live-updates source
-  toggle; the Get-live-updates "data source" picker is a wired-but-not-live placeholder).
-  Laid out as a
-  two-column card.
+  toggle; the Get-live-updates "data source" picker — Get Operations / Conditions /
+  Ecommerce / Events / Alerts — is a wired-but-not-live placeholder BotScrew connects to
+  Flows). Laid out as a two-column card.
+- **5.1b Webcams & featured image** ✅ — hero source (webcam / featured image / none) with
+  a **trashcan to clear the image**, plus a **Demo background image** (URL or upload) that
+  themes the prospect demo page with a **Light/Dark** text treatment. (Background image is
+  demo-only today; reserved for an optional Chat UI background later.)
 - **5.2 Launcher bubble** ✅ — all styles (simple/status pill/slide-in/custom), CTA
   text (≤24 glyphs), status-pill feature toggles, Save + live preview.
 - **5.3 Configurable icon style** 🟡 — styles done; business-hours auto live-agent not done.

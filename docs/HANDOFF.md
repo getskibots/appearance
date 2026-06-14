@@ -53,7 +53,9 @@ No env vars, no secrets, no backend required. Everything runs client-side.
 
 ```
 index.html              Appearance dashboard (admin UI)
-preview.html            Standalone widget preview on a resort-site mock
+preview.html            Prospect demo: a resort-homepage mock with the widget embedded,
+                        three entry points, a GetSkiBots demo control deck, and the
+                        Live Preview sync (themed entirely by applyWidgetConfig). See INTEGRATION §10
 weather.html            Weather config tab — Open-Meteo (active) + Resort Direct (coming soon) accordion
 vite.config.js          Multi-page build config (3 entries)
 
@@ -62,17 +64,23 @@ src/
     tokens.css          Design tokens (CSS variables)
     reset.css           Base reset
     widget-config.js    BotScrew config mapper (to/fromBotscrewWidgetSettings)
+    snow-engine.js      Ambient snowfall engine — shared by the dashboard preview AND the demo
+    webcam-render.js    Renders a hero cam/image by detected kind (img/iframe/video)
+    webcam.js           Webcam URL kind detection
+    image-compress.js   Client-side resize + WebP/optimize (logos, featured + background images)
+    sample-logo.js      JH demo logo as a data URI (bundles reliably on Pages)
     weather/
       open-meteo.js     Shared Open-Meteo adapter (the ONE weather source of truth)
   dashboard/
     dashboard.css       Dashboard styling
     dashboard.js        Dashboard logic: state, render(), save/load, all controls
   widget/
+    apply-config.js     applyWidgetConfig() — the single faithful config→DOM path (demo + embed)
     chat-widget.css     Widget styling
     widget-runtime.js   The chat widget runtime (interim umbrella module)
     knowledge/
       jackson-hole.js   Demo knowledge base (Jackson Hole)
-  assets/               Sample logo, etc.
+  assets/               GetSkiBots logo, etc.
 
 docs/
   HANDOFF.md                  ← you are here

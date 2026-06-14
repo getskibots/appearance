@@ -228,7 +228,13 @@ nothing widget-related is hand-built. Every appearance-tab field maps to the Cha
 Three entry points — header search icon, hero search bar, chat launcher — all open the
 same chat; a search submit injects the query as the first message. Two on-page control
 bars let a resort play with color / launcher style / live-agent live (each mutates
-`CONFIG` and re-applies).
+`CONFIG` and re-applies). Those bars are a **GetSkiBots-branded "control deck"** — dark
+dashboard-blue with the white GSB logo, deliberately wearing **our** colors (not the
+resort's `var(--brand)`), so it reads as demo tooling wrapping a preview of the resort's
+site below. (Only the in-deck Color picker stays tied to the resort color — it's the
+resort-color tool.) The optional **demo background photo** (`backgroundImage`) renders
+behind the hero with a legibility overlay + auto Light/Dark text, to make the mock feel
+like the resort's real site.
 
 ### How config reaches the page TODAY — prototype only
 
