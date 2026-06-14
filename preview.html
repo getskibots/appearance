@@ -31,10 +31,11 @@
     --surface:    #ffffff;
     --surface-2:  #f6f8fb;
     --page-radius: 16px;
-    /* GetSkiBots demo-chrome palette — OUR brand (matches getskibots.com + the
-       backend dashboard), deliberately NOT the resort's var(--brand). */
-    --gsb-deck:   #13263f;  /* deep GSB navy deck background */
-    --gsb-blue:   #2a7dc0;  /* GSB accent blue (dashboard sidebar / brochure) */
+    /* GetSkiBots demo-chrome palette — the backend dashboard blues (matches the
+       admin sidebar + getskibots.com), deliberately NOT the resort's var(--brand). */
+    --gsb-deck:   #2a7dc0;  /* dashboard sidebar blue (deck top) */
+    --gsb-deck-2: #2470b8;  /* deeper blue (deck bottom + edge) */
+    --gsb-blue:   #1c5994;  /* deep blue — text on the white demo chips */
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
@@ -50,48 +51,48 @@
     display: flex; flex-direction: column;
   }
 
-  /* ---- Demo control deck — a dark toolbar that clearly wraps the resort-site
-       preview below, so the two rows read as GetSkiBots demo tooling, not the
-       site. A brand-accent bottom edge + shadow define the seam. ---- */
+  /* ---- Demo control deck — a GetSkiBots-blue toolbar (the backend dashboard's
+       sidebar blue) that clearly wraps the resort-site preview below. White
+       'selected' pills + a deep-blue edge read as our admin chrome, not the site. ---- */
   .preview-bars {
     position: relative; z-index: 70;
-    background: var(--gsb-deck);
-    box-shadow: 0 10px 26px rgba(8,12,20,0.30);
-    border-bottom: 2px solid var(--gsb-blue);
+    background: linear-gradient(180deg, var(--gsb-deck) 0%, var(--gsb-deck-2) 100%);
+    box-shadow: 0 10px 26px rgba(12,40,72,0.28);
+    border-bottom: 1px solid rgba(8,30,60,0.30);
   }
   .pbar {
     display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
     padding: 9px 22px; background: transparent;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.14);
   }
-  .pbar--alt { background: rgba(255,255,255,0.03); border-bottom: 0; }
+  .pbar--alt { background: rgba(0,0,0,0.06); border-bottom: 0; }
   .pbar__wordmark { display: inline-flex; align-items: center; }
-  /* GSB lockup rendered white for the dark deck (brightness(0) invert(1) monochromes it). */
-  .pbar__wordmark img { height: 18px; width: auto; display: block; filter: brightness(0) invert(1); }
+  /* GSB lockup rendered white for the blue deck (brightness(0) invert(1) monochromes it). */
+  .pbar__wordmark img { height: 24px; width: auto; display: block; filter: brightness(0) invert(1); }
   .pbar__badge {
     font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
-    color: #fff; background: var(--gsb-blue); padding: 3px 9px; border-radius: 999px;
+    color: var(--gsb-blue); background: #fff; padding: 3px 9px; border-radius: 999px;
   }
-  .pbar__label { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.50); white-space: nowrap; }
+  .pbar__label { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.80); white-space: nowrap; }
   #layoutSeg, .pbar__controls { margin-left: auto; }
   .pbar__controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-  .pbar__seg { display: inline-flex; background: rgba(255,255,255,0.08); border-radius: 999px; padding: 3px; }
+  .pbar__seg { display: inline-flex; background: rgba(255,255,255,0.16); border-radius: 999px; padding: 3px; }
   .pbar__seg button {
-    appearance: none; border: 0; background: transparent; color: rgba(255,255,255,0.64);
+    appearance: none; border: 0; background: transparent; color: rgba(255,255,255,0.85);
     font: inherit; font-size: 12px; font-weight: 600; padding: 6px 13px; border-radius: 999px;
     cursor: pointer; white-space: nowrap; transition: background .15s, color .15s;
   }
-  .pbar__seg button:hover { color: rgba(255,255,255,0.92); }
-  .pbar__seg button[aria-pressed="true"] { background: var(--gsb-blue); color: #fff; }
-  .pbar__toggle { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.72); cursor: pointer; white-space: nowrap; }
-  .pbar__toggle input { appearance: none; -webkit-appearance: none; width: 34px; height: 19px; border-radius: 999px; background: rgba(255,255,255,0.22); position: relative; cursor: pointer; transition: background .15s; flex: 0 0 auto; }
-  .pbar__toggle input:checked { background: var(--gsb-blue); }
-  .pbar__toggle input::after { content: ''; position: absolute; top: 2px; left: 2px; width: 15px; height: 15px; border-radius: 50%; background: #fff; transition: transform .15s; }
-  .pbar__toggle input:checked::after { transform: translateX(15px); }
-  .pbar__color { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.72); white-space: nowrap; }
+  .pbar__seg button:hover { color: #fff; }
+  .pbar__seg button[aria-pressed="true"] { background: #fff; color: var(--gsb-blue); }
+  .pbar__toggle { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.88); cursor: pointer; white-space: nowrap; }
+  .pbar__toggle input { appearance: none; -webkit-appearance: none; width: 34px; height: 19px; border-radius: 999px; background: rgba(255,255,255,0.30); position: relative; cursor: pointer; transition: background .15s; flex: 0 0 auto; }
+  .pbar__toggle input:checked { background: #fff; }
+  .pbar__toggle input::after { content: ''; position: absolute; top: 2px; left: 2px; width: 15px; height: 15px; border-radius: 50%; background: #fff; transition: transform .15s, background .15s; }
+  .pbar__toggle input:checked::after { transform: translateX(15px); background: var(--gsb-deck); }
+  .pbar__color { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.88); white-space: nowrap; }
   .pbar__color input { width: 26px; height: 26px; border: 0; border-radius: 50%; background: none; cursor: pointer; padding: 0; }
   .pbar__color input::-webkit-color-swatch-wrapper { padding: 0; }
-  .pbar__color input::-webkit-color-swatch { border: 2px solid rgba(255,255,255,0.85); border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,0,0,0.35); }
+  .pbar__color input::-webkit-color-swatch { border: 2px solid rgba(255,255,255,0.9); border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,0,0,0.25); }
   @media (max-width: 820px) {
     .pbar { padding: 8px 14px; gap: 9px; justify-content: center; }
     .pbar__label { display: none; }
