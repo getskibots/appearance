@@ -167,25 +167,34 @@
      "photo hero" treatment and stays legible over any photo; the decorative
      mountains drop out. Text auto-adapts back to dark when no image is set. */
   body[data-bg-image="true"] .hero__mountains { display: none; }
-  /* LIGHT text (default): dark scrim + white text — suits most photos. */
+  /* Lift the foreground UI off the photo so it reads as distinct, popping cards. */
+  body[data-bg-image="true"] .hero-search { box-shadow: 0 22px 55px rgba(0,0,0,0.45); }
+  body[data-bg-image="true"] .entry-legend__item { box-shadow: 0 6px 18px rgba(0,0,0,0.28); }
+  body[data-bg-image="true"] .demo-cta { box-shadow: 0 14px 36px rgba(0,0,0,0.45); }
+
+  /* LIGHT text (default): an even, deliberate dark veil + a soft center vignette so
+     the photo stays visible but the white text + cards pop. Suits most photos. */
   body[data-bg-image="true"][data-bg-text="light"] .hero {
     background-image:
-      linear-gradient(180deg, rgba(12,17,28,0.58) 0%, rgba(12,17,28,0.32) 45%, rgba(12,17,28,0.50) 100%),
+      linear-gradient(180deg, rgba(9,13,20,0.58) 0%, rgba(9,13,20,0.44) 46%, rgba(9,13,20,0.56) 100%),
+      radial-gradient(130% 95% at 50% 30%, rgba(9,13,20,0) 0%, rgba(9,13,20,0.30) 100%),
       var(--gsb-bg-image);
     background-size: cover; background-position: center;
     color: #fff;
   }
-  body[data-bg-image="true"][data-bg-text="light"] .hero__title { color: #fff; text-shadow: 0 2px 20px rgba(0,0,0,0.38); }
-  body[data-bg-image="true"][data-bg-text="light"] .hero__eyebrow { color: rgba(255,255,255,0.92); }
-  body[data-bg-image="true"][data-bg-text="light"] .entry-legend__title { color: rgba(255,255,255,0.88); }
-  /* DARK text: light scrim, keep the dark ink text — for light / airy photos. */
+  body[data-bg-image="true"][data-bg-text="light"] .hero__title { color: #fff; text-shadow: 0 2px 22px rgba(0,0,0,0.45); }
+  body[data-bg-image="true"][data-bg-text="light"] .hero__eyebrow { color: rgba(255,255,255,0.94); }
+  body[data-bg-image="true"][data-bg-text="light"] .entry-legend__title { color: rgba(255,255,255,0.90); }
+
+  /* DARK text: a bright veil + soft vignette, keep the dark ink text — light/airy photos. */
   body[data-bg-image="true"][data-bg-text="dark"] .hero {
     background-image:
-      linear-gradient(180deg, rgba(255,255,255,0.86) 0%, rgba(255,255,255,0.60) 45%, rgba(255,255,255,0.40) 100%),
+      linear-gradient(180deg, rgba(255,255,255,0.84) 0%, rgba(255,255,255,0.66) 46%, rgba(255,255,255,0.74) 100%),
+      radial-gradient(130% 95% at 50% 30%, rgba(255,255,255,0) 0%, rgba(255,255,255,0.28) 100%),
       var(--gsb-bg-image);
     background-size: cover; background-position: center;
   }
-  body[data-bg-image="true"][data-bg-text="dark"] .hero__title { text-shadow: 0 1px 14px rgba(255,255,255,0.55); }
+  body[data-bg-image="true"][data-bg-text="dark"] .hero__title { text-shadow: 0 1px 14px rgba(255,255,255,0.6); }
   .hero__mountains { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 38%; }
   /* Mountains follow the same brand tint, progressively stronger toward the front. */
   .hero__mountains path:nth-of-type(1) { fill: color-mix(in srgb, var(--brand) 8%, #ffffff); }
