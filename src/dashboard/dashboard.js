@@ -1560,14 +1560,14 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   }
 
   // ============= LIVE PREVIEW SYNC =============
-  // Writes the current dashboard state to localStorage so the live preview
-  // page (sharable.link/0wa0vh2t) can pick it up. Both pages live on the
-  // sharable.link origin so localStorage is shared. Auto-sync is debounced
-  // to avoid hammering on slider drags. The "Live Preview" button click also
-  // syncs immediately and encodes state in the URL hash for shareability —
-  // partners can text the URL to anyone and the recipient sees the same
-  // configured chat regardless of whether their localStorage is fresh.
-  var LIVE_PREVIEW_URL = 'https://sharable.link/0wa0vh2t';
+  // Writes the current dashboard state to localStorage so the demo preview page
+  // (preview.html) can pick it up. Both pages are same-origin so localStorage is
+  // shared — an open preview tab live-updates via the storage event. Auto-sync is
+  // debounced to avoid hammering on slider drags. The "Live Preview" button click
+  // also syncs immediately and encodes state in the URL hash for shareability —
+  // partners can text the URL to anyone and the recipient sees the same configured
+  // chat regardless of whether their localStorage is fresh.
+  var LIVE_PREVIEW_URL = 'preview.html';
   var LIVE_PREVIEW_LS_KEY = 'gsb_preview_config';
   var syncDebounceTimer = null;
   var syncStatusEl = $('livePreviewSyncStatus');
@@ -1639,8 +1639,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     try {
       localStorage.setItem(LIVE_PREVIEW_LS_KEY, JSON.stringify(config));
       // Note: the durable BotScrew-shaped config (gsb_widget_settings) is written
-      // by the Save button, not here — auto-sync only feeds the sharable.link live
-      // preview, so Save/Revert and the dirty banner stay truthful.
+      // by the Save button, not here — auto-sync only feeds the demo preview page,
+      // so Save/Revert and the dirty banner stay truthful.
       setSyncStatus('synced', 'Synced');
       // Fade back to idle after 2 seconds
       setTimeout(function() {

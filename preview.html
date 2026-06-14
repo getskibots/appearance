@@ -571,7 +571,39 @@
       embedSearch: { borderRadius: 999, borderThickness: 1.5, width: 'fixed', placeholder: 'Ask anything about your visit…' },
       embedButton: { size: 44, shape: 'round', background: 'brand', iconWeight: 'regular', label: '' }
     };
-    applyWidgetConfig(CONFIG);
+    // ---- Live Preview sync -------------------------------------------------
+    // Opened from the dashboard's "Live Preview" button (or same browser), the
+    // page wears the resort's CURRENT settings: read the synced config from the
+    // URL hash (#cfg=, cross-device) or localStorage (same origin) and merge it
+    // over the JH defaults above. No sync → the page stays the JH demo.
+    function readSyncedConfig() {
+      try {
+        var m = (location.hash || '').match(/cfg=([^&]+)/);
+        if (m) {
+          var b64 = m[1].replace(/-/g, '+').replace(/_/g, '/');
+          b64 += '==='.slice((b64.length + 3) % 4);
+          return JSON.parse(decodeURIComponent(escape(atob(b64))));
+        }
+      } catch (e) { /* fall through to localStorage */ }
+      try {
+        var raw = localStorage.getItem('gsb_preview_config');
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return null;
+    }
+    function mergeSynced(synced) {
+      if (!synced) return;
+      for (var k in synced) {
+        if (!Object.prototype.hasOwnProperty.call(synced, k)) continue;
+        var v = synced[k];
+        if (v && typeof v === 'object' && !Array.isArray(v) &&
+            CONFIG[k] && typeof CONFIG[k] === 'object') {
+          for (var sk in v) { if (Object.prototype.hasOwnProperty.call(v, sk)) CONFIG[k][sk] = v[sk]; }
+        } else if (v != null) {
+          CONFIG[k] = v;
+        }
+      }
+    }
 
     // Ambient snowfall — same shared engine the appearance tab uses, driven by
     // CONFIG.snowfall so the effect carries over to the demo chat surface.
@@ -585,17 +617,28 @@
         pauseWhenIdle: s.pauseWhenIdle !== false
       });
     }
-    applySnow();
 
-    // The site's own logo (upper-left) pulls the same bot logo.
-    var siteLogo = document.getElementById('siteLogo');
-    if (siteLogo) siteLogo.src = CONFIG.logoUrl;
+    // Apply the whole config to page chrome + widget. Re-runnable for live sync.
+    function applyAll() {
+      applyWidgetConfig(CONFIG);
+      applySnow();
+      var siteLogo = document.getElementById('siteLogo');
+      if (siteLogo) siteLogo.src = CONFIG.logoUrl; // site logo pulls the bot logo
+      var heroInputCfg = document.getElementById('heroSearchInput');
+      if (heroInputCfg && CONFIG.embedSearch && CONFIG.embedSearch.placeholder) heroInputCfg.placeholder = CONFIG.embedSearch.placeholder;
+      var heroFormCfg = document.getElementById('heroSearch');
+      if (heroFormCfg && CONFIG.embedSearch && CONFIG.embedSearch.width) heroFormCfg.setAttribute('data-width', CONFIG.embedSearch.width);
+    }
 
-    // Hero search bar reflects the embeddable-search config (placeholder + width).
-    var heroInputCfg = document.getElementById('heroSearchInput');
-    if (heroInputCfg && CONFIG.embedSearch.placeholder) heroInputCfg.placeholder = CONFIG.embedSearch.placeholder;
-    var heroFormCfg = document.getElementById('heroSearch');
-    if (heroFormCfg && CONFIG.embedSearch.width) heroFormCfg.setAttribute('data-width', CONFIG.embedSearch.width);
+    mergeSynced(readSyncedConfig());
+    applyAll();
+
+    // Live-update: if the dashboard is open in another tab on this origin, its
+    // debounced auto-sync writes localStorage — reflect those edits immediately.
+    window.addEventListener('storage', function(e) {
+      if (e.key !== 'gsb_preview_config' || !e.newValue) return;
+      try { mergeSynced(JSON.parse(e.newValue)); applyAll(); } catch (err) {}
+    });
 
     var body = document.body;
     var api = function() { return window.gsbChatPreview; };
