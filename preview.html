@@ -256,13 +256,12 @@
   /* Entry point #2 — hero search bar */
   .hero-search {
     display: flex; align-items: center; gap: 8px;
-    max-width: 580px; margin: 0 auto; padding: 7px 7px 7px 18px;
+    /* Width follows the embeddable-search config (hug / fixed 480px / full). */
+    max-width: var(--gsb-embed-search-maxw, 480px); margin: 0 auto; padding: 7px 7px 7px 18px;
     background: #fff; border-radius: var(--gsb-embed-search-radius, 999px);
     border: var(--gsb-embed-search-border, 0px) solid #e9e6df;
     box-shadow: 0 18px 50px rgba(8,22,40,0.30);
   }
-  .hero-search[data-width="full"] { max-width: none; }
-  .hero-search[data-width="hug"] { max-width: max-content; }
   .hero-search__spark { display: inline-flex; color: var(--brand); flex: 0 0 auto; }
   .hero-search__spark svg { width: 20px; height: 20px; }
   .hero-search__input {
@@ -745,8 +744,6 @@
       if (siteLogo) siteLogo.src = CONFIG.logoUrl; // site logo pulls the bot logo
       var heroInputCfg = document.getElementById('heroSearchInput');
       if (heroInputCfg && CONFIG.embedSearch && CONFIG.embedSearch.placeholder) heroInputCfg.placeholder = CONFIG.embedSearch.placeholder;
-      var heroFormCfg = document.getElementById('heroSearch');
-      if (heroFormCfg && CONFIG.embedSearch && CONFIG.embedSearch.width) heroFormCfg.setAttribute('data-width', CONFIG.embedSearch.width);
     }
 
     mergeSynced(readSyncedConfig());

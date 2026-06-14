@@ -1676,6 +1676,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       snowfall: state.snowfall,
       statusPillFeatures: state.statusPillFeatures,
       typography: state.typography,
+      // Embeddable components — drive the demo's hero search bar + header search icon.
+      embedSearch: state.embedSearch,
+      embedButton: state.embedButton,
       // Forward-compatible — preview will read these when updated:
       effectMode: state.effectMode,
       effectIntensity: state.effectIntensity
