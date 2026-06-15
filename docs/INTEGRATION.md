@@ -88,7 +88,7 @@ spec you must match**:
 |---|---|---|
 | **Stub** (curated JH answers) | us | reference; runs our standalone preview with no backend |
 | **Production** | **BotScrew** | your existing SockJS/STOMP client → the seam |
-| *Live PoC (optional)* | *us — throwaway* | *only if you want a pre-handoff live demo; it reverse-engineers your socket, so it's **not required** and not meant to ship* |
+| *Live PoC (optional)* | *us — throwaway* | *only if you want a pre-handoff live demo; it's a quick standalone hookup, **not required** and not meant to ship* |
 
 You already own a working SockJS/STOMP client (it runs your current widget). Production isn't
 new plumbing — it's pointing that client at this one interface. And the **real live-answer
