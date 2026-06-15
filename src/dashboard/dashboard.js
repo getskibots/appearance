@@ -240,10 +240,10 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       borderThickness: 1.5,     // px
       width: 'fixed',           // 'hug' | 'fixed' | 'full'
       placeholder: 'Enter your question',
-      // Per-page starter chips shown beneath the bar (0–4). Each embed snippet
-      // carries its own via data-gsb-starters, so a resort drops a different
-      // snippet (with different chips) on the homepage vs the lessons page.
-      starters: ['Where should beginners ski?', 'What do lift tickets cost?', 'Are the lifts open today?']
+      // Per-page starter chips shown beneath the bar (0–4). Unseeded by default —
+      // chips appear only once a resort adds them, and each embed snippet carries
+      // its own via data-gsb-starters (different chips on homepage vs lessons).
+      starters: []
     },
     embedButton: {
       size: 44,                 // px
