@@ -1729,32 +1729,28 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
   overflow: visible;
 }
 
-/* Control dock — live caption + orb + status + clear begin/continue/end controls */
-.gsb-voice-mode__dock {
-  flex: 0 0 auto;
+/* Centered floating control card — sits in the middle of the panel, over the
+   streaming thread, so it's clear the conversation lives behind the voice chat
+   and is one tap away on End. Translucent + blurred so the thread shows through. */
+.gsb-voice-mode__center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: min(300px, 86%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 9px;
-  padding: 12px 18px 16px;
-  border-top: 1px solid var(--jh-border);
-  background: var(--jh-bg);
-}
-.gsb-voice-mode__row {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-}
-
-.gsb-voice-mode__head { display: none; }
-
-.gsb-voice-mode__title {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: calc(14px * var(--gsb-text-scale, 1));
-  font-weight: 500;
-  color: rgba(255,255,255,0.7);
-  letter-spacing: 0.02em;
+  gap: 13px;
+  padding: 22px 22px 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.82);
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+  border: 1px solid var(--jh-border);
+  border-radius: 20px;
+  box-shadow: 0 18px 50px rgba(23, 19, 15, 0.16);
 }
 
 .gsb-voice-mode__exit {
@@ -1772,26 +1768,16 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
 .gsb-voice-mode__exit:hover { background: var(--jh-border); }
 .gsb-voice-mode__exit svg { width: 13px; height: 13px; }
 
-/* Main stage: centered orb */
-.gsb-voice-mode__stage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 7px;
-  width: 100%;
-  position: relative;
-  z-index: 2;
-}
 
 .gsb-voice-mode__orb {
   position: relative;
-  width: 48px;
-  height: 48px;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 35% 30%, rgba(255,255,255,0.45) 0%, transparent 40%),
+    radial-gradient(circle at 35% 30%, rgba(255,255,255,0.5) 0%, transparent 42%),
     linear-gradient(135deg, var(--brand) 0%, var(--brand-deep) 100%);
-  box-shadow: 0 2px 10px rgba(var(--brand-rgb), 0.35);
+  box-shadow: 0 6px 22px rgba(var(--brand-rgb), 0.38);
   animation: orb-idle 4s ease-in-out infinite;
 }
 
@@ -1840,20 +1826,20 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
 
 .gsb-voice-mode__bars span {
   display: block;
-  width: 2.5px;
+  width: 3.5px;
   background: rgba(255,255,255,0.95);
   border-radius: 2px;
-  height: 8px;
+  height: 14px;
   animation: voice-bar-bounce 0.9s ease-in-out infinite;
 }
 
-.gsb-voice-mode__bars span:nth-child(1) { animation-delay: 0.0s; height: 5px; }
-.gsb-voice-mode__bars span:nth-child(2) { animation-delay: 0.1s; height: 9px; }
-.gsb-voice-mode__bars span:nth-child(3) { animation-delay: 0.2s; height: 7px; }
-.gsb-voice-mode__bars span:nth-child(4) { animation-delay: 0.3s; height: 13px; }
-.gsb-voice-mode__bars span:nth-child(5) { animation-delay: 0.2s; height: 7px; }
-.gsb-voice-mode__bars span:nth-child(6) { animation-delay: 0.1s; height: 9px; }
-.gsb-voice-mode__bars span:nth-child(7) { animation-delay: 0.0s; height: 5px; }
+.gsb-voice-mode__bars span:nth-child(1) { animation-delay: 0.0s; height: 9px; }
+.gsb-voice-mode__bars span:nth-child(2) { animation-delay: 0.1s; height: 16px; }
+.gsb-voice-mode__bars span:nth-child(3) { animation-delay: 0.2s; height: 12px; }
+.gsb-voice-mode__bars span:nth-child(4) { animation-delay: 0.3s; height: 22px; }
+.gsb-voice-mode__bars span:nth-child(5) { animation-delay: 0.2s; height: 12px; }
+.gsb-voice-mode__bars span:nth-child(6) { animation-delay: 0.1s; height: 16px; }
+.gsb-voice-mode__bars span:nth-child(7) { animation-delay: 0.0s; height: 9px; }
 
 @keyframes voice-bar-bounce {
   0%, 100% { transform: scaleY(0.45); opacity: 0.55; }
@@ -1924,15 +1910,14 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
   font-family: var(--gsb-body-font, 'Inter'), sans-serif;
 }
 
-/* Bottom controls: tap-to-interrupt + tap-to-speak */
+/* Begin / End — concise, full-width, stacked in the centered card */
 .gsb-voice-mode__controls {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  padding: 2px 0 0;
-  position: relative;
-  z-index: 2;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+  margin-top: 2px;
 }
 
 .gsb-voice-mode__btn {
@@ -1940,7 +1925,7 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
   font-family: inherit;
   font-size: calc(12px * var(--gsb-text-scale, 1));
   font-weight: 700;
-  letter-spacing: 0.10em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--jh-ink);
   background: var(--jh-surface);
@@ -1950,6 +1935,7 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
   transition: all 160ms ease;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
 }
 
@@ -2018,8 +2004,7 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
 }
 
 @media (max-width: 720px) {
-  .gsb-voice-mode__orb { width: 44px; height: 44px; }
-  .gsb-voice-mode__stage { gap: 6px; }
+  .gsb-voice-mode__orb { width: 76px; height: 76px; }
 
   /* COMPOSER — compact everything so the send button always fits on phones */
   .gsb-composer { padding: 10px 10px calc(10px + env(safe-area-inset-bottom)); }

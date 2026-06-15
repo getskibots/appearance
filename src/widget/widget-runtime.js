@@ -1112,20 +1112,20 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     // as surveillance). "Go ahead…" = your turn. The main button toggles talk/pause;
     // the separate End button always exits.
     var labels = {
-      idle: voice.paused ? 'Paused' : 'Tap to talk',
+      idle: voice.begun ? 'Paused' : 'Ready when you are',
       listening: 'Go ahead…',
       thinking: 'Thinking',
       speaking: 'Speaking'
     };
-    $('gsbVoiceStatus').textContent = labels[state] || 'Tap to talk';
+    $('gsbVoiceStatus').textContent = labels[state] || 'Ready when you are';
 
     var btnLabels = {
-      idle: voice.paused ? 'Resume' : 'Tap to talk',
+      idle: voice.begun ? 'Resume' : 'Begin Voice Chat',
       listening: 'Pause',
       thinking: 'Thinking…',
       speaking: 'Skip'
     };
-    $('gsbVoiceMainBtnLabel').textContent = btnLabels[state] || 'Tap to talk';
+    $('gsbVoiceMainBtnLabel').textContent = btnLabels[state] || 'Begin Voice Chat';
   }
 
   function setTranscript(text, kind) {
@@ -1156,6 +1156,7 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     }
     voice.fullModeActive = true;
     voice.paused = false;
+    voice.begun = false;
     $('gsbVoiceModeOverlay').setAttribute('data-open', 'true');
     document.body.setAttribute('data-voice-active', 'true');
     // Full-panel takeover: move the real message list into the voice surface so
@@ -1168,12 +1169,9 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     setOrbState('idle');
     setTranscript('');
     if ($('gsbVoiceHistory')) $('gsbVoiceHistory').innerHTML = '';
-    // Pin the thread to the bottom so the latest turns are in view.
+    // Pin the thread to the bottom so the latest turns are in view behind the card.
     requestAnimationFrame(snapConversationToBottom);
-    // Auto-start listening so the user can just begin talking.
-    setTimeout(function() {
-      if (voice.fullModeActive) startVoiceModeListening();
-    }, 350);
+    // Don't auto-start — the centered "Begin Voice Chat" button is the clear start.
   }
 
   function closeVoiceMode() {
@@ -1297,6 +1295,7 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     var state = voice.fullModeOrbState;
     if (state === 'idle') {
       // Begin / resume talking.
+      voice.begun = true;
       voice.paused = false;
       startVoiceModeListening();
     } else if (state === 'listening') {
