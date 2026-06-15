@@ -10,7 +10,7 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
 
 /* =========================================================================
    PRODUCTION-FIDELITY CHAT MODULE
-   Lifted from sharable.link/25yu2bgv. Includes: data fetching from Jackson
+   Ported from the GSB chat prototype. Includes: data fetching from Jackson
    Hole APIs (snow/lifts/webcams/parking) with cached fallback, AI keyword
    routing for chat responses, Web Speech API integration (mic dictation,
    voice output, full hands-free voice mode), and the column reorganization

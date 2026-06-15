@@ -46,6 +46,6 @@ src/
 
 ## Provenance
 
-The baseline (first commit) is a pristine import of the production prototype from
-sharable.link. Every subsequent commit is an incremental, behavior-preserving
-extraction — see commit history.
+The baseline (first commit) is a pristine import of the production chat prototype.
+Every subsequent commit is an incremental, behavior-preserving extraction — see
+commit history.

@@ -160,7 +160,7 @@ live in [`RESORT-DIRECT-FEEDS.md`](./RESORT-DIRECT-FEEDS.md).
 
 ## Provenance
 
-The first commit is a pristine import of the production prototype from sharable.link.
+The first commit is a pristine import of the production chat prototype.
 Every later commit is an incremental, behavior-preserving extraction (CSS first,
 then JS), with byte-faithful splitter tooling under `scripts/`. The git history is
 the audit trail.

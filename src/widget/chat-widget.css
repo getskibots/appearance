@@ -518,7 +518,7 @@ body.modal-open .gsb-launcher {
 .gsb-launcher:hover { animation: none !important; }
 
 /* =========================================================================
-   CHAT SURFACE — production fidelity from sharable.link/25yu2bgv
+   CHAT SURFACE — production-fidelity chat UI
    Includes: header, body (full panel two-col), webcam hero, conditions
    table, season banner, chips, messages, composer with voice group,
    footer wordmark, and full voice mode overlay.

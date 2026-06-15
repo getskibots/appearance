@@ -207,8 +207,8 @@ The appearance dashboard (`index.html` + `src/dashboard/dashboard.js`) is the
 (`toBotscrewWidgetSettings`) and writes it to `localStorage["gsb_widget_settings"]`.
 On load it hydrates `state` from that key via `fromBotscrewWidgetSettings` (merged
 over `DEFAULTS`), so a round-trip is lossless. (A separate `gsb_preview_config` is
-auto-written on every change, but only feeds the sharable.link live preview — it is
-not the source of truth.)
+auto-written on every change, but only feeds the live preview — it is not the
+source of truth.)
 
 To drop into BotScrew, an engineer:
 
