@@ -20,6 +20,28 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
 
 ---
 
+## Built vs not built — at a glance (for BotScrew)
+
+**✅ Built & working in this repo (no backend needed):**
+- The full **Appearance dashboard** (every control) and the **chat widget UI** (`index.html`, `chat-widget.css` + `widget-runtime.js`).
+- **`applyWidgetConfig`** — the single faithful config→DOM path; every appearance field maps to the widget (color, logo, fonts, layout, launcher + depth effect + CTA, status pill, Season Update banner, webcam/featured hero, snowfall, typing, voice toggle, embed components).
+- The **BotScrew config mapper** (`to/fromBotscrewWidgetSettings`) — emits/ingests the exact `widgetSettings` shape; **Save/Load** persists it (to localStorage today).
+- The **shippable embeddable components**: search bar (`.gsb-embed-search`) + standalone search button — both config-driven, shared by the dashboard preview AND the demo.
+- The **prospect demo page** (`preview.html`): resort-homepage mock, three entry points, the GetSkiBots control deck, the Live Preview sync, slide-away-on-scroll, benefits band.
+- **Open-Meteo** live weather + conditions card; the shared **snowfall engine**; depth effects, typography, layouts, launcher styles.
+
+**⬜ Not built — BotScrew / production wiring:**
+- **Per-bot persistence** (the big one): load/save config per `botId` via `GET /widget/info/{botId}` + `PATCH /private/bot/{id}/widget` instead of localStorage. Threads through everything — the mapper already emits the right shape (see [INTEGRATION.md](./INTEGRATION.md) §3a, §9).
+- **`answerProvider`** — streaming + structured-message rendering behind the seam (your socket → the widget). Stub/curated answers only today (§3c).
+- **`gsbAppearance` persistence decision** — confirm your config can store the opaque JSON block (Option B = zero backend change) or add one field (§4, the one open decision).
+- **Embed loader scripts** — `data-gsb-search` / `data-gsb-search-button` / chat-bubble loaders are sketched in the Install tab, not implemented (Epic 7).
+- **Live data sources** — the "Get Operations/Conditions/Ecommerce/Events/Alerts" picker is a placeholder; wire it to your Flows / AI Actions.
+- **Welcome-in-Appearance** → write to your atom API (§5 provenance).
+- **Demo per-bot wiring** — production selects the bot by `publicIdentifier` in the URL and loads `/widget/info/{botId}`; the demo's localStorage/`#cfg=` sync is a prototype hand-off (INTEGRATION §10).
+- **Backend-only**: resort snow feeds (CORS → server-side fetch), realtime-voice key minting.
+
+---
+
 ## By epic
 
 ### 1 · Entry points & unified session — 🟡 ~40%
