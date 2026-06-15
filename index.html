@@ -1120,12 +1120,15 @@
                 <!-- Install snippet for the search bar (live — reflects placeholder + starters) -->
                 <div class="embed-snippet">
                   <div class="embed-snippet__bar">
-                    <span class="embed-snippet__label">Install snippet</span>
+                    <span class="embed-snippet__label">Install snippet — copy &amp; paste this code</span>
                     <button type="button" class="embed-snippet__copy" id="embedSearchCopy">Copy</button>
                   </div>
                   <pre class="embed-snippet__code" id="embedSearchSnippet"></pre>
-                  <p class="field__hint" style="margin:8px 0 0">One snippet per page — put a different one (with its own chips) on each page you want the bar.</p>
                 </div>
+                <p class="embed-help">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="0.6" fill="currentColor"/></svg>
+                  <span>Paste where the bar should appear. Your <strong>placeholder &amp; chips above are baked into the code</strong> — to give a page its own chips, edit them here and drop that page's snippet on it.</span>
+                </p>
               </div>
 
               <!-- ===== STANDALONE MAGNIFYING GLASS BUTTON (separate sub-card) ===== -->
@@ -1206,9 +1209,16 @@
 
                 <!-- Install snippet for the standalone button -->
                 <div class="embed-snippet">
-                  <span class="embed-snippet__label">Install snippet</span>
-                  <span class="embed-snippet__tag">&lt;div</span> <span class="embed-snippet__attr">data-gsb-search-button</span><span class="embed-snippet__tag">&gt;&lt;/div&gt;</span>
+                  <div class="embed-snippet__bar">
+                    <span class="embed-snippet__label">Install snippet — copy &amp; paste this code</span>
+                    <button type="button" class="embed-snippet__copy" id="embedButtonCopy">Copy</button>
+                  </div>
+                  <pre class="embed-snippet__code" id="embedButtonSnippet">&lt;div data-gsb-search-button&gt;&lt;/div&gt;</pre>
                 </div>
+                <p class="embed-help">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="0.6" fill="currentColor"/></svg>
+                  <span>Drop into your top nav, sidebar, or any compact spot. <strong>Styling comes from your appearance settings above</strong> — no CSS needed.</span>
+                </p>
               </div>
             </section>
 

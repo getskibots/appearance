@@ -2688,6 +2688,26 @@
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+/* "How to use" note — visually distinct from the copyable code box above it:
+   no box, muted text, info icon, so it reads as guidance not as code. */
+.embed-help {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 9px 2px 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.embed-help svg {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+  color: var(--ink-muted);
+}
+.embed-help strong { color: var(--ink); font-weight: 600; }
 .embed-inline-preview__stage--button {
   /* button is small — center it tightly */
   padding: 18px 20px;

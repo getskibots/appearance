@@ -1656,6 +1656,15 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     setTimeout(function() { embedSearchCopy.removeAttribute('data-copied'); embedSearchCopy.textContent = 'Copy'; }, 1400);
   });
 
+  // BUTTON — copy the standalone-button install snippet (static)
+  var embedButtonCopy = $('embedButtonCopy');
+  if (embedButtonCopy) embedButtonCopy.addEventListener('click', function() {
+    if (navigator.clipboard) navigator.clipboard.writeText('<div data-gsb-search-button></div>');
+    embedButtonCopy.setAttribute('data-copied', 'true');
+    embedButtonCopy.textContent = 'Copied';
+    setTimeout(function() { embedButtonCopy.removeAttribute('data-copied'); embedButtonCopy.textContent = 'Copy'; }, 1400);
+  });
+
   // SEARCH BAR — clicking a preview chip opens chat with that question
   var embedStartersPreview = $('embedStartersPreview');
   if (embedStartersPreview) embedStartersPreview.addEventListener('click', function(e) {
