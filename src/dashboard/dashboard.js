@@ -674,7 +674,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
 
     // Conversation → message bubble style (classic | modern | fancy).
     document.body.setAttribute('data-msg-style', state.messageStyle || 'classic');
-    document.querySelectorAll('#bubbleStyleCards .anim-card').forEach(function(b) {
+    document.querySelectorAll('#msgStyleCards .anim-card').forEach(function(b) {
       var on = b.getAttribute('data-value') === (state.messageStyle || 'classic');
       b.setAttribute('data-checked', String(on));
       b.setAttribute('aria-checked', String(on));
@@ -966,8 +966,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       launcher: ['bubbleStyle','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','statusPillFeatures','ctaText'],
       typography: ['typography'],
       panel: ['layoutVariant','blurredBackground'],
-      conversation: ['messageStyle'],
-      effects: ['animationStyle','effectMode','effectIntensity','snowfall','typingIndicator'],
+      effects: ['animationStyle','typingIndicator','messageStyle','effectMode','effectIntensity','snowfall'],
       behavior: ['soundNotifications','popupMessagePreview','askForRating','realtimeVoice','disableTextInput'],
       embed: ['embedSearch','embedButton']
     };
@@ -1449,7 +1448,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   document.querySelectorAll('#animStyleCards .anim-card').forEach(function(c){
     c.addEventListener('click', function(){ state.animationStyle = c.getAttribute('data-value'); render(); });
   });
-  document.querySelectorAll('#bubbleStyleCards .anim-card').forEach(function(b){
+  document.querySelectorAll('#msgStyleCards .anim-card').forEach(function(b){
     b.addEventListener('click', function(){ state.messageStyle = b.getAttribute('data-value'); render(); });
   });
   bindToggle('toggleDisableInput', function(){ return state.disableTextInput; }, function(v){ state.disableTextInput = v; });

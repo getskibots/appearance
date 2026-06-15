@@ -696,9 +696,23 @@
   gap: 7px;
   padding: 0 11px;
 }
-.bubble-demo__b { height: 11px; border-radius: 6px; }
-.bubble-demo__b--ai   { width: 58%; align-self: flex-start; }
-.bubble-demo__b--user { width: 50%; align-self: flex-end; }
+.bubble-demo__b {
+  height: 11px;
+  border-radius: 6px;
+  /* True to form: the same fade-up entrance a real chat bubble uses (gsb-msg-in),
+     looping AI → guest so the example reads like a live thread. */
+  animation: bubble-demo-in 3.2s ease-out infinite;
+}
+.bubble-demo__b--ai   { width: 58%; align-self: flex-start; animation-delay: 0s; }
+.bubble-demo__b--user { width: 50%; align-self: flex-end; animation-delay: 0.55s; }
+@keyframes bubble-demo-in {
+  0%        { opacity: 0; transform: translateY(8px); }
+  12%, 80%  { opacity: 1; transform: translateY(0); }
+  92%, 100% { opacity: 0; transform: translateY(8px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bubble-demo__b { animation: none !important; opacity: 1; transform: none; }
+}
 /* Classic — solid fills + a single squared "tail" corner. */
 .bubble-demo--classic .bubble-demo__b--ai { background: #fff; border: 1px solid var(--border-strong); border-bottom-left-radius: 2px; }
 .bubble-demo--classic .bubble-demo__b--user { background: var(--brand, var(--accent)); border-bottom-right-radius: 2px; }
