@@ -1673,89 +1673,61 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
    FULL VOICE MODE OVERLAY — hands-free experience
    ========================================================================= */
 .gsb-voice-mode-overlay {
-  /* GENTLE VOICE OVERLAY — lays softly over the EXISTING chat (webcam hero,
-     conditions, live thread all stay visible behind a light veil). Top bar pinned
-     up top; the control panel sits at the bottom (where the composer was) and
-     extends to the canvas end. Fills any panel variant (side / middle / full). */
+  /* GENTLE VOICE OVERLAY — a soft veil over the EXISTING chat (the chat header,
+     webcam hero, conditions and live thread all stay visible behind it). The
+     controls float in the lower third (rule of thirds). The chat header sits crisp
+     above the veil and keeps its own ✕ (closing also ends voice). Any panel variant. */
   position: absolute;
   inset: 0;
   z-index: 100;
   display: none;
-  flex-direction: column;
-  justify-content: space-between;
   color: var(--jh-ink);
   background: rgba(247, 243, 237, 0.5);
   -webkit-backdrop-filter: blur(2.5px);
   backdrop-filter: blur(2.5px);
 }
 
-.gsb-voice-mode-overlay[data-open="true"] { display: flex; }
+.gsb-voice-mode-overlay[data-open="true"] { display: block; }
 
-/* While voice is live: the control panel takes the composer's place, and the
-   thread is padded so its latest turns sit above the panel (seen behind the veil). */
+/* Keep the chat header crisp + clickable above the veil. */
+body[data-voice-active="true"] .gsb-chat-header { position: relative; z-index: 101; }
+/* The voice controls replace the composer; small breathing room under the thread. */
 body[data-voice-active="true"] .gsb-composer-row { display: none; }
-body[data-voice-active="true"] #gsbMessages { padding-bottom: 272px; }
+body[data-voice-active="true"] #gsbMessages { padding-bottom: 28px; }
 
-/* Top bar — opaque, pinned at the top: live presence + end */
-.gsb-voice-mode__topbar {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 13px 16px;
-  border-bottom: 1px solid var(--jh-border);
-  background: var(--jh-bg);
-}
-.gsb-voice-mode__presence {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: calc(14px * var(--gsb-text-scale, 1));
-  font-weight: 600;
-  color: var(--jh-ink);
-}
-.gsb-voice-mode__pdot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: #3eb364;
-  flex: 0 0 auto;
-  animation: voice-status-pulse 1.6s ease-in-out infinite;
-}
-
-/* Bottom control panel — opaque, flush to the canvas end. Begin/End + orb + status.
-   Content is width-capped so it stays centered in a wide Full panel. */
+/* Floating control cluster — lifted into the lower third, over the veiled chat.
+   A soft halo keeps the status + caption legible; the orb and buttons read on their
+   own. Width-capped so it stays centered in a wide Full panel. */
 .gsb-voice-mode__center {
-  flex: 0 0 auto;
+  position: absolute;
+  left: 50%;
+  bottom: 9%;
+  transform: translateX(-50%);
+  z-index: 2;
+  width: min(320px, 86%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 16px 18px 18px;
+  gap: 11px;
   text-align: center;
-  border-top: 1px solid var(--jh-border);
-  background: var(--jh-bg);
+  pointer-events: none;
 }
+.gsb-voice-mode__center::before {
+  content: "";
+  position: absolute;
+  inset: -26px -18px;
+  background: radial-gradient(closest-side, rgba(247, 243, 237, 0.94) 52%, rgba(247, 243, 237, 0) 100%);
+  z-index: -1;
+  pointer-events: none;
+}
+.gsb-voice-mode__controls { pointer-events: auto; }
 
-.gsb-voice-mode__exit {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--jh-surface);
-  border: 1px solid var(--jh-border);
-  color: var(--jh-ink-soft);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.gsb-voice-mode__exit:hover { background: var(--jh-border); }
-.gsb-voice-mode__exit svg { width: 13px; height: 13px; }
 
 
 .gsb-voice-mode__orb {
   position: relative;
-  width: 68px;
-  height: 68px;
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
   flex: 0 0 auto;
   background:

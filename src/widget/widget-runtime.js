@@ -1355,7 +1355,7 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
   // Voice events
   $('gsbComposerMic').addEventListener('click', toggleComposerListening);
   $('gsbVoiceModeBtn').addEventListener('click', openVoiceMode);
-  $('gsbVoiceModeExit').addEventListener('click', closeVoiceMode);
+  if ($('gsbVoiceModeExit')) $('gsbVoiceModeExit').addEventListener('click', closeVoiceMode);
   $('gsbVoiceMainBtn').addEventListener('click', handleVoiceMainBtn);
   if ($('gsbVoiceEndBtn')) $('gsbVoiceEndBtn').addEventListener('click', closeVoiceMode);
 
