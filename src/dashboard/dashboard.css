@@ -615,6 +615,8 @@
 /* Panel-motion cards (Animations & effects) — each plays a looping mini-preview
    of its actual motion (scale from corner / slide up / fade in). */
 .anim-cards { display: flex; gap: 10px; max-width: 480px; }
+.anim-cards--four { flex-wrap: wrap; }
+.anim-cards--four .anim-card { flex: 1 1 calc(50% - 5px); }
 .anim-card {
   flex: 1 1 0;
   display: flex;
@@ -697,6 +699,7 @@
   padding: 0 11px;
 }
 .bubble-demo__b {
+  position: relative;
   height: 11px;
   border-radius: 6px;
   /* True to form: the same fade-up entrance a real chat bubble uses (gsb-msg-in),
@@ -713,20 +716,22 @@
 @media (prefers-reduced-motion: reduce) {
   .bubble-demo__b { animation: none !important; opacity: 1; transform: none; }
 }
-/* Classic — solid fills + a single squared "tail" corner. */
+/* Classic — solid fills + a real little tail. */
 .bubble-demo--classic .bubble-demo__b--ai { background: #fff; border: 1px solid var(--border-strong); border-bottom-left-radius: 2px; }
 .bubble-demo--classic .bubble-demo__b--user { background: var(--brand, var(--accent)); border-bottom-right-radius: 2px; }
-/* Modern — borderless, uniform pill radius. */
-.bubble-demo--modern .bubble-demo__b { border-radius: 999px; }
-.bubble-demo--modern .bubble-demo__b--ai { background: #e6e9ee; }
-.bubble-demo--modern .bubble-demo__b--user { background: var(--brand, var(--accent)); }
-/* Fancy — floating white AI card + gradient guest bubble, soft shadows. */
-.bubble-demo--fancy .bubble-demo__b--ai { background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.13); border-bottom-left-radius: 3px; }
-.bubble-demo--fancy .bubble-demo__b--user {
-  background: linear-gradient(135deg, var(--brand, var(--accent)), color-mix(in srgb, var(--brand, var(--accent)) 68%, #000));
-  box-shadow: 0 3px 9px color-mix(in srgb, var(--brand, var(--accent)) 42%, transparent);
-  border-bottom-right-radius: 3px;
-}
+.bubble-demo--classic .bubble-demo__b--ai::after { content: ""; position: absolute; left: -4px; bottom: 0; border-right: 6px solid #fff; border-top: 6px solid transparent; }
+.bubble-demo--classic .bubble-demo__b--user::after { content: ""; position: absolute; right: -4px; bottom: 0; border-left: 6px solid var(--brand, var(--accent)); border-top: 6px solid transparent; }
+/* Minimal — AI is plain text (no chrome, thinner line); only the guest gets a pill. */
+.bubble-demo--minimal .bubble-demo__b { border-radius: 999px; }
+.bubble-demo--minimal .bubble-demo__b--ai { background: var(--ink-muted); height: 7px; }
+.bubble-demo--minimal .bubble-demo__b--user { background: var(--brand, var(--accent)); }
+/* Elevated — floating cards with soft shadows. */
+.bubble-demo--elevated .bubble-demo__b--ai { background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.14); }
+.bubble-demo--elevated .bubble-demo__b--user { background: var(--brand, var(--accent)); box-shadow: 0 2px 7px color-mix(in srgb, var(--brand, var(--accent)) 40%, transparent); }
+/* Squared — crisp sharp corners. */
+.bubble-demo--squared .bubble-demo__b { border-radius: 2px; }
+.bubble-demo--squared .bubble-demo__b--ai { background: #fff; border: 1px solid var(--border-strong); }
+.bubble-demo--squared .bubble-demo__b--user { background: var(--brand, var(--accent)); }
 
 /* Section divider inside a card (snowfall is the heavier, continuous effect). */
 .field-divider { border: 0; border-top: 1px solid var(--border); margin: 22px 0 18px; }

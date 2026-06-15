@@ -1295,33 +1295,49 @@ body[data-variant="full"].gsb-conversation-started .gsb-conversation-intro { dis
   border-bottom-right-radius: 4px;
 }
 
-/* ===== Conversation bubble variants — Classic / Modern / Fancy =====
-   Classic = the base rules above (solid fills, single "tail" corner). Modern and
-   Fancy restyle the AI + user bubbles; driven by body[data-msg-style], which
-   applyWidgetConfig (demo/production) and the dashboard render both set. */
+/* ===== Conversation bubble variants — Classic / Minimal / Elevated / Squared =====
+   The base .gsb-msg--ai/--user rules above are the Classic baseline (solid fills).
+   Each variant is gated on body[data-msg-style], set by applyWidgetConfig
+   (demo/production) and the dashboard render. */
 
-/* MODERN — clean & airy: uniform pill radius (no tail), borderless AI, roomier. */
-body[data-msg-style="modern"] .gsb-msg { border-radius: 20px; padding: 11px 16px; }
-body[data-msg-style="modern"] .gsb-msg--ai {
-  background: var(--jh-surface);
-  border: 0;
-  border-bottom-left-radius: 20px;
+/* CLASSIC — solid fills + a real pointer tail. The AI tail keeps its border via a
+   layered triangle (border-color triangle behind, fill triangle in front). */
+body[data-msg-style="classic"] .gsb-msg { position: relative; overflow: visible; }
+body[data-msg-style="classic"] .gsb-msg--user:not(.gsb-typing-indicator)::after {
+  content: ""; position: absolute; right: -6px; bottom: 0; width: 0; height: 0;
+  border-left: 9px solid var(--brand); border-top: 9px solid transparent;
 }
-body[data-msg-style="modern"] .gsb-msg--user { border-bottom-right-radius: 20px; }
+body[data-msg-style="classic"] .gsb-msg--ai:not(.gsb-typing-indicator)::before {
+  content: ""; position: absolute; left: -7px; bottom: -1px; width: 0; height: 0;
+  border-right: 10px solid var(--jh-border); border-top: 10px solid transparent;
+}
+body[data-msg-style="classic"] .gsb-msg--ai:not(.gsb-typing-indicator)::after {
+  content: ""; position: absolute; left: -5px; bottom: 0; width: 0; height: 0;
+  border-right: 8px solid var(--jh-surface); border-top: 8px solid transparent;
+}
 
-/* FANCY — elevated: gradient guest bubble + soft shadows, floating white AI card. */
-body[data-msg-style="fancy"] .gsb-msg { border-radius: 16px; padding: 11px 15px; }
-body[data-msg-style="fancy"] .gsb-msg--ai {
-  background: #fff;
-  border: 1px solid var(--jh-border);
-  border-bottom-left-radius: 16px;
-  box-shadow: 0 5px 16px rgba(23, 19, 15, 0.09), 0 1px 3px rgba(23, 19, 15, 0.06);
+/* MINIMAL — the AI reply is plain text (no bubble); only the guest gets a pill. */
+body[data-msg-style="minimal"] .gsb-msg { border-radius: 16px; }
+body[data-msg-style="minimal"] .gsb-msg--ai:not(.gsb-typing-indicator) {
+  background: none; border: 0; padding-left: 2px; border-bottom-left-radius: 16px;
 }
-body[data-msg-style="fancy"] .gsb-msg--user {
-  background: linear-gradient(135deg, var(--brand), var(--brand-deep));
-  border-bottom-right-radius: 16px;
-  box-shadow: 0 7px 20px rgba(var(--brand-rgb), 0.30);
+body[data-msg-style="minimal"] .gsb-msg--user { border-bottom-right-radius: 16px; }
+
+/* ELEVATED — both sides float as soft-shadowed cards (white AI, solid guest). */
+body[data-msg-style="elevated"] .gsb-msg { border-radius: 14px; }
+body[data-msg-style="elevated"] .gsb-msg--ai {
+  background: #fff; border: 1px solid var(--jh-border); border-bottom-left-radius: 14px;
+  box-shadow: 0 4px 14px rgba(23, 19, 15, 0.10), 0 1px 3px rgba(23, 19, 15, 0.06);
 }
+body[data-msg-style="elevated"] .gsb-msg--user {
+  border-bottom-right-radius: 14px;
+  box-shadow: 0 6px 16px rgba(var(--brand-rgb), 0.28);
+}
+
+/* SQUARED — crisp 3px corners, solid fills (pairs with a sharp/zero-radius brand). */
+body[data-msg-style="squared"] .gsb-msg { border-radius: 3px; }
+body[data-msg-style="squared"] .gsb-msg--ai { border-bottom-left-radius: 3px; }
+body[data-msg-style="squared"] .gsb-msg--user { border-bottom-right-radius: 3px; }
 
 /* TYPING INDICATOR — three dots pulsing in sequence, styled like an AI bubble */
 .gsb-typing-indicator {
