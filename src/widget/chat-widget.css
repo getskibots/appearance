@@ -307,17 +307,23 @@
   flex-direction: column;
   gap: 3px;
   align-items: stretch;
-  min-width: 152px;
+  /* Shrink-wrap to the widest visible row so the pill always hugs its content
+     (avatars / weather / "Need help?" CTA) with no dead horizontal space. As
+     status-pill features are toggled off, the pill tightens to match whatever
+     remains — typically the CTA. */
+  width: max-content;
+  min-width: 0;
+  max-width: min(300px, calc(100vw - 32px));
   animation: gsb-launcher-pulse-enhanced 4s ease-out infinite;
   text-align: left;
-  transition: min-width 280ms ease, padding 280ms ease, gap 280ms ease;
+  transition: padding 280ms ease, gap 280ms ease;
 }
 
-/* EXPANDED state — when liveagent is on, AGENT ONLINE label sits inline,
-   pill widens to give it room and let "Need help?" center properly */
+/* EXPANDED state — when liveagent is on, AGENT ONLINE label sits inline.
+   Width stays content-driven (the ONLINE row sets it naturally); we only
+   open up the padding/gap a touch so the taller pill breathes. */
 [data-liveagent="on"] .gsb-launcher[data-icon-style="enhanced"],
 .gsb-launcher[data-icon-style="enhanced"][data-liveagent="on"] {
-  min-width: 220px;
   padding: 8px 14px 8px 8px;
   gap: 6px;
 }
@@ -325,6 +331,11 @@
 .gsb-launcher__row {
   display: flex;
   align-items: center;
+  /* Center the cluster so a short row (e.g. avatars only, weather off) sits
+     centered under the CTA instead of hugging the left edge. When the ONLINE
+     microlabel is present it flex-grows and fills the row, so centering is a
+     no-op there. */
+  justify-content: center;
   gap: 11px;
 }
 
