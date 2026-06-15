@@ -1107,25 +1107,22 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     voice.fullModeOrbState = state;
     $('gsbVoiceOrb').setAttribute('data-state', state);
     $('gsbVoiceStatus').setAttribute('data-state', state);
+    // Overlay carries the state so CSS can show the Begin button only while idle.
+    $('gsbVoiceModeOverlay').setAttribute('data-state', state);
 
     // Guest-facing copy is invitation-voiced, not machine-state ("Listening" reads
     // as surveillance). "Go ahead…" = your turn. The main button toggles talk/pause;
     // the separate End button always exits.
     var labels = {
-      idle: voice.begun ? 'Paused' : 'Ready when you are',
+      idle: 'Ready when you are',
       listening: 'Go ahead…',
       thinking: 'Thinking',
       speaking: 'Speaking'
     };
     $('gsbVoiceStatus').textContent = labels[state] || 'Ready when you are';
-
-    var btnLabels = {
-      idle: voice.begun ? 'Resume' : 'Begin Voice Chat',
-      listening: 'Pause',
-      thinking: 'Thinking…',
-      speaking: 'Skip'
-    };
-    $('gsbVoiceMainBtnLabel').textContent = btnLabels[state] || 'Begin Voice Chat';
+    // Primary button shows only while idle (CSS); once begun, End is the only
+    // control — Close stops a reply by default, so there's no Pause or Skip.
+    $('gsbVoiceMainBtnLabel').textContent = 'Begin Voice Chat';
   }
 
   function setTranscript(text, kind) {
@@ -1155,36 +1152,24 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
       return;
     }
     voice.fullModeActive = true;
-    voice.paused = false;
     voice.begun = false;
     $('gsbVoiceModeOverlay').setAttribute('data-open', 'true');
+    // Gentle overlay: the voice UI lays over the EXISTING chat (webcam hero,
+    // conditions, live thread all stay visible behind a soft veil). The control
+    // panel takes the composer's spot; the thread is padded so new turns clear it.
     document.body.setAttribute('data-voice-active', 'true');
-    // Full-panel takeover: move the real message list into the voice surface so
-    // turns render in the chosen bubble style and stream in. Remember its home.
-    var msgs = $('gsbMessages'), slot = $('gsbVoiceThread');
-    if (msgs && slot && msgs.parentNode !== slot) {
-      voice.msgHome = { parent: msgs.parentNode, next: msgs.nextSibling };
-      slot.appendChild(msgs);
-    }
     setOrbState('idle');
     setTranscript('');
     if ($('gsbVoiceHistory')) $('gsbVoiceHistory').innerHTML = '';
-    // Pin the thread to the bottom so the latest turns are in view behind the card.
     requestAnimationFrame(snapConversationToBottom);
-    // Don't auto-start — the centered "Begin Voice Chat" button is the clear start.
+    // Don't auto-start — "Begin Voice Chat" is the clear start.
   }
 
   function closeVoiceMode() {
     voice.fullModeActive = false;
-    voice.paused = false;
+    voice.begun = false;
     $('gsbVoiceModeOverlay').setAttribute('data-open', 'false');
     document.body.removeAttribute('data-voice-active');
-    // Move the message list back to its home in the chat body.
-    var msgs = $('gsbMessages');
-    if (msgs && voice.msgHome) {
-      voice.msgHome.parent.insertBefore(msgs, voice.msgHome.next);
-      voice.msgHome = null;
-    }
     if (voice.recognition) {
       try { voice.recognition.stop(); } catch (e) { /* ignore */ }
     }
@@ -1260,8 +1245,6 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
 
     recog.onend = function() {
       if (!voice.fullModeActive) return;
-      // Paused via the main button — don't submit; just go quiet.
-      if (voice.paused) { setTranscript(''); setOrbState('idle'); return; }
       var finalText = (voice.finalTranscript + ' ' + voice.interimTranscript).trim();
       if (finalText.length > 1) {
         // Commit what the guest said as a bubble, then stream the AI reply.
@@ -1279,8 +1262,8 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
           }, 250);
         }, 400);
       } else {
-        // No meaningful input — just go back to listening
-        setOrbState('idle');
+        // No meaningful input — keep listening (continuous until End).
+        setTimeout(function() { if (voice.fullModeActive) startVoiceModeListening(); }, 300);
       }
     };
 
@@ -1292,25 +1275,12 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
   }
 
   function handleVoiceMainBtn() {
-    var state = voice.fullModeOrbState;
-    if (state === 'idle') {
-      // Begin / resume talking.
+    // The primary button is only visible while idle (see CSS) — it begins the
+    // conversation. Once begun, the loop is continuous and End is the only control.
+    if (voice.fullModeOrbState === 'idle') {
       voice.begun = true;
-      voice.paused = false;
-      startVoiceModeListening();
-    } else if (state === 'listening') {
-      // Pause the mic (without submitting) — the separate End button exits.
-      voice.paused = true;
-      if (voice.recognition) { try { voice.recognition.stop(); } catch (e) { /* ignore */ } }
-      setOrbState('idle');
-    } else if (state === 'speaking') {
-      // Skip current speech, go back to listening.
-      if (voice.ttsSupported) window.speechSynthesis.cancel();
-      voice.paused = false;
-      setOrbState('listening');
       startVoiceModeListening();
     }
-    // 'thinking' state: button is non-interactive
   }
 
   // ============= EVENT WIRING =============
