@@ -57,11 +57,13 @@ Same `<head>` script on both pages — only the div changes. That's the
 
 ### Editing chips by hand (no dashboard round-trip)
 
-You don't have to reconfigure in the dashboard for every page. Copy the snippet
-once, then **edit the `data-gsb-starters` value directly** — each chip is separated
-by a `|` (up to 4). Easiest workflow: paste the snippet into a text file, change the
-chips for that page, and paste the result onto the page. The dashboard's generated
-snippet is just a convenient starting point.
+You don't have to reconfigure in the dashboard for every page. **Whatever is in the
+`data-gsb-starters` value is exactly what renders live on that page** — copy the
+snippet once, then edit that list directly (each chip separated by a `|`, up to 4)
+and the production bar shows those starters as-is, no dashboard round-trip. Easiest
+workflow: paste the snippet into a text file, change the chips for that page, and
+paste the result onto the page. The dashboard's generated snippet is just a
+convenient starting point.
 
 ## Behavior
 
