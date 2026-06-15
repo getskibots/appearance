@@ -1923,6 +1923,17 @@ body[data-voice-active="true"] #gsbMessages { padding-bottom: 28px; }
   background: rgba(var(--brand-rgb), 0.08);
   border-color: var(--brand);
 }
+/* Once the conversation is live (not idle), End becomes the single, prominent
+   control — solid dark fill instead of the light outline. */
+.gsb-voice-mode-overlay:not([data-state="idle"]) .gsb-voice-mode__btn--end {
+  background: var(--jh-ink);
+  border-color: var(--jh-ink);
+  color: #fff;
+}
+.gsb-voice-mode-overlay:not([data-state="idle"]) .gsb-voice-mode__btn--end:hover {
+  background: #000;
+  border-color: #000;
+}
 
 .gsb-voice-mode__btn svg { width: 14px; height: 14px; }
 
