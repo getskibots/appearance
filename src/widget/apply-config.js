@@ -118,6 +118,10 @@ export function applyWidgetConfig(config) {
   body.setAttribute('data-liveagent', liveAgent ? 'on' : 'off');
   setText('gsbAgentStatusLabel', liveAgent ? 'Online' : 'AI Concierge');
 
+  /* ---- Weather readout (one switch): governs BOTH the launcher temp AND the
+     in-chat conditions card. Off → hide the conditions card too. ---- */
+  body.setAttribute('data-show-conditions', pill.weather === false ? 'false' : 'true');
+
   /* ---- Hands-free voice on/off ---- */
   body.setAttribute('data-voice', config.realtimeVoice === false ? 'off' : 'on');
 

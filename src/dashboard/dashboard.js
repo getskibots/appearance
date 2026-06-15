@@ -616,6 +616,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     var isPillStyle = (state.bubbleStyle === 'enhanced' || state.bubbleStyle === 'slidein');
     launcher.setAttribute('data-show-weather', state.statusPillFeatures.weather && isPillStyle ? 'true' : 'false');
     launcher.setAttribute('data-show-cta', state.statusPillFeatures.needHelpCta && isPillStyle ? 'true' : 'false');
+    // Weather readout governs the in-chat conditions card too (one switch for all weather).
+    canvas.setAttribute('data-show-conditions', state.statusPillFeatures.weather === false ? 'false' : 'true');
     canvas.setAttribute('data-liveagent', state.statusPillFeatures.liveAgent ? 'on' : 'off');
     document.body.setAttribute('data-liveagent', state.statusPillFeatures.liveAgent ? 'on' : 'off');
     // Realtime voice on/off → hides the hands-free Voice Mode button + overlay in the chat.

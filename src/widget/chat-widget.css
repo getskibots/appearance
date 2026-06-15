@@ -1018,6 +1018,10 @@ body[data-variant="full"] .gsb-chat-left-column {
   font-size: calc(12px * var(--gsb-text-scale, 1));
   flex: 0 0 auto;
 }
+/* Weather readout off → hide the in-chat conditions card (one switch for all weather).
+   Demo sets the flag on <body>; the dashboard preview sets it on .preview-canvas. */
+body[data-show-conditions="false"] .gsb-conditions,
+.preview-canvas[data-show-conditions="false"] .gsb-conditions { display: none; }
 
 .gsb-conditions-header {
   display: flex;
