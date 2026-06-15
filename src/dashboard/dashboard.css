@@ -2708,6 +2708,15 @@
   color: var(--ink-muted);
 }
 .embed-help strong { color: var(--ink); font-weight: 600; }
+.embed-help code {
+  font-family: 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0 4px;
+  color: var(--ink);
+}
 .embed-inline-preview__stage--button {
   /* button is small — center it tightly */
   padding: 18px 20px;

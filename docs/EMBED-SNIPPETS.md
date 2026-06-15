@@ -55,6 +55,14 @@ placeholder-only bar.
 Same `<head>` script on both pages — only the div changes. That's the
 "drop it in, each page with its own chips" flow.
 
+### Editing chips by hand (no dashboard round-trip)
+
+You don't have to reconfigure in the dashboard for every page. Copy the snippet
+once, then **edit the `data-gsb-starters` value directly** — each chip is separated
+by a `|` (up to 4). Easiest workflow: paste the snippet into a text file, change the
+chips for that page, and paste the result onto the page. The dashboard's generated
+snippet is just a convenient starting point.
+
 ## Behavior
 
 - Chips render beneath the bar (`.gsb-embed-starters`, brand-pill style, hidden when empty).
