@@ -230,8 +230,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     disableTextInput: false,
     // Typography
     typography: {
-      bodyFont: 'Inter',
-      displayFont: 'Playfair Display',
+      bodyFont: 'Montserrat',
+      displayFont: 'Archivo',
       textScale: 1.0
     },
     // Embeddable Search controls

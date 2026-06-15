@@ -50,9 +50,15 @@
   --jh-surface:    #f7f5f1;
   --jh-border:     #e5e2dc;
 
-  /* Easing curves + serif fallback used by demo chat CSS */
+  /* Default widget typography = the "Modern" preset (Montserrat body / Archivo
+     display). JS (applyWidgetConfig) overrides these per saved config; defining
+     them here makes the chat UI paint Modern on initial onload, before any JS. */
+  --gsb-body-font:    'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --gsb-display-font: 'Archivo', 'Segoe UI', system-ui, sans-serif;
+
+  /* Easing curves + display fallback used by demo chat CSS */
   --ease-launch:   cubic-bezier(0.55, 0.08, 0.18, 0.99);
-  --serif:         var(--gsb-display-font, 'Playfair Display', Georgia, serif);
+  --serif:         var(--gsb-display-font, 'Archivo', 'Segoe UI', sans-serif);
 
   /* Master corner radius (driven by Corner radius slider in Identity).
      --gsb-radius applies to launcher pills, slide-in pill, chat surface.
