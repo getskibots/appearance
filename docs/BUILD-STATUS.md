@@ -76,7 +76,9 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
   `seasonMode` persists in `gsb-weather-config-v1`. **Remaining:** wire the same season swap
   into the *production* widget conditions card (`widget-runtime.js` `cell*` still shows the
   leftover snow cells). Scoped to Open-Meteo on purpose; Resort Direct defines its own season
-  handling when built. Also open: a "turn off conditions" toggle.
+  handling when built. The **"turn off conditions" toggle is now built** — the Appearance
+  **Weather readout** switch is one control for all weather: off hides both the launcher
+  temperature *and* the in-chat conditions card (`body[data-show-conditions="false"]`).
 
 ### 5 · Appearance tab — ✅ ~95% (the heaviest pre-build)
 - **5.1 Identity & branding** ✅ — logo upload (JPEG now **accepted with a warning**,
