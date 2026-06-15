@@ -1673,29 +1673,78 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
    FULL VOICE MODE OVERLAY — hands-free experience
    ========================================================================= */
 .gsb-voice-mode-overlay {
-  /* IN-THREAD VOICE DOCK — sits at the bottom of the chat panel (over the
-     composer) so the styled conversation thread stays visible above while you
-     talk. Light surface to match the chat; the brand orb is the one accent. */
+  /* FULL-PANEL VOICE TAKEOVER — fills the chat panel (any variant: side / middle /
+     full) with a light voice surface: a top bar, the streaming Q&A thread (the real
+     message list is moved in here while live), and a control dock. */
   position: absolute;
-  left: 0; right: 0; bottom: 0;
+  inset: 0;
   background: var(--jh-bg);
-  border-top: 1px solid var(--jh-border);
-  box-shadow: 0 -10px 30px rgba(23, 19, 15, 0.10);
   z-index: 100;
   display: none;
   flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 18px 16px;
   color: var(--jh-ink);
 }
 
 .gsb-voice-mode-overlay[data-open="true"] { display: flex; }
 
-/* While voice is live the dock replaces the composer; pad the thread so the last
-   bubble clears the dock. */
-body[data-voice-active="true"] .gsb-composer-row { display: none; }
-body[data-voice-active="true"] #gsbMessages { padding-bottom: 210px; }
+/* Top bar — live presence + title + end */
+.gsb-voice-mode__topbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--jh-border);
+}
+.gsb-voice-mode__presence {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: calc(14px * var(--gsb-text-scale, 1));
+  font-weight: 600;
+  color: var(--jh-ink);
+}
+.gsb-voice-mode__pdot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #3eb364;
+  flex: 0 0 auto;
+  animation: voice-status-pulse 1.6s ease-in-out infinite;
+}
+
+/* Streaming Q&A thread — the real #gsbMessages is moved in here while voice is live,
+   so turns render in the admin's chosen bubble style and stream in word-by-word. */
+.gsb-voice-mode__thread {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 16px 16px 10px;
+  min-height: 0;
+}
+.gsb-voice-mode__thread #gsbMessages {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: auto;
+  flex: 0 1 auto;
+  padding: 0;
+  overflow: visible;
+}
+
+/* Control dock — live caption + orb + status + clear begin/continue/end controls */
+.gsb-voice-mode__dock {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 18px 16px;
+  border-top: 1px solid var(--jh-border);
+  background: var(--jh-bg);
+}
+.gsb-voice-mode__row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
 
 .gsb-voice-mode__head { display: none; }
 
@@ -1709,19 +1758,19 @@ body[data-voice-active="true"] #gsbMessages { padding-bottom: 210px; }
 }
 
 .gsb-voice-mode__exit {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: #fff;
+  background: var(--jh-surface);
+  border: 1px solid var(--jh-border);
+  color: var(--jh-ink-soft);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
 }
-.gsb-voice-mode__exit:hover { background: rgba(255,255,255,0.12); }
-.gsb-voice-mode__exit svg { width: 14px; height: 14px; }
+.gsb-voice-mode__exit:hover { background: var(--jh-border); }
+.gsb-voice-mode__exit svg { width: 13px; height: 13px; }
 
 /* Main stage: centered orb */
 .gsb-voice-mode__stage {
@@ -1887,15 +1936,15 @@ body[data-voice-active="true"] #gsbMessages { padding-bottom: 210px; }
 }
 
 .gsb-voice-mode__btn {
-  padding: 14px 24px;
+  padding: 11px 20px;
   font-family: inherit;
   font-size: calc(12px * var(--gsb-text-scale, 1));
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
-  color: #fff;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.16);
+  color: var(--jh-ink);
+  background: var(--jh-surface);
+  border: 1px solid var(--jh-border);
   border-radius: 999px;
   cursor: pointer;
   transition: all 160ms ease;
@@ -1904,10 +1953,7 @@ body[data-voice-active="true"] #gsbMessages { padding-bottom: 210px; }
   gap: 8px;
 }
 
-.gsb-voice-mode__btn:hover {
-  background: rgba(255,255,255,0.14);
-  border-color: rgba(255,255,255,0.3);
-}
+.gsb-voice-mode__btn:hover { background: var(--jh-border); }
 
 .gsb-voice-mode__btn--primary {
   background: var(--brand);
@@ -1918,6 +1964,17 @@ body[data-voice-active="true"] #gsbMessages { padding-bottom: 210px; }
 .gsb-voice-mode__btn--primary:hover {
   background: var(--brand-deep);
   border-color: var(--brand-deep);
+}
+
+/* Clear, always-visible end control */
+.gsb-voice-mode__btn--end {
+  background: transparent;
+  border-color: var(--jh-border);
+  color: var(--brand);
+}
+.gsb-voice-mode__btn--end:hover {
+  background: rgba(var(--brand-rgb), 0.08);
+  border-color: var(--brand);
 }
 
 .gsb-voice-mode__btn svg { width: 14px; height: 14px; }

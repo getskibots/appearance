@@ -1526,37 +1526,36 @@
                     <span class="gsb-footer-mark">Powered by Get Ski Bots</span>
                   </div>
 
-                  <!-- FULL VOICE MODE OVERLAY (hands-free) -->
-                  <div class="gsb-voice-mode-overlay" id="gsbVoiceModeOverlay" data-open="false">
-                    <div class="gsb-voice-mode__head">
-                      <span class="gsb-voice-mode__title">Voice chat</span>
+                  <!-- FULL-PANEL VOICE TAKEOVER (hands-free) — top bar, streaming Q&A
+                       thread (the live message list is moved in here), control dock. -->
+                  <div class="gsb-voice-mode-overlay" id="gsbVoiceModeOverlay" data-open="false" data-state="idle">
+                    <div class="gsb-voice-mode__topbar">
+                      <span class="gsb-voice-mode__presence"><span class="gsb-voice-mode__pdot" aria-hidden="true"></span>Voice chat</span>
                       <button class="gsb-voice-mode__exit" id="gsbVoiceModeExit" aria-label="End voice chat">
-                        <svg viewBox="0 0 16 16" fill="none">
-                          <path d="M3 3l10 10M13 3l-10 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                        </svg>
+                        <svg viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3l-10 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
                       </button>
                     </div>
 
-                    <div class="gsb-voice-mode__stage">
-                      <div class="gsb-voice-mode__orb" id="gsbVoiceOrb" data-state="idle">
-                        <div class="gsb-voice-mode__bars">
-                          <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-                        </div>
-                      </div>
-                      <div class="gsb-voice-mode__status" id="gsbVoiceStatus" data-state="idle">Tap to talk</div>
+                    <div class="gsb-voice-mode__thread" id="gsbVoiceThread"></div>
+
+                    <div class="gsb-voice-mode__dock">
                       <div class="gsb-voice-mode__transcript" id="gsbVoiceTranscript"></div>
-                      <div class="gsb-voice-mode__history" id="gsbVoiceHistory"></div>
+                      <div class="gsb-voice-mode__row">
+                        <div class="gsb-voice-mode__orb" id="gsbVoiceOrb" data-state="idle">
+                          <div class="gsb-voice-mode__bars"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                        </div>
+                        <div class="gsb-voice-mode__status" id="gsbVoiceStatus" data-state="idle">Tap to talk</div>
+                      </div>
+                      <div class="gsb-voice-mode__controls">
+                        <button class="gsb-voice-mode__btn gsb-voice-mode__btn--primary" id="gsbVoiceMainBtn">
+                          <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
+                          <span id="gsbVoiceMainBtnLabel">Tap to talk</span>
+                        </button>
+                        <button class="gsb-voice-mode__btn gsb-voice-mode__btn--end" id="gsbVoiceEndBtn">End voice chat</button>
+                      </div>
                     </div>
 
-                    <div class="gsb-voice-mode__controls">
-                      <button class="gsb-voice-mode__btn gsb-voice-mode__btn--primary" id="gsbVoiceMainBtn">
-                        <svg viewBox="0 0 24 24" fill="none">
-                          <rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/>
-                          <path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-                        </svg>
-                        <span id="gsbVoiceMainBtnLabel">Tap to talk</span>
-                      </button>
-                    </div>
+                    <div class="gsb-voice-mode__history" id="gsbVoiceHistory" style="display:none"></div>
                   </div>
 
                 </div>
