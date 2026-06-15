@@ -512,25 +512,48 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
   else if (__layoutMQ.addListener) __layoutMQ.addListener(applyColumnLayout);
 
   // ============= MESSAGE HANDLING =============
+  // When the chat is opened *with* a query (starter chip or hero search), the
+  // panel is mid-expand from the launcher. A smooth scroll races that animation
+  // and can leave the question scrolled off below the webcam hero — so the
+  // opening exchange (question + typing) SNAPS into view instantly instead.
+  // Transform-scale doesn't affect scroll math, so it lands correctly even while
+  // the panel is still scaling up. Cleared once the panel has finished expanding.
+  var conversationOpening = false;
+  // Find the element that actually scrolls the message list (differs per panel
+  // variant) and pin it to the bottom. Uses scrollTop — which, unlike
+  // scrollIntoView/getBoundingClientRect, is NOT distorted by the panel's
+  // open-animation transform — so the conversation lands correctly mid-expand.
+  function snapConversationToBottom() {
+    var el = $('gsbMessages');
+    while (el && el !== document.body) {
+      var oy = getComputedStyle(el).overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight + 1) {
+        el.scrollTop = el.scrollHeight;
+        return;
+      }
+      el = el.parentElement;
+    }
+  }
+  function scrollMsgIntoView(msg) {
+    // Opening with a query: snap instantly (transform-safe) so the question +
+    // typing are what the user lands on as the panel expands.
+    if (conversationOpening) { snapConversationToBottom(); return; }
+    // 'block: end' keeps the new bubble at the bottom of the visible area
+    // (closest to the composer) — the natural reading position. scrollIntoView
+    // on the element is reliable across all three variants once the panel is at
+    // rest (no transform in flight).
+    requestAnimationFrame(function() {
+      msg.scrollIntoView({ block: 'end', behavior: 'smooth' });
+    });
+  }
+
   function appendMessage(text, role) {
     var msg = document.createElement('div');
     msg.className = 'gsb-msg gsb-msg--' + role;
     msg.textContent = text;
     $('gsbMessages').appendChild(msg);
     body.classList.add('gsb-conversation-started');
-
-    // Auto-scroll the new message into view. Using scrollIntoView on the
-    // appended element (rather than setting scrollTop on a parent) is more
-    // reliable across the three panel variants — Side and Middle scroll their
-    // right column, Full scrolls its right column independently from the left.
-    // This ensures every new message — user's, AI's, or the typing indicator —
-    // becomes visible as it arrives, so the user always sees their answer
-    // coming through and is positioned to ask the next question.
-    // 'block: end' keeps the new bubble at the bottom of the visible area
-    // (closest to the composer), which is the natural reading position.
-    requestAnimationFrame(function() {
-      msg.scrollIntoView({ block: 'end', behavior: 'smooth' });
-    });
+    scrollMsgIntoView(msg);
   }
 
   // ============= JACKSON HOLE KNOWLEDGE BASE =============
@@ -860,9 +883,7 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     body.classList.add('gsb-conversation-started');
     // Auto-scroll the typing indicator into view so the user immediately
     // sees the AI is composing — sells the realism of "someone is typing".
-    requestAnimationFrame(function() {
-      msg.scrollIntoView({ block: 'end', behavior: 'smooth' });
-    });
+    scrollMsgIntoView(msg);
   }
 
   function hideTypingIndicator(onDone) {
@@ -1354,7 +1375,20 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     closeChat: closeChat,
     setVariant: setVariant,
     refreshData: function() { return fetchAll().then(applyOpenMeteoWeather); },
-    handleQuery: function(q) { handleUserMessage(q); }
+    handleQuery: function(q) { handleUserMessage(q); },
+    // Open-with-query: post the question + typing indicator and snap them into
+    // view instantly as the panel expands from the launcher (used by the hero
+    // search bar + starter chips). Avoids the "chat opens on the webcam hero,
+    // then jumps to your question" feeling — the conversation is what you land on.
+    startWithQuery: function(q) {
+      if (!q || !q.trim()) return;
+      conversationOpening = true;
+      handleUserMessage(q);
+      // Snap during the expand and once more after it settles, then release so
+      // later messages resume smooth-scrolling.
+      requestAnimationFrame(snapConversationToBottom);
+      setTimeout(function() { snapConversationToBottom(); conversationOpening = false; }, 550);
+    }
   };
 
 })();

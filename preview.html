@@ -748,7 +748,11 @@
     function openWithQuery(q) {
       openChat();
       q = (q || '').trim();
-      if (q && api() && api().handleQuery) api().handleQuery(q);
+      if (!q || !api()) return;
+      // Prefer the open-with-query path (instant snap to the conversation as the
+      // panel expands); fall back to handleQuery for older widget builds.
+      if (api().startWithQuery) api().startWithQuery(q);
+      else if (api().handleQuery) api().handleQuery(q);
     }
 
     // Entry point #3 — chat launcher

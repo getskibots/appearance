@@ -1459,11 +1459,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       e.preventDefault();
       var q = (embedSearchInput && embedSearchInput.value || '').trim();
       setOpen(true);
-      if (q && window.gsbChatPreview && typeof window.gsbChatPreview.handleQuery === 'function') {
-        // Wait for chat to mount + animate in, then send query
-        setTimeout(function() {
-          window.gsbChatPreview.handleQuery(q);
-        }, 300);
+      // Snap the question + typing into view as the panel expands (no delay).
+      if (q && window.gsbChatPreview && window.gsbChatPreview.startWithQuery) {
+        window.gsbChatPreview.startWithQuery(q);
       }
       if (embedSearchInput) embedSearchInput.value = '';
       syncEmbedSearchActions();
@@ -1672,8 +1670,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     if (!chip) return;
     var q = chip.getAttribute('data-q') || '';
     setOpen(true);
-    if (q && window.gsbChatPreview && typeof window.gsbChatPreview.handleQuery === 'function') {
-      setTimeout(function() { window.gsbChatPreview.handleQuery(q); }, 300);
+    if (q && window.gsbChatPreview && window.gsbChatPreview.startWithQuery) {
+      window.gsbChatPreview.startWithQuery(q);
     }
   });
 
