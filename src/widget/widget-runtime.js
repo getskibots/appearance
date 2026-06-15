@@ -1155,9 +1155,13 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     }
     voice.fullModeActive = true;
     $('gsbVoiceModeOverlay').setAttribute('data-open', 'true');
+    // In-thread dock: hide the composer, keep the styled thread visible above.
+    document.body.setAttribute('data-voice-active', 'true');
     setOrbState('idle');
     setTranscript('');
-    $('gsbVoiceHistory').innerHTML = '';
+    if ($('gsbVoiceHistory')) $('gsbVoiceHistory').innerHTML = '';
+    // Pin the thread to the bottom so the latest bubbles sit just above the dock.
+    requestAnimationFrame(snapConversationToBottom);
     // Auto-start listening so the user can just speak
     setTimeout(function() {
       if (voice.fullModeActive) startVoiceModeListening();
@@ -1167,6 +1171,7 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
   function closeVoiceMode() {
     voice.fullModeActive = false;
     $('gsbVoiceModeOverlay').setAttribute('data-open', 'false');
+    document.body.removeAttribute('data-voice-active');
     if (voice.recognition) {
       try { voice.recognition.stop(); } catch (e) { /* ignore */ }
     }

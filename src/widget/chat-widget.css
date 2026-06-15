@@ -1673,39 +1673,31 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
    FULL VOICE MODE OVERLAY — hands-free experience
    ========================================================================= */
 .gsb-voice-mode-overlay {
+  /* IN-THREAD VOICE DOCK — sits at the bottom of the chat panel (over the
+     composer) so the styled conversation thread stays visible above while you
+     talk. Light surface to match the chat; the brand orb is the one accent. */
   position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, var(--jh-ink) 0%, #0a0a0a 100%);
+  left: 0; right: 0; bottom: 0;
+  background: var(--jh-bg);
+  border-top: 1px solid var(--jh-border);
+  box-shadow: 0 -10px 30px rgba(23, 19, 15, 0.10);
   z-index: 100;
   display: none;
   flex-direction: column;
-  color: #fff;
-  overflow: hidden;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 18px 16px;
+  color: var(--jh-ink);
 }
 
 .gsb-voice-mode-overlay[data-open="true"] { display: flex; }
 
-.gsb-voice-mode-overlay::before {
-  /* Ambient brand-colored glow behind the orb */
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(var(--brand-rgb), 0.18) 0%, transparent 65%);
-  pointer-events: none;
-}
+/* While voice is live the dock replaces the composer; pad the thread so the last
+   bubble clears the dock. */
+body[data-voice-active="true"] .gsb-composer-row { display: none; }
+body[data-voice-active="true"] #gsbMessages { padding-bottom: 210px; }
 
-.gsb-voice-mode__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  position: relative;
-  z-index: 2;
-}
+.gsb-voice-mode__head { display: none; }
 
 .gsb-voice-mode__title {
   font-family: var(--serif);
@@ -1733,30 +1725,24 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
 
 /* Main stage: centered orb */
 .gsb-voice-mode__stage {
-  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 32px;
-  padding: 0 24px;
+  gap: 7px;
+  width: 100%;
   position: relative;
   z-index: 2;
-  min-height: 0;
 }
 
 .gsb-voice-mode__orb {
   position: relative;
-  width: 180px;
-  height: 180px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 35% 30%, rgba(255,255,255,0.4) 0%, transparent 35%),
-    radial-gradient(circle at 65% 70%, rgba(var(--brand-rgb), 0.5) 0%, transparent 50%),
+    radial-gradient(circle at 35% 30%, rgba(255,255,255,0.45) 0%, transparent 40%),
     linear-gradient(135deg, var(--brand) 0%, var(--brand-deep) 100%);
-  box-shadow:
-    0 0 80px rgba(var(--brand-rgb), 0.4),
-    inset 0 0 40px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 10px rgba(var(--brand-rgb), 0.35);
   animation: orb-idle 4s ease-in-out infinite;
 }
 
@@ -1771,8 +1757,8 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
 }
 
 @keyframes orb-listening {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--brand-rgb), 0.6), 0 0 80px rgba(var(--brand-rgb), 0.4); }
-  50%      { box-shadow: 0 0 0 30px rgba(var(--brand-rgb), 0), 0 0 80px rgba(var(--brand-rgb), 0.4); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--brand-rgb), 0.5), 0 2px 10px rgba(var(--brand-rgb), 0.35); }
+  50%      { box-shadow: 0 0 0 12px rgba(var(--brand-rgb), 0), 0 2px 10px rgba(var(--brand-rgb), 0.35); }
 }
 
 /* Speaking state — orb breathes faster, brighter */
@@ -1792,7 +1778,7 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 2px;
   pointer-events: none;
   opacity: 0;
   transition: opacity 200ms ease;
@@ -1805,20 +1791,20 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
 
 .gsb-voice-mode__bars span {
   display: block;
-  width: 4px;
+  width: 2.5px;
   background: rgba(255,255,255,0.95);
   border-radius: 2px;
-  height: 18px;
+  height: 8px;
   animation: voice-bar-bounce 0.9s ease-in-out infinite;
 }
 
-.gsb-voice-mode__bars span:nth-child(1) { animation-delay: 0.0s; height: 14px; }
-.gsb-voice-mode__bars span:nth-child(2) { animation-delay: 0.1s; height: 28px; }
-.gsb-voice-mode__bars span:nth-child(3) { animation-delay: 0.2s; height: 22px; }
-.gsb-voice-mode__bars span:nth-child(4) { animation-delay: 0.3s; height: 36px; }
-.gsb-voice-mode__bars span:nth-child(5) { animation-delay: 0.2s; height: 22px; }
-.gsb-voice-mode__bars span:nth-child(6) { animation-delay: 0.1s; height: 28px; }
-.gsb-voice-mode__bars span:nth-child(7) { animation-delay: 0.0s; height: 14px; }
+.gsb-voice-mode__bars span:nth-child(1) { animation-delay: 0.0s; height: 5px; }
+.gsb-voice-mode__bars span:nth-child(2) { animation-delay: 0.1s; height: 9px; }
+.gsb-voice-mode__bars span:nth-child(3) { animation-delay: 0.2s; height: 7px; }
+.gsb-voice-mode__bars span:nth-child(4) { animation-delay: 0.3s; height: 13px; }
+.gsb-voice-mode__bars span:nth-child(5) { animation-delay: 0.2s; height: 7px; }
+.gsb-voice-mode__bars span:nth-child(6) { animation-delay: 0.1s; height: 9px; }
+.gsb-voice-mode__bars span:nth-child(7) { animation-delay: 0.0s; height: 5px; }
 
 @keyframes voice-bar-bounce {
   0%, 100% { transform: scaleY(0.45); opacity: 0.55; }
@@ -1831,23 +1817,21 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.55);
+  color: var(--jh-ink-muted);
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.gsb-voice-mode__status[data-state="listening"] { color: #fff; }
-/* Lightened brand tint so the speaking state stays legible on the dark overlay
-   while still following the brand color. */
-.gsb-voice-mode__status[data-state="speaking"] { color: color-mix(in srgb, var(--brand), #fff 55%); }
+.gsb-voice-mode__status[data-state="listening"] { color: var(--jh-ink); }
+.gsb-voice-mode__status[data-state="speaking"] { color: var(--brand); }
 
 .gsb-voice-mode__status::before {
   content: "";
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.4);
+  background: var(--jh-ink-muted);
 }
 
 .gsb-voice-mode__status[data-state="listening"]::before {
@@ -1867,33 +1851,27 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
 
 /* Live transcript area */
 .gsb-voice-mode__transcript {
-  font-family: var(--serif);
-  font-size: calc(22px * var(--gsb-text-scale, 1));
+  font-family: var(--gsb-body-font, 'Inter'), sans-serif;
+  font-size: calc(14px * var(--gsb-text-scale, 1));
   font-weight: 500;
   line-height: 1.4;
-  color: #fff;
+  color: var(--jh-ink);
   text-align: center;
-  max-width: 600px;
-  min-height: 60px;
-  letter-spacing: -0.005em;
+  max-width: 88%;
+  min-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.gsb-voice-mode__transcript--ai {
-  font-style: italic;
-  color: rgba(255,255,255,0.95);
-}
+.gsb-voice-mode__transcript--ai { color: var(--jh-ink); }
 
-.gsb-voice-mode__transcript--user {
-  color: rgba(255,255,255,0.7);
-  font-size: calc(18px * var(--gsb-text-scale, 1));
-  font-style: italic;
-}
+.gsb-voice-mode__transcript--user { color: var(--jh-ink-soft); }
 
 .gsb-voice-mode__transcript:empty::after {
   content: "Just start talking — snow, lifts, dinner, anything.";
-  color: rgba(255,255,255,0.3);
-  font-size: calc(16px * var(--gsb-text-scale, 1));
-  font-style: italic;
+  color: var(--jh-ink-muted);
+  font-size: calc(13px * var(--gsb-text-scale, 1));
   font-family: var(--gsb-body-font, 'Inter'), sans-serif;
 }
 
@@ -1903,7 +1881,7 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
   align-items: center;
   justify-content: center;
   gap: 14px;
-  padding: 0 24px 36px;
+  padding: 2px 0 0;
   position: relative;
   z-index: 2;
 }
@@ -1944,22 +1922,9 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
 
 .gsb-voice-mode__btn svg { width: 14px; height: 14px; }
 
-/* Recent message snippet at the bottom — small, last user/AI exchange */
-.gsb-voice-mode__history {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: center;
-  width: 100%;            /* fill the stage so items clamp to the panel width */
-  font-size: calc(11px * var(--gsb-text-scale, 1));
-  color: rgba(255,255,255,0.45);
-  text-align: center;
-  margin-top: 8px;
-  font-family: var(--gsb-body-font, 'Inter'), sans-serif;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  font-weight: 600;
-}
+/* Recent-snippet history is retired in the dock — the styled thread above IS the
+   history now, so the spoken turns appear as real bubbles. */
+.gsb-voice-mode__history { display: none; }
 
 .gsb-voice-mode__history-item {
   max-width: 100%;        /* was 480px — wider than the panel, so it overflowed */
@@ -1996,9 +1961,8 @@ body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
 }
 
 @media (max-width: 720px) {
-  .gsb-voice-mode__orb { width: 140px; height: 140px; }
-  .gsb-voice-mode__transcript { font-size: calc(18px * var(--gsb-text-scale, 1)); }
-  .gsb-voice-mode__stage { gap: 24px; }
+  .gsb-voice-mode__orb { width: 44px; height: 44px; }
+  .gsb-voice-mode__stage { gap: 6px; }
 
   /* COMPOSER — compact everything so the send button always fits on phones */
   .gsb-composer { padding: 10px 10px calc(10px + env(safe-area-inset-bottom)); }
