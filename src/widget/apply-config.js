@@ -112,6 +112,8 @@ export function applyWidgetConfig(config) {
   if (config.animationStyle) body.setAttribute('data-animation', config.animationStyle);
   if (config.typingIndicator) body.setAttribute('data-typing-indicator', config.typingIndicator);
   body.setAttribute('data-typing-label', config.widgetName || 'AI Concierge');
+  // Conversation message-bubble style (classic | modern | fancy).
+  body.setAttribute('data-msg-style', config.messageStyle || 'classic');
   if (config.blurredBackground != null) body.setAttribute('data-modal-blur', config.blurredBackground ? 'true' : 'false');
 
   /* ---- Live-agent indicator → header pill + label ("Online" vs "AI Concierge") ---- */

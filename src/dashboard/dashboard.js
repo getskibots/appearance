@@ -227,6 +227,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     askForRating: false,
     realtimeVoice: true,        // show the hands-free Voice Mode feature in the chat
     typingIndicator: 'dots',    // dots | orb | label — the "AI is replying" animation
+    messageStyle: 'classic',    // classic | modern | fancy — chat message bubble look
     disableTextInput: false,
     // Typography
     typography: {
@@ -670,6 +671,14 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       t.setAttribute('data-checked', String(on));
       t.setAttribute('aria-checked', String(on));
     });
+
+    // Conversation → message bubble style (classic | modern | fancy).
+    document.body.setAttribute('data-msg-style', state.messageStyle || 'classic');
+    document.querySelectorAll('#bubbleStyleCards .anim-card').forEach(function(b) {
+      var on = b.getAttribute('data-value') === (state.messageStyle || 'classic');
+      b.setAttribute('data-checked', String(on));
+      b.setAttribute('aria-checked', String(on));
+    });
     canvas.setAttribute('data-modal-blur', state.blurredBackground ? 'true' : 'false');
 
     // Swap chat header agent label: "AI Concierge" by default, "Agent Online" when liveAgent toggle is active
@@ -957,6 +966,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       launcher: ['bubbleStyle','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','statusPillFeatures','ctaText'],
       typography: ['typography'],
       panel: ['layoutVariant','blurredBackground'],
+      conversation: ['messageStyle'],
       effects: ['animationStyle','effectMode','effectIntensity','snowfall','typingIndicator'],
       behavior: ['soundNotifications','popupMessagePreview','askForRating','realtimeVoice','disableTextInput'],
       embed: ['embedSearch','embedButton']
@@ -1439,6 +1449,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   document.querySelectorAll('#animStyleCards .anim-card').forEach(function(c){
     c.addEventListener('click', function(){ state.animationStyle = c.getAttribute('data-value'); render(); });
   });
+  document.querySelectorAll('#bubbleStyleCards .anim-card').forEach(function(b){
+    b.addEventListener('click', function(){ state.messageStyle = b.getAttribute('data-value'); render(); });
+  });
   bindToggle('toggleDisableInput', function(){ return state.disableTextInput; }, function(v){ state.disableTextInput = v; });
 
   launcher.addEventListener('click', function(){ setOpen(true); });
@@ -1762,6 +1775,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       animationStyle: state.animationStyle,
       snowfall: state.snowfall,
       statusPillFeatures: state.statusPillFeatures,
+      messageStyle: state.messageStyle,
       typography: state.typography,
       // Embeddable components — drive the demo's hero search bar + header search icon.
       embedSearch: state.embedSearch,

@@ -1295,6 +1295,34 @@ body[data-variant="full"].gsb-conversation-started .gsb-conversation-intro { dis
   border-bottom-right-radius: 4px;
 }
 
+/* ===== Conversation bubble variants — Classic / Modern / Fancy =====
+   Classic = the base rules above (solid fills, single "tail" corner). Modern and
+   Fancy restyle the AI + user bubbles; driven by body[data-msg-style], which
+   applyWidgetConfig (demo/production) and the dashboard render both set. */
+
+/* MODERN — clean & airy: uniform pill radius (no tail), borderless AI, roomier. */
+body[data-msg-style="modern"] .gsb-msg { border-radius: 20px; padding: 11px 16px; }
+body[data-msg-style="modern"] .gsb-msg--ai {
+  background: var(--jh-surface);
+  border: 0;
+  border-bottom-left-radius: 20px;
+}
+body[data-msg-style="modern"] .gsb-msg--user { border-bottom-right-radius: 20px; }
+
+/* FANCY — elevated: gradient guest bubble + soft shadows, floating white AI card. */
+body[data-msg-style="fancy"] .gsb-msg { border-radius: 16px; padding: 11px 15px; }
+body[data-msg-style="fancy"] .gsb-msg--ai {
+  background: #fff;
+  border: 1px solid var(--jh-border);
+  border-bottom-left-radius: 16px;
+  box-shadow: 0 5px 16px rgba(23, 19, 15, 0.09), 0 1px 3px rgba(23, 19, 15, 0.06);
+}
+body[data-msg-style="fancy"] .gsb-msg--user {
+  background: linear-gradient(135deg, var(--brand), var(--brand-deep));
+  border-bottom-right-radius: 16px;
+  box-shadow: 0 7px 20px rgba(var(--brand-rgb), 0.30);
+}
+
 /* TYPING INDICATOR — three dots pulsing in sequence, styled like an AI bubble */
 .gsb-typing-indicator {
   display: inline-flex !important;

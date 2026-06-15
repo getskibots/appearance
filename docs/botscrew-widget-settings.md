@@ -71,6 +71,7 @@ interface GsbAppearance {
   recentUpdateFlow: string;                   // selected Flow / AI Action id (when source==='flow'; placeholder)
   realtimeVoice: boolean;                      // show the hands-free Voice Mode feature in the chat
   typingIndicator: 'dots' | 'orb' | 'label';   // the "reply is being written" animation
+  messageStyle: 'classic' | 'modern' | 'fancy'; // chat message bubble look (Conversation card)
   /** The hero slot at the top of the open chat (Webcams & featured image card). */
   hero: {
     source: 'webcam' | 'featured' | 'none';
@@ -169,6 +170,7 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `hero` | object | `{source:'webcam', webcam:{url:'…codybowl.jpg', label:'Cody Bowl', kind:'image', poster:''}, featuredImage:{…}}` | The hero image area at the top of the open chat. `source` = **Webcam** (any cam URL, or blank → live conditions feed), **Featured image** (Appearance-owned), or **None**. `webcam.kind` is **auto-detected** (`src/shared/webcam.js`) and the widget **auto-renders by kind** (`src/shared/webcam-render.js`): `<img>` for image/mjpeg/snapshot, `<iframe>` for youtube/vimeo/roundshot/panomax/feratel/bergfex/windy/earthcam, `<video>`+hls.js (loaded on demand) for `.m3u8`, native `<video>` for `.mp4`. Only `rtsp`/`rtmp` can't render in a browser (shows a transcode notice). Embeds keep a pop-out "Open ↗" in case a provider blocks framing. Partners just paste a URL — no type picker. **Uploaded featured images are optimized client-side** (`src/shared/image-compress.js`: Canvas resize to ≤1600×900 + WebP re-encode under a 250KB budget) **before upload**, so BotScrew's existing file path receives small files — no server-side processing to build. Single webcam for now — multi-cam is the separately-quoted extension |
 | `realtimeVoice` | boolean | `true` | Behavior toggle. When `false`, the chat hides the hands-free voice-chat button + overlay (`body[data-voice="off"]`). **User-facing label is "Voice chat"** — "realtime" stays internal, like `flow`. The dictation mic is a separate feature, unaffected |
 | `typingIndicator` | enum | `dots` | **Animations & effects card.** The "reply is being written" animation: `dots` (brand-tinted pulsing dots), `orb` (breathing brand orb, kin to the Voice Mode orb), or `label` ("{widgetName} is typing…" with animated ellipsis). Widget reads `body[data-typing-indicator]` + `data-typing-label` |
+| `messageStyle` | enum | `classic` | **Conversation card.** Chat message bubble look: `classic` (solid fills, single tail corner), `modern` (clean, borderless AI, uniform pill radius), or `fancy` (gradient guest bubble + soft shadows, floating white AI card). Widget reads `body[data-msg-style]` |
 | `ctaText` | string | `Need help?` | Launcher CTA label (≤24 glyphs) |
 | `bubbleStyle` | enum | `slidein` | Launcher style: traditional/custom/enhanced/slidein |
 | `customIconUrl` | string\|null | `null` | Uploaded launcher icon (custom style) |
