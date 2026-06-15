@@ -2646,7 +2646,47 @@
 }
 
 .embed-inline-preview__stage--search {
-  /* search bar can be wide — let it breathe */
+  /* search bar can be wide — let it breathe; stack the starter chips beneath it */
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Per-page starter-chip inputs (Embeddable search card) */
+.starter-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Install-snippet header row (label + copy) and the live code block */
+.embed-snippet__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.embed-snippet__copy {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.embed-snippet__copy:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.embed-snippet__copy[data-copied="true"] { background: #1e9e5a; color: #fff; border-color: #1e9e5a; }
+.embed-snippet__code {
+  margin: 8px 0 0;
+  font-family: 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 .embed-inline-preview__stage--button {
   /* button is small — center it tightly */

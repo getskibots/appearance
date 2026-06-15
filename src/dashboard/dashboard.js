@@ -239,7 +239,11 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       borderRadius: 999,        // px (999 = pill)
       borderThickness: 1.5,     // px
       width: 'fixed',           // 'hug' | 'fixed' | 'full'
-      placeholder: 'Enter your question'
+      placeholder: 'Enter your question',
+      // Per-page starter chips shown beneath the bar (0–4). Each embed snippet
+      // carries its own via data-gsb-starters, so a resort drops a different
+      // snippet (with different chips) on the homepage vs the lessons page.
+      starters: ['Where should beginners ski?', 'What do lift tickets cost?', 'Are the lifts open today?']
     },
     embedButton: {
       size: 44,                 // px
@@ -249,6 +253,32 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       label: ''
     }
   };
+
+  // ---- Embeddable-search starter-chip helpers (shared by render + handlers) ----
+  function escHtmlD(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  function escAttrD(s) { return escHtmlD(s).replace(/"/g, '&quot;'); }
+  function cleanStarters(arr) { return (arr || []).filter(function (s) { return s && String(s).trim(); }).map(function (s) { return String(s).trim(); }).slice(0, 4); }
+  // Render the live-preview chips beneath the dashboard's embed-search preview.
+  function renderEmbedStarters(es) {
+    var host = document.getElementById('embedStartersPreview');
+    if (!host) return;
+    host.innerHTML = cleanStarters(es && es.starters).map(function (t) {
+      return '<button type="button" class="gsb-embed-starter" data-q="' + escAttrD(t) + '">' + escHtmlD(t) + '</button>';
+    }).join('');
+  }
+  // Build the per-page install snippet from the current embed-search config.
+  // Placeholder + starters ride along as data-attrs so each page's snippet
+  // carries its own chips (homepage vs lessons).
+  function buildEmbedSnippet(es) {
+    es = es || {};
+    var lines = ['<div data-gsb-search'];
+    var ph = (es.placeholder || '').trim();
+    if (ph) lines.push('     data-gsb-placeholder="' + ph.replace(/"/g, '&quot;') + '"');
+    var st = cleanStarters(es.starters);
+    if (st.length) lines.push('     data-gsb-starters="' + st.join('|').replace(/"/g, '&quot;') + '"');
+    lines[lines.length - 1] += '></div>';
+    return lines.join('\n');
+  }
 
   // Device mode is preview-only (not part of saved config)
   var previewDevice = 'desktop';
@@ -857,6 +887,16 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       b.setAttribute('data-active', String(b.dataset.value === es.width));
     });
     if (document.activeElement !== $('searchPlaceholder')) $('searchPlaceholder').value = es.placeholder;
+
+    // Starter chips: sync the 4 inputs (don't fight typing), render the live
+    // preview chips, and (re)build the per-page install snippet.
+    var esStarters = es.starters || [];
+    for (var si = 0; si < 4; si++) {
+      var sInp = $('searchStarter' + si);
+      if (sInp && document.activeElement !== sInp) sInp.value = esStarters[si] || '';
+    }
+    renderEmbedStarters(es);
+    if ($('embedSearchSnippet')) $('embedSearchSnippet').textContent = buildEmbedSnippet(es);
 
     // ============= EMBEDDABLE BUTTON =============
     var eb = state.embedButton;
@@ -1590,6 +1630,42 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   $('searchPlaceholder').addEventListener('input', function(e) {
     state.embedSearch.placeholder = e.target.value;
     render();
+  });
+
+  // SEARCH BAR — starter chips (0–4), one input per slot
+  for (var sk = 0; sk < 4; sk++) {
+    (function(idx) {
+      var el = $('searchStarter' + idx);
+      if (!el) return;
+      el.addEventListener('input', function(e) {
+        var arr = (state.embedSearch.starters || []).slice();
+        arr[idx] = e.target.value;
+        state.embedSearch.starters = arr;
+        render();
+      });
+    })(sk);
+  }
+
+  // SEARCH BAR — copy the live install snippet
+  var embedSearchCopy = $('embedSearchCopy');
+  if (embedSearchCopy) embedSearchCopy.addEventListener('click', function() {
+    var txt = buildEmbedSnippet(state.embedSearch);
+    if (navigator.clipboard) navigator.clipboard.writeText(txt);
+    embedSearchCopy.setAttribute('data-copied', 'true');
+    embedSearchCopy.textContent = 'Copied';
+    setTimeout(function() { embedSearchCopy.removeAttribute('data-copied'); embedSearchCopy.textContent = 'Copy'; }, 1400);
+  });
+
+  // SEARCH BAR — clicking a preview chip opens chat with that question
+  var embedStartersPreview = $('embedStartersPreview');
+  if (embedStartersPreview) embedStartersPreview.addEventListener('click', function(e) {
+    var chip = e.target.closest('.gsb-embed-starter');
+    if (!chip) return;
+    var q = chip.getAttribute('data-q') || '';
+    setOpen(true);
+    if (q && window.gsbChatPreview && typeof window.gsbChatPreview.handleQuery === 'function') {
+      setTimeout(function() { window.gsbChatPreview.handleQuery(q); }, 300);
+    }
   });
 
   // BUTTON — size slider + presets

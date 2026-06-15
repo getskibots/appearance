@@ -58,10 +58,17 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
 - 🟡 Mobile "always full-screen chat" exists in the preview; verify against final
   embed.
 
-### 3 · Page-context conversation starters — ⬜ ~25%
+### 3 · Page-context conversation starters — 🟡 ~50%
 - ✅ Starter chips render inside the chat; input placeholder is configurable.
-- ⬜ Admin configuration of starters per page/URL, 0–4 count control, and passing
-  page context through the embed are **not** built.
+- ✅ **Hero-search starter chips (0–4) are now admin-configurable** in Appearance →
+  Embeddable components: type up to 4 chips, see them live beneath the bar, and the
+  install snippet auto-generates with `data-gsb-placeholder` + `data-gsb-starters`
+  (pipe-delimited). The demo hero renders them and a click opens chat with the query.
+  Contract: [`EMBED-SNIPPETS.md`](./EMBED-SNIPPETS.md).
+- ⬜ Still open: **per-page/URL** management (today the chips are authored per-snippet,
+  which already gives different chips per page via inline `data-gsb-starters`; an
+  admin-managed `data-gsb-page` model is the future option), and **the loader that reads
+  the attrs on a live host page** (Epic 7).
 
 ### 4 · Chat opening experience
 - **4.1 Chat header** — 🟡 logo/name/welcome ✅, webcam hero with fallback ✅;
@@ -134,12 +141,13 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
   Remaining to fully close = the cross-cutting **per-bot save/load** of the cam URL (shared with
   every feature), not webcam-specific work.
 
-### 7 · Installation & embed — ⬜ ~18%
-- ✅ Install tab exists and sketches the embed shape (`data-gsb-search`,
-  `data-gsb-search-button`).
+### 7 · Installation & embed — ⬜ ~25%
+- ✅ The embed shape is defined and the **search-bar snippet is now live + copyable**
+  (`<div data-gsb-search …>` auto-generated with `data-gsb-placeholder` /
+  `data-gsb-starters`, copy button). Per-page contract: [`EMBED-SNIPPETS.md`](./EMBED-SNIPPETS.md).
 - ⬜ The three modular embed scripts (main widget / hero search / header icon), the
-  loader that mounts them, copy-button snippets with `botId`, and "appearance applied
-  from platform" are **not** built.
+  loader that mounts them + reads the data-attrs on a host page, snippets carrying
+  `botId`, and "appearance applied from platform" are **not** built.
 
 ### 8 · Shareable prospect demo page — 🟡 demo built; per-prospect backdrop pending
 A self-serve sales tool: one link sales sends a prospect that opens a site with the

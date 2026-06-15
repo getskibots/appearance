@@ -387,6 +387,8 @@
           </button>
         </div>
       </form>
+      <!-- Per-page starter chips — rendered from config.embedSearch.starters by applyWidgetConfig -->
+      <div class="gsb-embed-starters" id="heroStarters" aria-label="Suggested questions"></div>
 
       <!-- Numbered legend — matches the on-page pins (1 search icon · 2 search bar · 3 chat) -->
       <div class="entry-legend" aria-label="Three ways to start a chat — tap to locate">
@@ -660,7 +662,7 @@
       popupMessagePreview: false,
       askForRating: false,
       snowfall: { enabled: false, style: 'realistic', intensity: 90, showOnMobile: true, pauseWhenIdle: true },
-      embedSearch: { borderRadius: 999, borderThickness: 1.5, width: 'fixed', placeholder: 'Enter your question' },
+      embedSearch: { borderRadius: 999, borderThickness: 1.5, width: 'fixed', placeholder: 'Enter your question', starters: ['Where should beginners ski?', 'What do lift tickets cost?', 'Are the lifts open today?'] },
       embedButton: { size: 44, shape: 'round', background: 'brand', iconWeight: 'regular', label: '' }
     };
     // ---- Live Preview sync -------------------------------------------------
@@ -778,6 +780,14 @@
       if (heroMic) heroMic.addEventListener('click', function() { openChat(); });
       if (heroVoice) heroVoice.addEventListener('click', function() { openChat(); });
     }
+
+    // Starter chips beneath the hero search (rendered by applyWidgetConfig) —
+    // delegated so re-renders never drop the listener; click = open chat w/ query.
+    var heroStarters = document.getElementById('heroStarters');
+    if (heroStarters) heroStarters.addEventListener('click', function(e) {
+      var chip = e.target.closest('.gsb-embed-starter');
+      if (chip) openWithQuery(chip.getAttribute('data-q') || '');
+    });
 
     // ----- Demo annotation pins: hidden by default. A legend chip reveals its
     //       pin (points at that entry), then it auto-fades — keeps the page clean. -----

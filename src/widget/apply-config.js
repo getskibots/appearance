@@ -35,6 +35,8 @@ function relativeLuminance(hex) {
 
 function setVar(name, val) { if (val != null) document.documentElement.style.setProperty(name, val); }
 function setText(id, val) { var el = document.getElementById(id); if (el && val != null) el.textContent = val; }
+function escHtml(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+function escAttr(s) { return escHtml(s).replace(/"/g, '&quot;'); }
 
 export function applyWidgetConfig(config) {
   config = config || {};
@@ -164,6 +166,22 @@ export function applyWidgetConfig(config) {
     setVar('--gsb-search-width', es.width === 'hug' ? 'auto' : '100%');
     setVar('--gsb-search-maxwidth', es.width === 'hug' ? 'none' : (es.width === 'full' ? 'none' : '480px'));
   }
+  // Per-page placeholder → every embeddable search input on the host page.
+  if (es.placeholder != null) {
+    document.querySelectorAll('.gsb-embed-search__input').forEach(function (inp) {
+      if (document.activeElement !== inp) inp.placeholder = es.placeholder;
+    });
+  }
+  // Per-page starter chips → render the markup into every .gsb-embed-starters host.
+  // Content only (data-q carries the question); the host page wires clicks via
+  // delegation so re-renders never drop listeners (keeps applyWidgetConfig pure).
+  var starters = (es.starters || []).filter(function (s) { return s && String(s).trim(); }).slice(0, 4);
+  document.querySelectorAll('.gsb-embed-starters').forEach(function (host) {
+    host.innerHTML = starters.map(function (s) {
+      var t = String(s).trim();
+      return '<button type="button" class="gsb-embed-starter" data-q="' + escAttr(t) + '">' + escHtml(t) + '</button>';
+    }).join('');
+  });
 
   var eb = config.embedButton || {};
   if (eb.size != null) setVar('--gsb-embed-btn-size', eb.size + 'px');

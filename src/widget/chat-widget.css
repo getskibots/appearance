@@ -2361,6 +2361,41 @@ body[data-variant="full"] .gsb-agent-status-feature {
 }
 
 /* =========================================================================
+   EMBEDDABLE SEARCH — STARTER CHIPS (shippable, part of the search component)
+   Rendered beneath the bar from the per-page `data-gsb-starters` list (0–4).
+   Same brand-pill look as the in-chat chips, laid out as a centered wrap so a
+   hero reads cleanly. Hidden when there are no starters.
+   ========================================================================= */
+.gsb-embed-starters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: var(--gsb-search-maxwidth, 480px);
+  margin: 12px auto 0;
+}
+.gsb-embed-starters:empty { display: none; }
+
+.gsb-embed-starter {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--brand);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--brand);
+  font-family: var(--gsb-body-font, 'Inter'), sans-serif;
+  font-size: calc(13px * var(--gsb-text-scale, 1));
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+.gsb-embed-starter:hover { background: var(--brand); color: #fff; }
+.gsb-embed-starter:active { transform: translateY(1px); }
+
+/* =========================================================================
    EMBEDDABLE SEARCH BAR (shippable component)
    Drops into a resort hero. Configurable via --gsb-search-* (radius, border,
    width, max-width). Sparkle (AI) on the left; chat-composer-style actions on

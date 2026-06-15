@@ -1065,6 +1065,18 @@
                   <input class="input" type="text" id="searchPlaceholder" value="Enter your question" />
                 </div>
 
+                <!-- Starter chips (per page) -->
+                <div class="field" style="margin-bottom:14px">
+                  <label class="field__label" style="font-weight:400;font-size:13px;color:var(--ink-soft)">Starter chips <span style="color:var(--ink-faint);font-weight:400">(0–4, optional)</span></label>
+                  <p class="field__hint" style="margin-top:0;margin-bottom:10px">Suggested questions shown beneath the bar. Leave all blank for a placeholder-only bar. These write into the install snippet below — drop a different snippet on each page (homepage vs. lessons) to give every page its own chips.</p>
+                  <div class="starter-inputs">
+                    <input class="input starter-input" type="text" id="searchStarter0" maxlength="60" placeholder="e.g. Where should beginners ski?" />
+                    <input class="input starter-input" type="text" id="searchStarter1" maxlength="60" placeholder="e.g. What do lift tickets cost?" />
+                    <input class="input starter-input" type="text" id="searchStarter2" maxlength="60" placeholder="e.g. Are the lifts open today?" />
+                    <input class="input starter-input" type="text" id="searchStarter3" maxlength="60" placeholder="e.g. Book a lesson" />
+                  </div>
+                </div>
+
                 <!-- Inline live preview of the search bar - functional trigger -->
                 <div class="embed-inline-preview" aria-label="Live search bar preview">
                   <span class="embed-inline-preview__label">Live preview</span>
@@ -1101,13 +1113,18 @@
                         </button>
                       </div>
                     </form>
+                    <div class="gsb-embed-starters" id="embedStartersPreview" aria-label="Starter chips preview"></div>
                   </div>
                 </div>
 
-                <!-- Install snippet for the search bar -->
+                <!-- Install snippet for the search bar (live — reflects placeholder + starters) -->
                 <div class="embed-snippet">
-                  <span class="embed-snippet__label">Install snippet</span>
-                  <span class="embed-snippet__tag">&lt;div</span> <span class="embed-snippet__attr">data-gsb-search</span><span class="embed-snippet__tag">&gt;&lt;/div&gt;</span>
+                  <div class="embed-snippet__bar">
+                    <span class="embed-snippet__label">Install snippet</span>
+                    <button type="button" class="embed-snippet__copy" id="embedSearchCopy">Copy</button>
+                  </div>
+                  <pre class="embed-snippet__code" id="embedSearchSnippet"></pre>
+                  <p class="field__hint" style="margin:8px 0 0">One snippet per page — put a different one (with its own chips) on each page you want the bar.</p>
                 </div>
               </div>
 
