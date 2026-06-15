@@ -15,7 +15,7 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
 |---|---|
 | Strongest area | **Appearance tab (Epic 5)** — ~95% built, the bulk of the UI |
 | Live + working | Open-Meteo weather, live conditions card, all appearance controls, save/load persistence |
-| Largest open items | Per-bot persistence (cross-cutting), embed loader (7), webcam manager (6.3), conversation-starter admin (3), entry-point orchestration (1) |
+| Largest open items | Per-bot persistence (cross-cutting), embed loader (7), conversation-starter admin (3), entry-point orchestration (1), Resort Direct feeds (6.2) |
 | Hard external constraint | Resort snow feeds are CORS-blocked → need server-side fetch (see HANDOFF → constraints) |
 
 ---
@@ -121,9 +121,18 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
   poller for the CORS-blocked half) is fully captured in
   [`RESORT-DIRECT-FEEDS.md`](./RESORT-DIRECT-FEEDS.md). Big finding: **OpenSnow already returns
   our normalized model**, so it's a near-zero-mapping second source.
-- **6.3 Webcam v1** ⬜ ~18% — hero image + fallback only. Multi-cam carousel,
-  URL auto-detect (still/YouTube/fallback), type badges, per-cam label/timestamp
-  admin are **not** built.
+- **6.3 Webcam — single-cam v1** ✅ ~90% (scope reduced to one cam; multi-cam dropped).
+  Built: paste-URL + **auto-detect kind** (`detectWebcamKind` — still/MJPEG/YouTube/Vimeo/
+  Roundshot/HLS/MP4/unknown), **render across every format** (`webcam-render.js`: `<img>` /
+  `<iframe>` / `<video>`+hls.js / poster + "Open live cam ↗" / blocked notice), **status badge**
+  (`webcamKindMeta`), **location label**, **"last updated"** stamp, and dark/night-image
+  tolerance (label + timestamp are persistent overlays). This **exceeds** the original scoped
+  v1, which only asked to *capture* iframe/HLS/MP4 URLs, not render them.
+  **Dropped from scope:** multi-cam gallery/carousel (6s rotate, 15s manual pause, swipe,
+  per-slide badges). **Optional, not built:** a "Change type" override link (only needed if
+  auto-detect guesses wrong). Offline still-image graceful fallback was **intentionally skipped**.
+  Remaining to fully close = the cross-cutting **per-bot save/load** of the cam URL (shared with
+  every feature), not webcam-specific work.
 
 ### 7 · Installation & embed — ⬜ ~18%
 - ✅ Install tab exists and sketches the embed shape (`data-gsb-search`,
