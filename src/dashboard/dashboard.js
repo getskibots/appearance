@@ -487,6 +487,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     document.documentElement.style.setProperty('--gsb-chat-header-bg', state.chatHeaderColor);
     if (document.activeElement !== $('chatHeaderColorHex')) $('chatHeaderColorHex').value = state.chatHeaderColor;
     if (document.activeElement !== $('chatHeaderColorPicker')) $('chatHeaderColorPicker').value = state.chatHeaderColor;
+    // Paint the swatch its OWN color — the shared .color-picker__swatch CSS defaults
+    // to var(--brand), which is only correct for the brand picker, not this one.
+    $('chatHeaderColorSwatch').style.background = state.chatHeaderColor;
 
     $('headerPlaceholderName').textContent = state.widgetName || 'Demo Resort';
     $('welcomeLine').textContent = state.welcomeText || "Welcome, ask us anything, we're here to help.";
