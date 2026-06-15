@@ -750,7 +750,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       launcher.removeAttribute('data-slide-state');
     }
 
-    document.querySelectorAll('#bubbleStyleCards .radio-card').forEach(function(c) {
+    document.querySelectorAll('#launcherStyleCards .radio-card').forEach(function(c) {
       c.setAttribute('data-checked', String(c.dataset.value === state.bubbleStyle));
     });
     document.querySelectorAll('#layoutCards .radio-card').forEach(function(c) {
@@ -1396,7 +1396,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     render();
   });
 
-  document.querySelectorAll('#bubbleStyleCards .radio-card').forEach(function(c) {
+  document.querySelectorAll('#launcherStyleCards .radio-card').forEach(function(c) {
     c.addEventListener('click', function() {
       state.bubbleStyle = c.dataset.value;
       // Reset slide state when switching bubble style
