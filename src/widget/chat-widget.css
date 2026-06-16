@@ -225,9 +225,9 @@
 
 /* ============================================================
    LIVE AGENT INDICATOR DOT — green pulsing dot in the top-right
-   corner of the launcher. Appears on Simple, Pillowdrop, and
-   Custom launcher styles when [data-liveagent="on"]. Status pill
-   (enhanced) is excluded — it has its own human-avatar treatment.
+   corner of the launcher. Appears on Pillowdrop (slide-in) only
+   when [data-liveagent="on"]. Simple bubble, Status pill (enhanced,
+   uses its own human avatar), and Custom are all excluded.
    ============================================================ */
 .gsb-launcher-agent-dot {
   position: absolute;
@@ -258,13 +258,8 @@
   100% { transform: scale(1.9); opacity: 0; }
 }
 
-/* Show on Simple bubble (traditional) — top-right of the 56px circle */
-.gsb-launcher[data-icon-style="traditional"][data-liveagent="on"] .gsb-launcher-agent-dot,
-[data-liveagent="on"] .gsb-launcher[data-icon-style="traditional"] .gsb-launcher-agent-dot {
-  display: block;
-  top: 2px;
-  right: 2px;
-}
+/* Simple bubble (traditional) does NOT show the live-agent dot — the bare sparkle
+   bubble already reads as the AI mark, so a green dot on it is just noise. */
 
 /* Custom launcher never shows the live-agent dot — a green dot on an uploaded
    logo doesn't communicate "live agent" to anyone, so it's just noise. */
