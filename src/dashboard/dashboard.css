@@ -803,17 +803,6 @@
   max-width: 360px;
 }
 .flow-picker .input { flex: 1 1 auto; }
-.flow-picker__badge {
-  flex: none;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: 999px;
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 12%, #fff);
-}
 
 /* Webcams & featured image card: controls left, live hero preview right. */
 /* Webcam cards — one per cam: live preview + URL + type pill/override + title/sub */
