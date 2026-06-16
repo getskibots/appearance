@@ -1216,7 +1216,9 @@ body[data-show-conditions="false"] .gsb-conditions,
 }
 .gsb-conditions-cell .value.is-cond .cond-label {
   align-self: stretch;
-  font-family: var(--gsb-body-font, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  /* Match the numeric values' typeface (display font) so the whole card is one
+     font — otherwise "Cloudy" reads in a different face than 52°F / 45°F. */
+  font-family: var(--serif);
   font-size: calc(12.5px * var(--gsb-text-scale, 1));
   font-weight: 600;
   line-height: 1.15;
