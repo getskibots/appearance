@@ -1220,7 +1220,7 @@ body[data-show-conditions="false"] .gsb-conditions,
      font — otherwise "Cloudy" reads in a different face than 52°F / 45°F. */
   font-family: var(--serif);
   font-size: calc(12.5px * var(--gsb-text-scale, 1));
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.15;
   color: var(--jh-ink);
   display: -webkit-box;
