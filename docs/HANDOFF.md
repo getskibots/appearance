@@ -4,6 +4,10 @@
 **Purpose:** everything needed to understand this repo, run it, and integrate it
 into BotScrew's admin + the resort website embed.
 
+> **New here?** [`OVERVIEW.md`](./OVERVIEW.md) is the simplest one-page front door
+> (how it ports to React, the 3 things to integrate, the Appearance-tab inventory, and
+> the Jackson Hole demo-code heads-up). This doc is the deeper engineering handoff.
+
 Start here, then branch to the deeper docs linked at the bottom.
 
 ---

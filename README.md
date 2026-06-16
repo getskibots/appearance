@@ -7,7 +7,8 @@ separates the **embeddable chat widget** from the **admin appearance dashboard**
 
 | Doc | For |
 |---|---|
-| [`docs/HANDOFF.md`](docs/HANDOFF.md) | **Start here** — orientation, run, repo map, integration boundary |
+| [`docs/OVERVIEW.md`](docs/OVERVIEW.md) | **Read this first** — one-page overview: how it ports, what to integrate, the Appearance-tab inventory, demo-code heads-up |
+| [`docs/HANDOFF.md`](docs/HANDOFF.md) | Engineering start — orientation, run, repo map, integration boundary |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Code + runtime model, config flow, how to extend |
 | [`docs/BUILD-STATUS.md`](docs/BUILD-STATUS.md) | What's done vs pending (where the build is) |
 | [`docs/DEMO-CODE.md`](docs/DEMO-CODE.md) | Jackson Hole / demo-only code to strip (don't port) vs. the deliverable |
