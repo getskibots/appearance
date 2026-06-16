@@ -59,10 +59,12 @@ export function loadFont(family, weights) {
   inject('gf-full-' + slug(family), href);
 }
 
-/** Load a name-only subset for a picker row (cheap, true-to-font preview). */
+/** Load a name-only subset for a picker row (cheap, true-to-font preview). Uses the v2
+ *  endpoint — the legacy v1 `/css` API doesn't serve newer/variable faces (Fraunces,
+ *  Playfair, DM Sans, …), so those would silently fall back to a generic serif/sans. */
 export function loadPreview(family) {
   if (!family) return;
   const text = encodeURIComponent('Aa ' + family);
-  const href = CSS1 + '?family=' + famParam(family) + '&text=' + text + '&display=swap';
+  const href = CSS2 + '?family=' + famParam(family) + '&text=' + text + '&display=swap';
   inject('gf-prev-' + slug(family), href);
 }
