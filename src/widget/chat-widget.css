@@ -1059,7 +1059,8 @@ body[data-variant="full"] .gsb-chat-left-column {
 .gsb-cam-caption__sub { font-size: calc(11px * var(--gsb-text-scale, 1)); font-weight: 400; opacity: 0.85; margin-left: 6px; }
 .gsb-cam-caption__updated { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.9; white-space: nowrap; }
 .gsb-cam-dots {
-  position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); z-index: 3;
+  /* Sit above the caption band so a long title never runs into the dots. */
+  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 3;
   display: flex; gap: 6px; padding: 4px 8px;
   background: rgba(0,0,0,0.35); border-radius: 999px;
 }
