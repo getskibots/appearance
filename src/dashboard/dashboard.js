@@ -975,6 +975,12 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // edits leave the count unchanged, so inputs keep focus.
     var wList = $('webcamList');
     if (wList && wList.children.length !== (hero.webcams ? hero.webcams.length : 0)) buildWebcamRows();
+    // Webcams cap at 3 — disable the Add button once full.
+    if ($('webcamAddBtn')) {
+      var camFull = (hero.webcams ? hero.webcams.length : 0) >= 3;
+      $('webcamAddBtn').disabled = camFull;
+      $('webcamAddBtn').title = camFull ? 'Up to 3 webcams' : '';
+    }
     var fList = $('featuredList');
     if (fList && fList.children.length !== (hero.featuredImages ? hero.featuredImages.length : 0)) buildFeaturedRows();
     // Demo background image — reflect the URL (hide data: blobs) + Remove visibility.
@@ -1718,6 +1724,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   // Webcam list: "Add webcam" appends a blank cam (per-row inputs in makeWebcamRow
   // edit them); focus the new row's URL for an immediate paste.
   if ($('webcamAddBtn')) $('webcamAddBtn').addEventListener('click', function(){
+    if (state.hero.webcams.length >= 3) return; // cap at 3
     state.hero.webcams.push({ url: '', label: '', sub: '', kind: 'image', poster: '' });
     render();
     var rows = $('webcamList').children;
