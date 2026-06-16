@@ -10,6 +10,7 @@ import { loadFont, loadPreview, fontStack } from '../shared/fonts/font-loader.js
 import { detectWebcamKind, webcamKindMeta, webcamPoster } from '../shared/webcam.js';
 import { renderWebcamHero, clearWebcamHero, renderWebcamCarousel, stopWebcamCarousel } from '../shared/webcam-render.js';
 import { optimizeImage, formatBytes } from '../shared/image-compress.js';
+import { linkifyMarkdown } from '../shared/markdown.js';
 import { createSnowEngine } from '../shared/snow-engine.js';
 import { startFeaturedCrop } from './featured-crop.js';
 import { processLogo } from '../shared/logo.js';
@@ -857,7 +858,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       seasonBanner.setAttribute('data-manual-update', 'true');
       var seasonTitle = seasonBanner.querySelector('.gsb-season-banner__title');
       if (seasonTitle) seasonTitle.textContent = state.updateLabel || 'Season update';
-      if ($('gsbSeasonText')) $('gsbSeasonText').textContent = bannerBody;
+      // Render [label](url) markdown links (XSS-safe); plain text otherwise.
+      if ($('gsbSeasonText')) $('gsbSeasonText').innerHTML = linkifyMarkdown(bannerBody);
     }
 
     // ============= HERO (Webcams & featured image) =============

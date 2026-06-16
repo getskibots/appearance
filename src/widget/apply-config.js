@@ -13,6 +13,7 @@
  */
 
 import { renderWebcamHero, clearWebcamHero, renderWebcamCarousel, stopWebcamCarousel } from '../shared/webcam-render.js';
+import { linkifyMarkdown } from '../shared/markdown.js';
 
 /* ---- color helpers (kept in sync with the dashboard's COLOR HELPERS) ---- */
 function hexToRgb(hex) {
@@ -264,7 +265,7 @@ export function applyWidgetConfig(config) {
     var sTitle = seasonBanner.querySelector('.gsb-season-banner__title');
     if (sTitle && config.updateLabel != null) sTitle.textContent = config.updateLabel || 'Season update';
     var sText = document.getElementById('gsbSeasonText');
-    if (sText) sText.textContent = sBody;
+    if (sText) sText.innerHTML = linkifyMarkdown(sBody);
   }
 
   /* ---- Hero source + station caption ----

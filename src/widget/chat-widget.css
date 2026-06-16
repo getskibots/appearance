@@ -1232,6 +1232,15 @@ body[data-show-conditions="false"] .gsb-conditions,
   flex: 0 0 auto;
 }
 
+/* Markdown links inside the Season Update copy ([label](url)). */
+.gsb-season-banner a {
+  color: var(--brand-deep, var(--brand));
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.gsb-season-banner a:hover { text-decoration-thickness: 2px; }
+
 .gsb-season-banner__title {
   font-size: calc(11px * var(--gsb-text-scale, 1));
   font-weight: 700;
