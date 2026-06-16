@@ -108,7 +108,8 @@ export function applyWidgetConfig(config) {
   /* ---- Copy ---- */
   setText('headerPlaceholderName', config.widgetName);
   setText('brandColTitle', config.widgetName);
-  setText('welcomeLine', config.welcomeText);
+  var welcomeEl = document.getElementById('welcomeLine');
+  if (welcomeEl && config.welcomeText != null) welcomeEl.innerHTML = linkifyMarkdown(config.welcomeText);
   var composer = document.getElementById('gsbComposerInput');
   if (composer && config.inputPlaceholder != null) composer.placeholder = config.inputPlaceholder;
 

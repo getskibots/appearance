@@ -1082,6 +1082,12 @@ body[data-variant="full"] .gsb-chat-left-column {
   line-height: 1.4;
   color: var(--jh-ink);
 }
+/* Markdown links inside the welcome copy ([label](url)). */
+.gsb-welcome-greeting a {
+  color: var(--brand-deep, var(--brand));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 
 /* CONDITIONS TABLE */
 .gsb-conditions {
