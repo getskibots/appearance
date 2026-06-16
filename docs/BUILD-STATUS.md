@@ -32,6 +32,7 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
 
 **⬜ Not built — BotScrew / production wiring:**
 - **Per-bot persistence** (the big one): load/save config per `botId` via `GET /widget/info/{botId}` + `PATCH /private/bot/{id}/widget` instead of localStorage. Threads through everything — the mapper already emits the right shape (see [INTEGRATION.md](./INTEGRATION.md) §3a, §9).
+- **Save / Revert flow** — the Appearance tab has a working **Save changes** + **Revert** (discard unsaved edits → restore last-saved snapshot). ❓**For BotScrew:** confirm your admin can support this Save/Revert pattern (Revert = re-load the saved config from the API and drop local edits). If your admin already has its own discard/cancel control, we'll defer to it and drop ours.
 - **`answerProvider`** — streaming + structured-message rendering behind the seam (your socket → the widget). Stub/curated answers only today (§3c).
 - **`gsbAppearance` persistence decision** — confirm your config can store the opaque JSON block (Option B = zero backend change) or add one field (§4, the one open decision).
 - **New GSB embed loaders** — only the `data-gsb-search` / `data-gsb-search-button` modular entry points are unbuilt (sketched in the Install tab, not implemented; Epic 7). The **primary chat-bubble loader already exists** — it's BotScrew's `script-chatbot.js` (launcher + greeting + iframe + postMessage bridge). We adapt to it, not rebuild it. See [SCRIPT-CHATBOT-CONTRACT.md](./SCRIPT-CHATBOT-CONTRACT.md).
