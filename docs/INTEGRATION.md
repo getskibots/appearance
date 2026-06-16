@@ -247,7 +247,7 @@ The widget is themed **entirely** by `applyWidgetConfig(config)`
 nothing widget-related is hand-built. Every appearance-tab field maps to the Chat UI:
 
 - brand color, logo, corner radius, fonts (Inter body / Playfair display, true weights)
-- layout variant (side / middle / full), panel-open animation, blurred background
+- layout variant (side / full), panel-open animation, blurred background
 - launcher style (simple / status-pill / slide-in / custom icon), depth effect
   (glow / radiate / shadow), CTA copy, slide-in state, status-pill features
 - Season Update banner (`updateLabel` + `recentUpdate`), webcam / featured-image hero
@@ -314,7 +314,7 @@ conservative production preset:
 | Depth effect | **Radiate** (intensity 65) | Demonstrates the depth-effect system + draws the eye to the launcher |
 | Auto-hide on scroll | **on** | Shows the slide-away (down hides, up/idle reveals) |
 | Placement | **Right, 32 / 32** | Conventional |
-| Layout | **Side panel** | Most "embedded widget" feel; the demo bar flips Middle/Full live |
+| Layout | **Side panel** | Most "embedded widget" feel; the demo bar flips Side/Full live |
 | Hero (chat top) | **Webcam** (live cam) | Demonstrates the live-data/webcam integration |
 | Season Update | **populated** (manual source) | Banner visible; shows the manual-vs-flow toggle |
 | Typing / voice | **dots / realtime voice on** | Conversation polish |

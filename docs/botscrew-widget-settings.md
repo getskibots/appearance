@@ -93,7 +93,7 @@ interface GsbAppearance {
   customIconSize: number;                     // px diameter of the custom launcher (40–96)
   slideState: 'visible' | 'hidden';
   autoHideOnScroll: { enhanced: boolean; slidein: boolean; custom: boolean };  // per-style slide-away-on-scroll
-  layoutVariant: 'side' | 'middle' | 'full';
+  layoutVariant: 'side' | 'full';
   animationStyle: 'scale' | 'slide' | 'fade'; // panel open animation (default 'scale')
   blurredBackground: boolean;
   effectMode: 'none' | 'shadow' | 'glow' | 'radiate';   // Animations & effects card
@@ -179,7 +179,7 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `customIconSize` | number (px) | `56` | Custom launcher diameter (40–96; image fills it) |
 | `slideState` | enum | `visible` | Slide-in pill shown/hidden |
 | `autoHideOnScroll` | object | `{enhanced:true, slidein:true, custom:true}` | Per-style auto-hide-on-scroll (Status pill, Slide-in pill, Custom; on by default) |
-| `layoutVariant` | enum | `side` | Panel layout: side/middle/full |
+| `layoutVariant` | enum | `side` | Panel layout: side/full |
 | `animationStyle` | enum | `scale` | **Animations & effects card.** Panel open animation: `scale` (grows from the launcher — current default behavior), `slide` (rises from the bottom edge), `fade` (opacity + small rise). Drives `body[data-animation]`; absent → `scale` |
 | `blurredBackground` | boolean | `true` | Backdrop blur when open |
 | `effectMode` | enum | `radiate` | **Animations & effects card.** Depth effect: none/shadow/glow/radiate |

@@ -60,7 +60,7 @@ Status legend: ✅ built & working · 🟡 partial · ⬜ not built (production 
 | **5.5** Search bar | ✅ | ✅ Border radius, border thickness, width, placeholder — all live-previewed. Drives the **real shippable `.gsb-embed-search` component** (shared by dashboard + demo). | [BUILD-STATUS §5.5](./BUILD-STATUS.md); component in `src/widget/chat-widget.css` |
 | **5.6** Search button | ✅ | ✅ Size, shape, background, icon weight, label — live-previewed. Standalone button component. | [BUILD-STATUS §5.6](./BUILD-STATUS.md) |
 | **5.7** Typography | ✅ | ✅ Body font, display font, base text size — live-previewed; fonts flow through to the chat UI. | [BUILD-STATUS §5.7](./BUILD-STATUS.md) |
-| **5.8** Panel layout | ✅ | ✅ Sidebar / Middle / Full (two-column hero+chat), ✅ blurred-background toggle, ✅ thumbnail previews + descriptions, ✅ applies globally regardless of entry point, ✅ **mobile exception — always full-screen**. Save + live preview. | [BUILD-STATUS §5.8](./BUILD-STATUS.md) |
+| **5.8** Panel layout | ✅ | ✅ Side / Full (two-column hero+chat), ✅ blurred-background toggle, ✅ thumbnail previews + descriptions, ✅ applies globally regardless of entry point, ✅ **mobile exception — always full-screen**. Save + live preview. | [BUILD-STATUS §5.8](./BUILD-STATUS.md) |
 | **5.9** Behavior | ✅ | ✅ Sound notifications, ✅ pop-up message preview, ✅ ask-for-rating, ✅ disable text input (all languages). **Bonus:** realtime-voice on/off toggle. | [BUILD-STATUS §5.9](./BUILD-STATUS.md) |
 
 ---

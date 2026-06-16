@@ -116,7 +116,7 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
 - **5.5 Search bar** ✅ — radius, thickness, width, placeholder, live preview.
 - **5.6 Search button** ✅ — size, shape, background, icon weight, label.
 - **5.7 Typography** ✅ — body font, display font, text scale.
-- **5.8 Panel layout** ✅ — sidebar/middle/full, blurred background, thumbnails.
+- **5.8 Panel layout** ✅ — Side / Full (two-column hero+chat), blurred background, thumbnails.
 - **5.9 Behavior** ✅ — **realtime voice** on/off (hides the hands-free Voice Mode
   button + overlay in the chat; dictation mic is separate), sound, popup preview,
   ask-for-rating, disable text input.
