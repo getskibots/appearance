@@ -238,10 +238,13 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     messageStyle: 'classic',    // classic | modern | fancy — chat message bubble look
     disableTextInput: false,
     // Typography — default is the "Modern" preset (Space Grotesk display + Inter body).
+    // displayScale = a per-preset optical-balance factor on the display font only (so a
+    // condensed face like Oswald gets more presence, a chunky serif like Fraunces settles).
     typography: {
       bodyFont: 'Inter',
       displayFont: 'Space Grotesk',
-      textScale: 1.0
+      textScale: 1.0,
+      displayScale: 1.0
     },
     // Embeddable Search controls
     embedSearch: {
@@ -1147,6 +1150,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     document.documentElement.style.setProperty('--gsb-body-font', bodyStack);
     document.documentElement.style.setProperty('--gsb-display-font', displayStack);
     document.documentElement.style.setProperty('--gsb-text-scale', String(typo.textScale));
+    document.documentElement.style.setProperty('--gsb-display-scale', String(typo.displayScale != null ? typo.displayScale : 1));
 
     // Reflect the current selection in the pickers (trigger label + face).
     if (bodyPicker) bodyPicker.sync();
@@ -1889,6 +1893,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     preset.addEventListener('click', function() {
       state.typography.bodyFont = preset.dataset.body;
       state.typography.displayFont = preset.dataset.display;
+      // Per-preset optical-balance factor on the display font (baked, not partner-facing).
+      state.typography.displayScale = parseFloat(preset.dataset.displayScale) || 1;
       render();
     });
   });

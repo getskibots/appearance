@@ -1091,7 +1091,7 @@ body[data-variant="full"] .gsb-chat-left-column {
 .gsb-welcome-greeting {
   margin: 0;
   font-family: var(--serif);
-  font-size: calc(19px * var(--gsb-text-scale, 1));
+  font-size: calc(19px * var(--gsb-text-scale, 1) * var(--gsb-display-scale, 1));
   line-height: 1.4;
   color: var(--jh-ink);
 }
@@ -1175,7 +1175,7 @@ body[data-show-conditions="false"] .gsb-conditions,
 .gsb-conditions-cell .value {
   font-family: var(--serif);
   font-feature-settings: 'tnum' 1, 'lnum' 1;
-  font-size: calc(22px * var(--gsb-text-scale, 1));
+  font-size: calc(22px * var(--gsb-text-scale, 1) * var(--gsb-display-scale, 1));
   font-weight: 700;
   color: var(--jh-ink);
   line-height: 1;
@@ -1223,7 +1223,7 @@ body[data-show-conditions="false"] .gsb-conditions,
 /* Narrow screens: trim cell chrome so the big serif values fit their third. */
 @media (max-width: 480px) {
   .gsb-conditions-cell { padding: 10px 6px; }
-  .gsb-conditions-cell .value { font-size: calc(19px * var(--gsb-text-scale, 1)); }
+  .gsb-conditions-cell .value { font-size: calc(19px * var(--gsb-text-scale, 1) * var(--gsb-display-scale, 1)); }
   .gsb-conditions-cell .value .unit { font-size: calc(10px * var(--gsb-text-scale, 1)); }
 }
 

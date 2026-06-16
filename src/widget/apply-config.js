@@ -85,6 +85,7 @@ export function applyWidgetConfig(config) {
   if (typo.bodyFont) setVar('--gsb-body-font', "'" + typo.bodyFont + "', system-ui, -apple-system, sans-serif");
   if (typo.displayFont) setVar('--gsb-display-font', "'" + typo.displayFont + "', Georgia, serif");
   if (typo.textScale != null) setVar('--gsb-text-scale', String(typo.textScale));
+  if (typo.displayScale != null) setVar('--gsb-display-scale', String(typo.displayScale));
 
   /* ---- Logo: image when set, text placeholder otherwise ---- */
   var headerLogo = document.getElementById('headerLogo');
