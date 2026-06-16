@@ -634,7 +634,11 @@
       // Hero slot at the top of the open chat (webcam by default).
       hero: {
         source: 'webcam',
-        webcam: { url: 'https://cams.jacksonhole.com/webcam/codybowl.jpg', label: 'Cody Bowl', kind: 'image', poster: '' },
+        webcams: [
+          { url: 'https://cams.jacksonhole.com/webcam/codybowl.jpg', label: 'Cody Bowl', kind: 'image', poster: '' },
+          { url: 'https://cams.jacksonhole.com/webcam/trambase.jpg', label: 'Tram Dock', kind: 'image', poster: '' },
+          { url: 'https://cams.jacksonhole.com/webcam/tetonvillagecommons.jpg', label: 'Village Commons', kind: 'image', poster: '' }
+        ],
         featuredImage: { url: '', caption: '', link: '' }
       },
       typography: { bodyFont: 'Montserrat', displayFont: 'Archivo', textScale: 1.0 },

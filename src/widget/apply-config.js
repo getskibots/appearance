@@ -12,7 +12,7 @@
  * added here once and every surface picks them up.
  */
 
-import { renderWebcamHero, clearWebcamHero } from '../shared/webcam-render.js';
+import { renderWebcamHero, clearWebcamHero, renderWebcamCarousel, stopWebcamCarousel } from '../shared/webcam-render.js';
 
 /* ---- color helpers (kept in sync with the dashboard's COLOR HELPERS) ---- */
 function hexToRgb(hex) {
@@ -255,24 +255,32 @@ export function applyWidgetConfig(config) {
     if (sText) sText.textContent = sBody;
   }
 
-  /* ---- Hero (webcam / featured image) source + station caption ----
-     The webcam image itself is drawn by the widget runtime; here we set the
-     source + managed flags it honors, plus the station label from config. */
+  /* ---- Hero source + station caption ----
+     Renders the configured hero here: a featured still image, or the webcam list as a
+     rotating carousel (2+ cams auto-advance). Marks the hero "managed" so the runtime's
+     live-feed cam doesn't override the resort's choice. */
   var heroEl = document.getElementById('gsbHero');
   if (heroEl && config.hero) {
     var h = config.hero;
     if (h.source) heroEl.setAttribute('data-hero-source', h.source);
     var station = document.getElementById('gsbHeroStation');
+    // Support the webcams[] list, falling back to an old single h.webcam.
+    var cams = (h.webcams || (h.webcam ? [h.webcam] : [])).filter(function (c) { return c && c.url && String(c.url).trim(); });
     if (h.source === 'featured') {
-      // Appearance-owned still image — render it here (the runtime only draws cams).
+      stopWebcamCarousel(heroEl);
       if (h.featuredImage && h.featuredImage.url) renderWebcamHero(heroEl, { url: h.featuredImage.url, kind: 'image', poster: '' });
       else clearWebcamHero(heroEl);
       if (station) station.textContent = (h.featuredImage && h.featuredImage.caption) || '';
       heroEl.setAttribute('data-hero-managed', 'true');
     } else if (h.source === 'none') {
+      stopWebcamCarousel(heroEl);
       heroEl.setAttribute('data-hero-managed', 'true');
-    } else if (station && h.webcam && h.webcam.label) {
-      station.textContent = h.webcam.label; // 'webcam' — runtime renders the live cam
+    } else if (cams.length) {
+      renderWebcamCarousel(heroEl, cams, function (lbl) { if (station) station.textContent = lbl || 'Webcam'; });
+      heroEl.setAttribute('data-hero-managed', 'true');
+    } else {
+      // No configured cams → let the runtime's live feed populate the hero.
+      heroEl.removeAttribute('data-hero-managed');
     }
   }
 

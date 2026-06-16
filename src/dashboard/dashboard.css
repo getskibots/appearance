@@ -822,6 +822,47 @@
 }
 
 /* Webcams & featured image card: controls left, live hero preview right. */
+/* Webcam list — one row per cam (url + label + type badge + remove) */
+.webcam-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+.webcam-row__fields { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.webcam-row__url, .webcam-row__label { width: 100%; }
+.webcam-row__url { font-family: 'SF Mono', Menlo, monospace; font-size: 12px; }
+.webcam-row__badge {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+.webcam-row__badge:empty { display: none; }
+.webcam-row__remove {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-muted);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.webcam-row__remove:hover { background: var(--border); color: var(--ink); }
+
 .media-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(240px, 340px);

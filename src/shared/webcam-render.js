@@ -70,15 +70,41 @@ function addPopout(heroEl, url) {
 // Remove any rendered media and reset the hero to an empty state.
 export function clearWebcamHero(heroEl) {
   if (!heroEl) return;
+  stopWebcamCarousel(heroEl);
+  heroEl.removeAttribute('data-cam-url');
   clearMedia(heroEl);
   const f = heroEl.querySelector('.gsb-webcam-fallback');
   if (f) { f.style.display = ''; f.style.cssText = ''; f.innerHTML = ''; }
+}
+
+// Stop a running multi-cam rotation (call before rendering a single image / clearing).
+export function stopWebcamCarousel(heroEl) {
+  if (heroEl && heroEl._gsbCamTimer) { clearInterval(heroEl._gsbCamTimer); heroEl._gsbCamTimer = null; }
+}
+
+// Rotating multi-cam hero: shows webcams[0]; with 2+, auto-advances every 6s. Reuses
+// the single-cam renderer (auto-detect + per-kind render) for each slide.
+export function renderWebcamCarousel(heroEl, webcams, onLabel) {
+  if (!heroEl) return;
+  stopWebcamCarousel(heroEl);
+  const cams = (webcams || []).filter((c) => c && c.url && String(c.url).trim());
+  if (!cams.length) { clearWebcamHero(heroEl); if (onLabel) onLabel(''); return; }
+  let i = 0;
+  const show = (idx) => { renderWebcamHero(heroEl, cams[idx]); if (onLabel) onLabel(cams[idx].label || ''); };
+  show(0);
+  if (cams.length > 1) {
+    heroEl._gsbCamTimer = setInterval(() => { i = (i + 1) % cams.length; show(i); }, 6000);
+  }
 }
 
 export function renderWebcamHero(heroEl, cam) {
   if (!heroEl || !cam) return;
   const url = (cam.url || '').trim();
   if (!url) return; // blank → leave the live-conditions feed to populate
+  // Already showing this exact cam → no-op (prevents iframe reloads / image flash when
+  // the hero re-renders on unrelated config edits, and on each carousel re-apply).
+  if (heroEl.getAttribute('data-cam-url') === url) return;
+  heroEl.setAttribute('data-cam-url', url);
   const kind = cam.kind || detectWebcamKind(url);
   const mode = webcamRender(kind);
 
