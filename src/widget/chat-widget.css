@@ -1947,7 +1947,7 @@ body[data-voice-active="true"] #gsbMessages { padding-bottom: 28px; }
 }
 
 .gsb-voice-mode__transcript:empty::after {
-  content: "Just start talking — snow, lifts, dinner, anything.";
+  content: "Just start talking — ask me anything.";
   color: var(--jh-ink-muted);
   font-size: calc(13px * var(--gsb-text-scale, 1));
   font-family: var(--gsb-body-font, 'Inter'), sans-serif;
