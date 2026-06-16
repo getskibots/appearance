@@ -357,11 +357,6 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     // (Conditions-card source footer removed — no data-source attribution in the
     //  guest-facing card; the Weather tab is where the source is configured.)
 
-    // Conditions timestamp
-    if (data.snow.respTimestamp) {
-      var d = new Date(data.snow.respTimestamp);
-      safeText('gsbConditionsTime', d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-    }
 
     // Season banner — show if there's a detail message indicating off-season.
     // A manual "Recent update" (data-manual-update="true") takes precedence over
