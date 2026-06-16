@@ -3477,7 +3477,7 @@ import { fetchOpenMeteo, conditionIcon, mToFt, ftToM } from './src/shared/weathe
   // Render normalized model into the UI
   // -------------------------------------------------------------------
   // ----- Season mode: which 6 cells the conditions card shows (Open-Meteo) -----
-  let seasonMode = 'winter';   // 'winter' | 'summer' — persisted in gsb-weather-config-v1
+  let seasonMode = 'summer';   // 'winter' | 'summer' — default summer; persisted in gsb-weather-config-v1
   const SEASON_SUB = {
     winter: 'Winter — base &amp; summit temps, summit wind, conditions, 5-day snowfall, snow level.',
     summer: 'Summer — temp, feels-like, conditions, wind, UV index, precip chance.'

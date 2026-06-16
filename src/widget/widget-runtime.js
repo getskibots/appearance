@@ -242,7 +242,8 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
       try { s = read(JSON.parse(localStorage.getItem('gsb-weather-config-v1') || '{}')); }
       catch (e) {}
     }
-    return s === 'summer' ? 'summer' : 'winter';
+    // Default to summer when unset (BotScrew default); only an explicit 'winter' opts out.
+    return s === 'winter' ? 'winter' : 'summer';
   }
 
   // The 6 cells per season — same map as the Weather dashboard's preview. Returns
