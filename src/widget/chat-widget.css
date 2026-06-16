@@ -1012,10 +1012,22 @@ body[data-variant="full"] .gsb-chat-left-column {
   display: flex;
   width: 100%;
   height: 100%;
-  cursor: grab;
   transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
-.gsb-cam-track:active { cursor: grabbing; }
+/* Prev/next arrows — desktop affordance; appear on hover. Touch users swipe. */
+.gsb-cam-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
+  width: 30px; height: 30px; border-radius: 50%; border: 0;
+  background: rgba(0, 0, 0, 0.42); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; opacity: 0;
+  transition: opacity 0.18s ease, background 0.15s ease;
+}
+.gsb-cam-arrow svg { width: 16px; height: 16px; }
+.gsb-cam-arrow--prev { left: 8px; }
+.gsb-cam-arrow--next { right: 8px; }
+.gsb-cam-arrow:hover { background: rgba(0, 0, 0, 0.62); }
+.gsb-cam-gallery:hover .gsb-cam-arrow { opacity: 1; }
 .gsb-cam-slide { flex: 0 0 100%; width: 100%; height: 100%; position: relative; background: #1a1a1a; }
 .gsb-cam-media { position: absolute; inset: 0; }
 .gsb-cam-media img, .gsb-cam-media iframe, .gsb-cam-media video,

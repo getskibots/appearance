@@ -133,7 +133,7 @@ export function renderWebcamCarousel(heroEl, webcams, onLabel) {
   });
   gallery.appendChild(track);
 
-  let dotsEl = null;
+  let dotsEl = null, prevArrow = null, nextArrow = null;
   if (cams.length > 1) {
     dotsEl = document.createElement('div');
     dotsEl.className = 'gsb-cam-dots';
@@ -145,6 +145,18 @@ export function renderWebcamCarousel(heroEl, webcams, onLabel) {
       dotsEl.appendChild(d);
     });
     gallery.appendChild(dotsEl);
+    prevArrow = document.createElement('button');
+    prevArrow.type = 'button';
+    prevArrow.className = 'gsb-cam-arrow gsb-cam-arrow--prev';
+    prevArrow.setAttribute('aria-label', 'Previous webcam');
+    prevArrow.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+    nextArrow = document.createElement('button');
+    nextArrow.type = 'button';
+    nextArrow.className = 'gsb-cam-arrow gsb-cam-arrow--next';
+    nextArrow.setAttribute('aria-label', 'Next webcam');
+    nextArrow.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+    gallery.appendChild(prevArrow);
+    gallery.appendChild(nextArrow);
   }
   heroEl.insertBefore(gallery, heroEl.firstChild);
   if (onLabel) onLabel(cams[0].label || '');
@@ -171,19 +183,18 @@ export function renderWebcamCarousel(heroEl, webcams, onLabel) {
     dotsEl.querySelectorAll('.gsb-cam-dot').forEach((d) => {
       d.addEventListener('click', (e) => { e.stopPropagation(); go(parseInt(d.getAttribute('data-i'), 10)); pauseThenResume(); });
     });
+    prevArrow.addEventListener('click', (e) => { e.stopPropagation(); go(st.index - 1); pauseThenResume(); });
+    nextArrow.addEventListener('click', (e) => { e.stopPropagation(); go(st.index + 1); pauseThenResume(); });
     gallery.addEventListener('mouseenter', () => { st.interacting = true; });
     gallery.addEventListener('mouseleave', () => { if (!st.pauseTimer) st.interacting = false; });
+    // Swipe is TOUCH ONLY — desktop users get the hover arrows + dots (mouse-drag felt awkward).
     let startX = null, dx = 0, dragging = false;
-    const onStart = (e) => { const p = e.touches ? e.touches[0] : e; startX = p.clientX; dx = 0; dragging = true; track.style.transition = 'none'; pauseThenResume(); };
-    const onMove = (e) => { if (!dragging || startX === null) return; const p = e.touches ? e.touches[0] : e; dx = p.clientX - startX; track.style.transform = 'translateX(' + (-st.index * 100 + (dx / gallery.offsetWidth) * 100) + '%)'; };
+    const onStart = (e) => { const p = e.touches[0]; startX = p.clientX; dx = 0; dragging = true; track.style.transition = 'none'; pauseThenResume(); };
+    const onMove = (e) => { if (!dragging || startX === null) return; const p = e.touches[0]; dx = p.clientX - startX; track.style.transform = 'translateX(' + (-st.index * 100 + (dx / gallery.offsetWidth) * 100) + '%)'; };
     const onEnd = () => { if (!dragging) return; dragging = false; track.style.transition = ''; const th = gallery.offsetWidth * 0.18; if (dx < -th) go(st.index + 1); else if (dx > th) go(st.index - 1); else go(st.index); startX = null; dx = 0; };
-    gallery.addEventListener('mousedown', onStart);
     gallery.addEventListener('touchstart', onStart, { passive: true });
     gallery.addEventListener('touchmove', onMove, { passive: true });
     gallery.addEventListener('touchend', onEnd);
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onEnd);
-    st.cleanup = () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onEnd); };
   }
 }
 
