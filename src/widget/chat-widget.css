@@ -138,6 +138,20 @@
   box-shadow: var(--gsb-depth-effect, none) !important;
 }
 
+/* Custom: shadow + glow follow the round uploaded icon (not the square button), the
+   same way radiate does — keep the button itself clean and put the depth effect on the
+   circle so it reads as a halo/shadow around the icon. */
+.gsb-launcher[data-effect-mode="shadow"][data-icon-style="custom"],
+.gsb-launcher[data-effect-mode="glow"][data-icon-style="custom"] {
+  animation: none !important;
+  box-shadow: none !important;
+}
+.gsb-launcher[data-effect-mode="shadow"][data-icon-style="custom"] .gsb-launcher-custom-icon,
+.gsb-launcher[data-effect-mode="glow"][data-icon-style="custom"] .gsb-launcher-custom-icon {
+  animation: none;
+  box-shadow: var(--gsb-depth-effect, none);
+}
+
 /* Radiate — restore the keyframe animation. The base rules at lines 1847,
    1915, and 2029 already declare the animation, but we re-declare here to
    ensure it wins specificity battles when the partner toggles between modes
