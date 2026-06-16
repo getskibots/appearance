@@ -544,32 +544,49 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     var urlIn = card.querySelector('.webcam-card__url');
     var capIn = card.querySelector('.featured-card__caption');
     var linkIn = card.querySelector('.featured-card__link');
+    var fileIn = card.querySelector('.featured-card__file');
+    var info = card.querySelector('.featured-card__info');
+    var uploadBtn = card.querySelector('.featured-card__uploadbtn');
     urlIn.value = (img.url && img.url.indexOf('data:') === 0) ? '' : (img.url || '');
     capIn.value = img.caption || '';
     linkIn.value = img.link || '';
+    function isUploaded() { return !!(img.url && img.url.indexOf('data:') === 0); }
     function hasUrl() { return !!(img.url && img.url.trim()); }
+    // An uploaded image has no meaningful URL to show: hide the URL field and put the card
+    // in an "Uploaded …" state with a Replace button. URL-sourced images keep the field.
+    // (Does not touch urlIn.value during typing, to avoid moving the caret.)
+    function syncSourceUI() {
+      var up = isUploaded();
+      urlIn.style.display = up ? 'none' : '';
+      uploadBtn.textContent = up ? 'Replace image' : 'Upload image';
+      if (up) {
+        if (!info.textContent) { info.textContent = 'Uploaded image'; info.setAttribute('data-status', 'ok'); }
+        info.style.display = '';
+      } else {
+        info.textContent = ''; info.style.display = 'none';
+      }
+    }
     function renderPreview() {
       card.setAttribute('data-empty', hasUrl() ? 'false' : 'true');
       if (hasUrl()) renderWebcamHero(preview, { url: img.url, kind: 'image', poster: '' });
       else clearWebcamHero(preview);
     }
+    syncSourceUI();
     renderPreview();
     // Uploaded files open a crop surface in this card's preview (drag to frame, zoom to
     // scale, live-baked). URL images just cover-fit. endCrop() tears the surface down.
     function endCrop() { if (card._cropCtl) { card._cropCtl.destroy(); card._cropCtl = null; } }
-    urlIn.addEventListener('input', function(e) { endCrop(); img.url = e.target.value; renderPreview(); render(); });
+    urlIn.addEventListener('input', function(e) { endCrop(); img.url = e.target.value; syncSourceUI(); renderPreview(); render(); });
     capIn.addEventListener('input', function(e) { img.caption = e.target.value; render(); });
     linkIn.addEventListener('input', function(e) { img.link = e.target.value; render(); });
-    var fileIn = card.querySelector('.featured-card__file');
-    var info = card.querySelector('.featured-card__info');
-    card.querySelector('.featured-card__uploadbtn').addEventListener('click', function() { fileIn.click(); });
+    uploadBtn.addEventListener('click', function() { fileIn.click(); });
     fileIn.addEventListener('change', function(e) {
       var f = e.target.files && e.target.files[0]; if (!f) return; e.target.value = '';
       function setInfo(t, s) { if (!info) return; info.textContent = t; info.style.display = ''; info.setAttribute('data-status', s || ''); }
       endCrop();
       if (f.type === 'image/svg+xml') {
         var rs = new FileReader();
-        rs.onload = function() { img.url = rs.result; urlIn.value = ''; setInfo('SVG · ' + formatBytes(f.size) + ' (used as-is)', 'ok'); renderPreview(); render(); };
+        rs.onload = function() { img.url = rs.result; urlIn.value = ''; setInfo('SVG · ' + formatBytes(f.size) + ' (used as-is)', 'ok'); syncSourceUI(); renderPreview(); render(); };
         rs.readAsDataURL(f); return;
       }
       setInfo('Loading…', '');
@@ -584,6 +601,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
           img.url = out.dataUrl; urlIn.value = '';
           var fmt = out.mime === 'image/webp' ? 'WebP' : 'JPEG';
           setInfo(formatBytes(origBytes) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height + ' · ' + fmt, 'ok');
+          syncSourceUI();
           render();
         }
       }).then(function(ctrl) { card._cropCtl = ctrl; }).catch(function() {
@@ -591,10 +609,10 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
         optimizeImage(f).then(function(out) {
           img.url = out.dataUrl; urlIn.value = '';
           setInfo(formatBytes(f.size) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height, 'ok');
-          renderPreview(); render();
+          syncSourceUI(); renderPreview(); render();
         }).catch(function() {
           var rf = new FileReader();
-          rf.onload = function() { img.url = rf.result; urlIn.value = ''; renderPreview(); render(); };
+          rf.onload = function() { img.url = rf.result; urlIn.value = ''; syncSourceUI(); renderPreview(); render(); };
           rf.readAsDataURL(f);
         });
       });
