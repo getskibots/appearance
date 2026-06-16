@@ -587,7 +587,7 @@ body.modal-open[data-variant="side"] .gsb-backdrop {
   pointer-events: none;
   transition: transform 500ms var(--ease-launch), opacity 500ms var(--ease-launch), box-shadow 240ms ease;
   font-family: var(--gsb-body-font, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
-  font-size: calc(14px * var(--gsb-text-scale, 1));
+  font-size: calc(15px * var(--gsb-text-scale, 1));
 }
 
 body.modal-open .gsb-chat {
@@ -1091,7 +1091,7 @@ body[data-variant="full"] .gsb-chat-left-column {
 .gsb-welcome-greeting {
   margin: 0;
   font-family: var(--serif);
-  font-size: calc(17px * var(--gsb-text-scale, 1));
+  font-size: calc(19px * var(--gsb-text-scale, 1));
   line-height: 1.4;
   color: var(--jh-ink);
 }
@@ -1164,7 +1164,7 @@ body[data-show-conditions="false"] .gsb-conditions,
 .gsb-conditions-cell:nth-last-child(-n+3) { border-bottom: none; }
 
 .gsb-conditions-cell .label {
-  font-size: calc(9px * var(--gsb-text-scale, 1));
+  font-size: calc(10.5px * var(--gsb-text-scale, 1));
   font-weight: 700;
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -1174,6 +1174,7 @@ body[data-show-conditions="false"] .gsb-conditions,
 
 .gsb-conditions-cell .value {
   font-family: var(--serif);
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
   font-size: calc(22px * var(--gsb-text-scale, 1));
   font-weight: 700;
   color: var(--jh-ink);
@@ -1245,7 +1246,7 @@ body[data-show-conditions="false"] .gsb-conditions,
 }
 
 .gsb-season-banner__title {
-  font-size: calc(10px * var(--gsb-text-scale, 1));
+  font-size: calc(11px * var(--gsb-text-scale, 1));
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1270,7 +1271,7 @@ body[data-show-conditions="false"] .gsb-conditions,
   border: 1.5px solid var(--brand);
   background: transparent;
   color: var(--brand);
-  font-size: calc(13px * var(--gsb-text-scale, 1));
+  font-size: calc(13.5px * var(--gsb-text-scale, 1));
   font-weight: 600;
   cursor: pointer;
 }

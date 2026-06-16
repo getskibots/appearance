@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <!-- Preload only the defaults (Inter/Playfair) + Roboto (launcher temp glyphs); every
      other Google Font loads on demand via src/shared/fonts/font-loader.js when picked. -->
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Montserrat:wght@400;500;600;700&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <!-- Shared design tokens + base reset (extracted from the original inline <style>).
      Loaded before the remaining inline styles to preserve cascade order. -->
 <link rel="stylesheet" href="/src/shared/tokens.css" />
@@ -836,21 +836,21 @@
                 <label class="field__label">Preset pairings</label>
                 <p class="field__hint" style="margin-top:0;margin-bottom:12px">Tap a preset to set both fonts at once. You can fine-tune below.</p>
                 <div class="font-presets" id="fontPresets">
-                  <button type="button" class="font-preset" data-body="Montserrat" data-display="Archivo" data-active="true">
+                  <button type="button" class="font-preset" data-body="Inter" data-display="Space Grotesk" data-active="true">
                     <span class="font-preset__name">Modern</span>
-                    <span class="font-preset__sample" style="font-family:'Montserrat',sans-serif"><strong>Aa</strong><em style="font-family:'Archivo',sans-serif">Aa</em></span>
+                    <span class="font-preset__sample" style="font-family:'Inter',sans-serif"><strong>Aa</strong><em style="font-family:'Space Grotesk',sans-serif">Aa</em></span>
                   </button>
                   <button type="button" class="font-preset" data-body="DM Sans" data-display="Fraunces">
                     <span class="font-preset__name">Alpine</span>
                     <span class="font-preset__sample" style="font-family:'DM Sans',sans-serif"><strong>Aa</strong><em style="font-family:'Fraunces',serif">Aa</em></span>
                   </button>
-                  <button type="button" class="font-preset" data-body="Montserrat" data-display="Oswald">
-                    <span class="font-preset__name">Bold</span>
-                    <span class="font-preset__sample" style="font-family:'Montserrat',sans-serif"><strong>Aa</strong><em style="font-family:'Oswald',sans-serif">Aa</em></span>
-                  </button>
-                  <button type="button" class="font-preset" data-body="Lato" data-display="Lora">
+                  <button type="button" class="font-preset" data-body="Lato" data-display="Playfair Display">
                     <span class="font-preset__name">Classic</span>
-                    <span class="font-preset__sample" style="font-family:'Lato',sans-serif"><strong>Aa</strong><em style="font-family:'Lora',serif">Aa</em></span>
+                    <span class="font-preset__sample" style="font-family:'Lato',sans-serif"><strong>Aa</strong><em style="font-family:'Playfair Display',serif">Aa</em></span>
+                  </button>
+                  <button type="button" class="font-preset" data-body="Barlow" data-display="Oswald">
+                    <span class="font-preset__name">Bold</span>
+                    <span class="font-preset__sample" style="font-family:'Barlow',sans-serif"><strong>Aa</strong><em style="font-family:'Oswald',sans-serif">Aa</em></span>
                   </button>
                 </div>
               </div>

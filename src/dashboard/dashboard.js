@@ -24,8 +24,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   // picker's default "Popular for resorts" view (search covers the full catalog).
   var FONT_BY_NAME = {};
   FONT_CATALOG.forEach(function(e) { FONT_BY_NAME[e.f] = e; });
-  var CURATED_BODY = ['Inter', 'Poppins', 'Montserrat', 'Lato', 'Work Sans', 'Nunito Sans', 'DM Sans', 'Open Sans', 'Raleway', 'Mulish', 'Source Sans 3', 'Roboto'];
-  var CURATED_DISPLAY = ['Playfair Display', 'Merriweather', 'Lora', 'Fraunces', 'Cormorant', 'Oswald', 'Bebas Neue', 'Archivo', 'DM Serif Display', 'Libre Baskerville'];
+  var CURATED_BODY = ['Inter', 'DM Sans', 'Barlow', 'Lato', 'Poppins', 'Montserrat', 'Work Sans', 'Nunito Sans', 'Open Sans', 'Raleway', 'Mulish', 'Source Sans 3', 'Roboto'];
+  var CURATED_DISPLAY = ['Space Grotesk', 'Playfair Display', 'Fraunces', 'Oswald', 'Merriweather', 'Lora', 'Cormorant', 'Bebas Neue', 'Archivo', 'DM Serif Display', 'Libre Baskerville'];
   var bodyPicker = null, displayPicker = null;
 
   // ============= COLOR HELPERS =============
@@ -237,10 +237,10 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     typingIndicator: 'dots',    // dots | orb | label — the "AI is replying" animation
     messageStyle: 'classic',    // classic | modern | fancy — chat message bubble look
     disableTextInput: false,
-    // Typography
+    // Typography — default is the "Modern" preset (Space Grotesk display + Inter body).
     typography: {
-      bodyFont: 'Montserrat',
-      displayFont: 'Archivo',
+      bodyFont: 'Inter',
+      displayFont: 'Space Grotesk',
       textScale: 1.0
     },
     // Embeddable Search controls
@@ -1893,7 +1893,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     });
   });
   // Preload preview faces so the preset tiles render their Aa samples in-font.
-  ['Inter', 'Playfair Display', 'DM Sans', 'Fraunces', 'Montserrat', 'Oswald', 'Lato', 'Lora'].forEach(loadPreview);
+  ['Space Grotesk', 'Inter', 'Fraunces', 'DM Sans', 'Playfair Display', 'Lato', 'Oswald', 'Barlow'].forEach(loadPreview);
   // Text size slider + presets
   $('textSizeSlider').addEventListener('input', function(e) {
     state.typography.textScale = parseFloat(e.target.value);
