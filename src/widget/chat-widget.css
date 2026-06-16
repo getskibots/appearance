@@ -387,6 +387,11 @@
    pill). The AI avatar stays; showing a person with no live agent online is misleading. */
 [data-liveagent="off"] .gsb-launcher-avatar-human { display: none; }
 
+/* With the human avatar gone, the lone AI icon would hug the Status pill's tight 6px
+   left padding. Match it to the right padding so the icon sits centered in its left
+   zone (weather stays on the right; the AI | weather two-column feel is kept). */
+[data-liveagent="off"] .gsb-launcher[data-icon-style="enhanced"] { padding-left: 12px; }
+
 .gsb-launcher-divider {
   width: 1px;
   height: 18px;
