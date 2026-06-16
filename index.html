@@ -914,9 +914,12 @@
                     <input type="radio" name="layoutVariant" value="full" />
                     <div class="radio-card__icon" aria-hidden="true">
                       <svg width="60" height="40" viewBox="0 0 60 40" fill="none">
+                        <!-- dimmed site behind -->
+                        <rect x="2" y="4" width="56" height="32" rx="3" fill="currentColor" fill-opacity="0.09"/>
                         <rect x="2" y="4" width="56" height="32" rx="3" stroke="currentColor" stroke-width="1.2" fill="none"/>
-                        <rect x="5" y="7" width="50" height="26" rx="2" fill="currentColor" fill-opacity="0.5"/>
-                        <rect x="5" y="7" width="26" height="26" rx="2" fill="currentColor" fill-opacity="0.4"/>
+                        <!-- centered near-fullscreen overlay panel (two-column) -->
+                        <rect x="8" y="9" width="44" height="22" rx="2" fill="currentColor" fill-opacity="0.55"/>
+                        <rect x="8" y="9" width="20" height="22" rx="2" fill="currentColor" fill-opacity="0.4"/>
                       </svg>
                     </div>
                     <div class="radio-card__title">Full Panel</div>
