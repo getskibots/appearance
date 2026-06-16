@@ -213,7 +213,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // Auto-hide-on-scroll is available on both pill styles AND the custom launcher.
     // Per-style so each remembers its own setting; default ON so the launcher stays
     // clear of checkout/CTA elements out of the box.
-    autoHideOnScroll: { enhanced: true, slidein: true, custom: true },
+    autoHideOnScroll: { traditional: false, enhanced: true, slidein: true, custom: true },
     // Launcher placement: which corner it anchors to + spacing from the screen
     // edges (px). Maps to BotScrew's greetingMessagePopupSettings.{alignment,
     // bottomSpacing, sideSpacing}; the greeting popup + open panel inherit it.
@@ -1440,7 +1440,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
 
   // Launcher styles that support the auto-hide-on-scroll (slide away) behavior.
   function supportsAutoHide(style) {
-    return style === 'enhanced' || style === 'slidein' || style === 'custom';
+    // Auto-hide on scroll is a behavior, not a look — every launcher style can slide
+    // off-screen (the [data-slide-state] transform is generic).
+    return style === 'traditional' || style === 'enhanced' || style === 'slidein' || style === 'custom';
   }
   // True when the active launcher style has auto-hide-on-scroll switched on.
   function isAutoHideActive() {
