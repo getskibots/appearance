@@ -1399,13 +1399,6 @@ body[data-msg-style="classic"] .gsb-msg--ai:not(.gsb-typing-indicator)::after {
   border-right: 8px solid var(--jh-surface); border-top: 8px solid transparent;
 }
 
-/* MINIMAL — the AI reply is plain text (no bubble); only the guest gets a pill. */
-body[data-msg-style="minimal"] .gsb-msg { border-radius: 16px; }
-body[data-msg-style="minimal"] .gsb-msg--ai:not(.gsb-typing-indicator) {
-  background: none; border: 0; padding-left: 2px; border-bottom-left-radius: 16px;
-}
-body[data-msg-style="minimal"] .gsb-msg--user { border-bottom-right-radius: 16px; }
-
 /* ELEVATED — both sides float as soft-shadowed cards (white AI, solid guest). */
 body[data-msg-style="elevated"] .gsb-msg { border-radius: 14px; }
 body[data-msg-style="elevated"] .gsb-msg--ai {

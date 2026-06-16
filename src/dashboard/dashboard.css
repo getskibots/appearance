@@ -615,8 +615,6 @@
 /* Panel-motion cards (Animations & effects) — each plays a looping mini-preview
    of its actual motion (scale from corner / slide up / fade in). */
 .anim-cards { display: flex; gap: 10px; max-width: 480px; }
-.anim-cards--four { flex-wrap: wrap; }
-.anim-cards--four .anim-card { flex: 1 1 calc(50% - 5px); }
 .anim-card {
   flex: 1 1 0;
   display: flex;
@@ -721,10 +719,6 @@
 .bubble-demo--classic .bubble-demo__b--user { background: var(--brand, var(--accent)); border-bottom-right-radius: 2px; }
 .bubble-demo--classic .bubble-demo__b--ai::after { content: ""; position: absolute; left: -4px; bottom: 0; border-right: 6px solid #fff; border-top: 6px solid transparent; }
 .bubble-demo--classic .bubble-demo__b--user::after { content: ""; position: absolute; right: -4px; bottom: 0; border-left: 6px solid var(--brand, var(--accent)); border-top: 6px solid transparent; }
-/* Minimal — AI is plain text (no chrome, thinner line); only the guest gets a pill. */
-.bubble-demo--minimal .bubble-demo__b { border-radius: 999px; }
-.bubble-demo--minimal .bubble-demo__b--ai { background: var(--ink-muted); height: 7px; }
-.bubble-demo--minimal .bubble-demo__b--user { background: var(--brand, var(--accent)); }
 /* Elevated — floating cards with soft shadows. */
 .bubble-demo--elevated .bubble-demo__b--ai { background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.14); }
 .bubble-demo--elevated .bubble-demo__b--user { background: var(--brand, var(--accent)); box-shadow: 0 2px 7px color-mix(in srgb, var(--brand, var(--accent)) 40%, transparent); }

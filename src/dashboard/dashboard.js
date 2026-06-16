@@ -242,7 +242,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     askForRating: false,
     realtimeVoice: true,        // show the hands-free Voice Mode feature in the chat
     typingIndicator: 'dots',    // dots | orb | label — the "AI is replying" animation
-    messageStyle: 'classic',    // classic | modern | fancy — chat message bubble look
+    messageStyle: 'classic',    // classic | elevated | squared — chat message bubble look
     disableTextInput: false,
     // Typography — default is the "Modern" preset (Space Grotesk display + Inter body).
     // displayScale = a per-preset optical-balance factor on the display font only (so a
@@ -345,6 +345,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       if (base.hero.featuredImage && base.hero.featuredImage.url) base.hero.featuredImages = [base.hero.featuredImage];
       delete base.hero.featuredImage;
     }
+    // Retired message-bubble style: 'minimal' → 'classic'.
+    if (base.messageStyle === 'minimal') base.messageStyle = 'classic';
     return base;
   }
 
