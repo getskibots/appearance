@@ -1067,7 +1067,7 @@ body[data-variant="full"] .gsb-chat-left-column {
   background: rgba(0,0,0,0.35); border-radius: 999px;
 }
 .gsb-cam-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); border: 0; padding: 0; cursor: pointer; transition: all 0.2s; }
-.gsb-cam-dot.is-active { background: #fff; width: 18px; border-radius: 3px; }
+.gsb-cam-dot.is-active { background: #fff; }
 
 /* WELCOME LINE */
 .gsb-welcome {
