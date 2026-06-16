@@ -1045,7 +1045,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       panel: ['layoutVariant','blurredBackground'],
       effects: ['animationStyle','typingIndicator','messageStyle','effectMode','effectIntensity','snowfall'],
       behavior: ['soundNotifications','popupMessagePreview','askForRating','realtimeVoice','disableTextInput'],
-      embed: ['embedSearch','embedButton']
+      embed: ['embedSearch','embedButton','backgroundImage','bgTextMode']
     };
     Object.keys(ACC_CARD_FIELDS).forEach(function(id) {
       var card = document.querySelector('.acc-card[data-acc-id="' + id + '"]');

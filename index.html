@@ -359,33 +359,6 @@
                     </div>
                   </div>
 
-                  <!-- Demo background image — fills the demo/preview page background
-                       (and, down the road, an optional Chat UI background). -->
-                  <div class="field" style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px">
-                    <label class="field__label" for="backgroundImageUrl">Demo background image <span style="color:var(--ink-muted);font-weight:400">(optional)</span></label>
-                    <p class="field__hint" style="margin-top:0;margin-bottom:8px">Fills the background of the demo / preview page so it feels like a real resort site. Paste a wide photo URL or upload one.</p>
-                    <input class="input" type="url" id="backgroundImageUrl" placeholder="https://…/hero-photo.jpg" style="width:100%" />
-                    <div class="logo-actions" style="margin-top:8px">
-                      <button class="btn" type="button" onclick="document.getElementById('backgroundImageFile').click()">Upload image</button>
-                      <input type="file" id="backgroundImageFile" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" />
-                      <button class="btn" type="button" id="backgroundImageClear" style="display:none;align-items:center;gap:6px">
-                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true"><path d="M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M6 7l1 12a2 2 0 002 2h6a2 2 0 002-2l1-12M10 11v6M14 11v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        Remove
-                      </button>
-                    </div>
-                    <img class="bg-image-preview" id="backgroundImagePreview" alt="Background image preview" style="display:none" />
-                    <div class="img-optim" id="backgroundImageInfo" style="display:none"></div>
-                    <!-- Hero text treatment over the photo — Light (default) or Dark. -->
-                    <div class="field" id="bgTextModeRow" style="display:none;margin-top:12px;margin-bottom:0">
-                      <label class="field__label">Text over photo</label>
-                      <p class="field__hint" style="margin-top:0;margin-bottom:8px">Light suits most photos (dark overlay + white text); pick Dark for light / airy images.</p>
-                      <div class="segmented" id="bgTextModeSeg" role="radiogroup" aria-label="Hero text over photo">
-                        <button type="button" data-bg-text="light" data-active="true" role="radio" aria-checked="true">Light text</button>
-                        <button type="button" data-bg-text="dark" data-active="false" role="radio" aria-checked="false">Dark text</button>
-                      </div>
-                    </div>
-                  </div>
-
                 </div>
 
                 <!-- Live preview: renders the actual hero (cam / image) as you configure it -->
@@ -1043,7 +1016,7 @@
                 <span class="acc-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></span>
                 <span class="acc-head__titles">
                   <span class="acc-head__title">Embeddable components</span>
-                  <span class="acc-head__desc">The hero search bar and standalone search button</span>
+                  <span class="acc-head__desc">Hero search bar, standalone search button, demo page background</span>
                 </span>
                 <span class="acc-head__dot" aria-hidden="true"></span>
                 <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
@@ -1251,6 +1224,36 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="0.6" fill="currentColor"/></svg>
                   <span>Drop into your top nav, sidebar, or any compact spot. <strong>Styling comes from your appearance settings above</strong> — no CSS needed.</span>
                 </p>
+              </div>
+
+              <!-- ===== DEMO / PREVIEW PAGE BACKGROUND (not the chat hero) ===== -->
+              <div class="embed-subcard">
+                <h4 class="embed-subcard__title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M8 14l2.5-3 2 2.5L15 11l3 3"/></svg>
+                  Demo page background
+                </h4>
+                <p class="embed-subcard__sub">Fills the background of the demo / preview page so it feels like a real resort site. This is the prospect demo only — <strong>not</strong> the chat hero.</p>
+                <div class="field">
+                  <input class="input" type="url" id="backgroundImageUrl" placeholder="https://…/hero-photo.jpg" style="width:100%" />
+                  <div class="logo-actions" style="margin-top:8px">
+                    <button class="btn" type="button" onclick="document.getElementById('backgroundImageFile').click()">Upload image</button>
+                    <input type="file" id="backgroundImageFile" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" />
+                    <button class="btn" type="button" id="backgroundImageClear" style="display:none;align-items:center;gap:6px">
+                      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true"><path d="M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M6 7l1 12a2 2 0 002 2h6a2 2 0 002-2l1-12M10 11v6M14 11v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      Remove
+                    </button>
+                  </div>
+                  <img class="bg-image-preview" id="backgroundImagePreview" alt="Background image preview" style="display:none" />
+                  <div class="img-optim" id="backgroundImageInfo" style="display:none"></div>
+                  <div class="field" id="bgTextModeRow" style="display:none;margin-top:12px;margin-bottom:0">
+                    <label class="field__label">Text over photo</label>
+                    <p class="field__hint" style="margin-top:0;margin-bottom:8px">Light suits most photos (dark overlay + white text); pick Dark for light / airy images.</p>
+                    <div class="segmented" id="bgTextModeSeg" role="radiogroup" aria-label="Hero text over photo">
+                      <button type="button" data-bg-text="light" data-active="true" role="radio" aria-checked="true">Light text</button>
+                      <button type="button" data-bg-text="dark" data-active="false" role="radio" aria-checked="false">Dark text</button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </section>
 
