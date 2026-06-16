@@ -205,9 +205,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       ]
     },
     ctaText: 'Need help?',
-    // Showcase default: the Status pill is the richest launcher (avatars + live agent +
-    // weather + CTA), so a fresh appearance tab demonstrates the most for BotScrew.
-    bubbleStyle: 'enhanced',
+    // Default: the vertical Slide-in pill — slides off on scroll-down to stay clear of
+    // checkout/CTA elements, the preferred launcher for the BotScrew handoff.
+    bubbleStyle: 'slidein',
     customIconUrl: null,
     customIconSize: 56,         // px diameter of the custom launcher (the image fills it)
     slideState: 'visible',
