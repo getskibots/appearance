@@ -243,7 +243,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     typography: {
       bodyFont: 'Inter',
       displayFont: 'Space Grotesk',
-      textScale: 1.0,
+      textScale: 1.05,
       displayScale: 1.0
     },
     // Embeddable Search controls
