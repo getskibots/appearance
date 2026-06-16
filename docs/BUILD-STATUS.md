@@ -96,10 +96,14 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
   that opens the builder in a new tab — production lists the bot's real Flows and deep-links the
   builder (spec: [INTEGRATION.md §5a](./INTEGRATION.md)). Two-column card. (Corner radius now
   lives in the **Launcher** card.)
-- **5.1b Webcams & featured image** ✅ — hero source (webcam / featured image / none) with
-  a **trashcan to clear the image**, plus a **Demo background image** (URL or upload) that
-  themes the prospect demo page with a **Light/Dark** text treatment. (Background image is
-  demo-only today; reserved for an optional Chat UI background later.)
+- **5.1b Webcams & featured image** ✅ — hero source (webcam / featured image / none).
+  **Webcams** and **featured images** both use a multi-card editor (horizontal cards,
+  add/remove, drag-to-reorder) and render through one shared carousel (3 dots, hover
+  arrows, touch swipe, auto-rotate). Webcams carry a LIVE pill + "Updated just now";
+  featured images are caption-only with an optional tap-through link (no LIVE chrome) and
+  rotate a touch slower. Plus a **Demo background image** (URL or upload) that themes the
+  prospect demo page with a **Light/Dark** text treatment. (Background image is demo-only
+  today; reserved for an optional Chat UI background later.)
 - **5.2 Launcher bubble** ✅ — all styles (simple/status pill/slide-in/custom), CTA
   text (≤24 glyphs), status-pill feature toggles, Save + live preview.
 - **5.3 Configurable icon style** 🟡 — styles done; business-hours auto live-agent not done.

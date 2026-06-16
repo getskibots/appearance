@@ -75,15 +75,17 @@ interface GsbAppearance {
   /** The hero slot at the top of the open chat (Webcams & featured image card). */
   hero: {
     source: 'webcam' | 'featured' | 'none';
-    webcam: {
+    webcams: Array<{        // 0+ cams; 2+ auto-rotate in a carousel (order = rotation order)
       url: string;            // any cam URL; blank = use the live conditions feed
       label: string;
+      sub: string;            // caption subtitle (e.g. elevation)
       kind: 'image' | 'mjpeg' | 'unknown' | 'hls' | 'dash' | 'mp4' | 'youtube' | 'vimeo'
           | 'roundshot' | 'panomax' | 'feratel' | 'bergfex' | 'earthcam' | 'hdontap'
           | 'windy' | 'brownrice' | 'rtsp' | 'rtmp';   // auto-detected delivery type
       poster: string;         // best-effort still for non-image kinds (e.g. YouTube thumb)
-    };
-    featuredImage: { url: string; caption: string; link: string };  // Appearance-owned
+    }>;
+    featuredImages: Array<{ url: string; caption: string; link: string }>;  // Appearance-owned;
+    // 0+ promo images; 2+ rotate in the same carousel (no LIVE pill, caption-only, tap-to-link)
   };
   ctaText: string;
   bubbleStyle: 'traditional' | 'custom' | 'enhanced' | 'slidein';

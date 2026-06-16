@@ -95,13 +95,24 @@ export function stopWebcamCarousel(heroEl) {
   }
 }
 
-// Multi-cam hero carousel — slide track, dots, swipe/drag, 6s auto-rotate with a 15s
-// manual-pause, and a per-slide caption (title · sub · "Updated just now") + LIVE pill
-// and type badge. A URL/label signature avoids rebuilding on unrelated re-renders.
-export function renderWebcamCarousel(heroEl, webcams, onLabel) {
+// Hero carousel — slide track, dots, hover arrows, touch swipe, auto-rotate with a 15s
+// manual-pause, and a per-slide caption. Shared by webcams (LIVE pill + "Updated just now")
+// and featured images (caption-only, tap-to-link). A signature avoids rebuilding on
+// unrelated re-renders.
+//   opts.showLive    (default true)  — show the LIVE pill
+//   opts.showUpdated (default true)  — show the "Updated just now" stamp
+//   opts.linkable    (default false) — a slide with item.link becomes clickable
+//   opts.interval    (default 6000)  — auto-rotate cadence (ms)
+export function renderWebcamCarousel(heroEl, webcams, onLabel, opts) {
   if (!heroEl) return;
+  opts = opts || {};
+  const showLive = opts.showLive !== false;
+  const showUpdated = opts.showUpdated !== false;
+  const linkable = !!opts.linkable;
+  const interval = opts.interval || 6000;
   const cams = (webcams || []).filter((c) => c && c.url && String(c.url).trim());
-  const sig = cams.map((c) => [c.url, c.kind || '', c.label || '', c.sub || ''].join('|')).join('::');
+  const sig = cams.map((c) => [c.url, c.kind || '', c.label || '', c.sub || '', c.link || ''].join('|')).join('::') +
+    '#' + (showLive ? 1 : 0) + (showUpdated ? 1 : 0) + (linkable ? 1 : 0);
   if (heroEl._gsbGallerySig === sig && heroEl.querySelector(':scope > .gsb-cam-gallery')) return;
   heroEl._gsbGallerySig = sig;
   stopWebcamCarousel(heroEl);
@@ -118,16 +129,23 @@ export function renderWebcamCarousel(heroEl, webcams, onLabel) {
   cams.forEach((cam) => {
     const slide = document.createElement('div');
     slide.className = 'gsb-cam-slide';
+    const hasCaption = cam.label || cam.sub;
     slide.innerHTML =
       '<div class="gsb-cam-media"></div>' +
-      '<div class="gsb-cam-live">LIVE</div>' +
-      ((cam.label || cam.sub)
+      (showLive ? '<div class="gsb-cam-live">LIVE</div>' : '') +
+      (hasCaption
         ? '<div class="gsb-cam-caption"><span class="gsb-cam-caption__title">' + escHtml(cam.label || 'Webcam') +
             (cam.sub ? '<span class="gsb-cam-caption__sub">' + escHtml(cam.sub) + '</span>' : '') +
-          '</span><span class="gsb-cam-caption__updated">Updated just now</span></div>'
+          '</span>' + (showUpdated ? '<span class="gsb-cam-caption__updated">Updated just now</span>' : '') + '</div>'
         : '');
     track.appendChild(slide);
-    renderWebcamHero(slide.querySelector('.gsb-cam-media'), cam);
+    const media = slide.querySelector('.gsb-cam-media');
+    renderWebcamHero(media, cam);
+    if (linkable && cam.link && String(cam.link).trim()) {
+      const href = String(cam.link).trim();
+      media.classList.add('gsb-cam-media--link');
+      media.addEventListener('click', () => { window.open(href, '_blank', 'noopener'); });
+    }
   });
   gallery.appendChild(track);
 
@@ -177,7 +195,7 @@ export function renderWebcamCarousel(heroEl, webcams, onLabel) {
   setPos(0, false);
 
   if (st.n > 1) {
-    heroEl._gsbCamTimer = setInterval(() => { if (!st.interacting) go(st.index + 1); }, 6000);
+    heroEl._gsbCamTimer = setInterval(() => { if (!st.interacting) go(st.index + 1); }, interval);
     dotsEl.querySelectorAll('.gsb-cam-dot').forEach((d) => {
       d.addEventListener('click', (e) => { e.stopPropagation(); go(parseInt(d.getAttribute('data-i'), 10)); pauseThenResume(); });
     });

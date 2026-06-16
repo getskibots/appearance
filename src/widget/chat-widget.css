@@ -1030,6 +1030,7 @@ body[data-variant="full"] .gsb-chat-left-column {
 .gsb-cam-gallery:hover .gsb-cam-arrow { opacity: 1; }
 .gsb-cam-slide { flex: 0 0 100%; width: 100%; height: 100%; position: relative; background: #1a1a1a; }
 .gsb-cam-media { position: absolute; inset: 0; }
+.gsb-cam-media--link { cursor: pointer; }
 .gsb-cam-media img, .gsb-cam-media iframe, .gsb-cam-media video,
 .gsb-cam-media .gsb-webcam-img, .gsb-cam-media .gsb-webcam-iframe, .gsb-cam-media .gsb-webcam-video {
   width: 100%; height: 100%; object-fit: cover; border: 0; display: block; position: absolute; inset: 0;

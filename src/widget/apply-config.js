@@ -267,10 +267,19 @@ export function applyWidgetConfig(config) {
     // Support the webcams[] list, falling back to an old single h.webcam.
     var cams = (h.webcams || (h.webcam ? [h.webcam] : [])).filter(function (c) { return c && c.url && String(c.url).trim(); });
     if (h.source === 'featured') {
-      stopWebcamCarousel(heroEl);
-      if (h.featuredImage && h.featuredImage.url) renderWebcamHero(heroEl, { url: h.featuredImage.url, kind: 'image', poster: '' });
-      else clearWebcamHero(heroEl);
-      if (station) station.textContent = (h.featuredImage && h.featuredImage.caption) || '';
+      // Support the featuredImages[] list, falling back to an old single h.featuredImage.
+      var feat = (h.featuredImages || (h.featuredImage ? [h.featuredImage] : []))
+        .filter(function (im) { return im && im.url && String(im.url).trim(); });
+      if (feat.length) {
+        renderWebcamCarousel(heroEl, feat.map(function (im) {
+          return { url: im.url, kind: 'image', poster: '', label: im.caption || '', sub: '', link: im.link || '' };
+        }), function (lbl) { if (station) station.textContent = lbl || ''; },
+          { showLive: false, showUpdated: false, linkable: true, interval: 8500 });
+      } else {
+        stopWebcamCarousel(heroEl);
+        clearWebcamHero(heroEl);
+        if (station) station.textContent = '';
+      }
       heroEl.setAttribute('data-hero-managed', 'true');
     } else if (h.source === 'none') {
       stopWebcamCarousel(heroEl);

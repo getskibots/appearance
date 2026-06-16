@@ -11,7 +11,6 @@ import { detectWebcamKind, webcamKindMeta, webcamPoster } from '../shared/webcam
 import { renderWebcamHero, clearWebcamHero, renderWebcamCarousel, stopWebcamCarousel } from '../shared/webcam-render.js';
 import { optimizeImage, formatBytes } from '../shared/image-compress.js';
 import { createSnowEngine } from '../shared/snow-engine.js';
-import { startFeaturedCrop } from './featured-crop.js';
 import { processLogo } from '../shared/logo.js';
 import { createFontPicker } from './font-picker.js';
 import FONT_CATALOG from '../shared/fonts/google-fonts.json';
@@ -27,8 +26,6 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   var CURATED_BODY = ['Inter', 'Poppins', 'Montserrat', 'Lato', 'Work Sans', 'Nunito Sans', 'DM Sans', 'Open Sans', 'Raleway', 'Mulish', 'Source Sans 3', 'Roboto'];
   var CURATED_DISPLAY = ['Playfair Display', 'Merriweather', 'Lora', 'Fraunces', 'Cormorant', 'Oswald', 'Bebas Neue', 'Archivo', 'DM Serif Display', 'Libre Baskerville'];
   var bodyPicker = null, displayPicker = null;
-  var cropController = null; // active featured-image crop editor (Webcams card)
-  function endFeaturedCrop() { if (cropController) { cropController.destroy(); cropController = null; } }
 
   // ============= COLOR HELPERS =============
   function hexToRgb(hex) {
@@ -198,7 +195,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
         { url: 'https://cams.jacksonhole.com/webcam/trambase.jpg', label: 'Tram Station', sub: '9,095 ft', kind: 'image', poster: '' },
         { url: 'https://cams.jacksonhole.com/webcam/teewinot.jpg', label: 'Teewinot', sub: '', kind: 'image', poster: '' }
       ],
-      featuredImage: { url: '', caption: '', link: '' }
+      featuredImages: []
     },
     ctaText: 'Need help?',
     // Showcase default: the Status pill is the richest launcher (avatars + live agent +
@@ -327,6 +324,10 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       if (base.hero.webcam && base.hero.webcam.url) base.hero.webcams = [base.hero.webcam];
       delete base.hero.webcam;
       base.hero.webcams.forEach(function(c) { if (c && c.sub == null) c.sub = ''; });
+      // Migrate the old single hero.featuredImage → the hero.featuredImages[] list.
+      if (!Array.isArray(base.hero.featuredImages)) base.hero.featuredImages = [];
+      if (base.hero.featuredImage && base.hero.featuredImage.url) base.hero.featuredImages = [base.hero.featuredImage];
+      delete base.hero.featuredImage;
     }
     return base;
   }
@@ -425,8 +426,16 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       if (i > -1) state.hero.webcams.splice(i, 1);
       render();
     });
-    // Drag-to-reorder: the card is only draggable while the grip handle is held.
+    wireCardDrag(card, commitWebcamOrder);
+    return card;
+  }
+  // ---- Generic card drag-reorder (shared by webcams + featured images) ----
+  // The card is only draggable while its grip handle is held; on drop, `commit`
+  // rebuilds the backing array from DOM order. Featured cards reuse the .webcam-card
+  // class so the same layout, handle, and drag logic apply.
+  function wireCardDrag(card, commit) {
     var handle = card.querySelector('.webcam-card__handle');
+    if (!handle) return;
     handle.addEventListener('mousedown', function() { card.setAttribute('draggable', 'true'); });
     card.addEventListener('dragstart', function(e) {
       card.classList.add('is-dragging');
@@ -436,9 +445,32 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     card.addEventListener('dragend', function() {
       card.classList.remove('is-dragging');
       card.setAttribute('draggable', 'false');
-      commitWebcamOrder();
+      commit();
     });
-    return card;
+  }
+  // Which card the dragged one should be inserted before, based on cursor Y.
+  function cardDropTarget(list, y) {
+    var rest = [].slice.call(list.querySelectorAll('.webcam-card:not(.is-dragging)'));
+    var closest = null, closestOffset = -Infinity;
+    rest.forEach(function(el) {
+      var box = el.getBoundingClientRect();
+      var offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closestOffset) { closestOffset = offset; closest = el; }
+    });
+    return closest;
+  }
+  // Bind the drag-over reorder behaviour to a card list (once per list element).
+  function setupListReorder(list) {
+    if (!list || list._reorderBound) return;
+    list.addEventListener('dragover', function(e) {
+      var dragging = list.querySelector('.webcam-card.is-dragging');
+      if (!dragging) return;
+      e.preventDefault();
+      var before = cardDropTarget(list, e.clientY);
+      if (before == null) list.appendChild(dragging);
+      else if (before !== dragging.nextSibling) list.insertBefore(dragging, before);
+    });
+    list._reorderBound = true;
   }
   // Rebuild the webcams array from the current DOM order, then re-render.
   function commitWebcamOrder() {
@@ -451,37 +483,104 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     state.hero.webcams = ordered;
     render();
   }
-  // Which card the dragged one should be inserted before, based on cursor Y.
-  function webcamDropTarget(list, y) {
-    var rest = [].slice.call(list.querySelectorAll('.webcam-card:not(.is-dragging)'));
-    var closest = null, closestOffset = -Infinity;
-    rest.forEach(function(el) {
-      var box = el.getBoundingClientRect();
-      var offset = y - box.top - box.height / 2;
-      if (offset < 0 && offset > closestOffset) { closestOffset = offset; closest = el; }
-    });
-    return closest;
-  }
   function buildWebcamRows() {
     var list = $('webcamList');
     if (!list) return;
     list.innerHTML = '';
     (state.hero.webcams || []).forEach(function(cam) { list.appendChild(makeWebcamCard(cam)); });
-    if (!list._reorderBound) {
-      list.addEventListener('dragover', function(e) {
-        var dragging = list.querySelector('.webcam-card.is-dragging');
-        if (!dragging) return;
-        e.preventDefault();
-        var before = webcamDropTarget(list, e.clientY);
-        if (before == null) list.appendChild(dragging);
-        else if (before !== dragging.nextSibling) list.insertBefore(dragging, before);
-      });
-      list._reorderBound = true;
-    }
+    setupListReorder(list);
   }
-  // Safety: if the handle was pressed but no drag happened, clear draggable on release.
+
+  // ---- Featured images: same multi-card editor as webcams, but caption + optional
+  // tap-through link instead of title/subtitle/type. Renders as a rotating carousel
+  // (live/updated chrome off) when 2+ are configured. ----
+  function makeFeaturedCard(img) {
+    var card = document.createElement('div');
+    card.className = 'webcam-card featured-card';
+    card._cam = img; // back-reference for drag-reorder (read per-list on commit)
+    card.innerHTML =
+      '<button type="button" class="webcam-card__delete" aria-label="Remove image">&times;</button>' +
+      '<div class="webcam-card__handle" aria-label="Drag to reorder" title="Drag to reorder">' +
+        '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><circle cx="9" cy="5" r="1.4"/><circle cx="15" cy="5" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="19" r="1.4"/><circle cx="15" cy="19" r="1.4"/></svg>' +
+      '</div>' +
+      '<div class="webcam-card__media"><div class="webcam-card__preview"></div></div>' +
+      '<div class="webcam-card__fields">' +
+        '<input class="input webcam-card__url" type="url" placeholder="https://…/feature.jpg" />' +
+        '<div class="featured-card__upload">' +
+          '<button type="button" class="btn featured-card__uploadbtn">Upload image</button>' +
+          '<input type="file" class="featured-card__file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" hidden />' +
+          '<span class="featured-card__info img-optim" style="display:none"></span>' +
+        '</div>' +
+        '<input class="input featured-card__caption" type="text" placeholder="Caption (e.g. Opening day — Dec 6)" />' +
+        '<input class="input featured-card__link" type="url" placeholder="Link (optional)" />' +
+      '</div>';
+    var preview = card.querySelector('.webcam-card__preview');
+    var urlIn = card.querySelector('.webcam-card__url');
+    var capIn = card.querySelector('.featured-card__caption');
+    var linkIn = card.querySelector('.featured-card__link');
+    urlIn.value = (img.url && img.url.indexOf('data:') === 0) ? '' : (img.url || '');
+    capIn.value = img.caption || '';
+    linkIn.value = img.link || '';
+    function hasUrl() { return !!(img.url && img.url.trim()); }
+    function renderPreview() {
+      card.setAttribute('data-empty', hasUrl() ? 'false' : 'true');
+      if (hasUrl()) renderWebcamHero(preview, { url: img.url, kind: 'image', poster: '' });
+      else clearWebcamHero(preview);
+    }
+    renderPreview();
+    urlIn.addEventListener('input', function(e) { img.url = e.target.value; renderPreview(); render(); });
+    capIn.addEventListener('input', function(e) { img.caption = e.target.value; render(); });
+    linkIn.addEventListener('input', function(e) { img.link = e.target.value; render(); });
+    var fileIn = card.querySelector('.featured-card__file');
+    var info = card.querySelector('.featured-card__info');
+    card.querySelector('.featured-card__uploadbtn').addEventListener('click', function() { fileIn.click(); });
+    fileIn.addEventListener('change', function(e) {
+      var f = e.target.files && e.target.files[0]; if (!f) return; e.target.value = '';
+      function setInfo(t, s) { if (!info) return; info.textContent = t; info.style.display = ''; info.setAttribute('data-status', s || ''); }
+      if (f.type === 'image/svg+xml') {
+        var rs = new FileReader();
+        rs.onload = function() { img.url = rs.result; urlIn.value = ''; setInfo('SVG · ' + formatBytes(f.size) + ' (used as-is)', 'ok'); renderPreview(); render(); };
+        rs.readAsDataURL(f); return;
+      }
+      setInfo('Loading…', '');
+      optimizeImage(f).then(function(out) {
+        img.url = out.dataUrl; urlIn.value = '';
+        setInfo(formatBytes(f.size) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height, 'ok');
+        renderPreview(); render();
+      }).catch(function() {
+        var rf = new FileReader();
+        rf.onload = function() { img.url = rf.result; urlIn.value = ''; renderPreview(); render(); };
+        rf.readAsDataURL(f);
+      });
+    });
+    card.querySelector('.webcam-card__delete').addEventListener('click', function() {
+      var i = state.hero.featuredImages.indexOf(img);
+      if (i > -1) state.hero.featuredImages.splice(i, 1);
+      render();
+    });
+    wireCardDrag(card, commitFeaturedOrder);
+    return card;
+  }
+  function commitFeaturedOrder() {
+    var list = $('featuredList');
+    if (!list) return;
+    var ordered = [].slice.call(list.querySelectorAll('.webcam-card')).map(function(c) { return c._cam; });
+    var changed = ordered.length === state.hero.featuredImages.length &&
+      ordered.some(function(c, i) { return c !== state.hero.featuredImages[i]; });
+    if (!changed) return;
+    state.hero.featuredImages = ordered;
+    render();
+  }
+  function buildFeaturedRows() {
+    var list = $('featuredList');
+    if (!list) return;
+    list.innerHTML = '';
+    (state.hero.featuredImages || []).forEach(function(img) { list.appendChild(makeFeaturedCard(img)); });
+    setupListReorder(list);
+  }
+  // Safety: if a handle was pressed but no drag happened, clear draggable on release.
   document.addEventListener('mouseup', function() {
-    document.querySelectorAll('#webcamList .webcam-card[draggable="true"]').forEach(function(c) {
+    document.querySelectorAll('.webcam-card[draggable="true"]').forEach(function(c) {
       c.setAttribute('draggable', 'false');
     });
   });
@@ -715,10 +814,16 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       heroEl.setAttribute('data-hero-source', hero.source);
       var heroStation = $('gsbHeroStation');
       if (hero.source === 'featured') {
-        stopWebcamCarousel(heroEl);
-        if (hero.featuredImage.url) renderWebcamHero(heroEl, { url: hero.featuredImage.url, kind: 'image', poster: '' });
-        else clearWebcamHero(heroEl);
-        if (heroStation) heroStation.textContent = hero.featuredImage.caption || '';
+        var validFeatured = (hero.featuredImages || []).filter(function(im){ return im && im.url && String(im.url).trim(); });
+        if (validFeatured.length) {
+          var fitems = validFeatured.map(function(im){ return { url: im.url, kind: 'image', poster: '', label: im.caption || '', sub: '', link: im.link || '' }; });
+          renderWebcamCarousel(heroEl, fitems, function(lbl){ if (heroStation) heroStation.textContent = lbl || ''; },
+            { showLive: false, showUpdated: false, linkable: true, interval: 8500 });
+        } else {
+          stopWebcamCarousel(heroEl);
+          clearWebcamHero(heroEl);
+          if (heroStation) heroStation.textContent = '';
+        }
         heroEl.setAttribute('data-hero-managed', 'true');
       } else if (hero.source === 'webcam') {
         if (validCams.length) {
@@ -735,15 +840,11 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
         heroEl.setAttribute('data-hero-managed', 'true');
       }
     }
-    // Live preview in the card — the webcam preview rotates through all cams; a featured
-    // image is single. While a featured image is being cropped, the crop editor owns it.
+    // Live preview in the card — only used for the 'none' source now (webcam + featured
+    // both hide this panel and rely on their per-card thumbnails + the full chat preview).
     var preview = $('heroPreview'), previewChip = $('heroPreviewChip');
-    if (preview && hero.source === 'featured' && preview.querySelector('.crop-layer')) {
-      if (previewChip) previewChip.style.display = 'none';
-    } else if (preview) {
-      var pcam = hero.source === 'featured'
-        ? (hero.featuredImage.url ? { url: hero.featuredImage.url, kind: 'image', poster: '' } : null)
-        : (hero.source === 'webcam' ? (validCams[0] || null) : null);
+    if (preview) {
+      var pcam = hero.source === 'webcam' ? (validCams[0] || null) : null;
       if (pcam && pcam.url) {
         // The small card preview shows the first cam statically (the chip notes "+N
         // rotating"); the full rotating gallery lives in the chat hero (#gsbHero).
@@ -769,10 +870,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // Trash button — shown when the current source actually has an image to clear.
     var heroClearBtn = $('heroClearBtn');
     if (heroClearBtn) {
-      var hasHeroImg = (hero.source === 'featured' && !!hero.featuredImage.url) ||
-                       (hero.source === 'webcam' && validCams.length > 0);
-      var cropping = preview && preview.querySelector('.crop-layer');
-      heroClearBtn.style.display = (hasHeroImg && !cropping) ? '' : 'none';
+      var hasHeroImg = (hero.source === 'webcam' && validCams.length > 0);
+      heroClearBtn.style.display = hasHeroImg ? '' : 'none';
     }
 
     // Reflect the source toggle + show the matching control group.
@@ -792,9 +891,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // edits leave the count unchanged, so inputs keep focus.
     var wList = $('webcamList');
     if (wList && wList.children.length !== (hero.webcams ? hero.webcams.length : 0)) buildWebcamRows();
-    if ($('featuredImageUrl') && document.activeElement !== $('featuredImageUrl')) $('featuredImageUrl').value = hero.featuredImage.url.indexOf('data:') === 0 ? '' : hero.featuredImage.url;
-    if ($('featuredCaption') && document.activeElement !== $('featuredCaption')) $('featuredCaption').value = hero.featuredImage.caption;
-    if ($('featuredLink') && document.activeElement !== $('featuredLink')) $('featuredLink').value = hero.featuredImage.link;
+    var fList = $('featuredList');
+    if (fList && fList.children.length !== (hero.featuredImages ? hero.featuredImages.length : 0)) buildFeaturedRows();
     // Demo background image — reflect the URL (hide data: blobs) + Remove visibility.
     if ($('backgroundImageUrl') && document.activeElement !== $('backgroundImageUrl')) {
       $('backgroundImageUrl').value = (state.backgroundImage && state.backgroundImage.indexOf('data:') === 0) ? '' : (state.backgroundImage || '');
@@ -1492,7 +1590,6 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   document.querySelectorAll('#heroSourceSegmented [data-hero-source]').forEach(function(btn){
     btn.addEventListener('click', function(){
       state.hero.source = btn.getAttribute('data-hero-source');
-      if (state.hero.source !== 'featured') endFeaturedCrop();
       render();
       // Webcam source with no cams configured → repopulate from the live feed.
       var anyCam = (state.hero.webcams || []).some(function(c){ return c.url && c.url.trim(); });
@@ -1510,22 +1607,18 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     var rows = $('webcamList').children;
     if (rows.length) { var u = rows[rows.length - 1].querySelector('.webcam-card__url'); if (u) u.focus(); }
   });
-  $('featuredImageUrl').addEventListener('input', function(e){ endFeaturedCrop(); state.hero.featuredImage.url = e.target.value; render(); });
-  // Trash button — clears the image for the current hero source (state change flows
-  // to the dashboard preview, the Save button, and the demo page via sync).
+  // Featured images: "Add featured image" appends a blank slot; focus its URL field.
+  if ($('featuredAddBtn')) $('featuredAddBtn').addEventListener('click', function(){
+    state.hero.featuredImages.push({ url: '', caption: '', link: '' });
+    render();
+    var rows = $('featuredList').children;
+    if (rows.length) { var u = rows[rows.length - 1].querySelector('.webcam-card__url'); if (u) u.focus(); }
+  });
+  // Trash button — clears all webcams for the webcam source (featured/none clear via cards).
   if ($('heroClearBtn')) $('heroClearBtn').addEventListener('click', function(){
-    endFeaturedCrop();
-    if (state.hero.source === 'featured') {
-      state.hero.featuredImage.url = '';
-      if ($('featuredImageInfo')) $('featuredImageInfo').style.display = 'none';
-      if ($('featuredImageFile')) $('featuredImageFile').value = '';
-    } else if (state.hero.source === 'webcam') {
-      state.hero.webcams = [];
-    }
+    if (state.hero.source === 'webcam') state.hero.webcams = [];
     render();
   });
-  $('featuredCaption').addEventListener('input', function(e){ state.hero.featuredImage.caption = e.target.value; render(); });
-  $('featuredLink').addEventListener('input', function(e){ state.hero.featuredImage.link = e.target.value; render(); });
 
   // ---- Demo background image (page bg now; optional Chat UI bg later) ----
   $('backgroundImageUrl').addEventListener('input', function(e){ state.backgroundImage = e.target.value; render(); });
@@ -1552,43 +1645,6 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   });
   document.querySelectorAll('#bgTextModeSeg [data-bg-text]').forEach(function(btn){
     btn.addEventListener('click', function(){ state.bgTextMode = btn.getAttribute('data-bg-text'); render(); });
-  });
-  $('featuredImageFile').addEventListener('change', function(e){
-    var f = e.target.files && e.target.files[0];
-    if (!f) return;
-    var info = $('featuredImageInfo');
-    function setInfo(text, status){ if (!info) return; info.textContent = text; info.style.display = ''; info.setAttribute('data-status', status || ''); }
-    // SVG is already vector/tiny — use as-is (rasterizing would lose scalability).
-    if (f.type === 'image/svg+xml') {
-      var rs = new FileReader();
-      rs.onload = function(){ state.hero.featuredImage.url = rs.result; setInfo('SVG · ' + formatBytes(f.size) + ' (used as-is)', 'ok'); render(); };
-      rs.readAsDataURL(f);
-      return;
-    }
-    setInfo('Loading…', '');
-    endFeaturedCrop();
-    startFeaturedCrop({
-      previewEl: $('heroPreview'),
-      sliderEl: $('cropZoom'),
-      file: f,
-      onBake: function(out, origBytes){
-        state.hero.featuredImage.url = out.dataUrl;
-        var fmt = out.mime === 'image/webp' ? 'WebP' : 'JPEG';
-        setInfo(formatBytes(origBytes) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height + ' · ' + fmt, 'ok');
-        render();
-      }
-    }).then(function(ctrl){ cropController = ctrl; }).catch(function(){
-      // Crop editor unavailable — fall back to a plain resize+compress.
-      optimizeImage(f).then(function(out){
-        state.hero.featuredImage.url = out.dataUrl;
-        setInfo(formatBytes(f.size) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height, 'ok');
-        render();
-      }).catch(function(){
-        var rf = new FileReader();
-        rf.onload = function(){ state.hero.featuredImage.url = rf.result; render(); };
-        rf.readAsDataURL(f);
-      });
-    });
   });
   $('ctaText').addEventListener('input', function(e){
     // Glyph-aware cap at 24 user-visible chars (so 🎿 counts as 1, not 2).
