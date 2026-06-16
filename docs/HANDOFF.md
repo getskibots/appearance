@@ -19,8 +19,15 @@ Start here, then branch to the deeper docs linked at the bottom.
   tab is fully specified in [`botscrew-widget-settings.md`](./botscrew-widget-settings.md).
   **That is the single most important doc for integration.**
 - Where the build stands: the **admin UI** and **Open-Meteo weather** are largely
-  done; the **per-bot-ID persistence, the embed loader, and webcam** are the main
-  remaining work. Full breakdown in [`BUILD-STATUS.md`](./BUILD-STATUS.md).
+  done; the **per-bot-ID persistence** and **webcam** are the main remaining work.
+  Full breakdown in [`BUILD-STATUS.md`](./BUILD-STATUS.md).
+- **Milestone 1 is an iframe chat-app swap, not a customer-snippet replacement.**
+  BotScrew's existing host-page loader (`script-chatbot.js`) already creates the
+  launcher, greeting popup, and iframe, and bridges to the iframe via `postMessage`.
+  Our job is to drop the GetSkiBots widget UI **inside that iframe** and consume
+  BotScrew's config/conversation APIs — not to rewrite the loader or change the
+  embed snippet. The contract is captured in
+  [`SCRIPT-CHATBOT-CONTRACT.md`](./SCRIPT-CHATBOT-CONTRACT.md).
 
 ---
 
@@ -88,6 +95,8 @@ docs/
   ARCHITECTURE.md             Code + runtime model, how to extend
   BUILD-STATUS.md             What's done vs pending (where the build is)
   botscrew-widget-settings.md Data contract (authoritative)
+  SCRIPT-CHATBOT-CONTRACT.md  BotScrew host-page loader contract: script tag, iframe,
+                              parent↔iframe postMessage protocol, public API inventory
   RESORT-DIRECT-FEEDS.md      Resort-feed audit (7 shape families) + Resort Direct build plan
 
 scripts/                Byte-faithful extraction tooling (refactor provenance)
@@ -140,10 +149,16 @@ These four items are the seam between "what GSB built" and "what BotScrew wires"
    `GET /widget/info/{botId}` into `applyWidgetConfig` instead of the prototype
    localStorage/hash sync. **Same render layer — only the config *source* changes.**
 
-3. **Embed loader.** The dashboard's Install tab sketches the embed shape
-   (`<div data-gsb-search></div>`, `<div data-gsb-search-button></div>`, the chat
-   bubble) but **no loader script implements it** and there is no `botId` attribute
-   wired. The 3 modular embed scripts are unbuilt (see BUILD-STATUS, Epic 7).
+3. **Embed loaders.** Two different things, don't conflate them:
+   - **Primary chat bubble — already exists.** BotScrew's `script-chatbot.js` is the
+     host-page loader (launcher bubble, greeting popup, iframe creation, parent
+     resize/open/close, `postMessage` bridge). We do **not** rebuild it; we adapt the
+     GSB iframe app to its existing protocol. See
+     [`SCRIPT-CHATBOT-CONTRACT.md`](./SCRIPT-CHATBOT-CONTRACT.md).
+   - **New modular GSB entry points — unbuilt.** The Install tab sketches
+     `<div data-gsb-search></div>` and `<div data-gsb-search-button></div>`, but no
+     loader implements them and there's no `botId` attribute wired. *These* are the
+     unbuilt loaders (BUILD-STATUS, Epic 7) — a Milestone 3 concern, not Milestone 1.
 
 4. **Config injection the widget already honors today:**
    - `window.gsbWeatherConfig` — resort coordinates (base/summit lat/lng/elev).
@@ -171,6 +186,7 @@ These four items are the seam between "what GSB built" and "what BotScrew wires"
 
 ## Where to go next
 
+- **The host-page loader & iframe protocol** (Milestone 1 target) → [`SCRIPT-CHATBOT-CONTRACT.md`](./SCRIPT-CHATBOT-CONTRACT.md)
 - **Integrating into BotScrew admin** → [`botscrew-widget-settings.md`](./botscrew-widget-settings.md)
 - **Dropping the widget into your embed** (iframe/snippet, seams, provenance) → [`INTEGRATION.md`](./INTEGRATION.md)
 - **Understanding / modifying the code** → [`ARCHITECTURE.md`](./ARCHITECTURE.md)

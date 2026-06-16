@@ -15,7 +15,7 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
 |---|---|
 | Strongest area | **Appearance tab (Epic 5)** — ~95% built, the bulk of the UI |
 | Live + working | Open-Meteo weather, live conditions card, all appearance controls, save/load persistence |
-| Largest open items | Per-bot persistence (cross-cutting), embed loader (7), conversation-starter admin (3), entry-point orchestration (1), Resort Direct feeds (6.2) |
+| Largest open items | Per-bot persistence (cross-cutting), iframe-app swap into BotScrew's existing `script-chatbot.js` (M1), new GSB modular loaders (7), conversation-starter admin (3), entry-point orchestration (1), Resort Direct feeds (6.2) |
 | Hard external constraint | Resort snow feeds are CORS-blocked → need server-side fetch (see HANDOFF → constraints) |
 
 ---
@@ -34,7 +34,7 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
 - **Per-bot persistence** (the big one): load/save config per `botId` via `GET /widget/info/{botId}` + `PATCH /private/bot/{id}/widget` instead of localStorage. Threads through everything — the mapper already emits the right shape (see [INTEGRATION.md](./INTEGRATION.md) §3a, §9).
 - **`answerProvider`** — streaming + structured-message rendering behind the seam (your socket → the widget). Stub/curated answers only today (§3c).
 - **`gsbAppearance` persistence decision** — confirm your config can store the opaque JSON block (Option B = zero backend change) or add one field (§4, the one open decision).
-- **Embed loader scripts** — `data-gsb-search` / `data-gsb-search-button` / chat-bubble loaders are sketched in the Install tab, not implemented (Epic 7).
+- **New GSB embed loaders** — only the `data-gsb-search` / `data-gsb-search-button` modular entry points are unbuilt (sketched in the Install tab, not implemented; Epic 7). The **primary chat-bubble loader already exists** — it's BotScrew's `script-chatbot.js` (launcher + greeting + iframe + postMessage bridge). We adapt to it, not rebuild it. See [SCRIPT-CHATBOT-CONTRACT.md](./SCRIPT-CHATBOT-CONTRACT.md).
 - **Season Update flow** — the "Get live updates" picker defaults to **"Connect flow…"** and is a shell (stubbed flow list + "+ Create new flow"). Wire it to the bot's real Flows + builder deep-link; runtime fills the banner from the flow's output. Spec: [INTEGRATION §5a](./INTEGRATION.md).
 - **Welcome-in-Appearance** → write to your atom API (§5 provenance).
 - **Demo per-bot wiring** — production selects the bot by `publicIdentifier` in the URL and loads `/widget/info/{botId}`; the demo's localStorage/`#cfg=` sync is a prototype hand-off (INTEGRATION §10).
