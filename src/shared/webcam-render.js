@@ -116,13 +116,11 @@ export function renderWebcamCarousel(heroEl, webcams, onLabel) {
   const track = document.createElement('div');
   track.className = 'gsb-cam-track';
   cams.forEach((cam) => {
-    const kind = cam.kind || detectWebcamKind(cam.url);
     const slide = document.createElement('div');
     slide.className = 'gsb-cam-slide';
     slide.innerHTML =
       '<div class="gsb-cam-media"></div>' +
       '<div class="gsb-cam-live">LIVE</div>' +
-      '<div class="gsb-cam-typebadge">' + escHtml(webcamKindMeta(kind).label) + '</div>' +
       ((cam.label || cam.sub)
         ? '<div class="gsb-cam-caption"><span class="gsb-cam-caption__title">' + escHtml(cam.label || 'Webcam') +
             (cam.sub ? '<span class="gsb-cam-caption__sub">' + escHtml(cam.sub) + '</span>' : '') +
