@@ -2175,18 +2175,31 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       ctaText: state.ctaText,
       bubbleStyle: state.bubbleStyle,
       customIconUrl: state.customIconUrl,
+      customIconSize: state.customIconSize,
+      slideState: state.slideState,
+      autoHideOnScroll: state.autoHideOnScroll,
+      // Launcher placement (corner + spacing) and dedicated launcher size.
+      placement: state.placement,
+      launcherScale: state.launcherScale,
       layoutVariant: state.layoutVariant,
+      panelSideSpacing: state.panelSideSpacing,
+      blurredBackground: state.blurredBackground,
       animationStyle: state.animationStyle,
       snowfall: state.snowfall,
       statusPillFeatures: state.statusPillFeatures,
       messageStyle: state.messageStyle,
       typography: state.typography,
+      effectMode: state.effectMode,
+      effectIntensity: state.effectIntensity,
+      disableTextInput: state.disableTextInput,
       // Embeddable components — drive the demo's hero search bar + header search icon.
       embedSearch: state.embedSearch,
       embedButton: state.embedButton,
-      // Forward-compatible — preview will read these when updated:
-      effectMode: state.effectMode,
-      effectIntensity: state.effectIntensity
+      // Host-page behaviors (not visually rendered in the demo, carried for a faithful
+      // round-trip mirror of the full appearance state).
+      soundNotifications: state.soundNotifications,
+      popupMessagePreview: state.popupMessagePreview,
+      askForRating: state.askForRating
     };
   }
 
