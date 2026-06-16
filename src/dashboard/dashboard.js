@@ -346,8 +346,12 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   function makeWebcamCard(cam) {
     var card = document.createElement('div');
     card.className = 'webcam-card';
+    card._cam = cam; // back-reference so drag-reorder can rebuild the array from DOM order
     card.innerHTML =
       '<button type="button" class="webcam-card__delete" aria-label="Remove webcam">&times;</button>' +
+      '<div class="webcam-card__handle" aria-label="Drag to reorder" title="Drag to reorder">' +
+        '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><circle cx="9" cy="5" r="1.4"/><circle cx="15" cy="5" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="19" r="1.4"/><circle cx="15" cy="19" r="1.4"/></svg>' +
+      '</div>' +
       '<div class="webcam-card__media">' +
         '<div class="webcam-card__preview"><span class="webcam-card__live">&bull; LIVE</span></div>' +
       '</div>' +
@@ -421,14 +425,66 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       if (i > -1) state.hero.webcams.splice(i, 1);
       render();
     });
+    // Drag-to-reorder: the card is only draggable while the grip handle is held.
+    var handle = card.querySelector('.webcam-card__handle');
+    handle.addEventListener('mousedown', function() { card.setAttribute('draggable', 'true'); });
+    card.addEventListener('dragstart', function(e) {
+      card.classList.add('is-dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      try { e.dataTransfer.setData('text/plain', ''); } catch (_) {}
+    });
+    card.addEventListener('dragend', function() {
+      card.classList.remove('is-dragging');
+      card.setAttribute('draggable', 'false');
+      commitWebcamOrder();
+    });
     return card;
+  }
+  // Rebuild the webcams array from the current DOM order, then re-render.
+  function commitWebcamOrder() {
+    var list = $('webcamList');
+    if (!list) return;
+    var ordered = [].slice.call(list.querySelectorAll('.webcam-card')).map(function(c) { return c._cam; });
+    var changed = ordered.length === state.hero.webcams.length &&
+      ordered.some(function(c, i) { return c !== state.hero.webcams[i]; });
+    if (!changed) return;
+    state.hero.webcams = ordered;
+    render();
+  }
+  // Which card the dragged one should be inserted before, based on cursor Y.
+  function webcamDropTarget(list, y) {
+    var rest = [].slice.call(list.querySelectorAll('.webcam-card:not(.is-dragging)'));
+    var closest = null, closestOffset = -Infinity;
+    rest.forEach(function(el) {
+      var box = el.getBoundingClientRect();
+      var offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closestOffset) { closestOffset = offset; closest = el; }
+    });
+    return closest;
   }
   function buildWebcamRows() {
     var list = $('webcamList');
     if (!list) return;
     list.innerHTML = '';
     (state.hero.webcams || []).forEach(function(cam) { list.appendChild(makeWebcamCard(cam)); });
+    if (!list._reorderBound) {
+      list.addEventListener('dragover', function(e) {
+        var dragging = list.querySelector('.webcam-card.is-dragging');
+        if (!dragging) return;
+        e.preventDefault();
+        var before = webcamDropTarget(list, e.clientY);
+        if (before == null) list.appendChild(dragging);
+        else if (before !== dragging.nextSibling) list.insertBefore(dragging, before);
+      });
+      list._reorderBound = true;
+    }
   }
+  // Safety: if the handle was pressed but no drag happened, clear draggable on release.
+  document.addEventListener('mouseup', function() {
+    document.querySelectorAll('#webcamList .webcam-card[draggable="true"]').forEach(function(c) {
+      c.setAttribute('draggable', 'false');
+    });
+  });
   // Close any open type-override menu when clicking elsewhere.
   document.addEventListener('click', function() {
     document.querySelectorAll('#webcamList .type-menu').forEach(function(m) { m.hidden = true; });
