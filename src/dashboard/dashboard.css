@@ -3271,8 +3271,11 @@
 }
 
 .gsb-embed-button svg {
-  width: calc(var(--gsb-btn-size, 44px) * 0.42);
-  height: calc(var(--gsb-btn-size, 44px) * 0.42);
+  /* 0.525 = the base 0.42 enlarged 25% so the glass + sparkle read clearly. Scaling
+     the SVG also scales its viewBox-unit stroke-widths, so thin/regular/bold stay
+     proportional; centered, so it works for round/square/pill and every background. */
+  width: calc(var(--gsb-btn-size, 44px) * 0.525);
+  height: calc(var(--gsb-btn-size, 44px) * 0.525);
   flex: 0 0 auto;
 }
 
