@@ -1939,6 +1939,13 @@ body[data-voice-active="true"] #gsbMessages { padding-bottom: 28px; }
 
 .gsb-voice-mode__transcript--user { color: var(--jh-ink-soft); }
 
+/* The empty-state prompt is decorative copy, not a live transcript — let it wrap
+   to its full length instead of ellipsis-truncating on the single nowrap line. */
+.gsb-voice-mode__transcript:empty {
+  white-space: normal;
+  overflow: visible;
+}
+
 .gsb-voice-mode__transcript:empty::after {
   content: "Just start talking — snow, lifts, dinner, anything.";
   color: var(--jh-ink-muted);
