@@ -347,6 +347,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     }
     // Retired message-bubble style: 'minimal' → 'classic'.
     if (base.messageStyle === 'minimal') base.messageStyle = 'classic';
+    // Retired panel layout: 'middle' → 'side' (the default).
+    if (base.layoutVariant === 'middle') base.layoutVariant = 'side';
     return base;
   }
 

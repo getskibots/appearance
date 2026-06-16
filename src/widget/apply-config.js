@@ -114,7 +114,8 @@ export function applyWidgetConfig(config) {
   if (composer && config.inputPlaceholder != null) composer.placeholder = config.inputPlaceholder;
 
   /* ---- Behavior data-attributes (the widget CSS reads these on <body>) ---- */
-  if (config.layoutVariant) body.setAttribute('data-variant', config.layoutVariant);
+  // 'middle' panel layout was retired → fall back to 'side'.
+  if (config.layoutVariant) body.setAttribute('data-variant', config.layoutVariant === 'middle' ? 'side' : config.layoutVariant);
   // Side Panel distance-from-edge (only consumed by the side layout's CSS).
   if (config.panelSideSpacing != null) setVar('--gsb-panel-side', Math.min(160, Math.max(24, config.panelSideSpacing)) + 'px');
   if (config.animationStyle) body.setAttribute('data-animation', config.animationStyle);
