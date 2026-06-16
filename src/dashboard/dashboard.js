@@ -351,8 +351,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       '<div class="webcam-card__preview"><span class="webcam-card__live">&bull; LIVE</span></div>' +
       '<input class="input webcam-card__url" type="url" placeholder="https://…/webcam.jpg" />' +
       '<div class="webcam-card__type"></div>' +
-      '<input class="input webcam-card__title" type="text" placeholder="Title (e.g. Tram Station)" />' +
-      '<input class="input webcam-card__sub" type="text" placeholder="Subtitle (e.g. 9,095 ft)" />';
+      '<input class="input webcam-card__title" type="text" placeholder="Title" />' +
+      '<input class="input webcam-card__sub" type="text" placeholder="Subtitle" />';
     var preview = card.querySelector('.webcam-card__preview');
     var urlIn = card.querySelector('.webcam-card__url');
     var titleIn = card.querySelector('.webcam-card__title');
