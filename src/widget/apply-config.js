@@ -302,7 +302,7 @@ export function applyWidgetConfig(config) {
       stopWebcamCarousel(heroEl);
       heroEl.setAttribute('data-hero-managed', 'true');
     } else if (cams.length) {
-      renderWebcamCarousel(heroEl, cams, function (lbl) { if (station) station.textContent = lbl || 'Webcam'; });
+      renderWebcamCarousel(heroEl, cams, function (lbl) { if (station) station.textContent = lbl || 'Webcam'; }, { showUpdated: false });
       heroEl.setAttribute('data-hero-managed', 'true');
     } else {
       // No configured cams → let the runtime's live feed populate the hero.

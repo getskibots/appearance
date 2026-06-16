@@ -893,7 +893,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
         heroEl.setAttribute('data-hero-managed', 'true');
       } else if (hero.source === 'webcam') {
         if (validCams.length) {
-          renderWebcamCarousel(heroEl, validCams, function(lbl){ if (heroStation) heroStation.textContent = lbl || 'Webcam'; });
+          renderWebcamCarousel(heroEl, validCams, function(lbl){ if (heroStation) heroStation.textContent = lbl || 'Webcam'; }, { showUpdated: false });
           heroEl.setAttribute('data-hero-managed', 'true');
         } else {
           clearWebcamHero(heroEl);
