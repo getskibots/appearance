@@ -67,38 +67,131 @@ function addPopout(heroEl, url) {
   heroEl.appendChild(a);
 }
 
-// Remove any rendered media and reset the hero to an empty state.
+function escHtml(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+// Remove any rendered media (single OR gallery) and reset the hero to empty.
 export function clearWebcamHero(heroEl) {
   if (!heroEl) return;
   stopWebcamCarousel(heroEl);
+  const gal = heroEl.querySelector(':scope > .gsb-cam-gallery');
+  if (gal) gal.remove();
+  heroEl.removeAttribute('data-gallery');
+  heroEl._gsbGallerySig = null;
   heroEl.removeAttribute('data-cam-url');
   clearMedia(heroEl);
   const f = heroEl.querySelector('.gsb-webcam-fallback');
   if (f) { f.style.display = ''; f.style.cssText = ''; f.innerHTML = ''; }
 }
 
-// Stop a running multi-cam rotation (call before rendering a single image / clearing).
+// Stop a running rotation + clean up its window listeners/timers.
 export function stopWebcamCarousel(heroEl) {
-  if (heroEl && heroEl._gsbCamTimer) { clearInterval(heroEl._gsbCamTimer); heroEl._gsbCamTimer = null; }
+  if (!heroEl) return;
+  if (heroEl._gsbCamTimer) { clearInterval(heroEl._gsbCamTimer); heroEl._gsbCamTimer = null; }
+  const st = heroEl._gsbGalleryState;
+  if (st) {
+    if (st.pauseTimer) clearTimeout(st.pauseTimer);
+    if (st.cleanup) st.cleanup();
+    heroEl._gsbGalleryState = null;
+  }
 }
 
-// Rotating multi-cam hero: shows webcams[0]; with 2+, auto-advances every 6s. Reuses
-// the single-cam renderer (auto-detect + per-kind render) for each slide.
+// Multi-cam hero carousel — slide track, dots, swipe/drag, 6s auto-rotate with a 15s
+// manual-pause, and a per-slide caption (title · sub · "Updated just now") + LIVE pill
+// and type badge. A URL/label signature avoids rebuilding on unrelated re-renders.
 export function renderWebcamCarousel(heroEl, webcams, onLabel) {
   if (!heroEl) return;
-  stopWebcamCarousel(heroEl);
   const cams = (webcams || []).filter((c) => c && c.url && String(c.url).trim());
+  const sig = cams.map((c) => [c.url, c.kind || '', c.label || '', c.sub || ''].join('|')).join('::');
+  if (heroEl._gsbGallerySig === sig && heroEl.querySelector(':scope > .gsb-cam-gallery')) return;
+  heroEl._gsbGallerySig = sig;
+  stopWebcamCarousel(heroEl);
+  const old = heroEl.querySelector(':scope > .gsb-cam-gallery');
+  if (old) old.remove();
   if (!cams.length) { clearWebcamHero(heroEl); if (onLabel) onLabel(''); return; }
-  let i = 0;
-  const show = (idx) => { renderWebcamHero(heroEl, cams[idx]); if (onLabel) onLabel(cams[idx].label || ''); };
-  show(0);
+  heroEl.setAttribute('data-gallery', 'true');
+  heroEl.removeAttribute('data-cam-url');
+
+  const gallery = document.createElement('div');
+  gallery.className = 'gsb-cam-gallery';
+  const track = document.createElement('div');
+  track.className = 'gsb-cam-track';
+  cams.forEach((cam) => {
+    const kind = cam.kind || detectWebcamKind(cam.url);
+    const slide = document.createElement('div');
+    slide.className = 'gsb-cam-slide';
+    slide.innerHTML =
+      '<div class="gsb-cam-media"></div>' +
+      '<div class="gsb-cam-live">LIVE</div>' +
+      '<div class="gsb-cam-typebadge">' + escHtml(webcamKindMeta(kind).label) + '</div>' +
+      ((cam.label || cam.sub)
+        ? '<div class="gsb-cam-caption"><span class="gsb-cam-caption__title">' + escHtml(cam.label || 'Webcam') +
+            (cam.sub ? '<span class="gsb-cam-caption__sub">' + escHtml(cam.sub) + '</span>' : '') +
+          '</span><span class="gsb-cam-caption__updated">Updated just now</span></div>'
+        : '');
+    track.appendChild(slide);
+    renderWebcamHero(slide.querySelector('.gsb-cam-media'), cam);
+  });
+  gallery.appendChild(track);
+
+  let dotsEl = null;
   if (cams.length > 1) {
-    heroEl._gsbCamTimer = setInterval(() => { i = (i + 1) % cams.length; show(i); }, 6000);
+    dotsEl = document.createElement('div');
+    dotsEl.className = 'gsb-cam-dots';
+    cams.forEach((_, idx) => {
+      const d = document.createElement('button');
+      d.type = 'button';
+      d.className = 'gsb-cam-dot' + (idx === 0 ? ' is-active' : '');
+      d.setAttribute('data-i', String(idx));
+      dotsEl.appendChild(d);
+    });
+    gallery.appendChild(dotsEl);
+  }
+  heroEl.insertBefore(gallery, heroEl.firstChild);
+  if (onLabel) onLabel(cams[0].label || '');
+
+  const st = { index: 0, n: cams.length, interacting: false, pauseTimer: null, cleanup: null };
+  heroEl._gsbGalleryState = st;
+  const setPos = (idx, animate) => {
+    track.style.transition = animate ? '' : 'none';
+    track.style.transform = 'translateX(' + (-idx * 100) + '%)';
+    if (!animate) { void track.offsetHeight; track.style.transition = ''; }
+    if (dotsEl) dotsEl.querySelectorAll('.gsb-cam-dot').forEach((d, i) => d.classList.toggle('is-active', i === idx));
+    if (onLabel) onLabel(cams[idx].label || '');
+  };
+  const go = (idx) => { st.index = ((idx % st.n) + st.n) % st.n; setPos(st.index, true); };
+  const pauseThenResume = () => {
+    st.interacting = true;
+    if (st.pauseTimer) clearTimeout(st.pauseTimer);
+    st.pauseTimer = setTimeout(() => { st.interacting = false; st.pauseTimer = null; }, 15000);
+  };
+  setPos(0, false);
+
+  if (st.n > 1) {
+    heroEl._gsbCamTimer = setInterval(() => { if (!st.interacting) go(st.index + 1); }, 6000);
+    dotsEl.querySelectorAll('.gsb-cam-dot').forEach((d) => {
+      d.addEventListener('click', (e) => { e.stopPropagation(); go(parseInt(d.getAttribute('data-i'), 10)); pauseThenResume(); });
+    });
+    gallery.addEventListener('mouseenter', () => { st.interacting = true; });
+    gallery.addEventListener('mouseleave', () => { if (!st.pauseTimer) st.interacting = false; });
+    let startX = null, dx = 0, dragging = false;
+    const onStart = (e) => { const p = e.touches ? e.touches[0] : e; startX = p.clientX; dx = 0; dragging = true; track.style.transition = 'none'; pauseThenResume(); };
+    const onMove = (e) => { if (!dragging || startX === null) return; const p = e.touches ? e.touches[0] : e; dx = p.clientX - startX; track.style.transform = 'translateX(' + (-st.index * 100 + (dx / gallery.offsetWidth) * 100) + '%)'; };
+    const onEnd = () => { if (!dragging) return; dragging = false; track.style.transition = ''; const th = gallery.offsetWidth * 0.18; if (dx < -th) go(st.index + 1); else if (dx > th) go(st.index - 1); else go(st.index); startX = null; dx = 0; };
+    gallery.addEventListener('mousedown', onStart);
+    gallery.addEventListener('touchstart', onStart, { passive: true });
+    gallery.addEventListener('touchmove', onMove, { passive: true });
+    gallery.addEventListener('touchend', onEnd);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onEnd);
+    st.cleanup = () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onEnd); };
   }
 }
 
 export function renderWebcamHero(heroEl, cam) {
   if (!heroEl || !cam) return;
+  // If a multi-cam gallery is active on this element, tear it down for the single render.
+  const gal = heroEl.querySelector(':scope > .gsb-cam-gallery');
+  if (gal) { stopWebcamCarousel(heroEl); gal.remove(); heroEl.removeAttribute('data-gallery'); heroEl._gsbGallerySig = null; heroEl.removeAttribute('data-cam-url'); }
   const url = (cam.url || '').trim();
   if (!url) return; // blank → leave the live-conditions feed to populate
   // Already showing this exact cam → no-op (prevents iframe reloads / image flash when

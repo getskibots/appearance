@@ -685,8 +685,10 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
         ? (hero.featuredImage.url ? { url: hero.featuredImage.url, kind: 'image', poster: '' } : null)
         : (hero.source === 'webcam' ? (validCams[0] || null) : null);
       if (pcam && pcam.url) {
-        if (hero.source === 'webcam') renderWebcamCarousel(preview, validCams);
-        else { stopWebcamCarousel(preview); renderWebcamHero(preview, pcam); }
+        // The small card preview shows the first cam statically (the chip notes "+N
+        // rotating"); the full rotating gallery lives in the chat hero (#gsbHero).
+        stopWebcamCarousel(preview);
+        renderWebcamHero(preview, pcam);
         preview.setAttribute('data-empty', 'false');
         if (previewChip) {
           var pm = webcamKindMeta(pcam.kind || detectWebcamKind(pcam.url));
