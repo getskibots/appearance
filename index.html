@@ -161,7 +161,7 @@
 
               <!-- Logo -->
               <div class="field">
-                <label class="field__label" data-info="Use a logo file with a see-through background — a PNG or SVG. A regular photo file (JPG) shows an ugly white box behind it. Trim the empty space around the logo, and remember wide logos look best in the header.">Choose widget logo</label>
+                <label class="field__label" data-info="Use a logo file with a see-through background — a PNG or SVG. A regular photo file (JPG) shows an ugly white box behind it.">Choose widget logo</label>
                 <div class="logo-upload">
                   <label class="logo-dropzone" for="logoFile">
                     <img id="logoPreview" alt="" />
@@ -236,19 +236,19 @@
 
               <!-- Widget Name -->
               <div class="field">
-                <label class="field__label" for="widgetName" data-info="Also used as the header name when you haven't added a logo, and as the name in the '… is typing' message.">Widget name</label>
+                <label class="field__label" for="widgetName" data-info="This is used in the chat header if you're not using a logo. It's also used for the 'agent typing' message.">Widget name</label>
                 <input class="input" type="text" id="widgetName" value="Jackson Hole Support" style="max-width:360px" />
               </div>
 
               <!-- Welcome Text -->
               <div class="field">
-                <label class="field__label" for="welcomeText" data-info="To add a clickable link, put the words in square brackets and the web address in round brackets right after — like [plan your visit](https://www.jacksonhole.com).">Welcome message</label>
+                <label class="field__label" for="welcomeText" data-info="The first thing a guest sees when they open the chat. A warm, clear greeting sets the tone and invites people to start asking — so keep it friendly and short.">Welcome message</label>
                 <textarea class="textarea" id="welcomeText" style="max-width:360px">Welcome to Jackson Hole, ask us anything, we're here to help.</textarea>
               </div>
 
               <!-- Recent Update (pushes to the Season Update banner) -->
               <div class="field">
-                <label class="field__label" data-info="Write it yourself, or pull it in from a flow. To add a clickable link, put the words in square brackets and the web address in round brackets right after.">Recent update</label>
+                <label class="field__label" data-info="Use this to showcase a recent update — like a closure, reopening, or event. Write it yourself, or pull in real-time data so it updates on its own.">Recent update</label>
                 <p class="field__hint" style="margin-top:0;margin-bottom:10px">Pushes a short announcement into the Season Update card in the chat — closures, reopenings, events. Leave blank to hide it.</p>
 
                 <!-- Source toggle: type it, or pull it from a flow -->
@@ -322,7 +322,7 @@
                   <!-- Webcams — add as many as you like; the chat hero rotates 2+ -->
                   <div id="heroWebcamGroup">
                     <div class="field">
-                      <label class="field__label" data-info="We work out the camera type from its link for you. Two or more cameras take turns in the chat — drag the handle to set their order.">Webcams <span style="color:var(--ink-muted);font-weight:400">— add as many as you like</span></label>
+                      <label class="field__label" data-info="We automatically detect the webcam format from its link — a still image, YouTube, and more. Two or more cameras take turns in the chat — drag the handle to set their order.">Webcams <span style="color:var(--ink-muted);font-weight:400">— add as many as you like</span></label>
                       <p class="field__hint" style="margin-top:0;margin-bottom:10px">Paste a webcam link, or upload a still image.</p>
                       <div id="webcamList"></div>
                       <button class="btn" type="button" id="webcamAddBtn" style="margin-top:8px;display:inline-flex;align-items:center;gap:6px">
@@ -335,7 +335,7 @@
                   <!-- Featured images — add as many as you like; the chat hero rotates 2+ -->
                   <div id="heroFeaturedGroup" style="display:none">
                     <div class="field">
-                      <label class="field__label" data-info="Two or more images take turns in the chat. Images you upload get a crop tool, and you can add a link to make an image clickable.">Featured images <span style="color:var(--ink-muted);font-weight:400">— add as many as you like</span></label>
+                      <label class="field__label" data-info="Add a featured image, a promotion, or a visual highlight. Give each one a title, and add a link to send guests to a specific page. Two or more take turns in the chat, and images you upload get a crop tool.">Featured images <span style="color:var(--ink-muted);font-weight:400">— add as many as you like</span></label>
                       <p class="field__hint" style="margin-top:0;margin-bottom:10px">Paste an image link or upload a file, then add a caption.</p>
                       <div id="featuredList"></div>
                       <button class="btn" type="button" id="featuredAddBtn" style="margin-top:8px;display:inline-flex;align-items:center;gap:6px">
@@ -490,7 +490,7 @@
                 <div class="conditional-block" id="slideinNoteBlock" style="display:none">
                   <div class="toggle-row" style="padding:2px 0">
                     <div class="toggle-row__main">
-                      <div class="toggle-row__title" data-info="Slides the launcher out of the way as guests scroll down (keeping it clear of 'Add to cart' / checkout bars) and brings it back as they scroll up.">Auto-hide on scroll</div>
+                      <div class="toggle-row__title" data-info="Turn the feature on or off. It slides your launcher in and out of view as guests scroll — a great way to keep the chat launcher clear of ecommerce 'Add to cart' and checkout buttons.">Auto-hide on scroll</div>
                       <div class="toggle-row__desc">Slides the launcher away as guests scroll down, and back as they scroll up — keeping it clear of "Add to cart" buttons and checkout bars.</div>
                     </div>
                     <button type="button" class="toggle" id="toggleAutoHide" role="switch" aria-checked="false"></button>
@@ -587,7 +587,7 @@
                   </div>
                   <div class="toggle-row">
                     <div class="toggle-row__main">
-                      <div class="toggle-row__title" data-info="One switch controls BOTH the temperature on the launcher and the live weather inside the chat — turning it off hides both.">Weather readout</div>
+                      <div class="toggle-row__title" data-info="Turn the weather readout on or off. It shows in the chat launcher and in the weather card inside the open chat. Choose summer or winter mode over in the Weather tab.">Weather readout</div>
                       <div class="toggle-row__desc">Sun icon + current temperature, pulled from your Mountain Data tab.</div>
                     </div>
                     <button type="button" class="toggle" id="toggleWeather" role="switch" aria-checked="true"></button>
@@ -693,7 +693,7 @@
 
               <!-- Depth effect (shadow / glow / radiate) — relocated from Identity -->
               <div class="field">
-                <label class="field__label" data-info="Adds a sense of depth around the chat. 'Radiate' affects only the launcher button; 'Shadow' and 'Glow' also lift the chat window.">Depth effect</label>
+                <label class="field__label" data-info="Set a unique effect to make your chat launcher pop — Radiate, Glow, or Shadow. It applies to every launcher style.">Depth effect</label>
                 <div style="max-width:420px">
                   <div class="segmented" id="effectModeSegmented" role="radiogroup" aria-label="Depth effect style">
                     <button type="button" data-effect-mode="none" data-active="false" role="radio" aria-checked="false">None</button>
@@ -976,7 +976,7 @@
 
               <div class="toggle-row toggle-row--standalone">
                 <div class="toggle-row__main">
-                  <div class="toggle-row__title">Voice chat</div>
+                  <div class="toggle-row__title" data-info="Voice Chat uses real-time voice AI to talk back and forth with your customers out loud. Turn it off to hide the button that starts it.">Voice chat</div>
                   <div class="toggle-row__desc">Show the hands-free voice button so guests can talk with the agent out loud. Turn off to hide it.</div>
                 </div>
                 <button type="button" class="toggle" id="toggleVoice" role="switch" aria-checked="true"></button>
@@ -1073,7 +1073,7 @@
 
                 <!-- Starter chips (per page) -->
                 <div class="field" style="margin-bottom:14px">
-                  <label class="field__label" style="font-weight:400;font-size:13px;color:var(--ink-soft)" data-info="The questions you add to a page's install code show up on that page exactly as written. Use a different copy of the code on each page to give every page its own questions.">Starter chips <span style="color:var(--ink-faint);font-weight:400">(0–4, optional)</span></label>
+                  <label class="field__label" style="font-weight:400;font-size:13px;color:var(--ink-soft)" data-info="Conversation-starter 'chips' give visitors an easy way to send questions into the chat. Use the DIV tag in the install code to create your own starters for different pages. Tip: copy the code into a text file so you can edit it further.">Starter chips <span style="color:var(--ink-faint);font-weight:400">(0–4, optional)</span></label>
                   <p class="field__hint" style="margin-top:0;margin-bottom:10px">Suggested questions shown beneath the bar. Leave them all blank for a bar with no questions.</p>
                   <div class="starter-inputs">
                     <input class="input starter-input" type="text" id="searchStarter0" maxlength="60" placeholder="e.g. Where should beginners ski?" />
@@ -1131,10 +1131,6 @@
                   </div>
                   <pre class="embed-snippet__code" id="embedSearchSnippet"></pre>
                 </div>
-                <p class="embed-help">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="0.6" fill="currentColor"/></svg>
-                  <span>Paste where the bar should appear. <strong>Whatever you type into <code>data-gsb-starters</code> is exactly what goes live on that page</strong> — edit this list to set that page's conversation starters (separate each with a <code>|</code>, up to 4). No dashboard change needed: the chips in the code populate the live bar as-is. Easiest: copy the snippet into a text file, change the chips for that page, then paste it on that page.</span>
-                </p>
               </div>
 
               <!-- ===== STANDALONE MAGNIFYING GLASS BUTTON (separate sub-card) ===== -->
@@ -1221,10 +1217,6 @@
                   </div>
                   <pre class="embed-snippet__code" id="embedButtonSnippet">&lt;div data-gsb-search-button&gt;&lt;/div&gt;</pre>
                 </div>
-                <p class="embed-help">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="0.6" fill="currentColor"/></svg>
-                  <span>Drop into your top nav, sidebar, or any compact spot. <strong>Styling comes from your appearance settings above</strong> — no CSS needed.</span>
-                </p>
               </div>
 
               <!-- ===== DEMO / PREVIEW PAGE BACKGROUND (not the chat hero) ===== -->
