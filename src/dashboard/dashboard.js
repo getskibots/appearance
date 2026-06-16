@@ -728,6 +728,10 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     }
     if ($('heroWebcamGroup')) $('heroWebcamGroup').style.display = hero.source === 'webcam' ? '' : 'none';
     if ($('heroFeaturedGroup')) $('heroFeaturedGroup').style.display = hero.source === 'featured' ? '' : 'none';
+    // Webcam mode drops the right-side live preview (the per-cam thumbnails + full chat preview
+    // already cover it) and gives the horizontal cam cards the full width.
+    var mediaGridEl = document.querySelector('.media-grid');
+    if (mediaGridEl) mediaGridEl.setAttribute('data-hero-source', hero.source);
     // Rebuild the cam rows only when the count changes (add/remove/revert); per-keystroke
     // edits leave the count unchanged, so inputs keep focus.
     var wList = $('webcamList');

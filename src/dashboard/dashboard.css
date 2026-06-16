@@ -914,6 +914,10 @@
 }
 .media-grid__controls { min-width: 0; }
 .media-grid__preview { min-width: 0; }
+/* Webcam mode: the per-cam thumbnails + full chat preview already show the hero,
+   so drop the right-side live preview and let the cam cards span the full width. */
+.media-grid[data-hero-source="webcam"] { grid-template-columns: 1fr; }
+.media-grid[data-hero-source="webcam"] .media-grid__preview { display: none; }
 .media-grid__preview-label {
   display: block;
   margin-bottom: 8px;
