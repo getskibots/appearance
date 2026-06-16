@@ -825,13 +825,20 @@
 /* Webcam cards — one per cam: live preview + URL + type pill/override + title/sub */
 .webcam-card {
   position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 12px;
+  padding-right: 36px; /* gutter so the × never overlaps the fields */
   margin-bottom: 10px;
 }
 .webcam-card .input { width: 100%; }
+/* Left: live thumbnail. Right: the editable fields. */
+.webcam-card__media { flex: 0 0 150px; }
+.webcam-card__fields { flex: 1 1 auto; min-width: 0; }
 .webcam-card__delete {
   position: absolute;
   top: 8px; right: 8px;
@@ -848,11 +855,11 @@
 .webcam-card__preview {
   position: relative;
   width: 100%;
-  height: 150px;
+  height: 100px;
   background: #1a1a1a;
   border-radius: 7px;
   overflow: hidden;
-  margin-bottom: 10px;
+  margin-bottom: 0;
 }
 .webcam-card[data-empty="true"] .webcam-card__preview {
   background: repeating-linear-gradient(45deg, #ece9e2, #ece9e2 10px, #e4e0d7 10px, #e4e0d7 20px);

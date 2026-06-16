@@ -348,11 +348,15 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     card.className = 'webcam-card';
     card.innerHTML =
       '<button type="button" class="webcam-card__delete" aria-label="Remove webcam">&times;</button>' +
-      '<div class="webcam-card__preview"><span class="webcam-card__live">&bull; LIVE</span></div>' +
-      '<input class="input webcam-card__url" type="url" placeholder="https://…/webcam.jpg" />' +
-      '<div class="webcam-card__type"></div>' +
-      '<input class="input webcam-card__title" type="text" placeholder="Title" />' +
-      '<input class="input webcam-card__sub" type="text" placeholder="Subtitle" />';
+      '<div class="webcam-card__media">' +
+        '<div class="webcam-card__preview"><span class="webcam-card__live">&bull; LIVE</span></div>' +
+      '</div>' +
+      '<div class="webcam-card__fields">' +
+        '<input class="input webcam-card__url" type="url" placeholder="https://…/webcam.jpg" />' +
+        '<div class="webcam-card__type"></div>' +
+        '<input class="input webcam-card__title" type="text" placeholder="Title" />' +
+        '<input class="input webcam-card__sub" type="text" placeholder="Subtitle" />' +
+      '</div>';
     var preview = card.querySelector('.webcam-card__preview');
     var urlIn = card.querySelector('.webcam-card__url');
     var titleIn = card.querySelector('.webcam-card__title');
