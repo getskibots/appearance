@@ -56,6 +56,7 @@ function toGsbAppearance(state) {
     customIconSize: state.customIconSize,
     slideState: state.slideState,
     autoHideOnScroll: state.autoHideOnScroll,
+    launcherScale: state.launcherScale,
     layoutVariant: state.layoutVariant,
     animationStyle: state.animationStyle,
     snowfall: state.snowfall,

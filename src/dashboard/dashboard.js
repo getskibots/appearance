@@ -218,6 +218,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // edges (px). Maps to BotScrew's greetingMessagePopupSettings.{alignment,
     // bottomSpacing, sideSpacing}; the greeting popup + open panel inherit it.
     placement: { align: 'right', bottomSpacing: 32, sideSpacing: 32 },
+    // Dedicated launcher size — scales the whole launcher (text + frame) independent of
+    // the in-chat Text size slider. Clamped 0.8–1.25 so placement/slide can't break.
+    launcherScale: 1,
     statusPillFeatures: { liveAgent: true, weather: true, needHelpCta: true },
     layoutVariant: 'side',
     animationStyle: 'scale', // 'scale' | 'slide' | 'fade' — how the panel opens
@@ -969,6 +972,14 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     launcher.setAttribute('data-align', pAlign);
     document.documentElement.style.setProperty('--gsb-launcher-bottom', pBottom + 'px');
     document.documentElement.style.setProperty('--gsb-launcher-side', pSide + 'px');
+    // Launcher size (dedicated control, clamped) — scales the whole launcher via zoom.
+    var lScale = Math.min(1.25, Math.max(0.8, state.launcherScale != null ? state.launcherScale : 1));
+    document.documentElement.style.setProperty('--gsb-launcher-scale', String(lScale));
+    if ($('launcherSizeSlider') && document.activeElement !== $('launcherSizeSlider')) $('launcherSizeSlider').value = String(lScale);
+    if ($('launcherSizeReadout')) $('launcherSizeReadout').textContent = (Math.round(lScale * 100) / 100) + '×';
+    document.querySelectorAll('#launcherSizePresets button').forEach(function(b) {
+      b.setAttribute('data-active', String(parseFloat(b.dataset.preset) === lScale));
+    });
     document.querySelectorAll('#placementAlignSegmented button').forEach(function(b) {
       var active = b.dataset.value === pAlign;
       b.setAttribute('data-active', String(active));
@@ -1297,7 +1308,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     var ACC_CARD_FIELDS = {
       identity: ['logoUrl','logoMaxHeight','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText','updateLabel','recentUpdate','recentUpdateSource','recentUpdateFlow'],
       media: ['hero'],
-      launcher: ['bubbleStyle','cornerRadius','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','statusPillFeatures','ctaText'],
+      launcher: ['bubbleStyle','cornerRadius','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','launcherScale','statusPillFeatures','ctaText'],
       typography: ['typography'],
       panel: ['layoutVariant','blurredBackground'],
       effects: ['animationStyle','typingIndicator','messageStyle','effectMode','effectIntensity','snowfall'],
@@ -1577,6 +1588,20 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   document.querySelectorAll('.radius-presets button').forEach(function(b) {
     b.addEventListener('click', function() {
       state.cornerRadius = parseInt(b.dataset.radiusPreset, 10);
+      render();
+    });
+  });
+
+  // Launcher size — dedicated scale (slider + presets), clamped 0.8–1.25 so the launcher
+  // scales as a whole (text + frame) without breaking placement or the slide-in geometry.
+  if ($('launcherSizeSlider')) $('launcherSizeSlider').addEventListener('input', function(e) {
+    var v = parseFloat(e.target.value);
+    state.launcherScale = Math.min(1.25, Math.max(0.8, isNaN(v) ? 1 : v));
+    render();
+  });
+  document.querySelectorAll('#launcherSizePresets button').forEach(function(b) {
+    b.addEventListener('click', function() {
+      state.launcherScale = parseFloat(b.dataset.preset) || 1;
       render();
     });
   });

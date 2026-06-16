@@ -80,6 +80,9 @@ export function applyWidgetConfig(config) {
   if (place.bottomSpacing != null) setVar('--gsb-launcher-bottom', place.bottomSpacing + 'px');
   if (place.sideSpacing != null) setVar('--gsb-launcher-side', place.sideSpacing + 'px');
 
+  /* ---- Launcher size (dedicated scale; clamped) — scales the whole launcher via zoom ---- */
+  if (config.launcherScale != null) setVar('--gsb-launcher-scale', String(Math.min(1.25, Math.max(0.8, config.launcherScale))));
+
   /* ---- Typography (caller is responsible for actually loading the fonts) ---- */
   var typo = config.typography || {};
   if (typo.bodyFont) setVar('--gsb-body-font', "'" + typo.bodyFont + "', system-ui, -apple-system, sans-serif");
