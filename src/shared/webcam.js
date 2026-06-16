@@ -93,7 +93,7 @@ const KIND_LABEL = {
   youtube: 'YouTube live', vimeo: 'Vimeo', roundshot: 'Roundshot 360°',
   panomax: 'Panomax 360°', feratel: 'Feratel', bergfex: 'bergfex',
   earthcam: 'EarthCam', hdontap: 'HDOnTap', windy: 'Windy.com', brownrice: 'Embedded cam',
-  rtsp: 'RTSP stream', rtmp: 'RTMP stream',
+  iframe: 'Embed / iframe', rtsp: 'RTSP stream', rtmp: 'RTMP stream',
 };
 
 // Dashboard badge: a label + a status the UI colors + an honest note.

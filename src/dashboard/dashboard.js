@@ -194,9 +194,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       // poster = best-effort still for non-image kinds. Stored so future renderers
       // need no schema change.
       webcams: [
-        { url: 'https://cams.jacksonhole.com/webcam/codybowl.jpg', label: 'Cody Bowl', kind: 'image', poster: '' },
-        { url: 'https://cams.jacksonhole.com/webcam/trambase.jpg', label: 'Tram Dock', kind: 'image', poster: '' },
-        { url: 'https://cams.jacksonhole.com/webcam/tetonvillagecommons.jpg', label: 'Village Commons', kind: 'image', poster: '' }
+        { url: 'https://cams.jacksonhole.com/webcam/codybowl.jpg', label: 'Cody Bowl', sub: '10,450 ft', kind: 'image', poster: '' },
+        { url: 'https://cams.jacksonhole.com/webcam/trambase.jpg', label: 'Tram Dock', sub: '9,095 ft', kind: 'image', poster: '' },
+        { url: 'https://cams.jacksonhole.com/webcam/tetonvillagecommons.jpg', label: 'Village Commons', sub: '6,311 ft', kind: 'image', poster: '' }
       ],
       featuredImage: { url: '', caption: '', link: '' }
     },
@@ -326,6 +326,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       if (!Array.isArray(base.hero.webcams)) base.hero.webcams = [];
       if (base.hero.webcam && base.hero.webcam.url) base.hero.webcams = [base.hero.webcam];
       delete base.hero.webcam;
+      base.hero.webcams.forEach(function(c) { if (c && c.sub == null) c.sub = ''; });
     }
     return base;
   }
@@ -335,49 +336,99 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
 
   var $ = function(id) { return document.getElementById(id); };
 
-  // ---- Webcam list rows (one per cam; bound to the cam OBJECT so splices are safe) ----
-  function makeWebcamRow(cam) {
-    var row = document.createElement('div');
-    row.className = 'webcam-row';
-    row.innerHTML =
-      '<div class="webcam-row__fields">' +
-        '<input class="input webcam-row__url" type="url" placeholder="https://…/webcam.jpg" />' +
-        '<input class="input webcam-row__label" type="text" placeholder="Label (e.g. Summit cam)" />' +
-      '</div>' +
-      '<span class="webcam-row__badge"></span>' +
-      '<button type="button" class="webcam-row__remove" aria-label="Remove webcam">' +
-        '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true"><path d="M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M6 7l1 12a2 2 0 002 2h6a2 2 0 002-2l1-12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
-      '</button>';
-    var urlIn = row.querySelector('.webcam-row__url');
-    var labelIn = row.querySelector('.webcam-row__label');
-    var badge = row.querySelector('.webcam-row__badge');
+  // ---- Webcam cards (one per cam: live preview + URL + type pill/override + title/sub) ----
+  // Bound to the cam OBJECT so splices stay safe. The type system is purely
+  // informational now — every kind renders (webcam-render.js) — but you can override
+  // the auto-detected type if it guesses wrong.
+  var OVERRIDE_KINDS = ['image', 'youtube', 'iframe', 'hls', 'mp4'];
+  function camKindLabel(kind) { return kind ? webcamKindMeta(kind).label : ''; }
+
+  function makeWebcamCard(cam) {
+    var card = document.createElement('div');
+    card.className = 'webcam-card';
+    card.innerHTML =
+      '<button type="button" class="webcam-card__delete" aria-label="Remove webcam">&times;</button>' +
+      '<div class="webcam-card__preview"><span class="webcam-card__live">&bull; LIVE</span></div>' +
+      '<input class="input webcam-card__url" type="url" placeholder="https://…/webcam.jpg" />' +
+      '<div class="webcam-card__type"></div>' +
+      '<input class="input webcam-card__title" type="text" placeholder="Title (e.g. Tram Station)" />' +
+      '<input class="input webcam-card__sub" type="text" placeholder="Subtitle (e.g. 9,095 ft)" />';
+    var preview = card.querySelector('.webcam-card__preview');
+    var urlIn = card.querySelector('.webcam-card__url');
+    var titleIn = card.querySelector('.webcam-card__title');
+    var subIn = card.querySelector('.webcam-card__sub');
+    var typeWrap = card.querySelector('.webcam-card__type');
     urlIn.value = cam.url || '';
-    labelIn.value = cam.label || '';
-    function refreshBadge() {
-      badge.textContent = (cam.url && cam.url.trim()) ? webcamKindMeta(cam.kind || detectWebcamKind(cam.url)).label : '';
+    titleIn.value = cam.label || '';
+    subIn.value = cam.sub || '';
+
+    function hasUrl() { return !!(cam.url && cam.url.trim()); }
+    function renderPreview() {
+      card.setAttribute('data-empty', hasUrl() ? 'false' : 'true');
+      if (hasUrl()) renderWebcamHero(preview, cam);
+      else clearWebcamHero(preview);
     }
-    refreshBadge();
+    function renderTypePill() {
+      if (!hasUrl()) { typeWrap.innerHTML = '<div class="type-pill type-pill--empty">paste a URL to detect type</div>'; return; }
+      var auto = detectWebcamKind(cam.url);
+      var kind = cam.kind || auto;
+      var overridden = kind !== auto;
+      typeWrap.innerHTML =
+        '<div class="type-pill">' +
+          '<span class="type-pill__dot"></span>' +
+          '<span class="type-pill__label">' + escHtmlD(camKindLabel(kind)) + '</span>' +
+          '<span class="type-pill__tag' + (overridden ? ' type-pill__tag--on' : '') + '">' + (overridden ? 'manual' : 'auto') + '</span>' +
+          '<button type="button" class="type-pill__change">change</button>' +
+        '</div>' +
+        '<div class="type-menu" hidden>' +
+          OVERRIDE_KINDS.map(function(k) {
+            return '<button type="button" class="type-menu__opt' + (k === kind ? ' is-current' : '') + '" data-kind="' + k + '">' +
+              escHtmlD(camKindLabel(k)) + (k === auto ? ' · auto' : '') + '</button>';
+          }).join('') +
+        '</div>';
+      var menu = typeWrap.querySelector('.type-menu');
+      typeWrap.querySelector('.type-pill__change').addEventListener('click', function(e) {
+        e.stopPropagation();
+        menu.hidden = !menu.hidden;
+      });
+      typeWrap.querySelectorAll('.type-menu__opt').forEach(function(opt) {
+        opt.addEventListener('click', function() {
+          cam.kind = opt.getAttribute('data-kind');
+          cam.poster = webcamPoster(cam.url, cam.kind);
+          preview.removeAttribute('data-cam-url'); // force a re-render with the new kind
+          renderPreview(); renderTypePill(); render();
+        });
+      });
+    }
+
+    renderPreview();
+    renderTypePill();
+
     urlIn.addEventListener('input', function(e) {
       cam.url = e.target.value;
-      cam.kind = detectWebcamKind(cam.url);
+      cam.kind = detectWebcamKind(cam.url); // re-auto-detect (clears any override)
       cam.poster = webcamPoster(cam.url, cam.kind);
-      refreshBadge();
-      render();
+      renderPreview(); renderTypePill(); render();
     });
-    labelIn.addEventListener('input', function(e) { cam.label = e.target.value; render(); });
-    row.querySelector('.webcam-row__remove').addEventListener('click', function() {
+    titleIn.addEventListener('input', function(e) { cam.label = e.target.value; render(); });
+    subIn.addEventListener('input', function(e) { cam.sub = e.target.value; render(); });
+    card.querySelector('.webcam-card__delete').addEventListener('click', function() {
       var i = state.hero.webcams.indexOf(cam);
       if (i > -1) state.hero.webcams.splice(i, 1);
-      render(); // count changed → render's guard rebuilds the rows
+      render();
     });
-    return row;
+    return card;
   }
   function buildWebcamRows() {
     var list = $('webcamList');
     if (!list) return;
     list.innerHTML = '';
-    (state.hero.webcams || []).forEach(function(cam) { list.appendChild(makeWebcamRow(cam)); });
+    (state.hero.webcams || []).forEach(function(cam) { list.appendChild(makeWebcamCard(cam)); });
   }
+  // Close any open type-override menu when clicking elsewhere.
+  document.addEventListener('click', function() {
+    document.querySelectorAll('#webcamList .type-menu').forEach(function(m) { m.hidden = true; });
+  });
   var canvas = $('previewCanvas');
   var launcher = $('previewLauncher');
 
@@ -1388,10 +1439,10 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   // Webcam list: "Add webcam" appends a blank cam (per-row inputs in makeWebcamRow
   // edit them); focus the new row's URL for an immediate paste.
   if ($('webcamAddBtn')) $('webcamAddBtn').addEventListener('click', function(){
-    state.hero.webcams.push({ url: '', label: '', kind: 'image', poster: '' });
+    state.hero.webcams.push({ url: '', label: '', sub: '', kind: 'image', poster: '' });
     render();
     var rows = $('webcamList').children;
-    if (rows.length) { var u = rows[rows.length - 1].querySelector('.webcam-row__url'); if (u) u.focus(); }
+    if (rows.length) { var u = rows[rows.length - 1].querySelector('.webcam-card__url'); if (u) u.focus(); }
   });
   $('featuredImageUrl').addEventListener('input', function(e){ endFeaturedCrop(); state.hero.featuredImage.url = e.target.value; render(); });
   // Trash button — clears the image for the current hero source (state change flows
