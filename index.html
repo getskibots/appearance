@@ -266,20 +266,25 @@
                   <textarea class="textarea" id="recentUpdate" placeholder="e.g. The Aerial Tram reopens for summer sightseeing on May 16th." style="max-width:360px">The 2025/26 ski season has wrapped. The Aerial Tram reopens for summer sightseeing on May 16th, with the gondolas joining June 6th.</textarea>
                 </div>
 
-                <!-- Flow mode (placeholder — not yet wired to live flows) -->
+                <!-- Live-updates mode — pick the FLOW that writes the Season Update.
+                     SHELL/placeholder: the flows are stubbed here; in production this lists
+                     the bot's real Flows and the "Create new flow" action deep-links the
+                     builder. See docs/INTEGRATION.md (Season-Update source). -->
                 <div id="updateFlowGroup" style="display:none">
                   <div class="flow-picker">
                     <select class="input" id="updateFlow" style="max-width:360px">
-                      <option value="">Select a data source…</option>
-                      <option value="operations">Get Operations</option>
-                      <option value="conditions">Get Conditions</option>
-                      <option value="ecommerce">Get Ecommerce</option>
-                      <option value="events">Get Events</option>
-                      <option value="alerts">Get Alerts</option>
+                      <option value="">Select a flow…</option>
+                      <optgroup label="Your flows">
+                        <option value="flow-conditions">Mountain Conditions</option>
+                        <option value="flow-lifts">Lift &amp; Trail Status</option>
+                        <option value="flow-events">Events &amp; Promotions</option>
+                        <option value="flow-alerts">Weather Alerts</option>
+                      </optgroup>
+                      <option value="__create__">+ Create new flow…</option>
                     </select>
                     <span class="flow-picker__badge">Preview</span>
                   </div>
-                  <p class="field__hint" style="margin-top:8px">Keeps the Season Update current automatically from the source you pick — refreshed when the chat opens. Live data wiring comes next; this is a preview of the control.</p>
+                  <p class="field__hint" style="margin-top:8px">Pick the flow that writes the Season Update — refreshed when the chat opens. Flows come from your bot; <a href="https://bots.getskitickets.com/admin/bot/43/flows/new?source=season-banner&amp;return=appearance" target="_blank" rel="noopener" id="updateFlowNew">create a new one</a> if you need it. <span style="color:var(--ink-muted)">(Demo: flows are stubbed; production lists your real flows.)</span></p>
                 </div>
               </div>
 

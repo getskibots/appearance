@@ -89,12 +89,13 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
 
 ### 5 · Appearance tab — ✅ ~95% (the heaviest pre-build)
 - **5.1 Identity & branding** ✅ — logo upload (JPEG now **accepted with a warning**,
-  no longer rejected), height, corner radius (launcher + panel), header
-  color, widget name, placeholder, welcome message, plus the **Recent update** control
-  that feeds the chat's Season Update banner (Write-it-myself / Get-live-updates source
-  toggle; the Get-live-updates "data source" picker — Get Operations / Conditions /
-  Ecommerce / Events / Alerts — is a wired-but-not-live placeholder BotScrew connects to
-  Flows). Laid out as a two-column card.
+  no longer rejected), height, header color, widget name, placeholder, welcome message, plus
+  the **Recent update** control that feeds the chat's Season Update banner (Write-it-myself /
+  Get-live-updates source toggle). The Get-live-updates picker is now a **flow shell**: a
+  stubbed list of the bot's Flows grouped under "Your flows" + a **"+ Create new flow"** action
+  that opens the builder in a new tab — production lists the bot's real Flows and deep-links the
+  builder (spec: [INTEGRATION.md §5a](./INTEGRATION.md)). Two-column card. (Corner radius now
+  lives in the **Launcher** card.)
 - **5.1b Webcams & featured image** ✅ — hero source (webcam / featured image / none) with
   a **trashcan to clear the image**, plus a **Demo background image** (URL or upload) that
   themes the prospect demo page with a **Light/Dark** text treatment. (Background image is

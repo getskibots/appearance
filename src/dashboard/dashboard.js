@@ -498,7 +498,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // Recent update → Season Update banner. Source = 'manual' (typed copy) or
     // 'flow' (placeholder: shows a stub line for the selected flow). Either way
     // we flag data-manual-update so the live weather feed leaves the banner alone.
-    var FLOW_LABELS = { 'operations': 'Get Operations', 'conditions': 'Get Conditions', 'ecommerce': 'Get Ecommerce', 'events': 'Get Events', 'alerts': 'Get Alerts' };
+    // Stubbed flow names (production lists the bot's real Flows; see INTEGRATION.md).
+    var FLOW_LABELS = { 'flow-conditions': 'Mountain Conditions', 'flow-lifts': 'Lift & Trail Status', 'flow-events': 'Events & Promotions', 'flow-alerts': 'Weather Alerts' };
     var updateSource = state.recentUpdateSource === 'flow' ? 'flow' : 'manual';
     // Reflect the source toggle: segmented active state + which group is visible.
     var srcBtns = document.querySelectorAll('#updateSourceSegmented [data-update-source]');
@@ -1284,7 +1285,18 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   document.querySelectorAll('#updateSourceSegmented [data-update-source]').forEach(function(btn){
     btn.addEventListener('click', function(){ state.recentUpdateSource = btn.getAttribute('data-update-source'); render(); });
   });
-  $('updateFlow').addEventListener('change', function(e){ state.recentUpdateFlow = e.target.value; render(); });
+  $('updateFlow').addEventListener('change', function(e){
+    if (e.target.value === '__create__') {
+      // "Create new flow" is an ACTION, not a selection — open the flow builder in a
+      // NEW TAB so unsaved appearance edits survive, then revert the select. Production
+      // injects the real bot id + new-flow route (see docs/INTEGRATION.md).
+      window.open('https://bots.getskitickets.com/admin/bot/43/flows/new?source=season-banner&return=appearance', '_blank', 'noopener');
+      e.target.value = state.recentUpdateFlow || '';
+      return;
+    }
+    state.recentUpdateFlow = e.target.value;
+    render();
+  });
 
   // ============= HERO (Webcams & featured image) WIRING =============
   document.querySelectorAll('#heroSourceSegmented [data-hero-source]').forEach(function(btn){

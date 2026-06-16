@@ -143,6 +143,33 @@ tab while still *living* in the flow atom — a friendly field that writes to yo
 (`PUT /bot/{id}/atom`, per-language). Conversational *behavior* (menus, branching) stays in
 Flows. The test: **"is it just copy, or is it behavior?"**
 
+### 5a · Season Update "Get live updates" → a Flow (production wiring)
+
+The Season Update banner (Appearance → Identity → **Recent update**) has two sources:
+- **Write it myself** — manual copy (`recentUpdate`). Works today.
+- **Get live updates** — the banner is written automatically by a **Flow** the admin picks.
+  The Appearance prototype ships a *shell* for this picker; production wires it to real Flows.
+
+**The picker (what to build):**
+- The dropdown lists the **bot's existing Flows** (`GET` the bot's flows), grouped under
+  "Your flows". `recentUpdateFlow` stores the chosen flow id.
+- A divider-separated **"+ Create new flow"** action sits at the **bottom** — an action, not a
+  selection. It **must open the Flow builder in a NEW TAB**: the admin has unsaved Appearance
+  edits that a same-tab navigation would destroy.
+- **Deep-link with context** so the new flow ties back to the banner and can return the admin,
+  e.g. `…/admin/bot/{botId}/flows/new?source=season-banner&return=appearance`.
+- **Empty state** (no flows yet): skip the empty dropdown — show a primary
+  "Create your first flow →" CTA instead.
+- **Preview** runs the selected flow and renders its output into the banner preview.
+
+**Runtime:** when `recentUpdateSource === 'flow'`, the widget fills the Season Update banner
+from the selected flow's output (refreshed on chat open) instead of the manual text.
+
+**Prototype today:** `index.html` `#updateFlow` is a stubbed flow list ("Mountain Conditions",
+"Lift & Trail Status", …) + the "+ Create new flow" action (opens the builder URL in a new
+tab). No live flow data. The mapper already carries `recentUpdateSource` + `recentUpdateFlow`
+in `gsbAppearance`, so only the flow list + builder deep-link are net-new on BotScrew's side.
+
 ---
 
 ## 6 · The conversation channel
