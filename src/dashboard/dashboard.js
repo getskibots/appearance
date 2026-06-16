@@ -186,7 +186,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // Hero slot at the top of the open chat (Webcams & featured image card).
     // source: 'webcam' (live cam / feed) | 'featured' (Appearance-owned image) | 'none'.
     hero: {
-      source: 'webcam',
+      source: 'featured',
       // webcams = ordered list; the chat hero rotates through them (2+ auto-rotate).
       // kind = auto-detected delivery type (image/mjpeg/hls/youtube/roundshot/rtsp/…);
       // poster = best-effort still for non-image kinds. Stored so future renderers
@@ -196,7 +196,12 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
         { url: 'https://cams.jacksonhole.com/webcam/trambase.jpg', label: 'Tram Station', sub: '9,095 ft', kind: 'image', poster: '' },
         { url: 'https://cams.jacksonhole.com/webcam/teewinot.jpg', label: 'Teewinot', sub: '', kind: 'image', poster: '' }
       ],
-      featuredImages: []
+      // Relative paths (no leading slash) → resolve against the page URL, so they work on
+      // GitHub Pages (/appearance/…) and locally. Drop the files in public/featured/.
+      featuredImages: [
+        { url: 'featured/summer.webp', caption: 'Welcome to Teton Village', link: 'https://www.jacksonhole.com' },
+        { url: 'featured/winter.webp', caption: 'Aerial Tram', link: 'https://www.jacksonhole.com' }
+      ]
     },
     ctaText: 'Need help?',
     // Showcase default: the Status pill is the richest launcher (avatars + live agent +

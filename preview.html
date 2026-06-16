@@ -631,15 +631,20 @@
       recentUpdate: "The 2025/26 ski season has wrapped. The Aerial Tram reopens for summer sightseeing on May 16th, with the gondolas joining June 6th.",
       recentUpdateSource: 'manual',
       recentUpdateFlow: '',
-      // Hero slot at the top of the open chat (webcam by default).
+      // Hero slot at the top of the open chat (featured images by default).
       hero: {
-        source: 'webcam',
+        source: 'featured',
         webcams: [
           { url: 'https://cams.jacksonhole.com/webcam/codybowl.jpg', label: 'Cody Bowl', sub: '10,450 ft', kind: 'image', poster: '' },
           { url: 'https://cams.jacksonhole.com/webcam/trambase.jpg', label: 'Tram Station', sub: '9,095 ft', kind: 'image', poster: '' },
           { url: 'https://cams.jacksonhole.com/webcam/teewinot.jpg', label: 'Teewinot', sub: '', kind: 'image', poster: '' }
         ],
-        featuredImages: []
+        // Relative paths resolve against the page URL (works on GitHub Pages + locally).
+        // Files live in public/featured/.
+        featuredImages: [
+          { url: 'featured/summer.webp', caption: 'Welcome to Teton Village', link: 'https://www.jacksonhole.com' },
+          { url: 'featured/winter.webp', caption: 'Aerial Tram', link: 'https://www.jacksonhole.com' }
+        ]
       },
       typography: { bodyFont: 'Montserrat', displayFont: 'Archivo', textScale: 1.0 },
       layoutVariant: 'side',
