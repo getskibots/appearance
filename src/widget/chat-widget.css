@@ -1146,12 +1146,14 @@ body[data-show-conditions="false"] .gsb-conditions,
   border-right: 1px solid var(--jh-border);
   border-bottom: 1px solid var(--jh-border);
   min-height: 64px;
-  /* Center label + value on both axes so variable-width values (7mph ENE vs
-     14mph WNW) and wrapped condition labels stay visually balanced. */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  /* Two fixed zones — label pinned to the top, value centered in the space below.
+     Grid stretches every cell in a row to equal height and the labels are uniform,
+     so each cell's value zone starts at the same Y and is the same height. Result:
+     all values line up across the card regardless of content (number+unit vs. a
+     weather icon+label), instead of each cell centering its own group. */
+  display: grid;
+  grid-template-rows: auto 1fr;
+  justify-items: center;
   text-align: center;
 }
 
@@ -1164,6 +1166,13 @@ body[data-show-conditions="false"] .gsb-conditions,
   letter-spacing: 0.10em;
   text-transform: uppercase;
   color: var(--jh-ink-soft);
+  line-height: 1.25;
+  /* Reserve two lines so single-word ("TEMP") and two-word ("FEELS LIKE") labels
+     occupy an identical zone whether or not they wrap — otherwise a wrapped label
+     pushes its value down and breaks the alignment. */
+  min-height: 2.5em;
+  display: flex;
+  align-items: center;
   margin-bottom: 4px;
 }
 
@@ -1174,6 +1183,9 @@ body[data-show-conditions="false"] .gsb-conditions,
   font-weight: 700;
   color: var(--jh-ink);
   line-height: 1;
+  /* Center within the value zone (the 1fr row) so a one-line number and a taller
+     icon+label group share the same vertical midline across cells. */
+  align-self: center;
 }
 
 .gsb-conditions-cell .value .unit {
