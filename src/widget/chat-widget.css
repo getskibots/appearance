@@ -145,10 +145,15 @@
 .gsb-launcher[data-effect-mode="radiate"][data-icon-style="traditional"] {
   animation: gsb-launcher-pulse-traditional 2.5s ease-out infinite !important;
 }
-/* Custom never radiates — the uploaded image is the whole launcher. */
+/* Custom radiates from the round icon, not the (square) button — keep the button
+   itself still and let the circular uploaded icon carry the brand-halo pulse, so the
+   ripple matches the circle instead of a square bounding box. */
 .gsb-launcher[data-effect-mode="radiate"][data-icon-style="custom"] {
   animation: none !important;
   box-shadow: none !important;
+}
+.gsb-launcher[data-effect-mode="radiate"][data-icon-style="custom"] .gsb-launcher-custom-icon {
+  animation: gsb-launcher-pulse-traditional 2.5s ease-out infinite;
 }
 .gsb-launcher[data-effect-mode="radiate"][data-icon-style="enhanced"],
 .gsb-launcher[data-effect-mode="radiate"][data-icon-style="slidein"] {
