@@ -383,6 +383,10 @@
   animation-delay: 1.1s;
 }
 
+/* No live agent → drop the human "live person" avatar entirely (Status pill / Slide-in
+   pill). The AI avatar stays; showing a person with no live agent online is misleading. */
+[data-liveagent="off"] .gsb-launcher-avatar-human { display: none; }
+
 .gsb-launcher-divider {
   width: 1px;
   height: 18px;
