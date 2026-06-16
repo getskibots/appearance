@@ -188,7 +188,7 @@
 
               <!-- Brand Color -->
               <div class="field">
-                <label class="field__label" for="brandColorHex">Choose widget color</label>
+                <label class="field__label" for="brandColorHex" data-info="Drives the launcher, send button, guest bubbles, and every branded accent. Foreground text auto-adjusts for contrast.">Choose widget color</label>
                 <div class="color-picker">
                   <input class="color-picker__hex" type="text" id="brandColorHex" maxlength="7" value="#a41e23" />
                   <label class="color-picker__swatch" id="colorSwatchFill" aria-label="Open color picker">
@@ -219,7 +219,7 @@
 
               <!-- Logo max-height -->
               <div class="field">
-                <label class="field__label" for="logoMaxHeight">Logo max-height</label>
+                <label class="field__label" for="logoMaxHeight" data-info="44px suits most horizontal lockups; bump to 60–80px for vertical or stacked logos.">Logo max-height</label>
                 <div class="max-height-row">
                   <input class="input" type="number" id="logoMaxHeight" min="32" max="96" step="1" value="44" style="width:80px" />
                   <span style="color:var(--ink-muted);font-size:13px">px</span>
@@ -239,13 +239,13 @@
 
               <!-- Widget Name -->
               <div class="field">
-                <label class="field__label" for="widgetName">Widget name</label>
+                <label class="field__label" for="widgetName" data-info="Doubles as the chat header name when no logo is uploaded, and the name in the '… is typing' indicator.">Widget name</label>
                 <input class="input" type="text" id="widgetName" value="Jackson Hole Support" style="max-width:360px" />
               </div>
 
               <!-- Welcome Text -->
               <div class="field">
-                <label class="field__label" for="welcomeText">Welcome message</label>
+                <label class="field__label" for="welcomeText" data-info="Supports markdown links — [label](https://…).">Welcome message</label>
                 <textarea class="textarea" id="welcomeText" style="max-width:360px">Welcome to Jackson Hole, ask us anything, we're here to help.</textarea>
                 <p class="field__hint" style="margin-top:6px;max-width:360px">Add a link with markdown: <code>[plan your visit](https://…)</code>.</p>
               </div>
@@ -464,7 +464,7 @@
 
                 <!-- Conditional: Custom upload field -->
                 <div class="conditional-block" id="customIconBlock" style="display:none">
-                  <p class="conditional-block__title">
+                  <p class="conditional-block__title" data-info="Shown as-is on a transparent background — no circle crop. Shadow/glow/radiate trace the icon's actual silhouette.">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v8M3.5 5.5L7 2l3.5 3.5M2 12h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     Custom launcher icon
                   </p>
@@ -496,7 +496,7 @@
                 <div class="conditional-block" id="slideinNoteBlock" style="display:none">
                   <div class="toggle-row" style="padding:2px 0">
                     <div class="toggle-row__main">
-                      <div class="toggle-row__title">Auto-hide on scroll</div>
+                      <div class="toggle-row__title" data-info="Slides the launcher away on scroll-down (clearing 'Add to cart' / checkout bars) and back on scroll-up.">Auto-hide on scroll</div>
                       <div class="toggle-row__desc">Slides the launcher away as guests scroll down, and back as they scroll up — keeping it clear of "Add to cart" buttons and checkout bars.</div>
                     </div>
                     <button type="button" class="toggle" id="toggleAutoHide" role="switch" aria-checked="false"></button>
@@ -589,7 +589,7 @@
                 <div class="toggle-group" id="pillFeaturesGroup">
                   <div class="toggle-row">
                     <div class="toggle-row__main">
-                      <div class="toggle-row__title">Live agent indicator</div>
+                      <div class="toggle-row__title" data-info="Lights the human avatar with a green ring + 'Agent online.' With it off, the avatar is dropped entirely — no person shown.">Live agent indicator</div>
                       <div class="toggle-row__desc">Lights up the human avatar with green ring + "Agent online" microlabel.</div>
                     </div>
                     <button type="button" class="toggle" id="toggleLiveAgent" role="switch" aria-checked="true"></button>
