@@ -129,15 +129,17 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
   poller for the CORS-blocked half) is fully captured in
   [`RESORT-DIRECT-FEEDS.md`](./RESORT-DIRECT-FEEDS.md). Big finding: **OpenSnow already returns
   our normalized model**, so it's a near-zero-mapping second source.
-- **6.3 Webcam — multi-cam** ✅ (multi-cam re-added). Built: a **webcam list** in the
-  Appearance card (add/remove rows, URL + label each), **auto-detect kind** (`detectWebcamKind`
-  — still/MJPEG/YouTube/Vimeo/Roundshot/HLS/MP4/unknown) shown as a per-row badge, and
-  **render across every format** (`webcam-render.js`: `<img>` / `<iframe>` / `<video>`+hls.js /
-  poster + "Open live cam ↗" / blocked notice). The chat hero **rotates through 2+ cams every
-  6s** (`renderWebcamCarousel`), updating the per-cam location label; one cam shows static. Old
-  single `hero.webcam` configs migrate to `hero.webcams[]`. **Not built:** drag-to-reorder
-  (order = list order today), 15s manual-pause / swipe gestures, a "Change type" override.
-  Remaining to fully close = cross-cutting **per-bot save/load** (shared with every feature).
+- **6.3 Webcam — multi-cam** ✅ (multi-cam re-added, with a polished treatment). Built:
+  a **webcam card list** in the Appearance card — each cam is a card with a **live preview**
+  thumbnail (+ LIVE badge), URL, **auto-detected type pill with a "change" override** menu
+  (still / YouTube / iframe / HLS / MP4), and **Title + Subtitle** (e.g. "Tram Station" +
+  "9,095 ft"). Renders **every format** (`webcam-render.js`: `<img>` / `<iframe>` /
+  `<video>`+hls.js / poster + "Open live cam ↗" / blocked notice). The chat hero is a full
+  **carousel** (`renderWebcamCarousel`): slide track, **dots**, **swipe/drag**, **6s
+  auto-rotate** with **hover + 15s manual pause**, and a per-slide **caption** (title · sub ·
+  "Updated just now") + LIVE pill + type badge. Old single `hero.webcam` migrates to
+  `hero.webcams[]`. **Not built:** drag-to-reorder (order = list order). Remaining to fully
+  close = cross-cutting **per-bot save/load** (shared with every feature).
 
 ### 7 · Installation & embed — ⬜ ~25%
 - ✅ The embed shape is defined and the **search-bar snippet is now live + copyable**
