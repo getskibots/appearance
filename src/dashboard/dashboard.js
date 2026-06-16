@@ -195,8 +195,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       // need no schema change.
       webcams: [
         { url: 'https://cams.jacksonhole.com/webcam/codybowl.jpg', label: 'Cody Bowl', sub: '10,450 ft', kind: 'image', poster: '' },
-        { url: 'https://cams.jacksonhole.com/webcam/trambase.jpg', label: 'Tram Dock', sub: '9,095 ft', kind: 'image', poster: '' },
-        { url: 'https://cams.jacksonhole.com/webcam/tetonvillagecommons.jpg', label: 'Village Commons', sub: '6,311 ft', kind: 'image', poster: '' }
+        { url: 'https://cams.jacksonhole.com/webcam/trambase.jpg', label: 'Tram Station', sub: '9,095 ft', kind: 'image', poster: '' },
+        { url: 'https://cams.jacksonhole.com/webcam/teewinot.jpg', label: 'Teewinot', sub: '', kind: 'image', poster: '' }
       ],
       featuredImage: { url: '', caption: '', link: '' }
     },
