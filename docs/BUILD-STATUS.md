@@ -80,9 +80,9 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
   page** (`weather.html`, Open-Meteo card): one season cell-map swaps both the Live Readings
   grid and the chat-preview card — winter = base/summit temp, summit wind, conditions, 5-day
   snowfall, snow level; summer = temp, feels-like, conditions, wind, UV index, precip.
-  `seasonMode` persists in `gsb-weather-config-v1`. **Remaining:** wire the same season swap
-  into the *production* widget conditions card (`widget-runtime.js` `cell*` still shows the
-  leftover snow cells). Scoped to Open-Meteo on purpose; Resort Direct defines its own season
+  `seasonMode` persists in `gsb-weather-config-v1`. ✅ The same season swap is **also wired into
+  the production widget conditions card** (`widget-runtime.js` `resolveSeasonMode` + `omSeasonCells`,
+  summer default). Scoped to Open-Meteo on purpose; Resort Direct defines its own season
   handling when built. The **"turn off conditions" toggle is now built** — the Appearance
   **Weather readout** switch is one control for all weather: off hides both the launcher
   temperature *and* the in-chat conditions card (`body[data-show-conditions="false"]`).
@@ -141,11 +141,11 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
   (still / YouTube / iframe / HLS / MP4), and **Title + Subtitle** (e.g. "Tram Station" +
   "9,095 ft"). Renders **every format** (`webcam-render.js`: `<img>` / `<iframe>` /
   `<video>`+hls.js / poster + "Open live cam ↗" / blocked notice). The chat hero is a full
-  **carousel** (`renderWebcamCarousel`): slide track, **dots**, **swipe/drag**, **6s
+  **carousel** (`renderWebcamCarousel`): slide track, **dots**, **hover arrows + swipe/drag**, **6s
   auto-rotate** with **hover + 15s manual pause**, and a per-slide **caption** (title · sub ·
-  "Updated just now") + LIVE pill + type badge. Old single `hero.webcam` migrates to
-  `hero.webcams[]`. **Not built:** drag-to-reorder (order = list order). Remaining to fully
-  close = cross-cutting **per-bot save/load** (shared with every feature).
+  "Updated just now") + LIVE pill. Old single `hero.webcam` migrates to
+  `hero.webcams[]`. **Drag-to-reorder is built** (drag the handle to set rotation order).
+  Remaining to fully close = cross-cutting **per-bot save/load** (shared with every feature).
 
 ### 7 · Installation & embed — ⬜ ~25%
 - ✅ The embed shape is defined and the **search-bar snippet is now live + copyable**
@@ -209,8 +209,8 @@ across all features + auth + the embed.
 - **Voice** (mic dictation, TTS, hands-free Voice Mode) is built in the widget and now
   has a dashboard control — **Behavior → Realtime voice** hides the hands-free Voice
   Mode when off. Full conversational voice still needs a backend to mint realtime keys.
-- **Winter/Summer mode** — ✅ built on the Weather config page (see §4.2); the remaining
-  piece is wiring the same season swap into the production widget conditions card.
+- **Winter/Summer mode** — ✅ built on the Weather config page (see §4.2) **and** wired into
+  the production widget conditions card (`widget-runtime.js`, summer default).
 - **Season Update "Automatic" source** — the source toggle + data-source picker are
   wired in the UI as a placeholder; consuming a live BotScrew Flow / AI Action output
   (rendered into the banner) is open work. Manual copy works today.
