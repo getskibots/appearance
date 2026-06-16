@@ -369,7 +369,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     card.className = 'webcam-card';
     card._cam = cam; // back-reference so drag-reorder can rebuild the array from DOM order
     card.innerHTML =
-      '<button type="button" class="webcam-card__delete" aria-label="Remove webcam">&times;</button>' +
+      '<button type="button" class="webcam-card__delete" aria-label="Remove webcam"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" aria-hidden="true"><path d="M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M6 7l1 12a2 2 0 002 2h6a2 2 0 002-2l1-12M10 11v6M14 11v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
       '<div class="webcam-card__handle" aria-label="Drag to reorder" title="Drag to reorder">' +
         '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><circle cx="9" cy="5" r="1.4"/><circle cx="15" cy="5" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="19" r="1.4"/><circle cx="15" cy="19" r="1.4"/></svg>' +
       '</div>' +
@@ -519,7 +519,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     card.className = 'webcam-card featured-card';
     card._cam = img; // back-reference for drag-reorder (read per-list on commit)
     card.innerHTML =
-      '<button type="button" class="webcam-card__delete" aria-label="Remove image">&times;</button>' +
+      '<button type="button" class="webcam-card__delete" aria-label="Remove image"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" aria-hidden="true"><path d="M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M6 7l1 12a2 2 0 002 2h6a2 2 0 002-2l1-12M10 11v6M14 11v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
       '<div class="webcam-card__handle" aria-label="Drag to reorder" title="Drag to reorder">' +
         '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><circle cx="9" cy="5" r="1.4"/><circle cx="15" cy="5" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="19" r="1.4"/><circle cx="15" cy="19" r="1.4"/></svg>' +
       '</div>' +

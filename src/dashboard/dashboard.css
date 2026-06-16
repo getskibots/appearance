@@ -855,10 +855,10 @@
   position: absolute;
   top: 8px; right: 8px;
   width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
   border: 0;
   background: transparent;
   color: var(--ink-muted);
-  font-size: 18px; line-height: 1;
   border-radius: 5px;
   cursor: pointer;
   z-index: 3;
