@@ -115,6 +115,8 @@ export function applyWidgetConfig(config) {
 
   /* ---- Behavior data-attributes (the widget CSS reads these on <body>) ---- */
   if (config.layoutVariant) body.setAttribute('data-variant', config.layoutVariant);
+  // Side Panel distance-from-edge (only consumed by the side layout's CSS).
+  if (config.panelSideSpacing != null) setVar('--gsb-panel-side', Math.min(160, Math.max(24, config.panelSideSpacing)) + 'px');
   if (config.animationStyle) body.setAttribute('data-animation', config.animationStyle);
   if (config.typingIndicator) body.setAttribute('data-typing-indicator', config.typingIndicator);
   body.setAttribute('data-typing-label', config.widgetName || 'AI Concierge');

@@ -593,13 +593,14 @@ body.modal-open .gsb-chat {
    the chat" feeling regardless of which variant is active.
    ========================================================================= */
 
-/* SIDE PANEL */
+/* SIDE PANEL — right offset is partner-configurable (Panel layout → Distance from edge)
+   so the panel can sit in from the edge while the launcher stays pinned. */
 body[data-variant="side"] .gsb-chat {
-  right: 24px;
+  right: var(--gsb-panel-side, 24px);
   top: 74px;
   bottom: 24px;
   width: 400px;
-  max-width: calc(100vw - 48px);
+  max-width: calc(100vw - var(--gsb-panel-side, 24px) - 24px);
   height: calc(100dvh - 98px);
   border-radius: var(--gsb-radius);
   transform: scale(0.6);

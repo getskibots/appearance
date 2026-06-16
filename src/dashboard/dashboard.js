@@ -224,6 +224,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     launcherScale: 1,
     statusPillFeatures: { liveAgent: true, weather: true, needHelpCta: true },
     layoutVariant: 'side',
+    // Side Panel only: how far the open panel sits from the screen edge (px). Lets the
+    // panel offset in (e.g. clear an edge-anchored site nav) while the launcher stays put.
+    panelSideSpacing: 24,
     animationStyle: 'scale', // 'scale' | 'slide' | 'fade' — how the panel opens
     blurredBackground: true,
     snowfall: {
@@ -978,6 +981,13 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     canvas.setAttribute('data-variant', state.layoutVariant);
     canvas.setAttribute('data-device', previewDevice);
     launcher.setAttribute('data-icon-style', state.bubbleStyle);
+    // Side Panel distance-from-edge (only meaningful for the side layout).
+    var panelSide = Math.min(160, Math.max(24, state.panelSideSpacing != null ? state.panelSideSpacing : 24));
+    document.documentElement.style.setProperty('--gsb-panel-side', panelSide + 'px');
+    var panelSideRow = $('panelSideRow');
+    if (panelSideRow) panelSideRow.style.display = state.layoutVariant === 'side' ? '' : 'none';
+    if ($('panelSideSlider') && document.activeElement !== $('panelSideSlider')) $('panelSideSlider').value = String(panelSide);
+    if ($('panelSideReadout')) $('panelSideReadout').textContent = panelSide;
 
     // Launcher placement — corner + edge spacing (popup + open panel inherit it)
     var place = state.placement || {};
@@ -1325,7 +1335,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       media: ['hero'],
       launcher: ['bubbleStyle','cornerRadius','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','launcherScale','statusPillFeatures','ctaText'],
       typography: ['typography'],
-      panel: ['layoutVariant','blurredBackground'],
+      panel: ['layoutVariant','panelSideSpacing','blurredBackground'],
       effects: ['animationStyle','typingIndicator','messageStyle','effectMode','effectIntensity','snowfall'],
       behavior: ['soundNotifications','popupMessagePreview','askForRating','realtimeVoice','disableTextInput'],
       embed: ['embedSearch','embedButton','backgroundImage','bgTextMode']
@@ -1773,6 +1783,14 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       setOpen(true);
       render();
     });
+  });
+  // Side Panel — distance from edge (only shown for the side layout, clamped 24–160).
+  if ($('panelSideSlider')) $('panelSideSlider').addEventListener('input', function(e) {
+    var v = parseInt(e.target.value, 10);
+    state.panelSideSpacing = Math.min(160, Math.max(24, isNaN(v) ? 24 : v));
+    // Open the panel (if closed) so the offset is visible while dragging.
+    if (canvas.getAttribute('data-preview-open') !== 'true') setOpen(true);
+    render();
   });
 
   function bindToggle(id, getter, setter) {

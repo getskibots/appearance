@@ -954,6 +954,22 @@
                 </div>
               </div>
 
+              <!-- Side Panel only: how far the open panel sits in from the screen edge -->
+              <div class="field" id="panelSideRow">
+                <label class="field__label" for="panelSideSlider">Distance from edge</label>
+                <p class="field__hint" style="margin-top:0;margin-bottom:12px">How far the open Side Panel sits in from the screen edge. Push it in to clear an edge-anchored site nav — the launcher stays put.</p>
+                <div style="max-width:360px">
+                  <div class="slider-row">
+                    <div class="slider-row__slider">
+                      <input type="range" id="panelSideSlider" min="24" max="160" step="1" value="24" />
+                    </div>
+                    <div class="slider-row__readout">
+                      <span id="panelSideReadout">24</span><span style="color:var(--ink-muted);font-size:13px">px</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div class="field">
                 <div class="toggle-row toggle-row--standalone">
                   <div class="toggle-row__main">
