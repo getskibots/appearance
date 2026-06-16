@@ -97,6 +97,7 @@ docs/
   botscrew-widget-settings.md Data contract (authoritative)
   SCRIPT-CHATBOT-CONTRACT.md  BotScrew host-page loader contract: script tag, iframe,
                               parent↔iframe postMessage protocol, public API inventory
+  DEMO-CODE.md                Jackson Hole / demo-only code to strip (don't port) vs. the deliverable
   RESORT-DIRECT-FEEDS.md      Resort-feed audit (7 shape families) + Resort Direct build plan
 
 scripts/                Byte-faithful extraction tooling (refactor provenance)
@@ -191,4 +192,5 @@ These four items are the seam between "what GSB built" and "what BotScrew wires"
 - **Dropping the widget into your embed** (iframe/snippet, seams, provenance) → [`INTEGRATION.md`](./INTEGRATION.md)
 - **Understanding / modifying the code** → [`ARCHITECTURE.md`](./ARCHITECTURE.md)
 - **Knowing what's done vs left** → [`BUILD-STATUS.md`](./BUILD-STATUS.md)
+- **What's Jackson Hole / demo-only and should NOT be ported** → [`DEMO-CODE.md`](./DEMO-CODE.md)
 - **Building Resort Direct (own-feed) support** → [`RESORT-DIRECT-FEEDS.md`](./RESORT-DIRECT-FEEDS.md)

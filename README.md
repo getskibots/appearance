@@ -10,6 +10,7 @@ separates the **embeddable chat widget** from the **admin appearance dashboard**
 | [`docs/HANDOFF.md`](docs/HANDOFF.md) | **Start here** — orientation, run, repo map, integration boundary |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Code + runtime model, config flow, how to extend |
 | [`docs/BUILD-STATUS.md`](docs/BUILD-STATUS.md) | What's done vs pending (where the build is) |
+| [`docs/DEMO-CODE.md`](docs/DEMO-CODE.md) | Jackson Hole / demo-only code to strip (don't port) vs. the deliverable |
 | [`docs/botscrew-widget-settings.md`](docs/botscrew-widget-settings.md) | The BotScrew data contract (authoritative) |
 | [`docs/INTEGRATION.md`](docs/INTEGRATION.md) | How the widget drops into BotScrew's embed — iframe/snippet model, seams, content provenance |
 | [`docs/RESORT-DIRECT-FEEDS.md`](docs/RESORT-DIRECT-FEEDS.md) | Resort-feed audit + Resort Direct build plan |
