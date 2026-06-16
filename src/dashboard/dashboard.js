@@ -262,7 +262,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       // Per-page starter chips shown beneath the bar (0–4). Unseeded by default —
       // chips appear only once a resort adds them, and each embed snippet carries
       // its own via data-gsb-starters (different chips on homepage vs lessons).
-      starters: []
+      starters: ['Where should beginners ski?', 'What do lift tickets cost?', 'Are the lifts open today?', 'Book a lesson']
     },
     embedButton: {
       size: 44,                 // px
