@@ -510,7 +510,14 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     }
     if ($('updateManualGroup')) $('updateManualGroup').style.display = updateSource === 'flow' ? 'none' : '';
     if ($('updateFlowGroup')) $('updateFlowGroup').style.display = updateSource === 'flow' ? '' : 'none';
-    if ($('updateFlow') && document.activeElement !== $('updateFlow')) $('updateFlow').value = state.recentUpdateFlow || '';
+    var flowSel = $('updateFlow');
+    if (flowSel) {
+      // Self-heal: if the stored flow id isn't a current option (e.g. an old
+      // placeholder value from a prior build), fall back to the empty default so
+      // the dropdown shows "Connect flow…" instead of going blank.
+      if (state.recentUpdateFlow && !FLOW_LABELS[state.recentUpdateFlow]) state.recentUpdateFlow = '';
+      if (document.activeElement !== flowSel) flowSel.value = state.recentUpdateFlow || '';
+    }
 
     var seasonBanner = $('gsbSeasonBanner');
     if (seasonBanner) {
