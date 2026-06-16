@@ -1958,6 +1958,45 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       render();
     });
   });
+  // Info tooltips — turn any element's data-info="..." into a hoverable ⓘ next to its
+  // text. One shared portal popover on <body> (fixed-positioned) so it's never clipped by
+  // a card's overflow:hidden; flips below the icon if there's no room above.
+  (function () {
+    var pop = document.createElement('div');
+    pop.className = 'gsb-info-pop';
+    pop.setAttribute('role', 'tooltip');
+    document.body.appendChild(pop);
+    function show(btn) {
+      pop.textContent = btn.getAttribute('data-tip');
+      pop.style.left = '-9999px'; pop.style.top = '0';
+      pop.classList.add('is-visible');
+      var r = btn.getBoundingClientRect(), pr = pop.getBoundingClientRect();
+      var left = Math.max(8, Math.min(r.left + r.width / 2 - pr.width / 2, window.innerWidth - pr.width - 8));
+      var top = r.top - pr.height - 9;
+      if (top < 8) top = r.bottom + 9; // no room above → flip below
+      pop.style.left = Math.round(left) + 'px';
+      pop.style.top = Math.round(top) + 'px';
+    }
+    function hide() { pop.classList.remove('is-visible'); }
+    document.querySelectorAll('[data-info]').forEach(function (el) {
+      var tip = el.getAttribute('data-info');
+      if (!tip) return;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'info-tip';
+      btn.setAttribute('aria-label', 'More information');
+      btn.setAttribute('data-tip', tip);
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="7.6" r="0.6" fill="currentColor" stroke="none"/></svg>';
+      btn.addEventListener('click', function (e) { e.preventDefault(); });
+      btn.addEventListener('mouseenter', function () { show(btn); });
+      btn.addEventListener('mouseleave', hide);
+      btn.addEventListener('focus', function () { show(btn); });
+      btn.addEventListener('blur', hide);
+      el.appendChild(btn);
+      el.removeAttribute('data-info');
+    });
+  })();
+
   // Preload preview faces so the preset tiles render their Aa samples in-font.
   ['Space Grotesk', 'Inter', 'Fraunces', 'DM Sans', 'Playfair Display', 'Lato', 'Oswald', 'Barlow'].forEach(loadPreview);
   // Text size slider + presets

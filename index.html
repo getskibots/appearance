@@ -252,7 +252,7 @@
 
               <!-- Recent Update (pushes to the Season Update banner) -->
               <div class="field">
-                <label class="field__label">Recent update</label>
+                <label class="field__label" data-info="Write it yourself, or pull it live from a flow. Supports markdown links — [label](https://…).">Recent update</label>
                 <p class="field__hint" style="margin-top:0;margin-bottom:10px">Pushes a short announcement into the Season Update card in the chat — closures, reopenings, events. Leave blank to hide it.</p>
 
                 <!-- Source toggle: type it, or pull it from a flow -->
@@ -327,7 +327,7 @@
                   <!-- Webcams — add as many as you like; the chat hero rotates 2+ -->
                   <div id="heroWebcamGroup">
                     <div class="field">
-                      <label class="field__label">Webcams <span style="color:var(--ink-muted);font-weight:400">— add as many as you like</span></label>
+                      <label class="field__label" data-info="Order = rotation order (drag the handle). The cam type auto-detects from the URL; 2+ cams rotate in the chat.">Webcams <span style="color:var(--ink-muted);font-weight:400">— add as many as you like</span></label>
                       <p class="field__hint" style="margin-top:0;margin-bottom:10px">Paste any cam URL — the type auto-detects (still / YouTube / …). One cam shows static; <strong>2+ auto-rotate in the chat</strong>. Drag the handle to set rotation order.</p>
                       <div id="webcamList"></div>
                       <button class="btn" type="button" id="webcamAddBtn" style="margin-top:8px;display:inline-flex;align-items:center;gap:6px">
@@ -340,7 +340,7 @@
                   <!-- Featured images — add as many as you like; the chat hero rotates 2+ -->
                   <div id="heroFeaturedGroup" style="display:none">
                     <div class="field">
-                      <label class="field__label">Featured images <span style="color:var(--ink-muted);font-weight:400">— add as many as you like</span></label>
+                      <label class="field__label" data-info="2+ images rotate in the chat. Uploads get a crop tool; add an optional link to make an image tap-through.">Featured images <span style="color:var(--ink-muted);font-weight:400">— add as many as you like</span></label>
                       <p class="field__hint" style="margin-top:0;margin-bottom:10px">Paste an image URL or upload a file. One shows static; <strong>2+ rotate in the chat</strong>. Add a caption and an optional tap-through link. Drag the handle to set order.</p>
                       <div id="featuredList"></div>
                       <button class="btn" type="button" id="featuredAddBtn" style="margin-top:8px;display:inline-flex;align-items:center;gap:6px">
@@ -512,7 +512,7 @@
 
               <!-- Corner radius (master) — rounds the launcher + chat surface so they match -->
               <div class="field">
-                <label class="field__label" for="cornerRadius">Corner radius</label>
+                <label class="field__label" for="cornerRadius" data-info="A master setting — it rounds the launcher pills and the chat surface together so they always match.">Corner radius</label>
                 <p class="field__hint" style="margin-top:0;margin-bottom:12px">Master rounding applied to the launcher pills, slide-in pill, and chat surface so they all match.</p>
                 <div style="max-width:360px">
                   <div class="slider-row">
@@ -537,7 +537,7 @@
 
               <!-- Launcher size: scales the whole launcher (text + frame), independent of in-chat Text size -->
               <div class="field">
-                <label class="field__label" for="launcherSizeSlider">Launcher size</label>
+                <label class="field__label" for="launcherSizeSlider" data-info="Scales the whole launcher independently of the in-chat Text size, so it won't change with reader preferences.">Launcher size</label>
                 <p class="field__hint" style="margin-top:0;margin-bottom:12px">Scales the whole launcher — text and frame together — independent of the in-chat Text size. Handy for matching denser or roomier sites.</p>
                 <div style="max-width:360px">
                   <div class="slider-row">
@@ -558,7 +558,7 @@
 
               <!-- Placement: corner + edge spacing for the launcher (popup + open panel inherit) -->
               <div class="field">
-                <label class="field__label">Placement</label>
+                <label class="field__label" data-info="The greeting popup and the open chat inherit this anchor and spacing.">Placement</label>
                 <p class="field__hint" style="margin-top:0;margin-bottom:12px">Which corner the launcher anchors to, and how far it sits from the screen edges. The greeting popup and open chat inherit this.</p>
                 <div style="max-width:280px">
                   <div class="segmented" id="placementAlignSegmented" role="radiogroup" aria-label="Align launcher to">
@@ -596,7 +596,7 @@
                   </div>
                   <div class="toggle-row">
                     <div class="toggle-row__main">
-                      <div class="toggle-row__title">Weather readout</div>
+                      <div class="toggle-row__title" data-info="One switch for BOTH the launcher temperature and the in-chat Live Conditions card — turning it off hides both.">Weather readout</div>
                       <div class="toggle-row__desc">Sun icon + current temperature, pulled from your Mountain Data tab.</div>
                     </div>
                     <button type="button" class="toggle" id="toggleWeather" role="switch" aria-checked="true"></button>
@@ -702,7 +702,7 @@
 
               <!-- Depth effect (shadow / glow / radiate) — relocated from Identity -->
               <div class="field">
-                <label class="field__label">Depth effect</label>
+                <label class="field__label" data-info="Radiate is launcher-only; Shadow and Glow also lift the chat panel and embeddable elements.">Depth effect</label>
                 <p class="field__hint" style="margin-top:0;margin-bottom:12px">Adds visual lift around the chat panel, launcher pill, and embeddable elements. Pick one style and tune intensity.</p>
                 <div style="max-width:420px">
                   <div class="segmented" id="effectModeSegmented" role="radiogroup" aria-label="Depth effect style">
@@ -868,21 +868,21 @@
 
               <!-- Display font picker (the hero text — listed first to match chat hierarchy) -->
               <div class="field">
-                <label class="field__label">Display font</label>
+                <label class="field__label" data-info="Headline moments only — the welcome line, in-chat headings, and the big weather numbers.">Display font</label>
                 <p class="field__hint" style="margin-top:0;margin-bottom:10px">Headline moments — the welcome line, in-chat headings, and the big numbers in the weather card. Pick one with character.</p>
                 <div id="displayFontPicker"></div>
               </div>
 
               <!-- Body font picker -->
               <div class="field">
-                <label class="field__label">Body font</label>
+                <label class="field__label" data-info="Everything else — messages, chips, buttons, weather labels, and the launcher.">Body font</label>
                 <p class="field__hint" style="margin-top:0;margin-bottom:10px">Everything else — chat messages, chips &amp; conversation starters, buttons, weather labels, and the launcher. Choose a clean, legible sans-serif.</p>
                 <div id="bodyFontPicker"></div>
               </div>
 
               <!-- Text size slider -->
               <div class="field" style="margin-bottom:0">
-                <label class="field__label">Text size</label>
+                <label class="field__label" data-info="Scales in-chat text only (messages, welcome, conditions, chips). The launcher has its own size control.">Text size</label>
                 <p class="field__hint" style="margin-top:0;margin-bottom:12px">Scales all text proportionally without breaking layout. Affects messages, welcome line, conditions table, and chips together.</p>
                 <div class="slider-row">
                   <div class="slider-row__slider">
@@ -951,7 +951,7 @@
 
               <!-- Side Panel only: how far the open panel sits in from the screen edge -->
               <div class="field" id="panelSideRow">
-                <label class="field__label" for="panelSideSlider">Distance from edge</label>
+                <label class="field__label" for="panelSideSlider" data-info="Side Panel only — push the open panel in from the edge to clear a site nav, while the launcher stays pinned.">Distance from edge</label>
                 <p class="field__hint" style="margin-top:0;margin-bottom:12px">How far the open Side Panel sits in from the screen edge. Push it in to clear an edge-anchored site nav — the launcher stays put.</p>
                 <div style="max-width:360px">
                   <div class="slider-row">
@@ -1019,7 +1019,7 @@
               </div>
               <div class="toggle-row toggle-row--standalone">
                 <div class="toggle-row__main">
-                  <div class="toggle-row__title">Disable text input (for all languages)</div>
+                  <div class="toggle-row__title" data-info="Restricts guests to the suggested-reply chips only — no free typing, in every language.">Disable text input (for all languages)</div>
                   <div class="toggle-row__desc">Restrict guests to suggested replies only — no free typing.</div>
                 </div>
                 <button type="button" class="toggle" id="toggleDisableInput" role="switch" aria-checked="false"></button>
@@ -1088,7 +1088,7 @@
 
                 <!-- Starter chips (per page) -->
                 <div class="field" style="margin-bottom:14px">
-                  <label class="field__label" style="font-weight:400;font-size:13px;color:var(--ink-soft)">Starter chips <span style="color:var(--ink-faint);font-weight:400">(0–4, optional)</span></label>
+                  <label class="field__label" style="font-weight:400;font-size:13px;color:var(--ink-soft)" data-info="Whatever you put in data-gsb-starters in the snippet goes live on that page as-is — use a different snippet per page for page-specific chips.">Starter chips <span style="color:var(--ink-faint);font-weight:400">(0–4, optional)</span></label>
                   <p class="field__hint" style="margin-top:0;margin-bottom:10px">Suggested questions shown beneath the bar. Leave all blank for a placeholder-only bar. These write into the install snippet below — drop a different snippet on each page (homepage vs. lessons) to give every page its own chips.</p>
                   <div class="starter-inputs">
                     <input class="input starter-input" type="text" id="searchStarter0" maxlength="60" placeholder="e.g. Where should beginners ski?" />
@@ -1244,7 +1244,7 @@
 
               <!-- ===== DEMO / PREVIEW PAGE BACKGROUND (not the chat hero) ===== -->
               <div class="embed-subcard">
-                <h4 class="embed-subcard__title">
+                <h4 class="embed-subcard__title" data-info="Themes the demo / preview page only — this is NOT the chat hero image.">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M8 14l2.5-3 2 2.5L15 11l3 3"/></svg>
                   Demo page background
                 </h4>

@@ -1240,6 +1240,29 @@
   line-height: 1.5;
 }
 
+/* Info tooltip — a small ⓘ next to key labels that reveals an explanation on hover/focus.
+   The icon is injected from [data-info] attributes by dashboard.js, which also drives a
+   single portal popover (.gsb-info-pop, fixed-positioned on <body>) so the tooltip is
+   never clipped by a card's overflow:hidden. */
+.info-tip {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 15px; height: 15px; margin-left: 5px; vertical-align: -2px;
+  padding: 0; border: 0; background: transparent; color: var(--ink-faint);
+  cursor: help; flex: none;
+}
+.info-tip:hover, .info-tip:focus-visible { color: var(--accent); outline: none; }
+.info-tip svg { width: 14px; height: 14px; display: block; }
+.gsb-info-pop {
+  position: fixed; z-index: 9999; top: 0; left: -9999px;
+  width: max-content; max-width: 240px;
+  background: var(--ink, #1d1b16); color: #fff;
+  padding: 8px 11px; border-radius: 8px;
+  font-size: 12px; font-weight: 400; line-height: 1.45; text-align: left;
+  box-shadow: 0 6px 22px rgba(23, 19, 15, 0.22);
+  opacity: 0; visibility: hidden; transition: opacity 0.12s ease; pointer-events: none;
+}
+.gsb-info-pop.is-visible { opacity: 1; visibility: visible; }
+
 .input,
 .textarea,
 .select {
