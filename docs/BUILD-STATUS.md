@@ -35,7 +35,7 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
 - **`answerProvider`** — streaming + structured-message rendering behind the seam (your socket → the widget). Stub/curated answers only today (§3c).
 - **`gsbAppearance` persistence decision** — confirm your config can store the opaque JSON block (Option B = zero backend change) or add one field (§4, the one open decision).
 - **Embed loader scripts** — `data-gsb-search` / `data-gsb-search-button` / chat-bubble loaders are sketched in the Install tab, not implemented (Epic 7).
-- **Live data sources** — the "Get Operations/Conditions/Ecommerce/Events/Alerts" picker is a placeholder; wire it to your Flows / AI Actions.
+- **Season Update flow** — the "Get live updates" picker defaults to **"Connect flow…"** and is a shell (stubbed flow list + "+ Create new flow"). Wire it to the bot's real Flows + builder deep-link; runtime fills the banner from the flow's output. Spec: [INTEGRATION §5a](./INTEGRATION.md).
 - **Welcome-in-Appearance** → write to your atom API (§5 provenance).
 - **Demo per-bot wiring** — production selects the bot by `publicIdentifier` in the URL and loads `/widget/info/{botId}`; the demo's localStorage/`#cfg=` sync is a prototype hand-off (INTEGRATION §10).
 - **Backend-only**: resort snow feeds (CORS → server-side fetch), realtime-voice key minting.

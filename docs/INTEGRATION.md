@@ -165,10 +165,14 @@ The Season Update banner (Appearance → Identity → **Recent update**) has two
 **Runtime:** when `recentUpdateSource === 'flow'`, the widget fills the Season Update banner
 from the selected flow's output (refreshed on chat open) instead of the manual text.
 
-**Prototype today:** `index.html` `#updateFlow` is a stubbed flow list ("Mountain Conditions",
-"Lift & Trail Status", …) + the "+ Create new flow" action (opens the builder URL in a new
-tab). No live flow data. The mapper already carries `recentUpdateSource` + `recentUpdateFlow`
-in `gsbAppearance`, so only the flow list + builder deep-link are net-new on BotScrew's side.
+**Prototype today (⚠ NOT WIRED — needs BotScrew):** `index.html` `#updateFlow` is a stubbed
+flow list ("Mountain Conditions", "Lift & Trail Status", …) + the "+ Create new flow" action
+(opens the builder URL in a new tab). Its **default/empty option reads "Connect flow…"** —
+deliberately an open connection point so it's obvious this is an unwired integration step, not
+a finished setting. No live flow data flows yet. The mapper already carries
+`recentUpdateSource` + `recentUpdateFlow` in `gsbAppearance`, so the **net-new BotScrew work**
+is: (1) populate the dropdown from the bot's real Flows, (2) deep-link "+ Create new flow" to
+the builder (new tab), (3) at runtime, fill the banner from the selected flow's output.
 
 ---
 
