@@ -167,7 +167,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     cornerRadius: 7,
     effectMode: 'radiate',    // 'none' | 'shadow' | 'glow' | 'radiate'
     effectIntensity: 65,      // 0-100, percentage of max effect strength
-    color: '#a41e23',
+    color: '#b20838',
     chatHeaderColor: '#ffffff',
     // Demo/preview page background photo (and, later, an optional Chat UI bg).
     backgroundImage: '',
