@@ -983,6 +983,12 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     }
     var fList = $('featuredList');
     if (fList && fList.children.length !== (hero.featuredImages ? hero.featuredImages.length : 0)) buildFeaturedRows();
+    // Featured images cap at 3 — disable the Add button once full.
+    if ($('featuredAddBtn')) {
+      var featFull = (hero.featuredImages ? hero.featuredImages.length : 0) >= 3;
+      $('featuredAddBtn').disabled = featFull;
+      $('featuredAddBtn').title = featFull ? 'Up to 3 featured images' : '';
+    }
     // Demo background image — reflect the URL (hide data: blobs) + Remove visibility.
     if ($('backgroundImageUrl') && document.activeElement !== $('backgroundImageUrl')) {
       $('backgroundImageUrl').value = (state.backgroundImage && state.backgroundImage.indexOf('data:') === 0) ? '' : (state.backgroundImage || '');
@@ -1732,6 +1738,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   });
   // Featured images: "Add featured image" appends a blank slot; focus its URL field.
   if ($('featuredAddBtn')) $('featuredAddBtn').addEventListener('click', function(){
+    if (state.hero.featuredImages.length >= 3) return; // cap at 3
     state.hero.featuredImages.push({ url: '', caption: '', link: '' });
     render();
     var rows = $('featuredList').children;
