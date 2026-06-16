@@ -752,7 +752,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     if ($('snowfallIntensityReadout')) $('snowfallIntensityReadout').textContent = snow.intensity;
     setToggle('toggleSnowMobile', !!snow.showOnMobile);
     setToggle('toggleSnowPause', !!snow.pauseWhenIdle);
-    setToggle('toggleSnowReducedMotion', true); // always locked on
+    // (Reduced-motion respect is enforced in CSS via @media (prefers-reduced-motion);
+    //  no UI toggle — it's always on.)
     // Push to the chat surface via data-attrs (CSS kill switch + engine read them).
     var effectiveStyle = snow.enabled ? (snow.style || 'realistic') : 'none';
     if (canvas) {

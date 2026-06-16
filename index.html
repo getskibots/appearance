@@ -264,7 +264,7 @@
                 <!-- Manual mode -->
                 <div id="updateManualGroup">
                   <input class="input" type="text" id="updateLabel" value="Season update" placeholder="Label (e.g. Season update)" style="max-width:360px;margin-bottom:8px" />
-                  <textarea class="textarea" id="recentUpdate" placeholder="e.g. The Aerial Tram reopens for summer sightseeing on May 16th." style="max-width:360px">The 2025/26 ski season has wrapped. The Aerial Tram reopens for summer sightseeing on May 16th, with the gondolas joining June 6th.</textarea>
+                  <textarea class="textarea" id="recentUpdate" placeholder="e.g. The Aerial Tram reopens for summer sightseeing on May 16th." style="max-width:360px;min-height:150px">The 2025/26 ski season has wrapped. The Aerial Tram reopens for summer sightseeing on May 16th, with the gondolas joining June 6th.</textarea>
                   <p class="field__hint" style="margin-top:6px;max-width:360px">Add a link with markdown: <code>[book your trip](https://…)</code>.</p>
                 </div>
 
@@ -811,13 +811,6 @@
                           <div class="toggle-row__desc">Stops the animation after 60 seconds of no chat activity. Resumes when the guest interacts.</div>
                         </div>
                         <button type="button" class="toggle" id="toggleSnowPause" role="switch" aria-checked="true"></button>
-                      </div>
-                      <div class="toggle-row toggle-row--locked">
-                        <div class="toggle-row__main">
-                          <div class="toggle-row__title">Respect reduced-motion preference</div>
-                          <div class="toggle-row__desc">Required for accessibility. Falls back to a static dusting when the guest's OS has Reduce Motion enabled.</div>
-                        </div>
-                        <button type="button" class="toggle" id="toggleSnowReducedMotion" role="switch" aria-checked="true" aria-disabled="true" disabled></button>
                       </div>
                     </div>
                   </div><!-- /#snowfallControls -->
