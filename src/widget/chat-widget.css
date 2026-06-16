@@ -1036,7 +1036,8 @@ body[data-variant="full"] .gsb-chat-left-column {
 }
 .gsb-cam-live {
   position: absolute; top: 12px; left: 12px; z-index: 2;
-  background: var(--brand); color: #fff;
+  background: rgba(18, 18, 20, 0.55); color: #fff;
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
   padding: 4px 9px 4px 8px; border-radius: 999px;
   display: inline-flex; align-items: center; gap: 5px;
