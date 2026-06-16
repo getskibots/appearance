@@ -138,18 +138,13 @@
   box-shadow: var(--gsb-depth-effect, none) !important;
 }
 
-/* Custom: shadow + glow follow the round uploaded icon (not the square button), the
-   same way radiate does — keep the button itself clean and put the depth effect on the
-   circle so it reads as a halo/shadow around the icon. */
+/* Custom: the button stays clean in every mode. The uploaded icon carries the effect
+   via filter: drop-shadow (defined in the custom section below) so it traces an irregular
+   transparent silhouette instead of boxing the bounds. */
 .gsb-launcher[data-effect-mode="shadow"][data-icon-style="custom"],
 .gsb-launcher[data-effect-mode="glow"][data-icon-style="custom"] {
   animation: none !important;
   box-shadow: none !important;
-}
-.gsb-launcher[data-effect-mode="shadow"][data-icon-style="custom"] .gsb-launcher-custom-icon,
-.gsb-launcher[data-effect-mode="glow"][data-icon-style="custom"] .gsb-launcher-custom-icon {
-  animation: none;
-  box-shadow: var(--gsb-depth-effect, none);
 }
 
 /* Radiate — restore the keyframe animation. The base rules at lines 1847,
@@ -159,15 +154,11 @@
 .gsb-launcher[data-effect-mode="radiate"][data-icon-style="traditional"] {
   animation: gsb-launcher-pulse-traditional 2.5s ease-out infinite !important;
 }
-/* Custom radiates from the round icon, not the (square) button — keep the button
-   itself still and let the circular uploaded icon carry the brand-halo pulse, so the
-   ripple matches the circle instead of a square bounding box. */
+/* Custom: the button stays still; the icon carries a filter:drop-shadow glow pulse
+   (defined in the custom section) so the radiate ripple traces an irregular silhouette. */
 .gsb-launcher[data-effect-mode="radiate"][data-icon-style="custom"] {
   animation: none !important;
   box-shadow: none !important;
-}
-.gsb-launcher[data-effect-mode="radiate"][data-icon-style="custom"] .gsb-launcher-custom-icon {
-  animation: gsb-launcher-pulse-traditional 2.5s ease-out infinite;
 }
 .gsb-launcher[data-effect-mode="radiate"][data-icon-style="enhanced"],
 .gsb-launcher[data-effect-mode="radiate"][data-icon-style="slidein"] {
@@ -180,54 +171,40 @@
   color: #fff;
 }
 
-/* Custom icon variant: the uploaded image fully REPLACES the launcher — it fills
-   the round launcher edge-to-edge with NO brand background, NO pulse halo, and NO
-   depth effect of any kind (see the effect-mode overrides above). 100% swapped.
-   Transparent areas of the image show through, not the brand color. */
+/* Custom icon variant: the uploaded image IS the launcher — shown as-is on a transparent
+   background with NO circle crop. It may be an irregular PNG/SVG (e.g. a mascot), so
+   effects use filter: drop-shadow (which traces the alpha SILHOUETTE) rather than
+   box-shadow (which would draw a square/round box around the bounds). The button stays
+   clean; the icon carries the effect. */
 .gsb-launcher[data-icon-style="custom"] {
   width: var(--gsb-custom-launcher-size, 56px);
   height: var(--gsb-custom-launcher-size, 56px);
-  border-radius: 50%;
   background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   animation: none;
   box-shadow: none;
-  overflow: hidden;
+  overflow: visible; /* let the silhouette shadow/glow spill past the box */
 }
 
 .gsb-launcher[data-icon-style="custom"] .gsb-launcher-custom-icon {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain; /* show the whole image, preserve aspect — no crop */
+  /* Shadow + glow ride here as a drop-shadow that follows the alpha silhouette. The
+     filter string is computed in the dashboard (mode + intensity); none/radiate → none. */
+  filter: var(--gsb-launcher-icon-filter, none);
 }
 
-/* Soft "radiate from the center of the icon" for the custom launcher. The launcher
-   itself stays clean (no box-shadow ring); this ::before is a separate glow layer
-   that starts at the icon's center and expands outward (custom is overflow:visible,
-   so it spills past the circle). z-index:-1 keeps it BEHIND the icon. Kept subtle
-   (~10%) so it never reads as a hard badge. Only shown once an icon is uploaded
-   (data-custom-icon) and only in radiate mode (the global default; None disables). */
-.gsb-launcher[data-icon-style="custom"][data-effect-mode="radiate"][data-custom-icon="true"]::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(var(--brand-rgb), 0.85) 0%, rgba(var(--brand-rgb), 0) 68%);
-  transform: translate(-50%, -50%) scale(0.35);
-  opacity: 0;
-  z-index: -1;
-  pointer-events: none;
-  animation: gsb-custom-radiate 2.8s ease-out infinite;
+/* Radiate: a pulsing brand glow tracing the silhouette (drop-shadow blur grows + fades). */
+.gsb-launcher[data-effect-mode="radiate"][data-icon-style="custom"] .gsb-launcher-custom-icon {
+  filter: none;
+  animation: gsb-launcher-pulse-custom-glow 2.5s ease-out infinite;
 }
-@keyframes gsb-custom-radiate {
-  0%   { transform: translate(-50%, -50%) scale(0.35); opacity: 0; }
-  25%  { opacity: 0.16; }
-  100% { transform: translate(-50%, -50%) scale(2.3); opacity: 0; }
+@keyframes gsb-launcher-pulse-custom-glow {
+  0%, 100% { filter: drop-shadow(0 0 calc(var(--gsb-radiate-strength, 1) * 2px) rgba(var(--brand-rgb), 0.75)); }
+  50%      { filter: drop-shadow(0 0 calc(var(--gsb-radiate-strength, 1) * 12px) rgba(var(--brand-rgb), 0)); }
 }
 
 /* Hide irrelevant children based on icon style */
@@ -303,14 +280,6 @@
   display: none !important;
 }
 
-/* Custom launcher has overflow:hidden which would clip the dot. Remove that
-   constraint and instead clip the uploaded image alone via its own border-radius */
-.gsb-launcher[data-icon-style="custom"] {
-  overflow: visible;
-}
-.gsb-launcher[data-icon-style="custom"] .gsb-launcher-custom-icon {
-  border-radius: 50%;
-}
 
 /* Status pill — CONDENSED state (default, no live agent)
    Compact pill with avatars + divider + weather inline, "Need help?" CTA below.

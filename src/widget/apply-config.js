@@ -205,20 +205,28 @@ export function applyWidgetConfig(config) {
   if (config.effectMode) {
     var fxI = Math.max(0, Math.min(100, config.effectIntensity || 0)) / 100;
     var depth;
+    // Parallel drop-shadow filter for the custom icon (traces the alpha silhouette of an
+    // irregular PNG/SVG). Mirrors the dashboard render() coefficients.
+    var iconFilter = 'none';
     if (config.effectMode === 'shadow') {
       var sLift = Math.round(8 + fxI * 24), sB1 = Math.round(30 + fxI * 50), sB2 = Math.round(6 + fxI * 14);
       depth = '0 ' + sLift + 'px ' + sB1 + 'px rgba(23,19,15,' + (0.06 + fxI * 0.20).toFixed(3) + '), '
             + '0 4px ' + sB2 + 'px rgba(23,19,15,' + (0.03 + fxI * 0.07).toFixed(3) + ')';
+      iconFilter = 'drop-shadow(0 ' + Math.round(sLift * 0.6) + 'px ' + Math.round(sB1 * 0.5) +
+        'px rgba(23,19,15,' + (0.06 + fxI * 0.20 + 0.18).toFixed(3) + '))';
     } else if (config.effectMode === 'glow') {
       var gSpread = Math.round(fxI * 24), gBlur = Math.round(20 + fxI * 40), gSoft = Math.round(40 + fxI * 60);
       var gOp = (0.20 + fxI * 0.45).toFixed(3), gSoftOp = (0.10 + fxI * 0.20).toFixed(3);
       depth = '0 0 0 ' + gSpread + 'px rgba(var(--brand-rgb), ' + gOp + '), '
             + '0 0 ' + gBlur + 'px rgba(var(--brand-rgb), ' + gOp + '), '
             + '0 8px ' + gSoft + 'px rgba(var(--brand-rgb), ' + gSoftOp + ')';
+      iconFilter = 'drop-shadow(0 0 ' + Math.round(gBlur * 0.5) + 'px rgba(var(--brand-rgb),' + gOp + ')) ' +
+        'drop-shadow(0 0 ' + Math.round(gSoft * 0.4) + 'px rgba(var(--brand-rgb),' + gSoftOp + '))';
     } else {
       depth = '0 0 0 transparent';
     }
     setVar('--gsb-depth-effect', depth);
+    setVar('--gsb-launcher-icon-filter', iconFilter);
     if (launcher) {
       launcher.setAttribute('data-effect-mode', config.effectMode);
       launcher.style.setProperty('--gsb-radiate-strength', String(0.4 + fxI * 1.2));

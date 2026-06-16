@@ -656,6 +656,10 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // blur, and opacity. Pushed to :root so all consuming surfaces (chat
     // panel, embed search, embed button) update in lockstep.
     var depthEffect;
+    // Parallel drop-shadow FILTER for the custom uploaded icon — it can be an irregular
+    // transparent PNG/SVG, so its effect must trace the alpha silhouette (filter:
+    // drop-shadow), not the bounding box (box-shadow). Computed from the same intensity.
+    var iconFilter = 'none';
     var intensity01 = (state.effectIntensity || 0) / 100; // 0..1
     if (state.effectMode === 'shadow') {
       // Shadow mode ADDS on top of the chat panel's always-on baseline. The
@@ -670,6 +674,10 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       var lift = Math.round(8 + intensity01 * 24);    // 8..32
       depthEffect = '0 ' + lift + 'px ' + blur1 + 'px rgba(23,19,15,' + op1 + '), '
                   + '0 4px ' + blur2 + 'px rgba(23,19,15,' + op2 + ')';
+      // drop-shadow has no spread and reads softer — tighten the blur and bump opacity
+      // so the silhouette shadow has parity with the box-shadow look.
+      iconFilter = 'drop-shadow(0 ' + Math.round(lift * 0.6) + 'px ' + Math.round(blur1 * 0.5) +
+        'px rgba(23,19,15,' + (parseFloat(op1) + 0.18).toFixed(3) + '))';
     } else if (state.effectMode === 'glow') {
       // Brand-colored glow halo — STATIC, applies to chat panel + embed
       // surfaces + launcher. Two layers (close + soft outer).
@@ -681,6 +689,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       depthEffect = '0 0 0 ' + spread + 'px rgba(var(--brand-rgb), ' + glowOp + '), '
                   + '0 0 ' + glowBlur + 'px rgba(var(--brand-rgb), ' + glowOp + '), '
                   + '0 8px ' + softBlur + 'px rgba(var(--brand-rgb), ' + softOp + ')';
+      // Two stacked drop-shadows (close + soft) trace the silhouette as a brand halo.
+      iconFilter = 'drop-shadow(0 0 ' + Math.round(glowBlur * 0.5) + 'px rgba(var(--brand-rgb),' + glowOp + ')) ' +
+        'drop-shadow(0 0 ' + Math.round(softBlur * 0.4) + 'px rgba(var(--brand-rgb),' + softOp + '))';
     } else if (state.effectMode === 'radiate') {
       // Radiate is LAUNCHER-ONLY. The launcher's pulse animation provides the
       // entire visual — a rippling brand-color halo emanating from the
@@ -694,6 +705,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       depthEffect = '0 0 0 transparent';
     }
     document.documentElement.style.setProperty('--gsb-depth-effect', depthEffect);
+    document.documentElement.style.setProperty('--gsb-launcher-icon-filter', iconFilter);
 
     // Push effect mode onto the launcher so CSS can react. The launcher's
     // pulse animation owns box-shadow when running, so we need to either
