@@ -943,6 +943,12 @@
 .featured-card__upload { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
 .featured-card__caption { margin-bottom: 8px; }
 .featured-card__info { font-size: 11px; }
+/* Per-card crop: the preview becomes a drag surface; controls stack under it. */
+.webcam-card__preview.is-cropping { cursor: grab; touch-action: none; }
+.webcam-card__preview.is-cropping:active { cursor: grabbing; }
+.featured-card__crop { flex-direction: column; align-items: stretch; gap: 4px; margin-top: 6px; }
+.featured-card__crop .crop-zoom { flex: 1 1 auto; width: 100%; }
+.featured-card__crop .crop-hint { font-size: 10px; line-height: 1.2; }
 .media-grid__preview-label {
   display: block;
   margin-bottom: 8px;

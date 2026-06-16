@@ -11,6 +11,7 @@ import { detectWebcamKind, webcamKindMeta, webcamPoster } from '../shared/webcam
 import { renderWebcamHero, clearWebcamHero, renderWebcamCarousel, stopWebcamCarousel } from '../shared/webcam-render.js';
 import { optimizeImage, formatBytes } from '../shared/image-compress.js';
 import { createSnowEngine } from '../shared/snow-engine.js';
+import { startFeaturedCrop } from './featured-crop.js';
 import { processLogo } from '../shared/logo.js';
 import { createFontPicker } from './font-picker.js';
 import FONT_CATALOG from '../shared/fonts/google-fonts.json';
@@ -503,7 +504,13 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       '<div class="webcam-card__handle" aria-label="Drag to reorder" title="Drag to reorder">' +
         '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><circle cx="9" cy="5" r="1.4"/><circle cx="15" cy="5" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="19" r="1.4"/><circle cx="15" cy="19" r="1.4"/></svg>' +
       '</div>' +
-      '<div class="webcam-card__media"><div class="webcam-card__preview"></div></div>' +
+      '<div class="webcam-card__media">' +
+        '<div class="webcam-card__preview"></div>' +
+        '<div class="crop-controls featured-card__crop" style="display:none">' +
+          '<input type="range" class="crop-zoom" min="1" max="3" step="0.01" value="1" aria-label="Zoom" />' +
+          '<span class="crop-hint">Drag to frame · slide to zoom</span>' +
+        '</div>' +
+      '</div>' +
       '<div class="webcam-card__fields">' +
         '<input class="input webcam-card__url" type="url" placeholder="https://…/feature.jpg" />' +
         '<div class="featured-card__upload">' +
@@ -528,7 +535,10 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       else clearWebcamHero(preview);
     }
     renderPreview();
-    urlIn.addEventListener('input', function(e) { img.url = e.target.value; renderPreview(); render(); });
+    // Uploaded files open a crop surface in this card's preview (drag to frame, zoom to
+    // scale, live-baked). URL images just cover-fit. endCrop() tears the surface down.
+    function endCrop() { if (card._cropCtl) { card._cropCtl.destroy(); card._cropCtl = null; } }
+    urlIn.addEventListener('input', function(e) { endCrop(); img.url = e.target.value; renderPreview(); render(); });
     capIn.addEventListener('input', function(e) { img.caption = e.target.value; render(); });
     linkIn.addEventListener('input', function(e) { img.link = e.target.value; render(); });
     var fileIn = card.querySelector('.featured-card__file');
@@ -537,23 +547,41 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     fileIn.addEventListener('change', function(e) {
       var f = e.target.files && e.target.files[0]; if (!f) return; e.target.value = '';
       function setInfo(t, s) { if (!info) return; info.textContent = t; info.style.display = ''; info.setAttribute('data-status', s || ''); }
+      endCrop();
       if (f.type === 'image/svg+xml') {
         var rs = new FileReader();
         rs.onload = function() { img.url = rs.result; urlIn.value = ''; setInfo('SVG · ' + formatBytes(f.size) + ' (used as-is)', 'ok'); renderPreview(); render(); };
         rs.readAsDataURL(f); return;
       }
       setInfo('Loading…', '');
-      optimizeImage(f).then(function(out) {
-        img.url = out.dataUrl; urlIn.value = '';
-        setInfo(formatBytes(f.size) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height, 'ok');
-        renderPreview(); render();
-      }).catch(function() {
-        var rf = new FileReader();
-        rf.onload = function() { img.url = rf.result; urlIn.value = ''; renderPreview(); render(); };
-        rf.readAsDataURL(f);
+      // The crop editor owns the card preview while active; onBake stores the framed
+      // result (so render() updates the chat hero) WITHOUT calling renderPreview, which
+      // would wipe the live crop layer.
+      startFeaturedCrop({
+        previewEl: preview,
+        sliderEl: card.querySelector('.crop-zoom'),
+        file: f,
+        onBake: function(out, origBytes) {
+          img.url = out.dataUrl; urlIn.value = '';
+          var fmt = out.mime === 'image/webp' ? 'WebP' : 'JPEG';
+          setInfo(formatBytes(origBytes) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height + ' · ' + fmt, 'ok');
+          render();
+        }
+      }).then(function(ctrl) { card._cropCtl = ctrl; }).catch(function() {
+        // Crop editor unavailable → plain resize+compress, cover-fit.
+        optimizeImage(f).then(function(out) {
+          img.url = out.dataUrl; urlIn.value = '';
+          setInfo(formatBytes(f.size) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height, 'ok');
+          renderPreview(); render();
+        }).catch(function() {
+          var rf = new FileReader();
+          rf.onload = function() { img.url = rf.result; urlIn.value = ''; renderPreview(); render(); };
+          rf.readAsDataURL(f);
+        });
       });
     });
     card.querySelector('.webcam-card__delete').addEventListener('click', function() {
+      endCrop();
       var i = state.hero.featuredImages.indexOf(img);
       if (i > -1) state.hero.featuredImages.splice(i, 1);
       render();
@@ -574,6 +602,11 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   function buildFeaturedRows() {
     var list = $('featuredList');
     if (!list) return;
+    // Tear down any active crop controllers before discarding their cards (avoids
+    // leaked window listeners; the framed result is already saved in img.url).
+    [].slice.call(list.querySelectorAll('.webcam-card')).forEach(function(c) {
+      if (c._cropCtl) { c._cropCtl.destroy(); c._cropCtl = null; }
+    });
     list.innerHTML = '';
     (state.hero.featuredImages || []).forEach(function(img) { list.appendChild(makeFeaturedCard(img)); });
     setupListReorder(list);

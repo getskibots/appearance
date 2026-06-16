@@ -101,7 +101,9 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
   add/remove, drag-to-reorder) and render through one shared carousel (3 dots, hover
   arrows, touch swipe, auto-rotate). Webcams carry a LIVE pill + "Updated just now";
   featured images are caption-only with an optional tap-through link (no LIVE chrome) and
-  rotate a touch slower. Plus a **Demo background image** (URL or upload) that themes the
+  rotate a touch slower; **uploaded** featured images open a per-card **crop & reposition**
+  surface (drag to frame, zoom, live-baked to an optimized 16:9), while URL images cover-fit.
+  Plus a **Demo background image** (URL or upload) that themes the
   prospect demo page with a **Light/Dark** text treatment. (Background image is demo-only
   today; reserved for an optional Chat UI background later.)
 - **5.2 Launcher bubble** ✅ — all styles (simple/status pill/slide-in/custom), CTA
