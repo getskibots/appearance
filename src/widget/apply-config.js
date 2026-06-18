@@ -50,6 +50,9 @@ export function applyWidgetConfig(config) {
     var rgb = hexToRgb(hex) || [164, 30, 35];
     setVar('--brand', hex);
     setVar('--brand-deep', darken(hex, 0.25));
+    // Deeper stops for the optional gradient accent (moderate / vivid).
+    setVar('--brand-deeper', darken(hex, 0.40));
+    setVar('--brand-deepest', darken(hex, 0.55));
     setVar('--brand-rgb', rgb.join(','));
     setVar('--enhanced-bg', hex);
     setVar('--enhanced-fg', lightBrand ? '#1a1a1a' : '#ffffff');
@@ -116,6 +119,8 @@ export function applyWidgetConfig(config) {
   /* ---- Behavior data-attributes (the widget CSS reads these on <body>) ---- */
   // 'middle' panel layout was retired → fall back to 'side'.
   if (config.layoutVariant) body.setAttribute('data-variant', config.layoutVariant === 'middle' ? 'side' : config.layoutVariant);
+  // Optional launcher gradient accent (auto-derived from brand color).
+  body.setAttribute('data-gradient', config.gradientAccent || 'none');
   // Side Panel distance-from-edge (only consumed by the side layout's CSS).
   if (config.panelSideSpacing != null) setVar('--gsb-panel-side', Math.min(160, Math.max(24, config.panelSideSpacing)) + 'px');
   if (config.animationStyle) body.setAttribute('data-animation', config.animationStyle);

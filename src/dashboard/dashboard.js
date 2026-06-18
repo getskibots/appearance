@@ -80,6 +80,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     var root = document.documentElement.style;
     root.setProperty('--brand', hex);
     root.setProperty('--brand-deep', deep);
+    // Deeper stops for the optional gradient accent (moderate / vivid).
+    root.setProperty('--brand-deeper', darken(hex, 0.40));
+    root.setProperty('--brand-deepest', darken(hex, 0.55));
     root.setProperty('--brand-rgb', rgb.join(','));
     root.setProperty('--enhanced-bg', hex);
     root.setProperty('--enhanced-fg', fg);
@@ -168,6 +171,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     cornerRadius: 7,
     effectMode: 'radiate',    // 'none' | 'shadow' | 'glow' | 'radiate'
     effectIntensity: 65,      // 0-100, percentage of max effect strength
+    // Optional gradient accent on the launcher, auto-derived from the brand color.
+    // 'none' keeps today's flat fill; subtle/moderate/vivid deepen the second stop.
+    gradientAccent: 'none',   // 'none' | 'subtle' | 'moderate' | 'vivid'
     color: '#b20838',
     chatHeaderColor: '#ffffff',
     // Demo/preview page background photo (and, later, an optional Chat UI bg).
@@ -1077,6 +1083,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
 
     // Conversation → message bubble style (classic | modern | fancy).
     document.body.setAttribute('data-msg-style', state.messageStyle || 'classic');
+    // Optional launcher gradient accent (auto-derived from brand color).
+    document.body.setAttribute('data-gradient', state.gradientAccent || 'none');
     document.querySelectorAll('#msgStyleCards .anim-card').forEach(function(b) {
       var on = b.getAttribute('data-value') === (state.messageStyle || 'classic');
       b.setAttribute('data-checked', String(on));

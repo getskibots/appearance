@@ -106,6 +106,30 @@
 }
 
 /* ============================================================
+   OPTIONAL GRADIENT ACCENT (auto-derived from the brand color)
+   Off by default. Drives the launcher fill only, on the three brand-filled
+   styles (traditional / enhanced / slidein). Custom is the resort's own icon
+   (no brand fill) so it's deliberately left alone. Deeper second stop = more
+   vivid. Higher specificity than the base brand fills, so it wins; coexists
+   with the depth-effect rules (those only set animation/box-shadow).
+   ============================================================ */
+body[data-gradient="subtle"] .gsb-launcher[data-icon-style="traditional"],
+body[data-gradient="subtle"] .gsb-launcher[data-icon-style="enhanced"],
+body[data-gradient="subtle"] .gsb-launcher[data-icon-style="slidein"] {
+  background: linear-gradient(135deg, var(--brand), var(--brand-deep));
+}
+body[data-gradient="moderate"] .gsb-launcher[data-icon-style="traditional"],
+body[data-gradient="moderate"] .gsb-launcher[data-icon-style="enhanced"],
+body[data-gradient="moderate"] .gsb-launcher[data-icon-style="slidein"] {
+  background: linear-gradient(135deg, var(--brand), var(--brand-deeper, var(--brand-deep)));
+}
+body[data-gradient="vivid"] .gsb-launcher[data-icon-style="traditional"],
+body[data-gradient="vivid"] .gsb-launcher[data-icon-style="enhanced"],
+body[data-gradient="vivid"] .gsb-launcher[data-icon-style="slidein"] {
+  background: linear-gradient(135deg, var(--brand), var(--brand-deepest, var(--brand-deep)));
+}
+
+/* ============================================================
    DEPTH EFFECT INTEGRATION FOR LAUNCHER
    - 'none'    → suppress pulse animation entirely (flat launcher).
    - 'shadow'  → suppress pulse, apply neutral drop shadow.
