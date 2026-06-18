@@ -98,6 +98,7 @@ interface GsbAppearance {
   blurredBackground: boolean;
   effectMode: 'none' | 'shadow' | 'glow' | 'radiate';   // Animations & effects card
   effectIntensity: number;                   // 0–100
+  gradientAccent: 'none' | 'subtle' | 'moderate' | 'vivid'; // optional launcher gradient, auto-derived from brand color (default 'none')
   snowfall: {                                // ambient snowfall overlay (default off)
     enabled: boolean;
     style: 'realistic' | 'crystalline' | 'storm';
@@ -184,6 +185,7 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `blurredBackground` | boolean | `true` | Backdrop blur when open |
 | `effectMode` | enum | `radiate` | **Animations & effects card.** Depth effect: none/shadow/glow/radiate |
 | `effectIntensity` | number | `65` | Depth strength 0–100 |
+| `gradientAccent` | enum | `none` | **Identity & branding card.** Optional launcher gradient, **auto-derived from the brand color** (no extra color input). `none` = flat fill; `subtle`/`moderate`/`vivid` deepen the second stop. Launcher fill only (the three brand-filled styles); opaque-JSON, **zero backend change** — absent → flat |
 | `snowfall` | object | `{enabled:false, style:'realistic', intensity:90, showOnMobile:true, pauseWhenIdle:true, respectReducedMotion:true}` | **Animations & effects card.** Ambient snowfall overlay on the chat surface. **Off by default** (heaviest, continuous effect). `style` realistic/crystalline/storm; `intensity` 20–200 flakes; behavior toggles for mobile, idle-pause, and reduced-motion (a11y-locked on) |
 | `statusPillFeatures` | object | `{liveAgent,weather,needHelpCta:true}` | Status-pill toggles |
 | `typography` | object | `{Inter, Playfair Display, 1.0}` | Body/display fonts + text scale. **`bodyFont`/`displayFont` are Google Fonts family names** (any of the ~1,800-family catalog). The embed must load the saved families from Google Fonts (`<link href="…css2?family=…">`) — the dashboard does this via `src/shared/fonts/font-loader.js`, which the widget loader can reuse |
