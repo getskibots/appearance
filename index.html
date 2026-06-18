@@ -200,6 +200,17 @@
                 <div class="color-warn" id="colorWarn"></div>
               </div>
 
+              <!-- Gradient accent (auto-derived from the brand color) -->
+              <div class="field">
+                <label class="field__label" data-info="Adds an optional gradient to the launcher, blended automatically from your brand color — no extra colors to pick. 'None' keeps a flat fill; Subtle, Moderate, and Vivid deepen it.">Gradient accent</label>
+                <div class="segmented" id="gradientAccentSegmented" role="radiogroup" aria-label="Gradient accent" style="max-width:360px">
+                  <button type="button" data-gradient="none" data-active="true" role="radio" aria-checked="true">None</button>
+                  <button type="button" data-gradient="subtle" data-active="false" role="radio" aria-checked="false">Subtle</button>
+                  <button type="button" data-gradient="moderate" data-active="false" role="radio" aria-checked="false">Moderate</button>
+                  <button type="button" data-gradient="vivid" data-active="false" role="radio" aria-checked="false">Vivid</button>
+                </div>
+              </div>
+
               <!-- Chat header color -->
               <div class="field">
                 <label class="field__label" for="chatHeaderColorHex">Chat header color</label>

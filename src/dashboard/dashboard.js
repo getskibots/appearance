@@ -761,6 +761,11 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       b.setAttribute('data-active', String(active));
       b.setAttribute('aria-checked', String(active));
     });
+    document.querySelectorAll('#gradientAccentSegmented [data-gradient]').forEach(function(b) {
+      var active = b.dataset.gradient === (state.gradientAccent || 'none');
+      b.setAttribute('data-active', String(active));
+      b.setAttribute('aria-checked', String(active));
+    });
     var intensityRow = $('effectIntensityRow');
     if (intensityRow) intensityRow.setAttribute('data-disabled', String(state.effectMode === 'none'));
     var intensitySlider = $('effectIntensity');
@@ -1680,6 +1685,12 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       render();
     });
   });
+  document.querySelectorAll('#gradientAccentSegmented [data-gradient]').forEach(function(b) {
+    b.addEventListener('click', function() {
+      state.gradientAccent = b.dataset.gradient;
+      render();
+    });
+  });
   $('effectIntensity').addEventListener('input', function(e) {
     var v = parseInt(e.target.value, 10);
     if (isNaN(v)) return;
@@ -2233,6 +2244,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       typography: state.typography,
       effectMode: state.effectMode,
       effectIntensity: state.effectIntensity,
+      gradientAccent: state.gradientAccent,
       disableTextInput: state.disableTextInput,
       // Embeddable components — drive the demo's hero search bar + header search icon.
       embedSearch: state.embedSearch,
