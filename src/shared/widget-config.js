@@ -64,6 +64,7 @@ function toGsbAppearance(state) {
     blurredBackground: state.blurredBackground,
     effectMode: state.effectMode,
     effectIntensity: state.effectIntensity,
+    gradientAccent: state.gradientAccent,
     statusPillFeatures: state.statusPillFeatures,
     typography: state.typography,
     embedSearch: state.embedSearch,
