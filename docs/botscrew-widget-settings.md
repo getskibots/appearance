@@ -20,6 +20,7 @@ BotScrew scopes appearance **per language** under `widgetSettings.languageConfig
 - Load: `GET {API}/bot/{botId}/widget` and `GET {API}/bot/{botId}/widget/default-translations`
 - Save: `PATCH {API}/bot/{botId}/widget` (whole object; saves on blur/enter, "disable input" saves immediately)
 - Logo upload: `POST {API}/file/widgetLogo` (multipart `file`, `credentials: "include"`, jpeg/png/jpg/gif/svg, **max 2 MB**) — shared by widget logo + popup logo
+- ⚠️ **Featured / hero image upload — needs a server endpoint.** Uploaded featured images (and any hero assets in `gsbAppearance.hero`) are **base64 `data:` blobs in the prototype** — fine for the demo, but they must NOT be persisted in the config (they'd bloat every `/widget/info` fetch). Production flow: we optimize client-side (`image-compress.js` → WebP), **POST the blob to a media endpoint**, and store **only the returned URL** in `gsbAppearance.hero.featuredImages[].url`. **Ask:** can `POST /file/widgetLogo` be generalized (e.g. `/file/widgetAsset`) to accept non-logo assets, or is there an existing media endpoint to use?
 - `doAskForRating` is **only rendered when `bot.type !== "AI_AGENT"`**
 - The component is `({ languageConfigs, botType }) => …` (React function component, hooks, CSS Modules)
 
