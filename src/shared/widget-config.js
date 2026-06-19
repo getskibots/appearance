@@ -69,6 +69,7 @@ function toGsbAppearance(state) {
     typography: state.typography,
     embedSearch: state.embedSearch,
     embedButton: state.embedButton,
+    analytics: state.analytics,
   };
 }
 
