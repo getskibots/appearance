@@ -24,8 +24,8 @@
 // GetSkiBots' own GA4 measurement id — ALWAYS receives every event.
 // Hardcoded in the widget (NOT stored in BotScrew). Only the resort's id is
 // configurable via gsbAppearance.analytics.ga4MeasurementId.
-// TODO(Brandon): replace this placeholder with the real GSB GA4 id before GA goes live.
-export var GSB_GA4_ID = 'G-XXXXXXXXXX'; // <-- PLACEHOLDER — fill me in
+// GetSkiBots' own GA4 — getskitickets.com (Colorado Travel Company).
+export var GSB_GA4_ID = 'G-JH3FX7ENNT';
 // ─────────────────────────────────────────────────────────────────────────────
 
 function isPlaceholderGsbId() {
@@ -132,3 +132,9 @@ function routeToGA(event, props) {
 }
 
 export var analytics = { init: init, track: track, setDebug: setDebug };
+
+// Convenience for testing: flip console logging from the browser console, even
+// after GSB_GA4_ID is a real id (which turns the default logging off). Sending
+// to GA is unaffected — this only controls the [GSB Analytics] console output.
+//   e.g.  gsbAnalyticsDebug(true)
+if (typeof window !== 'undefined') window.gsbAnalyticsDebug = setDebug;
