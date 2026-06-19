@@ -7,6 +7,7 @@
 // Snapshot ported from omni/src/data/parent.ts — see src/widget/knowledge/.
 import { JH_KNOWLEDGE, topicLink } from './knowledge/jackson-hole.js';
 import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
+import { analytics } from '../shared/analytics.js';
 
 /* =========================================================================
    PRODUCTION-FIDELITY CHAT MODULE
@@ -22,6 +23,38 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
 
   var $ = function(id) { return document.getElementById(id); };
   var body = document.body;
+
+  /* ── Analytics session ──────────────────────────────────────────────────
+     One session spans all three entry points (one runtime instance per page/
+     iframe = naturally unified). conversation_started fires ONCE on the first
+     user message; containment = !handedOff at session end. */
+  analytics.init({}); // console-first; the resort GA id is wired with the GA transport step
+  var session = {
+    started: false, turnCount: 0, startTime: 0, openTime: 0,
+    handedOff: false, entryPoint: null, webcamViewed: false, ended: false
+  };
+  // Emitted from ONE place so the "when does a conversation end" trigger is
+  // swappable in a single spot. Default trigger: page/tab hidden (below).
+  function endConversation() {
+    if (!session.started || session.ended) return;
+    session.ended = true;
+    analytics.track('conversation_ended', {
+      turn_count: session.turnCount,
+      contained: !session.handedOff,
+      duration_seconds: Math.round((Date.now() - session.startTime) / 1000)
+    });
+  }
+  // The containment signal. Dormant in the demo (no handoff path); BotScrew/ODIN
+  // calls window.gsbChatPreview.handoffToHuman() when routing to a live agent.
+  function handoffToHuman() {
+    session.handedOff = true;
+    analytics.track('handoff_to_human', { turn_number: session.turnCount });
+  }
+  // Session-end trigger (swappable): once, when the visit truly ends — tab close,
+  // navigation, or mobile backgrounding. (More reliable than pagehide on mobile.)
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') endConversation();
+  });
 
   // ============= CACHED FALLBACK DATA =============
   // If CORS blocks the live fetch, we fall back to this snapshot
@@ -420,15 +453,28 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
   }
 
   // ============= CHAT INTERACTION =============
-  function openChat() {
+  function openChat(entryPoint) {
     // body.modal-open is set by the dashboard's setOpen() — we just (re)assert
     // column placement for the current variant (idempotent).
     applyColumnLayout();
+    session.openTime = Date.now();
+    if (entryPoint) session.entryPoint = entryPoint;
+    analytics.track('widget_opened', { entry_point: entryPoint || session.entryPoint || 'unknown' });
+    // webcam_viewed: once per session when the hero is a live cam.
+    var heroEl = $('gsbHero');
+    if (!session.webcamViewed && heroEl && heroEl.getAttribute('data-hero-source') === 'webcam') {
+      session.webcamViewed = true;
+      analytics.track('webcam_viewed', {});
+    }
   }
 
   function closeChat() {
     // body.modal-open is unset by the dashboard's setOpen() — we just exit voice mode if active
     if (voice.fullModeActive) closeVoiceMode();
+    analytics.track('widget_closed', {
+      turn_count: session.turnCount,
+      duration_seconds: session.openTime ? Math.round((Date.now() - session.openTime) / 1000) : 0
+    });
   }
 
   function moveContentToLeftColumn() {
@@ -825,6 +871,14 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
   function handleUserMessage(text) {
     if (!text || !text.trim()) return null;
     var userText = text.trim();
+    // Analytics: first user message starts the conversation (once per session).
+    if (!session.started) {
+      session.started = true;
+      session.startTime = Date.now();
+      analytics.track('conversation_started', { entry_point: session.entryPoint || 'unknown' });
+    }
+    session.turnCount += 1;
+    analytics.track('message_sent', { turn_number: session.turnCount });
     appendMessage(userText, 'user');
 
     var aiResponse = generateAiResponse(userText);
@@ -1147,6 +1201,7 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
       showVoiceToast('Hands-free voice mode requires speech recognition, which this browser does not support.', 4000);
       return;
     }
+    analytics.track('voice_mode_used', {});
     voice.fullModeActive = true;
     voice.begun = false;
     $('gsbVoiceModeOverlay').setAttribute('data-open', 'true');
@@ -1344,6 +1399,7 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
   // Chip clicks
   document.querySelectorAll('.gsb-chip').forEach(function(chip) {
     chip.addEventListener('click', function() {
+      analytics.track('starter_clicked', { starter_text: chip.dataset.q || '' });
       handleUserMessage(chip.dataset.q);
     });
   });
@@ -1387,6 +1443,8 @@ import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
     openChat: openChat,
     closeChat: closeChat,
     setVariant: setVariant,
+    // Containment signal — host/ODIN calls this when routing to a live agent.
+    handoffToHuman: handoffToHuman,
     refreshData: function() { return fetchAll().then(applyOpenMeteoWeather); },
     handleQuery: function(q) { handleUserMessage(q); },
     // Open-with-query: post the question + typing indicator and snap them into

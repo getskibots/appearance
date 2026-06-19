@@ -610,6 +610,7 @@
     import { applyWidgetConfig } from '/src/widget/apply-config.js';
     import { JH_LOGO } from '/src/shared/sample-logo.js';
     import { createSnowEngine } from '/src/shared/snow-engine.js';
+    import { analytics } from '/src/shared/analytics.js';
 
     // The resort's config (JH for now). On a real embed this comes from the bot's
     // BotScrew settings; here it's hardwired so the page wears Jackson Hole's brand.
@@ -750,10 +751,13 @@
     var api = function() { return window.gsbChatPreview; };
 
     // Host owns body.modal-open (the runtime's open/close only handle layout + voice).
-    function openChat() { body.classList.add('modal-open'); if (typeof clearPins === 'function') clearPins(); if (api()) api().openChat(); }
+    // entryPoint ('header'|'hero'|'bubble') is forwarded to the runtime so
+    // widget_opened carries the source. The conversation/session is unified —
+    // all three open the SAME chat (no duplicate conversation_started).
+    function openChat(entryPoint) { body.classList.add('modal-open'); if (typeof clearPins === 'function') clearPins(); if (api()) api().openChat(entryPoint); }
     function closeChat() { body.classList.remove('modal-open'); }
-    function openWithQuery(q) {
-      openChat();
+    function openWithQuery(q, entryPoint) {
+      openChat(entryPoint);
       q = (q || '').trim();
       if (!q || !api()) return;
       // Prefer the open-with-query path (instant snap to the conversation as the
@@ -764,11 +768,11 @@
 
     // Entry point #3 — chat launcher
     var launcher = document.getElementById('previewLauncher');
-    if (launcher) launcher.addEventListener('click', function() { openChat(); });
+    if (launcher) launcher.addEventListener('click', function() { openChat('bubble'); });
 
     // Entry point #1 — header search icon
     var searchIcon = document.getElementById('siteSearchIcon');
-    if (searchIcon) searchIcon.addEventListener('click', function() { openChat(); });
+    if (searchIcon) searchIcon.addEventListener('click', function() { openChat('header'); });
 
     // Entry point #2 — hero search bar (the real .gsb-embed-search component).
     var heroSearch = document.getElementById('heroSearch');
@@ -781,15 +785,15 @@
       // Submit (Enter or the Send button) → open the chat with the typed query.
       heroSearch.addEventListener('submit', function(e) {
         e.preventDefault();
-        openWithQuery(heroInput.value);
+        openWithQuery(heroInput.value, 'hero');
         heroInput.value = '';
         heroSearch.setAttribute('data-has-text', 'false');
       });
       // Mic (dictate) + Voice mode both just open the chat in this demo.
       var heroMic = document.getElementById('heroSearchMic');
       var heroVoice = document.getElementById('heroSearchVoice');
-      if (heroMic) heroMic.addEventListener('click', function() { openChat(); });
-      if (heroVoice) heroVoice.addEventListener('click', function() { openChat(); });
+      if (heroMic) heroMic.addEventListener('click', function() { openChat('hero'); });
+      if (heroVoice) heroVoice.addEventListener('click', function() { openChat('hero'); });
     }
 
     // Starter chips beneath the hero search (rendered by applyWidgetConfig) —
@@ -797,7 +801,10 @@
     var heroStarters = document.getElementById('heroStarters');
     if (heroStarters) heroStarters.addEventListener('click', function(e) {
       var chip = e.target.closest('.gsb-embed-starter');
-      if (chip) openWithQuery(chip.getAttribute('data-q') || '');
+      if (chip) {
+        analytics.track('starter_clicked', { starter_text: chip.getAttribute('data-q') || '' });
+        openWithQuery(chip.getAttribute('data-q') || '', 'hero');
+      }
     });
 
     // ----- Demo annotation pins: hidden by default. A legend chip reveals its
