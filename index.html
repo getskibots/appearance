@@ -4,6 +4,16 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>GetSkiBots — Agent Widget · Appearance</title>
+<!-- Google Analytics — GSB Admin property (tracks resort-partner usage of the
+     Appearance tool itself). SEPARATE from the chat-widget analytics (which use
+     GSB_GA4_ID in src/shared/analytics.js). Pageviews by default. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-S7D4SQK4NQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-S7D4SQK4NQ');
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <!-- Preload only the defaults (Inter/Playfair) + Roboto (launcher temp glyphs); every
