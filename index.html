@@ -1011,6 +1011,14 @@
                 </div>
                 <button type="button" class="toggle" id="toggleDisableInput" role="switch" aria-checked="false"></button>
               </div>
+
+              <!-- Google Analytics (resort's own GA4 property) -->
+              <div class="field" style="margin-top:14px">
+                <label class="field__label" for="ga4MeasurementId" data-info="Adds your own Google Analytics so you can see chat usage (opens, messages, starters, handoffs) in your GA4. GetSkiBots' own analytics run regardless — this is just YOUR copy. Leave blank to keep it off.">Google Analytics Measurement ID</label>
+                <input class="input" type="text" id="ga4MeasurementId" placeholder="G-XXXXXXXXXX" maxlength="20" autocomplete="off" spellcheck="false" style="max-width:360px" />
+                <span class="field__hint">Paste your GA4 ID (G-XXXXXXXXXX) to see chat usage in your own Google Analytics.</span>
+                <span class="field__hint" id="ga4Warn" style="color:var(--danger,#c43f3f);display:none"></span>
+              </div>
             </section>
 
             <!-- ============== EMBEDDABLE SEARCH ============== -->

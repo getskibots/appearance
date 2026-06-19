@@ -250,6 +250,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     typingIndicator: 'dots',    // dots | orb | label — the "AI is replying" animation
     messageStyle: 'classic',    // classic | elevated | squared — chat message bubble look
     disableTextInput: false,
+    // Resort's own GA4 analytics (opaque in gsbAppearance). '' = off. GSB's own
+    // property is hardcoded in the widget, not stored here.
+    analytics: { ga4MeasurementId: '' },
     // Typography — default is the "Modern" preset (Space Grotesk display + Inter body).
     // displayScale = a per-preset optical-balance factor on the display font only (so a
     // condensed face like Oswald gets more presence, a chunky serif like Fraunces settles).
@@ -1185,6 +1188,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
 
     if (document.activeElement !== $('widgetName')) $('widgetName').value = state.widgetName;
     if (document.activeElement !== $('inputPlaceholder')) $('inputPlaceholder').value = state.inputPlaceholder;
+    if ($('ga4MeasurementId') && document.activeElement !== $('ga4MeasurementId')) $('ga4MeasurementId').value = (state.analytics && state.analytics.ga4MeasurementId) || '';
+    syncGa4Warn();
     if (document.activeElement !== $('welcomeText')) $('welcomeText').value = state.welcomeText;
     if (document.activeElement !== $('updateLabel')) $('updateLabel').value = state.updateLabel;
     if (document.activeElement !== $('recentUpdate')) $('recentUpdate').value = state.recentUpdate;
@@ -1714,6 +1719,19 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
 
   $('widgetName').addEventListener('input', function(e){ state.widgetName = e.target.value; render(); });
   $('inputPlaceholder').addEventListener('input', function(e){ state.inputPlaceholder = e.target.value; render(); });
+  // Resort GA4 id — store loosely; warn (don't block) on a malformed id.
+  function syncGa4Warn() {
+    var warn = $('ga4Warn'); if (!warn) return;
+    var v = ((state.analytics && state.analytics.ga4MeasurementId) || '').trim();
+    var bad = !!v && !/^G-[A-Z0-9]{6,}$/i.test(v);
+    warn.textContent = bad ? "That doesn't look like a GA4 ID — expected G-XXXXXXXXXX." : '';
+    warn.style.display = bad ? '' : 'none';
+  }
+  if ($('ga4MeasurementId')) $('ga4MeasurementId').addEventListener('input', function(e){
+    if (!state.analytics) state.analytics = { ga4MeasurementId: '' };
+    state.analytics.ga4MeasurementId = e.target.value.trim();
+    render();
+  });
   $('welcomeText').addEventListener('input', function(e){ state.welcomeText = e.target.value; render(); });
   $('updateLabel').addEventListener('input', function(e){ state.updateLabel = e.target.value; render(); });
   $('recentUpdate').addEventListener('input', function(e){ state.recentUpdate = e.target.value; render(); });
@@ -2246,6 +2264,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       effectIntensity: state.effectIntensity,
       gradientAccent: state.gradientAccent,
       disableTextInput: state.disableTextInput,
+      analytics: state.analytics,
       // Embeddable components — drive the demo's hero search bar + header search icon.
       embedSearch: state.embedSearch,
       embedButton: state.embedButton,
