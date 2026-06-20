@@ -90,6 +90,7 @@ interface GsbAppearance {
   };
   ctaText: string;
   bubbleStyle: 'traditional' | 'custom' | 'enhanced' | 'slidein';
+  mobileSlideIn: boolean;                     // phones force the slide-in pill (clears bottom CTAs); default true
   customIconUrl: string | null;
   customIconSize: number;                     // px diameter of the custom launcher (40–96)
   slideState: 'visible' | 'hidden';
@@ -180,6 +181,7 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `messageStyle` | enum | `classic` | **Animations & effects card.** Chat message bubble look: `classic` (solid fills + a real pointer tail), `elevated` (both float as soft-shadowed cards), or `squared` (crisp sharp corners). Widget reads `body[data-msg-style]` |
 | `ctaText` | string | `Need help?` | Launcher CTA label (≤24 glyphs) |
 | `bubbleStyle` | enum | `slidein` | Launcher style: traditional/custom/enhanced/slidein |
+| `mobileSlideIn` | boolean | `true` | **Launcher card.** On phone-width viewports (≤768px), force the **slide-in pill** regardless of `bubbleStyle`, so it auto-hides on scroll and clears bottom CTAs (booking / add-to-cart). Desktop is unaffected. ⚠️ **Parent-script:** the launcher is rendered by `script-chatbot.js` in production, so BotScrew's loader applies this swap — we define the flag, you honor it |
 | `customIconUrl` | string\|null | `null` | Uploaded launcher icon (custom style) |
 | `customIconSize` | number (px) | `56` | Custom launcher diameter (40–96; image fills it) |
 | `slideState` | enum | `visible` | Slide-in pill shown/hidden |

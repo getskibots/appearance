@@ -52,6 +52,7 @@ function toGsbAppearance(state) {
     realtimeVoice: state.realtimeVoice,
     ctaText: state.ctaText,
     bubbleStyle: state.bubbleStyle,
+    mobileSlideIn: state.mobileSlideIn,
     customIconUrl: state.customIconUrl,
     customIconSize: state.customIconSize,
     slideState: state.slideState,
