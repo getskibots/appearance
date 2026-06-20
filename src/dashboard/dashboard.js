@@ -2210,9 +2210,16 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
 
   // On small dashboards (Android phones administering this), default the preview
   // to mobile device mode since the partner is already in a mobile mindset.
-  if (window.matchMedia('(max-width: 720px)').matches) {
-    previewDevice = 'mobile';
+  // Track the live viewport (incl. Chrome DevTools device emulation) so the
+  // launcher's mobile slide-in reflects reality without a reload.
+  var _deviceMQ = window.matchMedia('(max-width: 720px)');
+  if (_deviceMQ.matches) previewDevice = 'mobile';
+  function syncPreviewDevice() {
+    var d = _deviceMQ.matches ? 'mobile' : 'desktop';
+    if (d !== previewDevice) { previewDevice = d; render(); }
   }
+  if (_deviceMQ.addEventListener) _deviceMQ.addEventListener('change', syncPreviewDevice);
+  else if (_deviceMQ.addListener) _deviceMQ.addListener(syncPreviewDevice);
 
   // ============= LIVE PREVIEW SYNC =============
   // Writes the current dashboard state to localStorage so the demo preview page
