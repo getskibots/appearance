@@ -8,6 +8,7 @@
 import { JH_KNOWLEDGE, topicLink } from './knowledge/jackson-hole.js';
 import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
 import { analytics } from '../shared/analytics.js';
+import { autolink } from '../shared/markdown.js';
 
 /* =========================================================================
    PRODUCTION-FIDELITY CHAT MODULE
@@ -592,7 +593,9 @@ import { analytics } from '../shared/analytics.js';
   function appendMessage(text, role) {
     var msg = document.createElement('div');
     msg.className = 'gsb-msg gsb-msg--' + role;
-    msg.textContent = text;
+    // Linkify so booking/ticket/lesson URLs in replies are clickable (and tracked
+    // via outbound_click). XSS-safe: autolink() escapes everything it doesn't anchor.
+    msg.innerHTML = autolink(text);
     $('gsbMessages').appendChild(msg);
     body.classList.add('gsb-conversation-started');
     scrollMsgIntoView(msg);
@@ -1402,6 +1405,27 @@ import { analytics } from '../shared/analytics.js';
       analytics.track('starter_clicked', { starter_text: chip.dataset.q || '' });
       handleUserMessage(chip.dataset.q);
     });
+  });
+
+  // Outbound-link clicks (conversion signal). Delegated so it catches links the AI
+  // renders in replies AND the welcome / Season Update / featured / webcam links —
+  // now, and in production where BotScrew renders the message links. Only fires for
+  // links on a chat surface; destination is hostname+path (query/hash stripped).
+  document.addEventListener('click', function(e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a) return;
+    var ctx;
+    if (a.closest('.gsb-msg')) ctx = 'message';
+    else if (a.closest('.gsb-welcome-greeting')) ctx = 'welcome';
+    else if (a.closest('.gsb-season-banner')) ctx = 'season_banner';
+    else if (a.closest('#gsbHero')) {
+      var hero = $('gsbHero');
+      ctx = (hero && hero.getAttribute('data-hero-source') === 'webcam') ? 'webcam' : 'featured';
+    } else return; // not a chat-surface link
+    var href = a.getAttribute('href') || '';
+    var dest = href;
+    try { var u = new URL(href, location.href); dest = u.hostname + u.pathname; } catch (err) {}
+    analytics.track('outbound_click', { destination: dest, context: ctx });
   });
 
   // Voice events
