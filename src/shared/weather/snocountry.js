@@ -77,6 +77,18 @@ export function normalizeSnoCountry(input) {
   };
 }
 
+// Baked GetSkiBots SnoCountry key (public read key — one key covers every resort).
+export const SNOCOUNTRY_KEY = 'colorado935.travel216';
+
+// Fetch + normalize a SnoCountry resort by id. Browser-safe (CORS-open).
+export async function fetchSnoCountry(resortId, key) {
+  const url = 'https://feeds.snocountry.net/getSnowReport.php?apiKey='
+    + encodeURIComponent(key || SNOCOUNTRY_KEY) + '&ids=' + encodeURIComponent(resortId) + '&output=json';
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('SnoCountry HTTP ' + res.status);
+  return normalizeSnoCountry(await res.json());
+}
+
 // Field catalog this source can fill — drives the "assign field → cell" UX later.
 export const SNOCOUNTRY_FIELDS = [
   { key: 'base_depth',       label: 'Base Depth',   unit: '"' },

@@ -7,6 +7,7 @@
 // Snapshot ported from omni/src/data/parent.ts — see src/widget/knowledge/.
 import { JH_KNOWLEDGE, topicLink } from './knowledge/jackson-hole.js';
 import { fetchOpenMeteo, conditionIcon } from '../shared/weather/open-meteo.js';
+import { composeConditions, readIntegrations } from '../shared/weather/compose.js';
 import { analytics } from '../shared/analytics.js';
 import { autolink } from '../shared/markdown.js';
 
@@ -215,52 +216,45 @@ import { autolink } from '../shared/markdown.js';
     return JH_DEFAULT_COORDS;
   }
 
+  // Compose the conditions card from whatever sources are SELECTED on the Weather
+  // tab (localStorage 'gsb-weather-integrations-v1'): Open-Meteo drives temps/wind/
+  // conditions; SnoCountry adds live-status cells. (Name kept for callers.)
   function applyOpenMeteoWeather() {
     var coords = resolveWeatherCoords();
-    if (!coords || !coords.base) return Promise.resolve();
+    var cfg = readIntegrations();
 
-    var jobs = [fetchOpenMeteo({ lat: coords.base.lat, lng: coords.base.lng, elevationFt: coords.base.elevFt, name: 'Base' })];
-    if (coords.summit) {
-      jobs.push(fetchOpenMeteo({ lat: coords.summit.lat, lng: coords.summit.lng, elevationFt: coords.summit.elevFt, name: 'Summit' }));
-    }
-
-    return Promise.allSettled(jobs).then(function(results) {
-      var baseRes = results[0];
-      if (baseRes.status !== 'fulfilled') return; // keep resort-feed/fallback weather
+    return composeConditions(cfg, coords).then(function(composed) {
+      var base = composed.weather.base;
+      var summit = composed.weather.summit;
+      if (!base) return; // nothing produced weather — keep resort-feed/fallback
 
       data.snow = data.snow || {};
       data.snow.weather = data.snow.weather || {};
 
-      var bc = baseRes.value.forecast_current;
+      var bc = base.forecast_current;
       data.snow.weather.base = {
         temperature: { value: String(bc.temp) },
         wind: { value: String(bc.wind_speed) }
       };
 
-      if (coords.summit) {
-        var summitRes = results[1];
-        if (summitRes && summitRes.status === 'fulfilled') {
-          var sc = summitRes.value.forecast_current;
-          data.snow.weather.tramSummit = {
-            temperature: { value: String(sc.temp) },
-            wind: { value: String(sc.wind_speed) }
-          };
-        }
-        // if the summit fetch failed, leave any prior reading in place (best effort)
+      if (summit && summit.forecast_current) {
+        var sc = summit.forecast_current;
+        data.snow.weather.tramSummit = {
+          temperature: { value: String(sc.temp) },
+          wind: { value: String(sc.wind_speed) }
+        };
       } else {
-        // Base-only resort — drop any stale summit reading and blank its cells so
-        // the conditions card doesn't show a leftover value from another resort.
+        // No summit (base-only resort) — drop any stale summit reading so the card
+        // doesn't show a leftover value from another resort.
         delete data.snow.weather.tramSummit;
         ['cellSummitTemp', 'statSummitTemp', 'cellWind'].forEach(function(id) {
           var el = $(id); if (el) el.innerHTML = '<span class="unit">—</span>';
         });
       }
 
-      // Full normalized models, kept for the season-aware conditions card.
-      data.weatherModel = {
-        base: baseRes.value,
-        summit: (coords.summit && results[1] && results[1].status === 'fulfilled') ? results[1].value : null
-      };
+      // Full normalized models + live status, kept for the conditions card.
+      data.weatherModel = { base: base, summit: summit || null };
+      data.liveStatus = composed.liveStatus || null;
 
       setDataStatus('live', 'Live weather · Open-Meteo');
       renderAllData();
@@ -323,6 +317,19 @@ import { autolink } from '../shared/markdown.js';
     return cells;
   }
 
+  // Live-status cells (SnoCountry / Direct Feed) appended to the card when present —
+  // the data only the mountain reports. Off-season nulls drop out automatically.
+  function liveStatusCells(ls) {
+    var out = [];
+    function add(k, v) { if (v != null && v !== '') out.push({ k: k, v: v }); }
+    function pair(p) { return p ? ((p.open != null ? p.open : '–') + '<span class="unit">/' + (p.total != null ? p.total : '–') + '</span>') : null; }
+    add('Base Depth', ls.base_depth != null ? ls.base_depth + '<span class="unit">"</span>' : null);
+    add('New Snow', ls.new_snow_24h != null ? ls.new_snow_24h + '<span class="unit">"</span>' : null);
+    add('Lifts', pair(ls.lifts));
+    add('Trails', pair(ls.trails));
+    return out;
+  }
+
   // ============= RENDER DATA INTO UI =============
   function fmt(value, fallback) {
     if (value === undefined || value === null || value === '') return fallback || '—';
@@ -383,6 +390,7 @@ import { autolink } from '../shared/markdown.js';
     if (condGrid) {
       var wm = data.weatherModel || {};
       var cells = omSeasonCells(resolveSeasonMode(), wm.base, wm.summit);
+      if (data.liveStatus) cells = cells.concat(liveStatusCells(data.liveStatus));
       condGrid.innerHTML = cells.map(function(c) {
         return '<div class="gsb-conditions-cell"><div class="label">' + c.k + '</div>' +
                '<div class="value' + (c.cond ? ' is-cond' : '') + '">' + c.v + '</div></div>';

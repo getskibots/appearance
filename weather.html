@@ -484,21 +484,6 @@
   .df-map-row[data-mapped="true"] .df-map-row__label { color: var(--success); }
   @media (max-width: 640px) { .df-grid { grid-template-columns: 1fr; } .df-map-row { grid-template-columns: 1fr auto; } }
 
-  /* ===================== OPENSNOW ===================== */
-  .os-brand { display: flex; align-items: center; justify-content: center; padding: 13px 14px 5px; }
-  .os-brand img { height: 19px; width: auto; display: block; }
-  .os-forecast { display: flex; flex-direction: column; }
-  .os-row { display: grid; grid-template-columns: 52px 1fr auto; gap: 10px; align-items: center; padding: 9px 14px; border-top: 1px solid var(--border); font-size: 13px; }
-  .os-row__day { font-weight: 700; color: var(--text); }
-  .os-row__cond { display: flex; align-items: center; gap: 7px; color: var(--text-muted); min-width: 0; }
-  .os-row__cond svg { width: 16px; height: 16px; flex: 0 0 auto; }
-  .os-row__cond span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .os-row__snow { font-weight: 700; color: var(--text); justify-self: end; white-space: nowrap; }
-  .os-row__snow .u { font-size: 11px; font-weight: 500; color: var(--text-soft); }
-  .os-row--none .os-row__snow { color: var(--text-soft); font-weight: 600; }
-  .os-link { display: block; text-align: center; padding: 11px 14px; border-top: 1px solid var(--border); background: #fafbfd; font-size: 12px; font-weight: 700; color: var(--sidebar); text-decoration: none; }
-  .os-link:hover { text-decoration: underline; }
-
   /* ===================== CARDS ===================== */
   .card {
     padding: 28px;
@@ -2715,21 +2700,6 @@
                 </span>
               </div>
 
-              <!-- 4 · OpenSnow (forecast aggregator) -->
-              <div class="cat-tile" data-int="opensnow" data-state="available" data-on="false">
-                <span class="cat-tile__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.6 1.5A3.5 3.5 0 0 0 6.5 19z"/></svg></span>
-                <span class="cat-tile__body">
-                  <span class="cat-tile__name">OpenSnow <em class="cat-tile__tag">Forecast</em></span>
-                  <span class="cat-tile__desc">Ski-specific weather forecasting.</span>
-                </span>
-                <span class="cat-tile__ctrl">
-                  <label class="cat-switch" title="Enable OpenSnow">
-                    <input type="checkbox" id="cat-toggle-opensnow" aria-label="Enable OpenSnow">
-                    <span class="cat-switch__track"></span>
-                  </label>
-                </span>
-              </div>
-
             </div>
           </div>
 
@@ -3245,48 +3215,6 @@
             </div>
           </section><!-- /Live Status card -->
 
-          <!-- ===== OpenSnow (forecast aggregator) ===== -->
-          <section class="acc-card" data-open="false" data-acc-id="opensnow">
-            <button type="button" class="acc-head" aria-expanded="false">
-              <span class="acc-head__icon" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.6 1.5A3.5 3.5 0 0 0 6.5 19z"/></svg>
-              </span>
-              <span class="acc-head__titles">
-                <span class="acc-head__title">OpenSnow</span>
-                <span class="acc-head__desc">Ski-specific weather forecasting</span>
-              </span>
-              <span class="acc-badge acc-badge--opt">Forecast</span>
-              <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-            </button>
-            <div class="acc-body">
-              <p class="ls-intro">OpenSnow adds <strong>ski-specific forecasting</strong> — current conditions plus a 5-day snow forecast (its response maps almost 1:1 to our model). Set your OpenSnow location ID and fetch.</p>
-              <div class="ls-form">
-                <div class="ls-field ls-field--provider">
-                  <label class="label">Provider</label>
-                  <div class="ls-provider"><span class="ls-provider-dot"></span>OpenSnow</div>
-                </div>
-                <div class="ls-field">
-                  <label class="label">Location ID</label>
-                  <input id="os-loc" class="input mono" placeholder="e.g. 66" value="66">
-                </div>
-                <div class="ls-field">
-                  <label class="label">API key <span class="opt">pre-set</span></label>
-                  <input id="os-key" class="input mono" type="password" placeholder="OpenSnow key" autocomplete="off">
-                </div>
-                <button type="button" class="btn btn-primary" id="os-fetch">Fetch</button>
-              </div>
-              <p class="help-text">The OpenSnow key is <strong>pre-configured</strong> — set a location ID and fetch. Find your ID at opensnow.com. Override the key only for a different account.</p>
-              <div class="ls-msg" id="os-msg" hidden></div>
-              <div class="ls-preview" id="os-preview" hidden>
-                <a class="os-brand" id="os-brand" target="_blank" rel="noopener" title="OpenSnow"></a>
-                <div class="ls-preview-head"><span class="ls-dot"></span><span class="ls-preview-title" id="os-preview-title">Forecast</span><span class="ls-preview-time" id="os-preview-now"></span></div>
-                <div class="ls-grid" id="os-grid"></div>
-                <div class="os-forecast" id="os-forecast"></div>
-                <a class="os-link" id="os-link" target="_blank" rel="noopener">View Snow Report ›</a>
-              </div>
-            </div>
-          </section><!-- /OpenSnow card -->
-
           </div><!-- /acc-wrap -->
         </section>
       </div>
@@ -3299,7 +3227,6 @@
 // widget uses) so the dashboard preview and production widget can never drift.
 import { fetchOpenMeteo, conditionIcon, mToFt, ftToM } from './src/shared/weather/open-meteo.js';
 import { normalizeSnoCountry } from './src/shared/weather/snocountry.js';
-import { normalizeOpenSnow, snowRange } from './src/shared/weather/opensnow.js';
 
 (function(){
   const SOURCES = {
@@ -4725,6 +4652,7 @@ import { normalizeOpenSnow, snowRange } from './src/shared/weather/opensnow.js';
       const id = (idEl.value || '').trim();
       const key = (keyEl.value || '').trim() || SNOCOUNTRY_KEY;
       if (!id) { showMsg('Enter a resort ID.', true); return; }
+      saveIntegrationConfig('snocountry', { resortId: id });   // so the live widget can fetch it
       fetchBtn.disabled = true;
       const label = fetchBtn.textContent;
       fetchBtn.textContent = 'Fetching…';
@@ -4748,8 +4676,20 @@ import { normalizeOpenSnow, snowRange } from './src/shared/weather/opensnow.js';
   // ===========================================================================
   // INTEGRATIONS CATALOG — each source is an INDEPENDENT selection; NONE on by
   // default. Toggling a tile reveals/hides its config card (persisted per source).
-  // Direct Feed + OpenSnow are gated placeholders (no config yet).
   // ===========================================================================
+  // Persist a source's config into the integrations store (shape: { id: {enabled, …} }).
+  // Used by the catalog toggles AND the per-source cards (resort/location IDs), so the
+  // live widget can fetch exactly what's selected. Tolerates the old boolean shape.
+  function saveIntegrationConfig(id, patch) {
+    try {
+      const s = JSON.parse(localStorage.getItem('gsb-weather-integrations-v1') || '{}') || {};
+      const cur = (s[id] && typeof s[id] === 'object') ? s[id] : (s[id] === true ? { enabled: true } : {});
+      s[id] = Object.assign({}, cur, patch);
+      localStorage.setItem('gsb-weather-integrations-v1', JSON.stringify(s));
+    } catch (e) {}
+  }
+  function intEnabled(v) { return v === true || !!(v && v.enabled === true); }
+
   (function initCatalog() {
     const STORE = 'gsb-weather-integrations-v1';
     const read = () => { try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { return {}; } };
@@ -4759,8 +4699,7 @@ import { normalizeOpenSnow, snowRange } from './src/shared/weather/opensnow.js';
     const INTS = [
       { id: 'open-meteo',  toggle: 'cat-toggle-open-meteo',  card: '[data-acc-id="open-meteo"]' },
       { id: 'direct-feed', toggle: 'cat-toggle-direct-feed', card: '[data-acc-id="direct-feed"]' },
-      { id: 'snocountry',  toggle: 'cat-toggle-snocountry',  card: '[data-acc-id="live-status"]' },
-      { id: 'opensnow',    toggle: 'cat-toggle-opensnow',    card: '[data-acc-id="opensnow"]' }
+      { id: 'snocountry',  toggle: 'cat-toggle-snocountry',  card: '[data-acc-id="live-status"]' }
     ];
 
     INTS.forEach((cfg) => {
@@ -4781,9 +4720,10 @@ import { normalizeOpenSnow, snowRange } from './src/shared/weather/opensnow.js';
         }
       }
 
-      apply(!!state[cfg.id], false);   // default OFF — nothing pre-enabled
+      apply(intEnabled(state[cfg.id]), false);   // default OFF — nothing pre-enabled
       toggle.addEventListener('change', () => {
-        state[cfg.id] = toggle.checked;
+        const cur = (state[cfg.id] && typeof state[cfg.id] === 'object') ? state[cfg.id] : {};
+        state[cfg.id] = Object.assign({}, cur, { enabled: toggle.checked });
         write(state);
         apply(toggle.checked, toggle.checked);
       });
@@ -4928,77 +4868,6 @@ import { normalizeOpenSnow, snowRange } from './src/shared/weather/opensnow.js';
     });
   })();
 
-  // ===========================================================================
-  // OPENSNOW — live forecast. Renders the REQUIRED branding (logo above, link
-  // below) from the API's attribution block. Key pre-filled (licensed credential).
-  // ===========================================================================
-  (function initOpenSnow() {
-    const $ = (id) => document.getElementById(id);
-    const fetchBtn = $('os-fetch'), msgEl = $('os-msg'), keyEl = $('os-key'), locEl = $('os-loc'),
-      previewEl = $('os-preview'), brandEl = $('os-brand'), titleEl = $('os-preview-title'),
-      nowEl = $('os-preview-now'), gridEl = $('os-grid'), fcEl = $('os-forecast'), linkEl = $('os-link');
-    if (!fetchBtn) return;
-
-    const OPENSNOW_KEY = 'e4f353ac853828102194556e6dfde636';   // licensed key — see opensnow.js
-    if (keyEl && !keyEl.value) keyEl.value = OPENSNOW_KEY;
-
-    function showMsg(text, isErr) { msgEl.textContent = text; msgEl.className = 'ls-msg' + (isErr ? ' ls-msg--err' : ''); msgEl.hidden = false; }
-    function cell(k, v) { return v == null ? '' : '<div class="ls-cell"><div class="ls-cell-k">' + k + '</div><div class="ls-cell-v">' + v + '</div></div>'; }
-
-    function render(m) {
-      if (!m) { showMsg('No forecast returned for that location ID.', true); return; }
-      msgEl.hidden = true;
-      const a = m.attribution || {};
-      // REQUIRED: "Powered by OpenSnow" branding above the data
-      brandEl.innerHTML = a.image_light_url
-        ? '<img src="' + a.image_light_url + '" alt="' + (a.description || 'Powered by OpenSnow') + '">'
-        : (a.description || 'Powered by OpenSnow');
-      brandEl.href = a.link_url || '#';
-      titleEl.textContent = m.location.name || 'Forecast';
-      const c = m.forecast_current || {};
-      nowEl.textContent = c.display_at_local_label ? ('as of ' + c.display_at_local_label) : '';
-
-      gridEl.innerHTML = [
-        cell('Now', c.temp != null ? c.temp + '°' : null),
-        cell('Conditions', c.conditions_label || null),
-        cell('Wind', c.wind_speed != null ? (c.wind_dir_label ? c.wind_dir_label + ' ' : '') + c.wind_speed + '<span class="ls-cell-unit"> mph</span>' : null),
-        cell('Snow Level', c.snow_level != null ? Number(c.snow_level).toLocaleString() + '<span class="ls-cell-unit"> ft</span>' : null)
-      ].filter(Boolean).join('');
-
-      // 5-day snow forecast — pair each snow_daily with its day-period conditions
-      const semiByDay = {};
-      (m.forecast_semi_daily || []).forEach((s) => { if (s.day_period === 'day' && !semiByDay[s.display_at_local_label]) semiByDay[s.display_at_local_label] = s; });
-      fcEl.innerHTML = (m.forecast_snow_daily || []).map((d) => {
-        const sd = semiByDay[d.display_at_local_label];
-        const none = d.precip_snow_max == null || Number(d.precip_snow_max) === 0;
-        const range = snowRange(d.precip_snow_min, d.precip_snow_max);
-        return '<div class="os-row' + (none ? ' os-row--none' : '') + '">' +
-          '<span class="os-row__day">' + (d.display_at_local_label || '') + '</span>' +
-          '<span class="os-row__cond">' + (sd && sd.icon_svg ? sd.icon_svg : '') + '<span>' + (sd ? sd.conditions_label : '') + '</span></span>' +
-          '<span class="os-row__snow">' + (none ? '0' : range) + '<span class="u">"</span></span></div>';
-      }).join('');
-
-      // REQUIRED: "View …" link below the data
-      linkEl.href = a.link_url || '#';
-      linkEl.textContent = (a.link_text || 'View Snow Report') + ' ›';
-      previewEl.hidden = false;
-    }
-
-    fetchBtn.addEventListener('click', async () => {
-      const loc = (locEl.value || '').trim();
-      const key = (keyEl.value || '').trim() || OPENSNOW_KEY;
-      if (!loc) { showMsg('Enter an OpenSnow location ID.', true); return; }
-      fetchBtn.disabled = true; const label = fetchBtn.textContent; fetchBtn.textContent = 'Fetching…';
-      try {
-        const url = 'https://api.opensnow.com/forecast/snow-detail/' + encodeURIComponent(loc) + '?api_key=' + encodeURIComponent(key) + '&v=1';
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        render(normalizeOpenSnow(await res.json()));
-      } catch (e) {
-        showMsg('Could not reach OpenSnow (' + e.message + '). The API may be CORS-blocked from the browser — it works server-side via the proxy in production.', true);
-      } finally { fetchBtn.disabled = false; fetchBtn.textContent = label; }
-    });
-  })();
 
 })();
 </script>
