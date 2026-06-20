@@ -13,6 +13,7 @@ separates the **embeddable chat widget** from the **admin appearance dashboard**
 | [`docs/BUILD-STATUS.md`](docs/BUILD-STATUS.md) | What's done vs pending (where the build is) |
 | [`docs/SCOPE-MAPPING.md`](docs/SCOPE-MAPPING.md) | Status mapped line-by-line against the scope sheet (epics 1–7) |
 | [`docs/DEMO-CODE.md`](docs/DEMO-CODE.md) | Jackson Hole / demo-only code to strip (don't port) vs. the deliverable |
+| [`docs/ANALYTICS.md`](docs/ANALYTICS.md) | Chat-widget GA4 event layer — events fired, BotScrew signals to map, roadmap |
 | [`docs/botscrew-widget-settings.md`](docs/botscrew-widget-settings.md) | The BotScrew data contract (authoritative) |
 | [`docs/SCRIPT-CHATBOT-CONTRACT.md`](docs/SCRIPT-CHATBOT-CONTRACT.md) | The host-page loader / parent↔iframe contract (Milestone 1 target) |
 | [`docs/INTEGRATION.md`](docs/INTEGRATION.md) | How the widget drops into BotScrew's embed — iframe/snippet model, seams, content provenance |

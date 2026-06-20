@@ -102,6 +102,7 @@ docs/
   SCRIPT-CHATBOT-CONTRACT.md  BotScrew host-page loader contract: script tag, iframe,
                               parent↔iframe postMessage protocol, public API inventory
   DEMO-CODE.md                Jackson Hole / demo-only code to strip (don't port) vs. the deliverable
+  ANALYTICS.md                Chat-widget GA4 event layer: events fired, BotScrew signals to map, roadmap
   RESORT-DIRECT-FEEDS.md      Resort-feed audit (7 shape families) + Resort Direct build plan
 
 scripts/                Byte-faithful extraction tooling (refactor provenance)
