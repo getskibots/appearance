@@ -1030,7 +1030,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     canvas.setAttribute('data-device', previewDevice);
     launcher.setAttribute('data-icon-style', state.bubbleStyle);
     // Side Panel distance-from-edge (only meaningful for the side layout).
-    var panelSide = Math.min(160, Math.max(24, state.panelSideSpacing != null ? state.panelSideSpacing : 24));
+    var panelSide = Math.min(160, Math.max(0, state.panelSideSpacing != null ? state.panelSideSpacing : 24));
     document.documentElement.style.setProperty('--gsb-panel-side', panelSide + 'px');
     var panelSideRow = $('panelSideRow');
     if (panelSideRow) panelSideRow.style.display = state.layoutVariant === 'side' ? '' : 'none';
@@ -1520,13 +1520,13 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   $('placementBottom').addEventListener('input', function(e) {
     var v = parseInt(e.target.value, 10);
     if (isNaN(v)) return;
-    state.placement.bottomSpacing = Math.max(24, Math.min(300, v));
+    state.placement.bottomSpacing = Math.max(0, Math.min(300, v));
     render();
   });
   $('placementSide').addEventListener('input', function(e) {
     var v = parseInt(e.target.value, 10);
     if (isNaN(v)) return;
-    state.placement.sideSpacing = Math.max(24, Math.min(300, v));
+    state.placement.sideSpacing = Math.max(0, Math.min(300, v));
     render();
   });
 
@@ -1860,7 +1860,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   // Side Panel — distance from edge (only shown for the side layout, clamped 24–160).
   if ($('panelSideSlider')) $('panelSideSlider').addEventListener('input', function(e) {
     var v = parseInt(e.target.value, 10);
-    state.panelSideSpacing = Math.min(160, Math.max(24, isNaN(v) ? 24 : v));
+    state.panelSideSpacing = Math.min(160, Math.max(0, isNaN(v) ? 24 : v));
     // Open the panel (if closed) so the offset is visible while dragging.
     if (canvas.getAttribute('data-preview-open') !== 'true') setOpen(true);
     render();
