@@ -368,6 +368,122 @@
   }
   .soon-panel__text strong { color: var(--text); }
 
+  /* ===================== LIVE STATUS (SnoCountry) ===================== */
+  .acc-badge--opt { background: #eef6fd; color: var(--sidebar); }
+  .ls-intro { margin: 0 0 16px; font-size: 13px; line-height: 1.55; color: var(--text-muted); }
+  .ls-intro strong { color: var(--text); }
+  .ls-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 14px;
+    align-items: end;
+  }
+  .ls-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .ls-field .label { white-space: nowrap; }
+  .ls-provider {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 12px; border: 1px solid var(--input-border); border-radius: 6px;
+    background: #fafbfd; font-size: 14px; font-weight: 600; color: var(--text);
+  }
+  .ls-provider-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); }
+  .ls-form .btn-primary { padding: 9px 20px; }
+  .ls-link {
+    background: none; border: 0; padding: 0; font: inherit;
+    color: var(--sidebar); font-weight: 600; cursor: pointer; text-decoration: underline;
+  }
+  .ls-preview {
+    margin-top: 18px; border: 1px solid var(--border); border-radius: 10px;
+    overflow: hidden; background: #fff; box-shadow: var(--shadow);
+  }
+  .ls-preview-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 11px 14px; border-bottom: 1px solid var(--border);
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-muted); font-weight: 700;
+  }
+  .ls-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); box-shadow: 0 0 0 3px rgba(46,143,94,0.18); }
+  .ls-preview-title { color: var(--text); }
+  .ls-preview-time { margin-left: auto; font-weight: 600; color: var(--text-soft); text-transform: none; letter-spacing: 0; }
+  .ls-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .ls-cell {
+    padding: 14px 16px; text-align: center;
+    border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  }
+  .ls-cell:nth-child(3n) { border-right: 0; }
+  .ls-cell:nth-last-child(-n+3) { border-bottom: 0; }
+  .ls-cell-k { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 700; margin-bottom: 5px; }
+  .ls-cell-v { font-size: 19px; font-weight: 700; color: var(--text); line-height: 1.1; }
+  .ls-cell-unit { font-size: 12px; font-weight: 500; color: var(--text-soft); }
+  .ls-preview-foot { padding: 8px 14px; background: #fafbfd; border-top: 1px solid var(--border); text-align: center; font-size: 10px; letter-spacing: 0.06em; color: var(--text-soft); }
+  .ls-preview-foot strong { color: var(--text-muted); }
+  .ls-empty { padding: 26px 16px; text-align: center; font-size: 13px; color: var(--text-muted); }
+  .ls-msg { margin-top: 12px; padding: 10px 14px; border-radius: 6px; font-size: 13px; background: var(--success-bg); color: var(--success); }
+  .ls-msg--err { background: var(--danger-bg); color: var(--danger); }
+  @media (max-width: 640px) {
+    .ls-form { grid-template-columns: 1fr 1fr; }
+    .ls-form .btn-primary { grid-column: 1 / -1; }
+    .ls-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ===================== INTEGRATIONS CATALOG ===================== */
+  .catalog { padding: 24px 28px 8px; }
+  .catalog__head { margin-bottom: 16px; }
+  .catalog__title { margin: 0 0 4px; font-size: 15px; font-weight: 700; color: var(--text); }
+  .catalog__sub { margin: 0; font-size: 13px; line-height: 1.5; color: var(--text-muted); }
+  .catalog__sub strong { color: var(--text); }
+  .catalog__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .cat-tile {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 16px; border: 1px solid var(--border); border-radius: 10px; background: #fff;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .cat-tile[data-state="active"] { border-color: var(--success); }
+  .cat-tile[data-on="true"] { border-color: var(--success); box-shadow: inset 0 0 0 1px var(--success); }
+  .cat-tile[data-state="soon"], .cat-tile[data-state="gated"] { background: #fafbfd; }
+  .cat-tile[data-state="soon"] .cat-tile__name, .cat-tile[data-state="gated"] .cat-tile__name { color: var(--text-muted); }
+  .cat-tile__icon {
+    flex: 0 0 auto; width: 38px; height: 38px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    background: #eef6fd; color: var(--sidebar);
+  }
+  .cat-tile[data-state="soon"] .cat-tile__icon, .cat-tile[data-state="gated"] .cat-tile__icon { background: #eef1f5; color: var(--text-soft); }
+  .cat-tile__body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .cat-tile__name { font-size: 14px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .cat-tile__tag { font-style: normal; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-soft); background: #f0f2f6; padding: 2px 7px; border-radius: 20px; }
+  .cat-tile__desc { font-size: 12.5px; line-height: 1.45; color: var(--text-muted); }
+  .cat-tile__ctrl { flex: 0 0 auto; display: flex; align-items: center; padding-top: 2px; }
+  .cat-pill { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: 4px 9px; border-radius: 20px; white-space: nowrap; }
+  .cat-pill--on { background: var(--success-bg); color: var(--success); }
+  .cat-pill--soon { background: #eef1f5; color: var(--text-soft); }
+  .cat-pill--gated { background: #fdf3e7; color: #9a6a1f; }
+  .cat-switch { position: relative; display: inline-block; width: 40px; height: 23px; cursor: pointer; }
+  .cat-switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .cat-switch__track { position: absolute; inset: 0; background: #cfd6df; border-radius: 20px; transition: background .15s; }
+  .cat-switch__track::before { content: ''; position: absolute; top: 3px; left: 3px; width: 17px; height: 17px; background: #fff; border-radius: 50%; transition: transform .15s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+  .cat-switch input:checked + .cat-switch__track { background: var(--success); }
+  .cat-switch input:checked + .cat-switch__track::before { transform: translateX(17px); }
+  @media (max-width: 720px) { .catalog__grid { grid-template-columns: 1fr; } }
+
+  /* ===================== DIRECT FEED (build-your-own) ===================== */
+  .df-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 22px; }
+  .df-step__head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .df-step__num { flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%; background: var(--sidebar); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .df-step__title { font-size: 14px; font-weight: 700; color: var(--text); }
+  .df-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; align-items: end; }
+  .df-col-wide { grid-column: 1 / -1; }
+  .df-actions { display: flex; align-items: center; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
+  .df-paste { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .df-textarea { min-height: 92px; font-size: 12px; resize: vertical; line-height: 1.5; }
+  .btn-ghost { background: #fff; border: 1px solid var(--input-border); color: var(--text); align-self: flex-start; }
+  .btn-ghost:hover { background: #f7f9fc; }
+  .df-map { display: flex; flex-direction: column; gap: 8px; }
+  .df-map-row { display: grid; grid-template-columns: 132px 1fr auto; gap: 12px; align-items: center; }
+  .df-map-row__label { font-size: 13px; font-weight: 600; color: var(--text); }
+  .df-map-row select { width: 100%; }
+  .df-map-row__sample { font-size: 11px; color: var(--text-soft); font-family: ui-monospace, Menlo, Consolas, monospace; white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+  .df-map-row[data-mapped="true"] .df-map-row__label { color: var(--success); }
+  @media (max-width: 640px) { .df-grid { grid-template-columns: 1fr; } .df-map-row { grid-template-columns: 1fr auto; } }
+
   /* ===================== CARDS ===================== */
   .card {
     padding: 28px;
@@ -2531,6 +2647,77 @@
             </div>
           </div>
 
+          <!-- ============= INTEGRATIONS CATALOG ============= -->
+          <div class="catalog">
+            <div class="catalog__head">
+              <h3 class="catalog__title">Integrations</h3>
+              <p class="catalog__sub">Choose the data sources that feed your chat weather card. Enable any you want — each is configured independently below.</p>
+            </div>
+            <div class="catalog__grid">
+
+              <!-- 1 · Open-Meteo (available, own toggle) -->
+              <div class="cat-tile" data-int="open-meteo" data-state="available" data-on="false">
+                <span class="cat-tile__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></span>
+                <span class="cat-tile__body">
+                  <span class="cat-tile__name">Open-Meteo <em class="cat-tile__tag">Weather</em></span>
+                  <span class="cat-tile__desc">Live temps, wind &amp; conditions — global, automatic.</span>
+                </span>
+                <span class="cat-tile__ctrl">
+                  <label class="cat-switch" title="Enable Open-Meteo">
+                    <input type="checkbox" id="cat-toggle-open-meteo" aria-label="Enable Open-Meteo">
+                    <span class="cat-switch__track"></span>
+                  </label>
+                </span>
+              </div>
+
+              <!-- 2 · Direct Feed (build-your-own) -->
+              <div class="cat-tile" data-int="direct-feed" data-state="available" data-on="false">
+                <span class="cat-tile__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+                <span class="cat-tile__body">
+                  <span class="cat-tile__name">Direct Feed <em class="cat-tile__tag">Build your own</em></span>
+                  <span class="cat-tile__desc">Your resort's own API — auto-detect fields &amp; map them.</span>
+                </span>
+                <span class="cat-tile__ctrl">
+                  <label class="cat-switch" title="Enable Direct Feed">
+                    <input type="checkbox" id="cat-toggle-direct-feed" aria-label="Enable Direct Feed">
+                    <span class="cat-switch__track"></span>
+                  </label>
+                </span>
+              </div>
+
+              <!-- 3 · SnoCountry (available, toggle) -->
+              <div class="cat-tile" data-int="snocountry" data-state="available" data-on="false">
+                <span class="cat-tile__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M4 20l5-10 3.5 6 2.5-4 6 8"/><circle cx="9" cy="5.5" r="1.3"/></svg></span>
+                <span class="cat-tile__body">
+                  <span class="cat-tile__name">SnoCountry <em class="cat-tile__tag">Snow Report</em></span>
+                  <span class="cat-tile__desc">Base depth, new snow, lifts &amp; trails open.</span>
+                </span>
+                <span class="cat-tile__ctrl">
+                  <label class="cat-switch" title="Enable SnoCountry">
+                    <input type="checkbox" id="cat-toggle-snocountry" aria-label="Enable SnoCountry">
+                    <span class="cat-switch__track"></span>
+                  </label>
+                </span>
+              </div>
+
+              <!-- 4 · OpenSnow (forecast aggregator) -->
+              <div class="cat-tile" data-int="opensnow" data-state="available" data-on="false">
+                <span class="cat-tile__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.6 1.5A3.5 3.5 0 0 0 6.5 19z"/></svg></span>
+                <span class="cat-tile__body">
+                  <span class="cat-tile__name">OpenSnow <em class="cat-tile__tag">Forecast</em></span>
+                  <span class="cat-tile__desc">Ski-specific weather forecasting.</span>
+                </span>
+                <span class="cat-tile__ctrl">
+                  <label class="cat-switch" title="Enable OpenSnow">
+                    <input type="checkbox" id="cat-toggle-opensnow" aria-label="Enable OpenSnow">
+                    <span class="cat-switch__track"></span>
+                  </label>
+                </span>
+              </div>
+
+            </div>
+          </div>
+
           <!-- ============= WEATHER SOURCE ACCORDION ============= -->
           <div class="acc-wrap">
 
@@ -2916,31 +3103,172 @@
             </div><!-- /acc-body -->
           </section><!-- /Open-Meteo card -->
 
-          <!-- ===== Resort Direct (coming soon) ===== -->
-          <section class="acc-card acc-card--soon" data-open="false" data-acc-id="resort-direct">
+          <!-- ===== Direct Feed (build-your-own card) ===== -->
+          <section class="acc-card" data-open="false" data-acc-id="direct-feed">
             <button type="button" class="acc-head" aria-expanded="false">
               <span class="acc-head__icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
               </span>
               <span class="acc-head__titles">
-                <span class="acc-head__title">Resort Direct</span>
-                <span class="acc-head__desc">Bring your own resort feed — point us at any JSON endpoint</span>
+                <span class="acc-head__title">Direct Feed</span>
+                <span class="acc-head__desc">Build your own card from your resort's API</span>
               </span>
-              <span class="acc-badge acc-badge--soon">Coming soon</span>
+              <span class="acc-badge acc-badge--opt">Custom</span>
               <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
             </button>
             <div class="acc-body">
-              <div class="soon-panel">
-                <span class="soon-panel__badge">🚧 Coming soon</span>
-                <p class="soon-panel__text">
-                  Point us at your resort's own weather or snow feed and we'll wire it straight into the chat card — no code.
-                  We auto-detect the format (SnoCountry, on-mountain sensors, or custom JSON), map it to our
-                  fields, and poll it every 15 minutes. Until then, <strong>Open-Meteo</strong> above covers live conditions
-                  for any resort, anywhere.
-                </p>
+              <ol class="df-steps">
+
+                <!-- Step 1 · connect -->
+                <li class="df-step">
+                  <div class="df-step__head"><span class="df-step__num">1</span><span class="df-step__title">Connect your feed</span></div>
+                  <div class="df-step__body">
+                    <div class="df-grid">
+                      <div class="ls-field df-col-wide">
+                        <label class="label">Endpoint URL</label>
+                        <input id="df-url" class="input mono" placeholder="https://your-resort.com/api/conditions.json">
+                      </div>
+                      <div class="ls-field">
+                        <label class="label">Auth</label>
+                        <select id="df-auth" class="input">
+                          <option value="none">None</option>
+                          <option value="bearer">Bearer token</option>
+                          <option value="header">API key header</option>
+                          <option value="query">API key (query param)</option>
+                        </select>
+                      </div>
+                      <div class="ls-field df-auth-field" id="df-auth-name-wrap" style="display:none">
+                        <label class="label" id="df-auth-name-label">Header name</label>
+                        <input id="df-auth-name" class="input mono" placeholder="X-API-Key">
+                      </div>
+                      <div class="ls-field df-auth-field" id="df-auth-key-wrap" style="display:none">
+                        <label class="label">Key / token <span class="opt">setup only</span></label>
+                        <input id="df-auth-key" class="input mono" type="password" placeholder="credential" autocomplete="off">
+                      </div>
+                    </div>
+                    <div class="df-actions">
+                      <button type="button" class="btn btn-primary" id="df-detect">Detect fields</button>
+                      <button type="button" class="ls-link" id="df-paste-toggle">or paste a sample response</button>
+                    </div>
+                    <div class="df-paste" id="df-paste" hidden>
+                      <textarea id="df-paste-json" class="input mono df-textarea" placeholder='{ "current": { "temp": 34, "wind": 12 }, "snow": { "base": 62, "new24": 6 }, "lifts": { "open": 7, "total": 9 } }'></textarea>
+                      <button type="button" class="btn btn-ghost" id="df-detect-paste">Detect from pasted JSON</button>
+                    </div>
+                    <p class="help-text">CORS-blocked or secret-protected feeds need the GetSkiBots proxy in production — for setup you can paste a sample response. Credentials preview only; in production they're stored <strong>server-side</strong>.</p>
+                    <div class="ls-msg" id="df-msg" hidden></div>
+                  </div>
+                </li>
+
+                <!-- Step 2 · map detected fields -->
+                <li class="df-step" id="df-step2" hidden>
+                  <div class="df-step__head"><span class="df-step__num">2</span><span class="df-step__title">Map detected fields to your card</span></div>
+                  <div class="df-step__body">
+                    <p class="help-text" id="df-detected-count"></p>
+                    <div class="df-map" id="df-map"></div>
+                  </div>
+                </li>
+
+                <!-- Step 3 · preview -->
+                <li class="df-step" id="df-step3" hidden>
+                  <div class="df-step__head"><span class="df-step__num">3</span><span class="df-step__title">Preview your card</span></div>
+                  <div class="df-step__body">
+                    <div class="ls-preview" id="df-preview">
+                      <div class="ls-preview-head"><span class="ls-dot"></span><span class="ls-preview-title">Your card</span></div>
+                      <div class="ls-grid" id="df-grid"></div>
+                      <div class="ls-preview-foot">Source · <strong>Direct Feed</strong></div>
+                    </div>
+                  </div>
+                </li>
+
+              </ol>
+            </div>
+          </section><!-- /Direct Feed card -->
+
+          <!-- ===== Live Status (resort-reported snow & operations) ===== -->
+          <section class="acc-card" data-open="false" data-acc-id="live-status">
+            <button type="button" class="acc-head" aria-expanded="false">
+              <span class="acc-head__icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M4 20l5-10 3.5 6 2.5-4 6 8"/><circle cx="9" cy="5.5" r="1.3"/></svg>
+              </span>
+              <span class="acc-head__titles">
+                <span class="acc-head__title">Live Status</span>
+                <span class="acc-head__desc">Snow, lifts &amp; trails — reported by the resort, via SnoCountry</span>
+              </span>
+              <span class="acc-badge acc-badge--opt">Optional</span>
+              <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="acc-body">
+              <p class="ls-intro">Open-Meteo above covers live <strong>weather</strong>. Live Status adds the data only the mountain reports — <strong>base depth, new snow, lifts &amp; trails open, surface</strong> — for any resort in <strong>SnoCountry</strong> (one ID, hundreds of resorts).</p>
+
+              <div class="ls-form">
+                <div class="ls-field ls-field--provider">
+                  <label class="label">Provider</label>
+                  <div class="ls-provider"><span class="ls-provider-dot"></span>SnoCountry</div>
+                </div>
+                <div class="ls-field">
+                  <label class="label">Resort ID</label>
+                  <input id="ls-resort-id" class="input mono" placeholder="e.g. 802006" value="802006">
+                </div>
+                <div class="ls-field">
+                  <label class="label">API key <span class="opt">pre-set</span></label>
+                  <input id="ls-api-key" class="input mono" type="password" placeholder="SnoCountry key" autocomplete="off">
+                </div>
+                <button type="button" class="btn btn-primary" id="ls-fetch">Fetch</button>
+              </div>
+              <p class="help-text">The GetSkiBots SnoCountry key is <strong>pre-configured</strong> — just set a Resort ID and fetch (one key covers every SnoCountry resort). Override the key only for a different account. Prefer not to fetch? <button type="button" class="ls-link" id="ls-sample">See a sample</button>.</p>
+
+              <div class="ls-preview" id="ls-preview" hidden>
+                <div class="ls-preview-head">
+                  <span class="ls-dot"></span>
+                  <span class="ls-preview-title" id="ls-preview-title">Live Status</span>
+                  <span class="ls-preview-time" id="ls-preview-time"></span>
+                </div>
+                <div class="ls-grid" id="ls-grid"></div>
+                <div class="ls-preview-foot">Source · <strong>SnoCountry</strong></div>
+              </div>
+              <div class="ls-msg" id="ls-msg" hidden></div>
+            </div>
+          </section><!-- /Live Status card -->
+
+          <!-- ===== OpenSnow (forecast aggregator) ===== -->
+          <section class="acc-card" data-open="false" data-acc-id="opensnow">
+            <button type="button" class="acc-head" aria-expanded="false">
+              <span class="acc-head__icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.6 1.5A3.5 3.5 0 0 0 6.5 19z"/></svg>
+              </span>
+              <span class="acc-head__titles">
+                <span class="acc-head__title">OpenSnow</span>
+                <span class="acc-head__desc">Ski-specific weather forecasting</span>
+              </span>
+              <span class="acc-badge acc-badge--opt">Forecast</span>
+              <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="acc-body">
+              <p class="ls-intro">OpenSnow adds <strong>ski-specific forecasting</strong> (its response maps almost 1:1 to our model). Connect your OpenSnow location + key.</p>
+              <div class="ls-form">
+                <div class="ls-field ls-field--provider">
+                  <label class="label">Provider</label>
+                  <div class="ls-provider"><span class="ls-provider-dot"></span>OpenSnow</div>
+                </div>
+                <div class="ls-field">
+                  <label class="label">Location ID</label>
+                  <input id="os-loc" class="input mono" placeholder="e.g. jackson-hole">
+                </div>
+                <div class="ls-field">
+                  <label class="label">API key</label>
+                  <input id="os-key" class="input mono" type="password" placeholder="OpenSnow key" autocomplete="off">
+                </div>
+                <button type="button" class="btn btn-primary" id="os-fetch">Fetch</button>
+              </div>
+              <p class="help-text"><strong>Note:</strong> OpenSnow API access isn't approved on this account yet — the card is wired and ready; enter a key to go live once approved.</p>
+              <div class="ls-msg" id="os-msg" hidden></div>
+              <div class="ls-preview" id="os-preview" hidden>
+                <div class="ls-preview-head"><span class="ls-dot"></span><span class="ls-preview-title" id="os-preview-title">Forecast</span></div>
+                <div class="ls-grid" id="os-grid"></div>
+                <div class="ls-preview-foot">Source · <strong>OpenSnow</strong></div>
               </div>
             </div>
-          </section><!-- /Resort Direct card -->
+          </section><!-- /OpenSnow card -->
 
           </div><!-- /acc-wrap -->
         </section>
@@ -2953,6 +3281,7 @@
 // Live conditions come from the shared Open-Meteo adapter (same module the chat
 // widget uses) so the dashboard preview and production widget can never drift.
 import { fetchOpenMeteo, conditionIcon, mToFt, ftToM } from './src/shared/weather/open-meteo.js';
+import { normalizeSnoCountry } from './src/shared/weather/snocountry.js';
 
 (function(){
   const SOURCES = {
@@ -4308,6 +4637,298 @@ import { fetchOpenMeteo, conditionIcon, mToFt, ftToM } from './src/shared/weathe
       }, 200);
     });
   });
+
+  // ===========================================================================
+  // LIVE STATUS (SnoCountry) — preview the resort-reported snow/ops layer.
+  // The key is used transiently for the preview fetch only; never saved
+  // (production stores provider + resort ID; the key lives server-side).
+  // ===========================================================================
+  (function initLiveStatus() {
+    const idEl = document.getElementById('ls-resort-id');
+    const keyEl = document.getElementById('ls-api-key');
+    const fetchBtn = document.getElementById('ls-fetch');
+    const sampleBtn = document.getElementById('ls-sample');
+    const previewEl = document.getElementById('ls-preview');
+    const gridEl = document.getElementById('ls-grid');
+    const titleEl = document.getElementById('ls-preview-title');
+    const timeEl = document.getElementById('ls-preview-time');
+    const msgEl = document.getElementById('ls-msg');
+    if (!fetchBtn) return;
+
+    // Baked GetSkiBots SnoCountry key — one key covers every SnoCountry resort, so the
+    // admin only sets a Resort ID. Pre-fills the field; the input still allows an override.
+    // NOTE: this repo is public + auto-deploys, so this key is publicly visible by design.
+    const SNOCOUNTRY_KEY = 'colorado935.travel216';
+    if (keyEl && !keyEl.value) keyEl.value = SNOCOUNTRY_KEY;
+
+    // A realistic in-season report so the preview is rich even off-season.
+    const SAMPLE = { items: [{
+      id: '802006', resortName: 'Jay Peak Resort', reportDateTime: '2026-01-18 06:30:00',
+      operatingStatus: 'Open', primarySurfaceCondition: 'Packed Powder',
+      newSnowMin: '5', newSnowMax: '8', snowLast48Hours: '14',
+      avgBaseDepthMin: '48', avgBaseDepthMax: '62',
+      openDownHillLifts: '7', maxOpenDownHillLifts: '9',
+      openDownHillTrails: '74', maxOpenDownHillTrails: '81',
+      openDownHillAcres: '350', maxOpenDownHillAcres: '385', openDownHillPercent: '91',
+      weatherToday_Condition: 'Snow Showers', weatherToday_WindDirection: 'NW'
+    }]};
+
+    function showMsg(text, isErr) {
+      msgEl.textContent = text;
+      msgEl.className = 'ls-msg' + (isErr ? ' ls-msg--err' : '');
+      msgEl.hidden = false;
+    }
+    function inches(v) { return v != null ? v + '<span class="ls-cell-unit">"</span>' : null; }
+    function pairCell(p) {
+      if (!p) return null;
+      return (p.open != null ? p.open : '–') + '<span class="ls-cell-unit"> / ' + (p.total != null ? p.total : '–') + '</span>';
+    }
+
+    function render(model) {
+      if (!model) { showMsg('No report returned for that resort ID.', true); return; }
+      msgEl.hidden = true;
+      titleEl.textContent = model.resort_name || 'Live Status';
+      timeEl.textContent = model.report_time ? ('reported ' + model.report_time.replace(/:\d\d$/, '')) : '';
+      const cells = [
+        { k: 'Status',       v: model.operating_status },
+        { k: 'Base Depth',   v: inches(model.base_depth) },
+        { k: 'New Snow 24h', v: inches(model.new_snow_24h) },
+        { k: 'Surface',      v: model.surface },
+        { k: 'Lifts Open',   v: pairCell(model.lifts) },
+        { k: 'Trails Open',  v: pairCell(model.trails) }
+      ].filter(c => c.v != null && c.v !== '');
+      gridEl.innerHTML = cells.length
+        ? cells.map(c => '<div class="ls-cell"><div class="ls-cell-k">' + c.k + '</div><div class="ls-cell-v">' + c.v + '</div></div>').join('')
+        : '<div class="ls-empty">This resort isn\'t reporting right now (off-season). In-season, depth / new snow / lifts / trails fill in here.</div>';
+      previewEl.hidden = false;
+    }
+
+    fetchBtn.addEventListener('click', async () => {
+      const id = (idEl.value || '').trim();
+      const key = (keyEl.value || '').trim() || SNOCOUNTRY_KEY;
+      if (!id) { showMsg('Enter a resort ID.', true); return; }
+      fetchBtn.disabled = true;
+      const label = fetchBtn.textContent;
+      fetchBtn.textContent = 'Fetching…';
+      try {
+        const url = 'https://feeds.snocountry.net/getSnowReport.php?apiKey='
+          + encodeURIComponent(key) + '&ids=' + encodeURIComponent(id) + '&output=json';
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        render(normalizeSnoCountry(await res.json()));
+      } catch (e) {
+        showMsg('Could not reach SnoCountry: ' + e.message, true);
+      } finally {
+        fetchBtn.disabled = false;
+        fetchBtn.textContent = label;
+      }
+    });
+
+    if (sampleBtn) sampleBtn.addEventListener('click', () => render(normalizeSnoCountry(SAMPLE)));
+  })();
+
+  // ===========================================================================
+  // INTEGRATIONS CATALOG — each source is an INDEPENDENT selection; NONE on by
+  // default. Toggling a tile reveals/hides its config card (persisted per source).
+  // Direct Feed + OpenSnow are gated placeholders (no config yet).
+  // ===========================================================================
+  (function initCatalog() {
+    const STORE = 'gsb-weather-integrations-v1';
+    const read = () => { try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { return {}; } };
+    const write = (s) => { try { localStorage.setItem(STORE, JSON.stringify(s)); } catch (e) {} };
+    const state = read();
+
+    const INTS = [
+      { id: 'open-meteo',  toggle: 'cat-toggle-open-meteo',  card: '[data-acc-id="open-meteo"]' },
+      { id: 'direct-feed', toggle: 'cat-toggle-direct-feed', card: '[data-acc-id="direct-feed"]' },
+      { id: 'snocountry',  toggle: 'cat-toggle-snocountry',  card: '[data-acc-id="live-status"]' },
+      { id: 'opensnow',    toggle: 'cat-toggle-opensnow',    card: '[data-acc-id="opensnow"]' }
+    ];
+
+    INTS.forEach((cfg) => {
+      const toggle = document.getElementById(cfg.toggle);
+      const tile = document.querySelector('.cat-tile[data-int="' + cfg.id + '"]');
+      const card = document.querySelector(cfg.card);
+      if (!toggle || !card) return;
+
+      function apply(on, scroll) {
+        toggle.checked = on;
+        if (tile) tile.setAttribute('data-on', on ? 'true' : 'false');
+        card.style.display = on ? '' : 'none';
+        if (on) {
+          card.setAttribute('data-open', 'true');
+          const head = card.querySelector('.acc-head');
+          if (head) head.setAttribute('aria-expanded', 'true');
+          if (scroll) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+
+      apply(!!state[cfg.id], false);   // default OFF — nothing pre-enabled
+      toggle.addEventListener('change', () => {
+        state[cfg.id] = toggle.checked;
+        write(state);
+        apply(toggle.checked, toggle.checked);
+      });
+    });
+  })();
+
+  // ===========================================================================
+  // DIRECT FEED — build-your-own card. Connect an endpoint (or paste a sample) →
+  // auto-detect (flatten) the JSON into fields → map fields to card cells → preview.
+  // ===========================================================================
+  (function initDirectFeed() {
+    const $ = (id) => document.getElementById(id);
+    const urlEl = $('df-url'), authEl = $('df-auth'),
+      authNameWrap = $('df-auth-name-wrap'), authNameLabel = $('df-auth-name-label'), authNameEl = $('df-auth-name'),
+      authKeyWrap = $('df-auth-key-wrap'), authKeyEl = $('df-auth-key'),
+      detectBtn = $('df-detect'), pasteToggle = $('df-paste-toggle'), pasteWrap = $('df-paste'),
+      pasteJson = $('df-paste-json'), detectPasteBtn = $('df-detect-paste'),
+      msgEl = $('df-msg'), step2 = $('df-step2'), step3 = $('df-step3'),
+      mapEl = $('df-map'), gridEl = $('df-grid'), countEl = $('df-detected-count');
+    if (!detectBtn) return;
+
+    // Card cells the user can fill (mapping targets).
+    const TARGETS = [
+      { key: 'base_temp', label: 'Base Temp', unit: '°' },
+      { key: 'summit_temp', label: 'Summit Temp', unit: '°' },
+      { key: 'conditions', label: 'Conditions' },
+      { key: 'wind', label: 'Wind', unit: ' mph' },
+      { key: 'new_snow_24h', label: 'New Snow 24h', unit: '"' },
+      { key: 'base_depth', label: 'Base Depth', unit: '"' },
+      { key: 'lifts_open', label: 'Lifts Open' },
+      { key: 'trails_open', label: 'Trails Open' },
+      { key: 'surface', label: 'Surface' },
+      { key: 'status', label: 'Status' }
+    ];
+    // Heuristics to auto-guess a target from a field path.
+    const GUESS = [
+      { key: 'summit_temp', re: /(summit|top|peak).*temp|temp.*(summit|top|peak)/i },
+      { key: 'base_temp', re: /temp/i },
+      { key: 'base_depth', re: /(base|snow).*(depth|base)|basedepth|snowbase/i },
+      { key: 'new_snow_24h', re: /(new|24|fresh).*snow|snow.*(24|new)/i },
+      { key: 'wind', re: /wind/i },
+      { key: 'conditions', re: /condition|weather|sky/i },
+      { key: 'surface', re: /surface|primarycond/i },
+      { key: 'lifts_open', re: /lift.*open|open.*lift|liftsopen/i },
+      { key: 'trails_open', re: /(trail|run).*open|open.*(trail|run)/i },
+      { key: 'status', re: /status|operating|isopen/i }
+    ];
+
+    let fields = [];   // [{ path, value }]
+    let mapping = {};  // targetKey -> path
+
+    function flatten(obj, prefix, out) {
+      out = out || []; prefix = prefix || '';
+      if (obj == null) return out;
+      if (Array.isArray(obj)) { if (obj.length) flatten(obj[0], prefix + '[0]', out); return out; }
+      if (typeof obj === 'object') { for (const k of Object.keys(obj)) flatten(obj[k], prefix ? prefix + '.' + k : k, out); return out; }
+      out.push({ path: prefix, value: obj });   // primitive leaf
+      return out;
+    }
+    function showMsg(text, isErr) { msgEl.textContent = text; msgEl.className = 'ls-msg' + (isErr ? ' ls-msg--err' : ''); msgEl.hidden = false; }
+    function valueFor(path) { const f = fields.find((f) => f.path === path); return f ? f.value : null; }
+
+    function autoGuess() {
+      mapping = {};
+      for (const g of GUESS) {
+        if (mapping[g.key]) continue;
+        const taken = Object.values(mapping);
+        const f = fields.find((f) => g.re.test(f.path) && !taken.includes(f.path));
+        if (f) mapping[g.key] = f.path;
+      }
+    }
+    function renderMap() {
+      mapEl.innerHTML = TARGETS.map((t) => {
+        const sel = mapping[t.key] || '';
+        const opts = '<option value="">— not mapped —</option>' +
+          fields.map((f) => '<option value="' + f.path + '"' + (sel === f.path ? ' selected' : '') + '>' + f.path + '</option>').join('');
+        const sample = sel ? String(valueFor(sel)) : '';
+        return '<div class="df-map-row" data-mapped="' + (sel ? 'true' : 'false') + '">' +
+          '<span class="df-map-row__label">' + t.label + '</span>' +
+          '<select data-target="' + t.key + '">' + opts + '</select>' +
+          '<span class="df-map-row__sample">' + (sample !== '' ? '= ' + sample : '') + '</span></div>';
+      }).join('');
+      mapEl.querySelectorAll('select').forEach((s) => s.addEventListener('change', () => {
+        if (s.value) mapping[s.dataset.target] = s.value; else delete mapping[s.dataset.target];
+        renderMap(); renderPreview();
+      }));
+    }
+    function renderPreview() {
+      const cells = TARGETS.filter((t) => mapping[t.key] != null).map((t) => {
+        const v = valueFor(mapping[t.key]);
+        return { k: t.label, v: (v == null || v === '') ? null : v + (t.unit || '') };
+      }).filter((c) => c.v != null);
+      gridEl.innerHTML = cells.length
+        ? cells.map((c) => '<div class="ls-cell"><div class="ls-cell-k">' + c.k + '</div><div class="ls-cell-v">' + c.v + '</div></div>').join('')
+        : '<div class="ls-empty">Map a field above to see it here.</div>';
+    }
+    function ingest(json) {
+      fields = flatten(json);
+      if (!fields.length) { showMsg('No readable fields found in that response.', true); return; }
+      msgEl.hidden = true;
+      autoGuess();
+      countEl.textContent = fields.length + ' fields detected · ' + Object.keys(mapping).length + ' auto-mapped. Adjust any below.';
+      renderMap(); renderPreview();
+      step2.hidden = false; step3.hidden = false;
+    }
+
+    function buildUrl() {
+      let url = (urlEl.value || '').trim();
+      if (authEl.value === 'query' && authKeyEl.value && authNameEl.value)
+        url += (url.includes('?') ? '&' : '?') + encodeURIComponent(authNameEl.value) + '=' + encodeURIComponent(authKeyEl.value);
+      return url;
+    }
+    function buildHeaders() {
+      const h = {};
+      if (authEl.value === 'bearer' && authKeyEl.value) h['Authorization'] = 'Bearer ' + authKeyEl.value;
+      if (authEl.value === 'header' && authKeyEl.value && authNameEl.value) h[authNameEl.value] = authKeyEl.value;
+      return h;
+    }
+
+    authEl.addEventListener('change', () => {
+      const v = authEl.value;
+      authKeyWrap.style.display = v === 'none' ? 'none' : '';
+      authNameWrap.style.display = (v === 'header' || v === 'query') ? '' : 'none';
+      authNameLabel.textContent = v === 'query' ? 'Query param' : 'Header name';
+      authNameEl.placeholder = v === 'query' ? 'apikey' : 'X-API-Key';
+    });
+    detectBtn.addEventListener('click', async () => {
+      if (!(urlEl.value || '').trim()) { showMsg('Enter an endpoint URL, or paste a sample response.', true); return; }
+      detectBtn.disabled = true; const label = detectBtn.textContent; detectBtn.textContent = 'Detecting…';
+      try {
+        const res = await fetch(buildUrl(), { headers: buildHeaders() });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        ingest(await res.json());
+      } catch (e) {
+        showMsg('Could not reach the feed (' + e.message + '). It may be CORS-blocked — paste a sample response instead.', true);
+      } finally { detectBtn.disabled = false; detectBtn.textContent = label; }
+    });
+    pasteToggle.addEventListener('click', () => { pasteWrap.hidden = !pasteWrap.hidden; });
+    detectPasteBtn.addEventListener('click', () => {
+      try { ingest(JSON.parse(pasteJson.value)); }
+      catch (e) { showMsg("That isn't valid JSON: " + e.message, true); }
+    });
+  })();
+
+  // ===========================================================================
+  // OPENSNOW — card wired & ready; live fetch activates once API access is approved.
+  // ===========================================================================
+  (function initOpenSnow() {
+    const fetchBtn = document.getElementById('os-fetch');
+    const msgEl = document.getElementById('os-msg');
+    const keyEl = document.getElementById('os-key');
+    if (!fetchBtn) return;
+    fetchBtn.addEventListener('click', () => {
+      msgEl.hidden = false;
+      if (!keyEl.value) {
+        msgEl.className = 'ls-msg ls-msg--err';
+        msgEl.textContent = "Enter an OpenSnow API key. Access isn't approved on this account yet.";
+        return;
+      }
+      msgEl.className = 'ls-msg';
+      msgEl.textContent = 'Key accepted — live fetch activates once OpenSnow approves API access for this account.';
+    });
+  })();
 
 })();
 </script>
