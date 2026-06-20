@@ -514,6 +514,15 @@
                 </div>
               </div>
 
+              <!-- Mobile: force the slide-in pill (clears bottom CTAs on phones) -->
+              <div class="toggle-row toggle-row--standalone" style="margin-bottom:16px">
+                <div class="toggle-row__main">
+                  <div class="toggle-row__title" data-info="On phones, always use the vertical slide-in pill — whatever style you picked for desktop. It auto-hides on scroll so it never covers booking or 'Add to cart' buttons. Desktop is unaffected.">Use the slide-in pill on mobile</div>
+                  <div class="toggle-row__desc">On phone-size screens the launcher becomes the slide-in pill so it stays clear of bottom buttons. Desktop keeps your chosen style.</div>
+                </div>
+                <button type="button" class="toggle" id="toggleMobileSlideIn" role="switch" aria-checked="true"></button>
+              </div>
+
               <!-- Corner radius (master) — rounds the launcher + chat surface so they match -->
               <div class="field">
                 <label class="field__label" for="cornerRadius" data-info="Styles the corners of the chat launcher and the open chat window together, so the rounding best matches your website and brand.">Corner radius</label>

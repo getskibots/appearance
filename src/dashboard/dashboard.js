@@ -1190,6 +1190,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     setToggle('toggleRating', state.askForRating);
     setToggle('toggleVoice', state.realtimeVoice);
     setToggle('toggleDisableInput', state.disableTextInput);
+    setToggle('toggleMobileSlideIn', state.mobileSlideIn !== false);
 
     if (document.activeElement !== $('widgetName')) $('widgetName').value = state.widgetName;
     if (document.activeElement !== $('inputPlaceholder')) $('inputPlaceholder').value = state.inputPlaceholder;
@@ -1882,6 +1883,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   bindToggle('togglePopup', function(){ return state.popupMessagePreview; }, function(v){ state.popupMessagePreview = v; });
   bindToggle('toggleRating', function(){ return state.askForRating; }, function(v){ state.askForRating = v; });
   bindToggle('toggleVoice', function(){ return state.realtimeVoice; }, function(v){ state.realtimeVoice = v; });
+  bindToggle('toggleMobileSlideIn', function(){ return state.mobileSlideIn !== false; }, function(v){ state.mobileSlideIn = v; });
   document.querySelectorAll('#typingTiles .typing-tile').forEach(function(t){
     t.addEventListener('click', function(){ state.typingIndicator = t.getAttribute('data-value'); render(); });
   });
