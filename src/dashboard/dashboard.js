@@ -214,6 +214,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // Default: the vertical Slide-in pill — slides off on scroll-down to stay clear of
     // checkout/CTA elements, the preferred launcher for the BotScrew handoff.
     bubbleStyle: 'slidein',
+    // On phones, force the slide-in pill regardless of the chosen style — it
+    // auto-hides on scroll to clear bottom CTAs (booking / add-to-cart). On by default.
+    mobileSlideIn: true,
     customIconUrl: null,
     customIconSize: 56,         // px diameter of the custom launcher (the image fills it)
     slideState: 'visible',
@@ -1028,7 +1031,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
 
     canvas.setAttribute('data-variant', state.layoutVariant);
     canvas.setAttribute('data-device', previewDevice);
-    launcher.setAttribute('data-icon-style', state.bubbleStyle);
+    // Mobile preview forces the slide-in pill when mobileSlideIn is on.
+    var effLauncherStyle = (state.mobileSlideIn !== false && previewDevice === 'mobile') ? 'slidein' : state.bubbleStyle;
+    launcher.setAttribute('data-icon-style', effLauncherStyle);
     // Side Panel distance-from-edge (only meaningful for the side layout).
     var panelSide = Math.min(160, Math.max(0, state.panelSideSpacing != null ? state.panelSideSpacing : 24));
     document.documentElement.style.setProperty('--gsb-panel-side', panelSide + 'px');
@@ -2245,6 +2250,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       typingIndicator: state.typingIndicator,
       ctaText: state.ctaText,
       bubbleStyle: state.bubbleStyle,
+      mobileSlideIn: state.mobileSlideIn,
       customIconUrl: state.customIconUrl,
       customIconSize: state.customIconSize,
       slideState: state.slideState,

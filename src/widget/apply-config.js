@@ -36,6 +36,26 @@ function relativeLuminance(hex) {
 
 function setVar(name, val) { if (val != null) document.documentElement.style.setProperty(name, val); }
 function setText(id, val) { var el = document.getElementById(id); if (el && val != null) el.textContent = val; }
+
+/* Mobile launcher override: phones get the slide-in pill (it auto-hides on scroll
+ * to clear bottom CTAs), if mobileSlideIn is on. Reads the chosen style + flag off
+ * the launcher's data-* (set in applyWidgetConfig) and picks the effective style. */
+var MOBILE_LAUNCHER_BP = 768;
+function applyEffectiveLauncherStyle() {
+  var l = document.querySelector('.gsb-launcher');
+  if (!l) return;
+  var base = l.getAttribute('data-base-icon-style');
+  if (!base) return;
+  var mobileSlide = l.getAttribute('data-mobile-slidein') !== 'false';
+  var isMobile = (typeof window !== 'undefined') && window.innerWidth <= MOBILE_LAUNCHER_BP;
+  l.setAttribute('data-icon-style', (mobileSlide && isMobile) ? 'slidein' : base);
+}
+var _mobileLauncherResizeBound = false;
+function bindMobileLauncherResize() {
+  if (_mobileLauncherResizeBound || typeof window === 'undefined') return;
+  _mobileLauncherResizeBound = true;
+  window.addEventListener('resize', applyEffectiveLauncherStyle, { passive: true });
+}
 function escHtml(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
 function escAttr(s) { return escHtml(s).replace(/"/g, '&quot;'); }
 
@@ -152,7 +172,15 @@ export function applyWidgetConfig(config) {
   /* ---- Launcher attributes ---- */
   var launcher = document.querySelector('.gsb-launcher');
   if (launcher) {
-    if (config.bubbleStyle) launcher.setAttribute('data-icon-style', config.bubbleStyle);
+    if (config.bubbleStyle) {
+      // Store the chosen style + the mobile-slide-in flag; the effective style
+      // (chosen, or forced to 'slidein' on a phone-width viewport) is applied here
+      // and re-applied on resize so it tracks orientation/breakpoint changes.
+      launcher.setAttribute('data-base-icon-style', config.bubbleStyle);
+      launcher.setAttribute('data-mobile-slidein', config.mobileSlideIn === false ? 'false' : 'true');
+      applyEffectiveLauncherStyle();
+      bindMobileLauncherResize();
+    }
     var isPill = config.bubbleStyle === 'enhanced' || config.bubbleStyle === 'slidein';
     launcher.setAttribute('data-show-weather', (pill.weather && isPill) ? 'true' : 'false');
     launcher.setAttribute('data-show-cta', (pill.needHelpCta && isPill) ? 'true' : 'false');
