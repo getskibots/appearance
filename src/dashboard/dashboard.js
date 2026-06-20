@@ -1610,7 +1610,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
         syncSimulateButton();
         render();
       }
-    }, 1200);
+    }, 3000);
   }
 
   function syncSimulateButton() {

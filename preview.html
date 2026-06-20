@@ -890,7 +890,7 @@
         setSlide(d > 0 ? 'hidden' : 'visible');   // down = hide, up = show
         lastY = y;
         if (idleTimer) clearTimeout(idleTimer);
-        idleTimer = setTimeout(function() { if (!body.classList.contains('modal-open')) setSlide('visible'); }, 1200);
+        idleTimer = setTimeout(function() { if (!body.classList.contains('modal-open')) setSlide('visible'); }, 3000);
       }
       // Direct (no rAF) — the work is trivial and this is robust everywhere.
       window.addEventListener('scroll', onScroll, { passive: true });
