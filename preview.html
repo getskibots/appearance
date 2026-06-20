@@ -277,10 +277,16 @@
   }
   /* The shared widget CSS locks html/body scroll at <=900px (for the fullscreen
      mobile chat). On the demo the PAGE must scroll when the chat is closed — re-enable
-     it, and only re-lock while the chat is open. */
+     it, and only re-lock while the chat is open. Use HIGHER-SPECIFICITY selectors
+     (:root beats html, `html body` beats body) so this wins regardless of CSS load
+     order — the production build hoists the bundled widget CSS *after* this block,
+     which would otherwise let the lock win and freeze the page on mobile. */
   @media (max-width: 900px) {
-    html, body { overflow: visible !important; height: auto !important; }
-    body.modal-open { overflow: hidden !important; height: 100dvh !important; }
+    :root, html body { overflow: visible !important; height: auto !important; }
+    /* Re-lock BOTH html + body while the chat is open. :root:has() relocks <html>
+       (its specificity beats the :root unlock); browsers without :has() still get
+       the body lock, which alone prevents background scroll in practice. */
+    :root:has(body.modal-open), html body.modal-open { overflow: hidden !important; height: 100dvh !important; }
   }
 
   /* Entry point #2 — the real embeddable search component (.gsb-embed-search, shared
