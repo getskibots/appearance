@@ -483,6 +483,28 @@
   .df-map-row__sample { font-size: 11px; color: var(--text-soft); font-family: ui-monospace, Menlo, Consolas, monospace; white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
   .df-map-row[data-mapped="true"] .df-map-row__label { color: var(--success); }
   @media (max-width: 640px) { .df-grid { grid-template-columns: 1fr; } .df-map-row { grid-template-columns: 1fr auto; } }
+  /* multi-feed */
+  .df-feeds { display: flex; flex-direction: column; gap: 8px; }
+  .df-feed-row { display: flex; align-items: flex-start; gap: 10px; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .df-feed-color { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; margin-top: 5px; }
+  .df-feed-main { flex: 1 1 auto; min-width: 0; }
+  .df-feed-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .df-feed-url { font-size: 12px; color: var(--text-soft); font-family: ui-monospace, Menlo, Consolas, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .df-feed-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+  .df-chip { background: #f0f2f6; color: var(--text-muted); font-size: 11px; padding: 2px 8px; border-radius: 20px; }
+  .df-feed-actions { display: flex; gap: 6px; flex: 0 0 auto; }
+  .df-icon-btn { background: #fff; border: 1px solid var(--input-border); border-radius: 6px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: var(--text-soft); cursor: pointer; }
+  .df-icon-btn:hover { background: #f7f9fc; color: var(--text); }
+  .df-add { width: 100%; margin-top: 10px; border: 1px dashed var(--input-border); border-radius: 8px; padding: 11px; display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--text-muted); background: transparent; cursor: pointer; }
+  .df-add:hover { border-color: var(--sidebar); color: var(--sidebar); }
+  .df-editor { margin-top: 14px; border: 1px solid var(--border); border-radius: 10px; padding: 16px; background: #fafbfd; }
+  .df-editor__title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+  .df-editor__actions { display: flex; align-items: center; gap: 16px; margin-top: 16px; }
+  .df-combined { margin-top: 16px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #fff; box-shadow: var(--shadow); }
+  .df-combined__head { display: flex; align-items: center; gap: 8px; padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); font-weight: 700; }
+  .df-cdot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 5px; vertical-align: middle; }
+  .df-legend { display: flex; flex-wrap: wrap; gap: 14px; padding: 10px 14px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted); }
+  .df-legend span { display: flex; align-items: center; gap: 6px; }
 
   /* ===================== CARDS ===================== */
   .card {
@@ -3102,70 +3124,73 @@
               <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
             </button>
             <div class="acc-body">
-              <ol class="df-steps">
+              <p class="ls-intro">Add each endpoint your resort exposes — weather, lifts, terrain. Every feed fills only the cells it maps; together they build one live card. <strong>When feeds overlap on a field, the top one wins.</strong></p>
 
-                <!-- Step 1 · connect -->
-                <li class="df-step">
-                  <div class="df-step__head"><span class="df-step__num">1</span><span class="df-step__title">Connect your feed</span></div>
-                  <div class="df-step__body">
-                    <div class="df-grid">
-                      <div class="ls-field df-col-wide">
-                        <label class="label">Endpoint URL</label>
-                        <input id="df-url" class="input mono" placeholder="https://your-resort.com/api/conditions.json">
-                      </div>
-                      <div class="ls-field">
-                        <label class="label">Auth</label>
-                        <select id="df-auth" class="input">
-                          <option value="none">None</option>
-                          <option value="bearer">Bearer token</option>
-                          <option value="header">API key header</option>
-                          <option value="query">API key (query param)</option>
-                        </select>
-                      </div>
-                      <div class="ls-field df-auth-field" id="df-auth-name-wrap" style="display:none">
-                        <label class="label" id="df-auth-name-label">Header name</label>
-                        <input id="df-auth-name" class="input mono" placeholder="X-API-Key">
-                      </div>
-                      <div class="ls-field df-auth-field" id="df-auth-key-wrap" style="display:none">
-                        <label class="label">Key / token <span class="opt">setup only</span></label>
-                        <input id="df-auth-key" class="input mono" type="password" placeholder="credential" autocomplete="off">
-                      </div>
-                    </div>
-                    <div class="df-actions">
-                      <button type="button" class="btn btn-primary" id="df-detect">Detect fields</button>
-                      <button type="button" class="ls-link" id="df-paste-toggle">or paste a sample response</button>
-                    </div>
-                    <div class="df-paste" id="df-paste" hidden>
-                      <textarea id="df-paste-json" class="input mono df-textarea" placeholder='{ "current": { "temp": 34, "wind": 12 }, "snow": { "base": 62, "new24": 6 }, "lifts": { "open": 7, "total": 9 } }'></textarea>
-                      <button type="button" class="btn btn-ghost" id="df-detect-paste">Detect from pasted JSON</button>
-                    </div>
-                    <p class="help-text">CORS-blocked or secret-protected feeds need the GetSkiBots proxy in production — for setup you can paste a sample response. Credentials preview only; in production they're stored <strong>server-side</strong>.</p>
-                    <div class="ls-msg" id="df-msg" hidden></div>
+              <div class="df-feeds" id="df-feeds"></div>
+
+              <button type="button" class="df-add" id="df-add">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add a feed
+              </button>
+
+              <!-- Feed editor (add / edit one feed) -->
+              <div class="df-editor" id="df-editor" hidden>
+                <div class="df-editor__title" id="df-editor-title">New feed</div>
+                <div class="ls-field" style="margin-bottom:12px;">
+                  <label class="label">Feed name</label>
+                  <input id="df-feed-name" class="input" placeholder="e.g. Lift status" autocomplete="off">
+                </div>
+                <div class="df-grid">
+                  <div class="ls-field df-col-wide">
+                    <label class="label">Endpoint URL</label>
+                    <input id="df-url" class="input mono" placeholder="https://your-resort.com/api/lifts.json">
                   </div>
-                </li>
-
-                <!-- Step 2 · map detected fields -->
-                <li class="df-step" id="df-step2" hidden>
-                  <div class="df-step__head"><span class="df-step__num">2</span><span class="df-step__title">Map detected fields to your card</span></div>
-                  <div class="df-step__body">
-                    <p class="help-text" id="df-detected-count"></p>
-                    <div class="df-map" id="df-map"></div>
+                  <div class="ls-field">
+                    <label class="label">Auth</label>
+                    <select id="df-auth" class="input">
+                      <option value="none">None</option>
+                      <option value="bearer">Bearer token</option>
+                      <option value="header">API key header</option>
+                      <option value="query">API key (query param)</option>
+                    </select>
                   </div>
-                </li>
-
-                <!-- Step 3 · preview -->
-                <li class="df-step" id="df-step3" hidden>
-                  <div class="df-step__head"><span class="df-step__num">3</span><span class="df-step__title">Preview your card</span></div>
-                  <div class="df-step__body">
-                    <div class="ls-preview" id="df-preview">
-                      <div class="ls-preview-head"><span class="ls-dot"></span><span class="ls-preview-title">Your card</span></div>
-                      <div class="ls-grid" id="df-grid"></div>
-                      <div class="ls-preview-foot">Source · <strong>Direct Feed</strong></div>
-                    </div>
+                  <div class="ls-field df-auth-field" id="df-auth-name-wrap" style="display:none">
+                    <label class="label" id="df-auth-name-label">Header name</label>
+                    <input id="df-auth-name" class="input mono" placeholder="X-API-Key">
                   </div>
-                </li>
+                  <div class="ls-field df-auth-field" id="df-auth-key-wrap" style="display:none">
+                    <label class="label">Key / token <span class="opt">setup only</span></label>
+                    <input id="df-auth-key" class="input mono" type="password" placeholder="credential" autocomplete="off">
+                  </div>
+                </div>
+                <div class="df-actions">
+                  <button type="button" class="btn btn-ghost" id="df-detect">Detect fields</button>
+                  <button type="button" class="ls-link" id="df-paste-toggle">or paste a sample response</button>
+                </div>
+                <div class="df-paste" id="df-paste" hidden>
+                  <textarea id="df-paste-json" class="input mono df-textarea" placeholder='{ "lifts": { "open": 7, "total": 9 }, "trails": { "open": 74, "total": 81 } }'></textarea>
+                  <button type="button" class="btn btn-ghost" id="df-detect-paste">Detect from pasted JSON</button>
+                </div>
+                <p class="help-text">CORS-blocked or secret feeds need the GetSkiBots proxy in production — for setup you can paste a sample response. Keys are used to preview only and are never saved.</p>
+                <div class="ls-msg" id="df-msg" hidden></div>
 
-              </ol>
+                <div id="df-map-wrap" hidden>
+                  <p class="help-text" id="df-detected-count"></p>
+                  <div class="df-map" id="df-map"></div>
+                </div>
+
+                <div class="df-editor__actions">
+                  <button type="button" class="btn btn-primary" id="df-save-feed" disabled>Save feed</button>
+                  <button type="button" class="ls-link" id="df-cancel-feed">Cancel</button>
+                </div>
+              </div>
+
+              <!-- Combined preview (merged from all feeds) -->
+              <div class="df-combined" id="df-combined" hidden>
+                <div class="df-combined__head"><span class="ls-dot"></span>Combined preview</div>
+                <div class="ls-grid" id="df-grid"></div>
+                <div class="df-legend" id="df-legend"></div>
+              </div>
             </div>
           </section><!-- /Direct Feed card -->
 
@@ -4731,21 +4756,24 @@ import { normalizeSnoCountry } from './src/shared/weather/snocountry.js';
   })();
 
   // ===========================================================================
-  // DIRECT FEED — build-your-own card. Connect an endpoint (or paste a sample) →
-  // auto-detect (flatten) the JSON into fields → map fields to card cells → preview.
+  // DIRECT FEED — build-your-own card from MULTIPLE resort endpoints. Each "feed"
+  // is detect→map (paste a sample or fetch); all feeds compose into one card,
+  // overlaps resolved by feed order (top wins). Persisted to the integrations store.
   // ===========================================================================
   (function initDirectFeed() {
     const $ = (id) => document.getElementById(id);
-    const urlEl = $('df-url'), authEl = $('df-auth'),
+    const feedsEl = $('df-feeds'), addBtn = $('df-add'),
+      editor = $('df-editor'), editorTitle = $('df-editor-title'), nameEl = $('df-feed-name'),
+      urlEl = $('df-url'), authEl = $('df-auth'),
       authNameWrap = $('df-auth-name-wrap'), authNameLabel = $('df-auth-name-label'), authNameEl = $('df-auth-name'),
       authKeyWrap = $('df-auth-key-wrap'), authKeyEl = $('df-auth-key'),
       detectBtn = $('df-detect'), pasteToggle = $('df-paste-toggle'), pasteWrap = $('df-paste'),
       pasteJson = $('df-paste-json'), detectPasteBtn = $('df-detect-paste'),
-      msgEl = $('df-msg'), step2 = $('df-step2'), step3 = $('df-step3'),
-      mapEl = $('df-map'), gridEl = $('df-grid'), countEl = $('df-detected-count');
-    if (!detectBtn) return;
+      msgEl = $('df-msg'), mapWrap = $('df-map-wrap'), mapEl = $('df-map'), countEl = $('df-detected-count'),
+      saveBtn = $('df-save-feed'), cancelBtn = $('df-cancel-feed'),
+      combinedEl = $('df-combined'), gridEl = $('df-grid'), legendEl = $('df-legend');
+    if (!addBtn) return;
 
-    // Card cells the user can fill (mapping targets).
     const TARGETS = [
       { key: 'base_temp', label: 'Base Temp', unit: '°' },
       { key: 'summit_temp', label: 'Summit Temp', unit: '°' },
@@ -4758,7 +4786,6 @@ import { normalizeSnoCountry } from './src/shared/weather/snocountry.js';
       { key: 'surface', label: 'Surface' },
       { key: 'status', label: 'Status' }
     ];
-    // Heuristics to auto-guess a target from a field path.
     const GUESS = [
       { key: 'summit_temp', re: /(summit|top|peak).*temp|temp.*(summit|top|peak)/i },
       { key: 'base_temp', re: /temp/i },
@@ -4771,103 +4798,150 @@ import { normalizeSnoCountry } from './src/shared/weather/snocountry.js';
       { key: 'trails_open', re: /(trail|run).*open|open.*(trail|run)/i },
       { key: 'status', re: /status|operating|isopen/i }
     ];
+    const COLORS = ['#2A7DC0', '#EF9F27', '#1D9E75', '#7F77DD', '#D4537E', '#378ADD'];
+    const ICON_EDIT = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+    const ICON_X = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
 
-    let fields = [];   // [{ path, value }]
-    let mapping = {};  // targetKey -> path
+    let feeds = [];
+    let edFields = [];
+    let edMapping = {};
+    let editingId = null;
 
+    function persist() {
+      saveIntegrationConfig('direct-feed', { feeds: feeds.map(function (f) {
+        return { id: f.id, name: f.name, color: f.color, endpoint: f.endpoint, auth: f.auth, authName: f.authName, mapping: f.mapping, fields: f.fields };
+      }) });
+    }
+    function hydrate() {
+      try {
+        const s = JSON.parse(localStorage.getItem('gsb-weather-integrations-v1') || '{}');
+        if (s['direct-feed'] && Array.isArray(s['direct-feed'].feeds)) feeds = s['direct-feed'].feeds;
+      } catch (e) {}
+    }
     function flatten(obj, prefix, out) {
       out = out || []; prefix = prefix || '';
       if (obj == null) return out;
       if (Array.isArray(obj)) { if (obj.length) flatten(obj[0], prefix + '[0]', out); return out; }
       if (typeof obj === 'object') { for (const k of Object.keys(obj)) flatten(obj[k], prefix ? prefix + '.' + k : k, out); return out; }
-      out.push({ path: prefix, value: obj });   // primitive leaf
+      out.push({ path: prefix, value: obj });
       return out;
     }
+    function valueIn(fields, path) { const f = (fields || []).find((x) => x.path === path); return f ? f.value : undefined; }
     function showMsg(text, isErr) { msgEl.textContent = text; msgEl.className = 'ls-msg' + (isErr ? ' ls-msg--err' : ''); msgEl.hidden = false; }
-    function valueFor(path) { const f = fields.find((f) => f.path === path); return f ? f.value : null; }
 
-    function autoGuess() {
-      mapping = {};
-      for (const g of GUESS) {
-        if (mapping[g.key]) continue;
-        const taken = Object.values(mapping);
-        const f = fields.find((f) => g.re.test(f.path) && !taken.includes(f.path));
-        if (f) mapping[g.key] = f.path;
-      }
-    }
-    function renderMap() {
-      mapEl.innerHTML = TARGETS.map((t) => {
-        const sel = mapping[t.key] || '';
-        const opts = '<option value="">— not mapped —</option>' +
-          fields.map((f) => '<option value="' + f.path + '"' + (sel === f.path ? ' selected' : '') + '>' + f.path + '</option>').join('');
-        const sample = sel ? String(valueFor(sel)) : '';
-        return '<div class="df-map-row" data-mapped="' + (sel ? 'true' : 'false') + '">' +
-          '<span class="df-map-row__label">' + t.label + '</span>' +
-          '<select data-target="' + t.key + '">' + opts + '</select>' +
-          '<span class="df-map-row__sample">' + (sample !== '' ? '= ' + sample : '') + '</span></div>';
+    function renderFeeds() {
+      feedsEl.innerHTML = feeds.map(function (f) {
+        const chips = TARGETS.filter((t) => f.mapping[t.key] != null).map((t) => '<span class="df-chip">' + t.label + '</span>').join('');
+        return '<div class="df-feed-row" data-id="' + f.id + '">' +
+          '<span class="df-feed-color" style="background:' + f.color + '"></span>' +
+          '<div class="df-feed-main"><div class="df-feed-name">' + (f.name || 'Feed') + '</div>' +
+          '<div class="df-feed-url">' + (f.endpoint || 'pasted sample') + '</div>' +
+          '<div class="df-feed-chips">' + chips + '</div></div>' +
+          '<div class="df-feed-actions"><button class="df-icon-btn" data-act="edit" aria-label="Edit feed">' + ICON_EDIT + '</button>' +
+          '<button class="df-icon-btn" data-act="remove" aria-label="Remove feed">' + ICON_X + '</button></div></div>';
       }).join('');
-      mapEl.querySelectorAll('select').forEach((s) => s.addEventListener('change', () => {
-        if (s.value) mapping[s.dataset.target] = s.value; else delete mapping[s.dataset.target];
-        renderMap(); renderPreview();
-      }));
+      feedsEl.querySelectorAll('.df-icon-btn').forEach(function (b) {
+        b.addEventListener('click', function () {
+          const id = b.closest('.df-feed-row').dataset.id;
+          if (b.dataset.act === 'remove') { feeds = feeds.filter((f) => f.id !== id); persist(); renderFeeds(); }
+          else openEditor(feeds.find((f) => f.id === id));
+        });
+      });
+      renderCombined();
     }
-    function renderPreview() {
-      const cells = TARGETS.filter((t) => mapping[t.key] != null).map((t) => {
-        const v = valueFor(mapping[t.key]);
-        return { k: t.label, v: (v == null || v === '') ? null : v + (t.unit || '') };
-      }).filter((c) => c.v != null);
-      gridEl.innerHTML = cells.length
-        ? cells.map((c) => '<div class="ls-cell"><div class="ls-cell-k">' + c.k + '</div><div class="ls-cell-v">' + c.v + '</div></div>').join('')
-        : '<div class="ls-empty">Map a field above to see it here.</div>';
-    }
-    function ingest(json) {
-      fields = flatten(json);
-      if (!fields.length) { showMsg('No readable fields found in that response.', true); return; }
-      msgEl.hidden = true;
-      autoGuess();
-      countEl.textContent = fields.length + ' fields detected · ' + Object.keys(mapping).length + ' auto-mapped. Adjust any below.';
-      renderMap(); renderPreview();
-      step2.hidden = false; step3.hidden = false;
-    }
-
-    function buildUrl() {
-      let url = (urlEl.value || '').trim();
-      if (authEl.value === 'query' && authKeyEl.value && authNameEl.value)
-        url += (url.includes('?') ? '&' : '?') + encodeURIComponent(authNameEl.value) + '=' + encodeURIComponent(authKeyEl.value);
-      return url;
-    }
-    function buildHeaders() {
-      const h = {};
-      if (authEl.value === 'bearer' && authKeyEl.value) h['Authorization'] = 'Bearer ' + authKeyEl.value;
-      if (authEl.value === 'header' && authKeyEl.value && authNameEl.value) h[authNameEl.value] = authKeyEl.value;
-      return h;
+    function renderCombined() {
+      if (!feeds.length) { combinedEl.hidden = true; return; }
+      const cells = [];
+      TARGETS.forEach(function (t) {
+        for (let i = 0; i < feeds.length; i++) {
+          const p = feeds[i].mapping[t.key]; if (!p) continue;
+          const v = valueIn(feeds[i].fields, p);
+          if (v != null && v !== '') { cells.push({ k: t.label, v: v + (t.unit || ''), color: feeds[i].color }); break; }
+        }
+      });
+      gridEl.innerHTML = cells.length ? cells.map(function (c) {
+        return '<div class="ls-cell"><div class="ls-cell-k"><span class="df-cdot" style="background:' + c.color + '"></span>' + c.k + '</div><div class="ls-cell-v">' + c.v + '</div></div>';
+      }).join('') : '<div class="ls-empty">Map fields in your feeds to build the card.</div>';
+      legendEl.innerHTML = feeds.map((f) => '<span><span class="df-cdot" style="background:' + f.color + '"></span>' + (f.name || 'Feed') + '</span>').join('');
+      combinedEl.hidden = false;
     }
 
-    authEl.addEventListener('change', () => {
+    function syncAuth() {
       const v = authEl.value;
       authKeyWrap.style.display = v === 'none' ? 'none' : '';
       authNameWrap.style.display = (v === 'header' || v === 'query') ? '' : 'none';
       authNameLabel.textContent = v === 'query' ? 'Query param' : 'Header name';
       authNameEl.placeholder = v === 'query' ? 'apikey' : 'X-API-Key';
-    });
-    detectBtn.addEventListener('click', async () => {
-      if (!(urlEl.value || '').trim()) { showMsg('Enter an endpoint URL, or paste a sample response.', true); return; }
-      detectBtn.disabled = true; const label = detectBtn.textContent; detectBtn.textContent = 'Detecting…';
-      try {
-        const res = await fetch(buildUrl(), { headers: buildHeaders() });
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        ingest(await res.json());
-      } catch (e) {
-        showMsg('Could not reach the feed (' + e.message + '). It may be CORS-blocked — paste a sample response instead.', true);
-      } finally { detectBtn.disabled = false; detectBtn.textContent = label; }
-    });
-    pasteToggle.addEventListener('click', () => { pasteWrap.hidden = !pasteWrap.hidden; });
-    detectPasteBtn.addEventListener('click', () => {
-      try { ingest(JSON.parse(pasteJson.value)); }
-      catch (e) { showMsg("That isn't valid JSON: " + e.message, true); }
-    });
-  })();
+    }
+    function renderMap() {
+      mapEl.innerHTML = TARGETS.map(function (t) {
+        const sel = edMapping[t.key] || '';
+        const opts = '<option value="">— not mapped —</option>' + edFields.map((f) => '<option value="' + f.path + '"' + (sel === f.path ? ' selected' : '') + '>' + f.path + '</option>').join('');
+        const sample = sel ? String(valueIn(edFields, sel)) : '';
+        return '<div class="df-map-row" data-mapped="' + (sel ? 'true' : 'false') + '"><span class="df-map-row__label">' + t.label + '</span><select data-target="' + t.key + '">' + opts + '</select><span class="df-map-row__sample">' + (sample !== '' ? '= ' + sample : '') + '</span></div>';
+      }).join('');
+      mapEl.querySelectorAll('select').forEach(function (s) { s.addEventListener('change', function () { if (s.value) edMapping[s.dataset.target] = s.value; else delete edMapping[s.dataset.target]; renderMap(); }); });
+      countEl.textContent = edFields.length + ' fields detected · ' + Object.keys(edMapping).length + ' mapped.';
+    }
+    function autoGuess() {
+      for (const g of GUESS) {
+        if (edMapping[g.key]) continue;
+        const taken = Object.keys(edMapping).map((k) => edMapping[k]);
+        const f = edFields.find((x) => g.re.test(x.path) && taken.indexOf(x.path) < 0);
+        if (f) edMapping[g.key] = f.path;
+      }
+    }
+    function ingest(json) {
+      edFields = flatten(json);
+      if (!edFields.length) { showMsg('No readable fields found.', true); return; }
+      msgEl.hidden = true; autoGuess(); renderMap(); mapWrap.hidden = false; saveBtn.disabled = false;
+    }
+    function openEditor(feed) {
+      editingId = feed ? feed.id : null;
+      editorTitle.textContent = feed ? 'Edit feed' : 'New feed';
+      nameEl.value = feed ? (feed.name || '') : '';
+      urlEl.value = feed ? (feed.endpoint || '') : '';
+      authEl.value = feed ? (feed.auth || 'none') : 'none';
+      authNameEl.value = feed ? (feed.authName || '') : '';
+      authKeyEl.value = '';
+      syncAuth();
+      edFields = feed && feed.fields ? feed.fields.slice() : [];
+      edMapping = feed ? Object.assign({}, feed.mapping) : {};
+      msgEl.hidden = true; pasteWrap.hidden = true;
+      if (edFields.length) { renderMap(); mapWrap.hidden = false; saveBtn.disabled = false; }
+      else { mapEl.innerHTML = ''; mapWrap.hidden = true; saveBtn.disabled = true; }
+      editor.hidden = false; addBtn.hidden = true;
+    }
+    function closeEditor() { editor.hidden = true; addBtn.hidden = false; editingId = null; }
+    function buildUrl() { let u = (urlEl.value || '').trim(); if (authEl.value === 'query' && authKeyEl.value && authNameEl.value) u += (u.indexOf('?') >= 0 ? '&' : '?') + encodeURIComponent(authNameEl.value) + '=' + encodeURIComponent(authKeyEl.value); return u; }
+    function buildHeaders() { const h = {}; if (authEl.value === 'bearer' && authKeyEl.value) h['Authorization'] = 'Bearer ' + authKeyEl.value; if (authEl.value === 'header' && authKeyEl.value && authNameEl.value) h[authNameEl.value] = authKeyEl.value; return h; }
 
+    addBtn.addEventListener('click', function () { openEditor(null); });
+    cancelBtn.addEventListener('click', closeEditor);
+    authEl.addEventListener('change', syncAuth);
+    detectBtn.addEventListener('click', async function () {
+      if (!(urlEl.value || '').trim()) { showMsg('Enter an endpoint URL, or paste a sample.', true); return; }
+      detectBtn.disabled = true; const l = detectBtn.textContent; detectBtn.textContent = 'Detecting…';
+      try { const res = await fetch(buildUrl(), { headers: buildHeaders() }); if (!res.ok) throw new Error('HTTP ' + res.status); ingest(await res.json()); }
+      catch (e) { showMsg('Could not reach the feed (' + e.message + '). It may be CORS-blocked — paste a sample instead.', true); }
+      finally { detectBtn.disabled = false; detectBtn.textContent = l; }
+    });
+    pasteToggle.addEventListener('click', function () { pasteWrap.hidden = !pasteWrap.hidden; });
+    detectPasteBtn.addEventListener('click', function () { try { ingest(JSON.parse(pasteJson.value)); } catch (e) { showMsg("That isn't valid JSON: " + e.message, true); } });
+    saveBtn.addEventListener('click', function () {
+      const name = (nameEl.value || '').trim();
+      if (editingId) {
+        const f = feeds.find((x) => x.id === editingId);
+        if (f) { f.name = name || 'Feed'; f.endpoint = (urlEl.value || '').trim(); f.auth = authEl.value; f.authName = (authNameEl.value || '').trim(); f.mapping = Object.assign({}, edMapping); f.fields = edFields.slice(); }
+      } else {
+        feeds.push({ id: 'f' + Date.now().toString(36), name: name || ('Feed ' + (feeds.length + 1)), color: COLORS[feeds.length % COLORS.length], endpoint: (urlEl.value || '').trim(), auth: authEl.value, authName: (authNameEl.value || '').trim(), mapping: Object.assign({}, edMapping), fields: edFields.slice() });
+      }
+      persist(); renderFeeds(); closeEditor();
+    });
+
+    hydrate();
+    renderFeeds();
+  })();
 
 })();
 </script>

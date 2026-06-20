@@ -857,7 +857,12 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     $('chatHeaderColorSwatch').style.background = state.chatHeaderColor;
 
     $('headerPlaceholderName').textContent = state.widgetName || 'Demo Resort';
-    $('welcomeLine').innerHTML = linkifyMarkdown(state.welcomeText || "Welcome, ask us anything, we're here to help.");
+    var welcomeLineEl = $('welcomeLine');
+    if (welcomeLineEl) {
+      var hasWelcome = !!(state.welcomeText && state.welcomeText.trim());
+      welcomeLineEl.innerHTML = hasWelcome ? linkifyMarkdown(state.welcomeText) : '';
+      welcomeLineEl.style.display = hasWelcome ? '' : 'none'; // blank = hide (no ghost default)
+    }
     $('brandColTitle').textContent = state.widgetName || 'Demo Resort';
 
     // Recent update → Season Update banner. Source = 'manual' (typed copy) or

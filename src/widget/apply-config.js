@@ -132,7 +132,11 @@ export function applyWidgetConfig(config) {
   setText('headerPlaceholderName', config.widgetName);
   setText('brandColTitle', config.widgetName);
   var welcomeEl = document.getElementById('welcomeLine');
-  if (welcomeEl && config.welcomeText != null) welcomeEl.innerHTML = linkifyMarkdown(config.welcomeText);
+  if (welcomeEl && config.welcomeText != null) {
+    var hasWelcome = !!String(config.welcomeText).trim();
+    welcomeEl.innerHTML = hasWelcome ? linkifyMarkdown(config.welcomeText) : '';
+    welcomeEl.style.display = hasWelcome ? '' : 'none'; // blank = hide (matches dashboard)
+  }
   var composer = document.getElementById('gsbComposerInput');
   if (composer && config.inputPlaceholder != null) composer.placeholder = config.inputPlaceholder;
 
