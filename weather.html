@@ -484,6 +484,21 @@
   .df-map-row[data-mapped="true"] .df-map-row__label { color: var(--success); }
   @media (max-width: 640px) { .df-grid { grid-template-columns: 1fr; } .df-map-row { grid-template-columns: 1fr auto; } }
 
+  /* ===================== OPENSNOW ===================== */
+  .os-brand { display: flex; align-items: center; justify-content: center; padding: 13px 14px 5px; }
+  .os-brand img { height: 19px; width: auto; display: block; }
+  .os-forecast { display: flex; flex-direction: column; }
+  .os-row { display: grid; grid-template-columns: 52px 1fr auto; gap: 10px; align-items: center; padding: 9px 14px; border-top: 1px solid var(--border); font-size: 13px; }
+  .os-row__day { font-weight: 700; color: var(--text); }
+  .os-row__cond { display: flex; align-items: center; gap: 7px; color: var(--text-muted); min-width: 0; }
+  .os-row__cond svg { width: 16px; height: 16px; flex: 0 0 auto; }
+  .os-row__cond span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .os-row__snow { font-weight: 700; color: var(--text); justify-self: end; white-space: nowrap; }
+  .os-row__snow .u { font-size: 11px; font-weight: 500; color: var(--text-soft); }
+  .os-row--none .os-row__snow { color: var(--text-soft); font-weight: 600; }
+  .os-link { display: block; text-align: center; padding: 11px 14px; border-top: 1px solid var(--border); background: #fafbfd; font-size: 12px; font-weight: 700; color: var(--sidebar); text-decoration: none; }
+  .os-link:hover { text-decoration: underline; }
+
   /* ===================== CARDS ===================== */
   .card {
     padding: 28px;
@@ -3244,7 +3259,7 @@
               <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
             </button>
             <div class="acc-body">
-              <p class="ls-intro">OpenSnow adds <strong>ski-specific forecasting</strong> (its response maps almost 1:1 to our model). Connect your OpenSnow location + key.</p>
+              <p class="ls-intro">OpenSnow adds <strong>ski-specific forecasting</strong> — current conditions plus a 5-day snow forecast (its response maps almost 1:1 to our model). Set your OpenSnow location ID and fetch.</p>
               <div class="ls-form">
                 <div class="ls-field ls-field--provider">
                   <label class="label">Provider</label>
@@ -3252,20 +3267,22 @@
                 </div>
                 <div class="ls-field">
                   <label class="label">Location ID</label>
-                  <input id="os-loc" class="input mono" placeholder="e.g. jackson-hole">
+                  <input id="os-loc" class="input mono" placeholder="e.g. 66" value="66">
                 </div>
                 <div class="ls-field">
-                  <label class="label">API key</label>
+                  <label class="label">API key <span class="opt">pre-set</span></label>
                   <input id="os-key" class="input mono" type="password" placeholder="OpenSnow key" autocomplete="off">
                 </div>
                 <button type="button" class="btn btn-primary" id="os-fetch">Fetch</button>
               </div>
-              <p class="help-text"><strong>Note:</strong> OpenSnow API access isn't approved on this account yet — the card is wired and ready; enter a key to go live once approved.</p>
+              <p class="help-text">The OpenSnow key is <strong>pre-configured</strong> — set a location ID and fetch. Find your ID at opensnow.com. Override the key only for a different account.</p>
               <div class="ls-msg" id="os-msg" hidden></div>
               <div class="ls-preview" id="os-preview" hidden>
-                <div class="ls-preview-head"><span class="ls-dot"></span><span class="ls-preview-title" id="os-preview-title">Forecast</span></div>
+                <a class="os-brand" id="os-brand" target="_blank" rel="noopener" title="OpenSnow"></a>
+                <div class="ls-preview-head"><span class="ls-dot"></span><span class="ls-preview-title" id="os-preview-title">Forecast</span><span class="ls-preview-time" id="os-preview-now"></span></div>
                 <div class="ls-grid" id="os-grid"></div>
-                <div class="ls-preview-foot">Source · <strong>OpenSnow</strong></div>
+                <div class="os-forecast" id="os-forecast"></div>
+                <a class="os-link" id="os-link" target="_blank" rel="noopener">View Snow Report ›</a>
               </div>
             </div>
           </section><!-- /OpenSnow card -->
@@ -3282,6 +3299,7 @@
 // widget uses) so the dashboard preview and production widget can never drift.
 import { fetchOpenMeteo, conditionIcon, mToFt, ftToM } from './src/shared/weather/open-meteo.js';
 import { normalizeSnoCountry } from './src/shared/weather/snocountry.js';
+import { normalizeOpenSnow, snowRange } from './src/shared/weather/opensnow.js';
 
 (function(){
   const SOURCES = {
@@ -4911,22 +4929,74 @@ import { normalizeSnoCountry } from './src/shared/weather/snocountry.js';
   })();
 
   // ===========================================================================
-  // OPENSNOW — card wired & ready; live fetch activates once API access is approved.
+  // OPENSNOW — live forecast. Renders the REQUIRED branding (logo above, link
+  // below) from the API's attribution block. Key pre-filled (licensed credential).
   // ===========================================================================
   (function initOpenSnow() {
-    const fetchBtn = document.getElementById('os-fetch');
-    const msgEl = document.getElementById('os-msg');
-    const keyEl = document.getElementById('os-key');
+    const $ = (id) => document.getElementById(id);
+    const fetchBtn = $('os-fetch'), msgEl = $('os-msg'), keyEl = $('os-key'), locEl = $('os-loc'),
+      previewEl = $('os-preview'), brandEl = $('os-brand'), titleEl = $('os-preview-title'),
+      nowEl = $('os-preview-now'), gridEl = $('os-grid'), fcEl = $('os-forecast'), linkEl = $('os-link');
     if (!fetchBtn) return;
-    fetchBtn.addEventListener('click', () => {
-      msgEl.hidden = false;
-      if (!keyEl.value) {
-        msgEl.className = 'ls-msg ls-msg--err';
-        msgEl.textContent = "Enter an OpenSnow API key. Access isn't approved on this account yet.";
-        return;
-      }
-      msgEl.className = 'ls-msg';
-      msgEl.textContent = 'Key accepted — live fetch activates once OpenSnow approves API access for this account.';
+
+    const OPENSNOW_KEY = 'e4f353ac853828102194556e6dfde636';   // licensed key — see opensnow.js
+    if (keyEl && !keyEl.value) keyEl.value = OPENSNOW_KEY;
+
+    function showMsg(text, isErr) { msgEl.textContent = text; msgEl.className = 'ls-msg' + (isErr ? ' ls-msg--err' : ''); msgEl.hidden = false; }
+    function cell(k, v) { return v == null ? '' : '<div class="ls-cell"><div class="ls-cell-k">' + k + '</div><div class="ls-cell-v">' + v + '</div></div>'; }
+
+    function render(m) {
+      if (!m) { showMsg('No forecast returned for that location ID.', true); return; }
+      msgEl.hidden = true;
+      const a = m.attribution || {};
+      // REQUIRED: "Powered by OpenSnow" branding above the data
+      brandEl.innerHTML = a.image_light_url
+        ? '<img src="' + a.image_light_url + '" alt="' + (a.description || 'Powered by OpenSnow') + '">'
+        : (a.description || 'Powered by OpenSnow');
+      brandEl.href = a.link_url || '#';
+      titleEl.textContent = m.location.name || 'Forecast';
+      const c = m.forecast_current || {};
+      nowEl.textContent = c.display_at_local_label ? ('as of ' + c.display_at_local_label) : '';
+
+      gridEl.innerHTML = [
+        cell('Now', c.temp != null ? c.temp + '°' : null),
+        cell('Conditions', c.conditions_label || null),
+        cell('Wind', c.wind_speed != null ? (c.wind_dir_label ? c.wind_dir_label + ' ' : '') + c.wind_speed + '<span class="ls-cell-unit"> mph</span>' : null),
+        cell('Snow Level', c.snow_level != null ? Number(c.snow_level).toLocaleString() + '<span class="ls-cell-unit"> ft</span>' : null)
+      ].filter(Boolean).join('');
+
+      // 5-day snow forecast — pair each snow_daily with its day-period conditions
+      const semiByDay = {};
+      (m.forecast_semi_daily || []).forEach((s) => { if (s.day_period === 'day' && !semiByDay[s.display_at_local_label]) semiByDay[s.display_at_local_label] = s; });
+      fcEl.innerHTML = (m.forecast_snow_daily || []).map((d) => {
+        const sd = semiByDay[d.display_at_local_label];
+        const none = d.precip_snow_max == null || Number(d.precip_snow_max) === 0;
+        const range = snowRange(d.precip_snow_min, d.precip_snow_max);
+        return '<div class="os-row' + (none ? ' os-row--none' : '') + '">' +
+          '<span class="os-row__day">' + (d.display_at_local_label || '') + '</span>' +
+          '<span class="os-row__cond">' + (sd && sd.icon_svg ? sd.icon_svg : '') + '<span>' + (sd ? sd.conditions_label : '') + '</span></span>' +
+          '<span class="os-row__snow">' + (none ? '0' : range) + '<span class="u">"</span></span></div>';
+      }).join('');
+
+      // REQUIRED: "View …" link below the data
+      linkEl.href = a.link_url || '#';
+      linkEl.textContent = (a.link_text || 'View Snow Report') + ' ›';
+      previewEl.hidden = false;
+    }
+
+    fetchBtn.addEventListener('click', async () => {
+      const loc = (locEl.value || '').trim();
+      const key = (keyEl.value || '').trim() || OPENSNOW_KEY;
+      if (!loc) { showMsg('Enter an OpenSnow location ID.', true); return; }
+      fetchBtn.disabled = true; const label = fetchBtn.textContent; fetchBtn.textContent = 'Fetching…';
+      try {
+        const url = 'https://api.opensnow.com/forecast/snow-detail/' + encodeURIComponent(loc) + '?api_key=' + encodeURIComponent(key) + '&v=1';
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        render(normalizeOpenSnow(await res.json()));
+      } catch (e) {
+        showMsg('Could not reach OpenSnow (' + e.message + '). The API may be CORS-blocked from the browser — it works server-side via the proxy in production.', true);
+      } finally { fetchBtn.disabled = false; fetchBtn.textContent = label; }
     });
   })();
 
