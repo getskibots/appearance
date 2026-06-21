@@ -30,8 +30,9 @@ export async function composeConditions(cfg, coords) {
   cfg = cfg || {};
   const out = { weather: { base: null, summit: null }, liveStatus: null, sources: [] };
 
-  // ---- WEATHER — Open-Meteo ----
-  if (coords && coords.base) {
+  // ---- WEATHER — Open-Meteo (baseline: ON by default, off only if explicitly disabled) ----
+  const omOn = cfg['open-meteo'] ? cfg['open-meteo'].enabled !== false : true;
+  if (omOn && coords && coords.base) {
     const [base, summit] = await Promise.all([
       fetchOpenMeteo({ lat: coords.base.lat, lng: coords.base.lng, elevationFt: coords.base.elevFt, name: 'Base' }).catch(() => null),
       coords.summit

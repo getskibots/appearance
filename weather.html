@@ -4722,7 +4722,7 @@ import { normalizeSnoCountry } from './src/shared/weather/snocountry.js';
     const state = read();
 
     const INTS = [
-      { id: 'open-meteo',  toggle: 'cat-toggle-open-meteo',  card: '[data-acc-id="open-meteo"]' },
+      { id: 'open-meteo',  toggle: 'cat-toggle-open-meteo',  card: '[data-acc-id="open-meteo"]', defaultOn: true },
       { id: 'direct-feed', toggle: 'cat-toggle-direct-feed', card: '[data-acc-id="direct-feed"]' },
       { id: 'snocountry',  toggle: 'cat-toggle-snocountry',  card: '[data-acc-id="live-status"]' }
     ];
@@ -4745,7 +4745,8 @@ import { normalizeSnoCountry } from './src/shared/weather/snocountry.js';
         }
       }
 
-      apply(intEnabled(state[cfg.id]), false);   // default OFF — nothing pre-enabled
+      const initOn = state[cfg.id] === undefined ? !!cfg.defaultOn : intEnabled(state[cfg.id]);
+      apply(initOn, false);   // Open-Meteo defaults ON (baseline weather); others OFF
       toggle.addEventListener('change', () => {
         const cur = (state[cfg.id] && typeof state[cfg.id] === 'object') ? state[cfg.id] : {};
         state[cfg.id] = Object.assign({}, cur, { enabled: toggle.checked });
