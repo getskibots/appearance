@@ -2747,15 +2747,15 @@
             <div class="field-row3">
               <div class="field" style="margin-bottom: 0;">
                 <label class="label">Latitude</label>
-                <input id="base-lat" class="input mono" value="" placeholder="e.g. 43.5875 or 43.5875°N">
+                <input id="base-lat" class="input mono" value="43.5875" placeholder="e.g. 43.5875 or 43.5875°N">
               </div>
               <div class="field" style="margin-bottom: 0;">
                 <label class="label">Longitude</label>
-                <input id="base-lng" class="input mono" value="" placeholder="e.g. -110.8279 or 110.8279°W">
+                <input id="base-lng" class="input mono" value="-110.8279" placeholder="e.g. -110.8279 or 110.8279°W">
               </div>
               <div class="field" style="margin-bottom: 0;">
                 <label class="label">Elevation <span class="opt">ft</span></label>
-                <input id="base-elev" class="input mono" value="" placeholder="e.g. 6311">
+                <input id="base-elev" class="input mono" value="6311" placeholder="e.g. 6311">
               </div>
             </div>
             <p class="help-text" style="margin-top: 6px;">Used for base-elevation temperature, conditions, and wind. Paste from Google (<code class="mono-inline">39.6433° N, 106.3781° W</code>), GPS apps, or Google Maps — we'll figure out the format.</p>
@@ -2768,15 +2768,15 @@
             <div class="field-row3">
               <div class="field" style="margin-bottom: 0;">
                 <label class="label">Latitude</label>
-                <input id="summit-lat" class="input mono" value="" placeholder="e.g. 43.5969 or 43.5969°N">
+                <input id="summit-lat" class="input mono" value="43.5969" placeholder="e.g. 43.5969 or 43.5969°N">
               </div>
               <div class="field" style="margin-bottom: 0;">
                 <label class="label">Longitude</label>
-                <input id="summit-lng" class="input mono" value="" placeholder="e.g. -110.8716 or 110.8716°W">
+                <input id="summit-lng" class="input mono" value="-110.8716" placeholder="e.g. -110.8716 or 110.8716°W">
               </div>
               <div class="field" style="margin-bottom: 0;">
                 <label class="label">Elevation <span class="opt">ft</span></label>
-                <input id="summit-elev" class="input mono" value="" placeholder="e.g. 10449">
+                <input id="summit-elev" class="input mono" value="10449" placeholder="e.g. 10449">
               </div>
             </div>
             <p class="help-text" style="margin-top: 6px;">Leave blank for single-altitude resorts. When set, the chat shows separate base and summit temperatures — summit-base spreads of 20°F+ help guests plan layers.</p>
@@ -2877,11 +2877,11 @@
             <div class="season-row">
               <div class="season-row__label">
                 <span class="season-row__title">Conditions card</span>
-                <span class="season-row__sub" id="season-sub">Winter — base &amp; summit temps, summit wind, conditions, 5-day snowfall, snow level.</span>
+                <span class="season-row__sub" id="season-sub">Summer — temp, feels-like, conditions, wind, UV index, precip chance.</span>
               </div>
               <div class="season-seg" role="group" aria-label="Season mode">
-                <button type="button" class="season-seg__btn is-active" data-season="winter">❄ Winter</button>
-                <button type="button" class="season-seg__btn" data-season="summer">☀ Summer</button>
+                <button type="button" class="season-seg__btn" data-season="winter">❄ Winter</button>
+                <button type="button" class="season-seg__btn is-active" data-season="summer">☀ Summer</button>
               </div>
             </div>
 
@@ -3817,7 +3817,7 @@ import { normalizeSnoCountry } from './src/shared/weather/snocountry.js';
     const sub = document.getElementById('season-sub');
     if (sub) sub.innerHTML = SEASON_SUB[seasonMode];
     const m = window.__lastWeatherModel;
-    if (m) renderSeasonGrids(m.base, m.summit);
+    renderSeasonGrids(m && m.base, m && m.summit);   // always reflect the season (even before data)
     if (typeof refreshSaveStatus === 'function') refreshSaveStatus();
   }
   document.querySelectorAll('.season-seg__btn').forEach(btn => {
@@ -4205,7 +4205,7 @@ import { normalizeSnoCountry } from './src/shared/weather/snocountry.js';
         savedSnapshot = { ...parsed.values };
         savedSource = parsed.source === 'direct' ? 'direct' : 'om';
         savedDirectUrl = parsed.directUrl || '';
-        savedSeason = parsed.seasonMode === 'summer' ? 'summer' : 'winter';
+        savedSeason = parsed.seasonMode === 'winter' ? 'winter' : 'summer';
         seasonMode = savedSeason;
         const urlEl = document.getElementById(DIRECT_URL_ID);
         if (urlEl && savedDirectUrl) urlEl.value = savedDirectUrl;
@@ -4547,13 +4547,12 @@ import { normalizeSnoCountry } from './src/shared/weather/snocountry.js';
     if (dt && !dt.classList.contains('active')) dt.click();
   }
 
-  if (hasSavedConfig()) {
-    if (savedSource === 'om') {
-      setConnectionState('loading');
-      setTimeout(doRefresh, 600);
-    } else {
-      refreshSaveStatus();   // Resort Direct: reflect the saved (not-yet-live) state
-    }
+  if (hasSavedConfig() && savedSource === 'direct') {
+    refreshSaveStatus();   // Resort Direct: reflect the saved (not-yet-live) state
+  } else if (document.getElementById('base-lat').value.trim() && document.getElementById('base-lng').value.trim()) {
+    // Open-Meteo — saved config OR the default Jackson Hole coords → fetch live readings
+    setConnectionState('loading');
+    setTimeout(doRefresh, 600);
   } else {
     setConnectionState('idle');
   }
