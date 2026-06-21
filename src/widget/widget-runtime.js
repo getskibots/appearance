@@ -317,18 +317,6 @@ import { autolink } from '../shared/markdown.js';
     return cells;
   }
 
-  // Live-status cells (SnoCountry / Direct Feed) appended to the card when present —
-  // the data only the mountain reports. Off-season nulls drop out automatically.
-  function liveStatusCells(ls) {
-    var out = [];
-    function add(k, v) { if (v != null && v !== '') out.push({ k: k, v: v }); }
-    function pair(p) { return p ? ((p.open != null ? p.open : '–') + '<span class="unit">/' + (p.total != null ? p.total : '–') + '</span>') : null; }
-    add('Base Depth', ls.base_depth != null ? ls.base_depth + '<span class="unit">"</span>' : null);
-    add('New Snow', ls.new_snow_24h != null ? ls.new_snow_24h + '<span class="unit">"</span>' : null);
-    add('Lifts', pair(ls.lifts));
-    add('Trails', pair(ls.trails));
-    return out;
-  }
 
   // ============= RENDER DATA INTO UI =============
   function fmt(value, fallback) {
