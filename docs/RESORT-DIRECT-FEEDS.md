@@ -87,9 +87,14 @@ Mountain Capital Partners resorts — different domain, not a conditions feed.)
 
 ### Suggested order
 
-1. **OpenSnow passthrough** — zero mapping, proves the fetch → detect → normalize → preview → save loop.
-2. **Auto-detect + adapters for the CORS-open four** (OpenSnow, Alta, Cranmore, WordPress) — works end-to-end in the dashboard with no backend.
-3. **Generic mapper fallback** for unknown shapes.
+> ⚠️ **Update:** OpenSnow is **no longer available** (API access denied), so ignore the
+> OpenSnow-first steps below — they're kept only as the shape reference. **SnoCountry** is
+> the working CORS-open aggregator we built instead (`snocountry.js`), and the **Direct Feed
+> multi-feed engine** is the generic mapper. Both are parked behind "Coming soon."
+
+1. ~~**OpenSnow passthrough**~~ — *blocked (no API access).*
+2. **Auto-detect + adapters for the CORS-open feeds** (Alta, Cranmore, WordPress + SnoCountry) — works end-to-end in the dashboard with no backend.
+3. **Generic mapper fallback** for unknown shapes — *built (the Direct Feed build-your-own engine).*
 4. **Server poller** for the blocked half (Jackson Hole, Grand Targhee, Gunstock, Killington/Pico, Snow Trails, Diamond Peak).
 
 ### Bigger picture
