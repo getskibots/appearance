@@ -384,13 +384,12 @@ import { autolink } from '../shared/markdown.js';
       safeSet('launcherTemp', fmt(weather.base.temperature.value) + '<span class="gsb-launcher-weather__unit">°F</span>');
     }
 
-    // Conditions card — season-aware grid (Winter/Summer), Open-Meteo driven.
-    // Replaces the old fixed cells and retires the leftover snow cells (24h/season/depth).
+    // Conditions card — a clean 6-cell matrix filled by ONE active source
+    // (Open-Meteo today; a resort feed can swap in later). Season-aware (Winter/Summer).
     var condGrid = document.querySelector('.gsb-conditions-grid');
     if (condGrid) {
       var wm = data.weatherModel || {};
-      var cells = omSeasonCells(resolveSeasonMode(), wm.base, wm.summit);
-      if (data.liveStatus) cells = cells.concat(liveStatusCells(data.liveStatus));
+      var cells = omSeasonCells(resolveSeasonMode(), wm.base, wm.summit).slice(0, 6);
       condGrid.innerHTML = cells.map(function(c) {
         return '<div class="gsb-conditions-cell"><div class="label">' + c.k + '</div>' +
                '<div class="value' + (c.cond ? ' is-cond' : '') + '">' + c.v + '</div></div>';
