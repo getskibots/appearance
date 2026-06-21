@@ -370,6 +370,13 @@
 
   /* ===================== LIVE STATUS (SnoCountry) ===================== */
   .acc-badge--opt { background: #eef6fd; color: var(--sidebar); }
+  /* "Coming soon" rows — muted, collapsed, non-expandable */
+  .acc-badge--soon { background: #eef1f5; color: var(--text-soft); }
+  .acc-card--soon { opacity: 0.7; }
+  .acc-card--soon .acc-head { cursor: default; }
+  .acc-card--soon .acc-head:hover { background: transparent; }
+  .acc-card--soon .acc-head__chevron { display: none; }
+  .acc-card--soon .acc-body { display: none !important; }
   .ls-intro { margin: 0 0 16px; font-size: 13px; line-height: 1.55; color: var(--text-muted); }
   .ls-intro strong { color: var(--text); }
   .ls-form {
@@ -2669,59 +2676,11 @@
             </div>
           </div>
 
-          <!-- ============= INTEGRATIONS CATALOG ============= -->
+          <!-- ============= DATA SOURCES (vertical stack) ============= -->
           <div class="catalog">
             <div class="catalog__head">
-              <h3 class="catalog__title">Integrations</h3>
-              <p class="catalog__sub">Choose the data sources that feed your chat weather card. Enable any you want — each is configured independently below.</p>
-            </div>
-            <div class="catalog__grid">
-
-              <!-- 1 · Open-Meteo (available, own toggle) -->
-              <div class="cat-tile" data-int="open-meteo" data-state="available" data-on="false">
-                <span class="cat-tile__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></span>
-                <span class="cat-tile__body">
-                  <span class="cat-tile__name">Open-Meteo <em class="cat-tile__tag">Weather</em></span>
-                  <span class="cat-tile__desc">Live temps, wind &amp; conditions — global, automatic.</span>
-                </span>
-                <span class="cat-tile__ctrl">
-                  <label class="cat-switch" title="Enable Open-Meteo">
-                    <input type="checkbox" id="cat-toggle-open-meteo" aria-label="Enable Open-Meteo">
-                    <span class="cat-switch__track"></span>
-                  </label>
-                </span>
-              </div>
-
-              <!-- 2 · Direct Feed (build-your-own) -->
-              <div class="cat-tile" data-int="direct-feed" data-state="available" data-on="false">
-                <span class="cat-tile__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
-                <span class="cat-tile__body">
-                  <span class="cat-tile__name">Direct Feed <em class="cat-tile__tag">Build your own</em></span>
-                  <span class="cat-tile__desc">Your resort's own API — auto-detect fields &amp; map them.</span>
-                </span>
-                <span class="cat-tile__ctrl">
-                  <label class="cat-switch" title="Enable Direct Feed">
-                    <input type="checkbox" id="cat-toggle-direct-feed" aria-label="Enable Direct Feed">
-                    <span class="cat-switch__track"></span>
-                  </label>
-                </span>
-              </div>
-
-              <!-- 3 · SnoCountry (available, toggle) -->
-              <div class="cat-tile" data-int="snocountry" data-state="available" data-on="false">
-                <span class="cat-tile__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M4 20l5-10 3.5 6 2.5-4 6 8"/><circle cx="9" cy="5.5" r="1.3"/></svg></span>
-                <span class="cat-tile__body">
-                  <span class="cat-tile__name">SnoCountry <em class="cat-tile__tag">Snow Report</em></span>
-                  <span class="cat-tile__desc">Base depth, new snow, lifts &amp; trails open.</span>
-                </span>
-                <span class="cat-tile__ctrl">
-                  <label class="cat-switch" title="Enable SnoCountry">
-                    <input type="checkbox" id="cat-toggle-snocountry" aria-label="Enable SnoCountry">
-                    <span class="cat-switch__track"></span>
-                  </label>
-                </span>
-              </div>
-
+              <h3 class="catalog__title">Data sources</h3>
+              <p class="catalog__sub">Open-Meteo powers your live weather card today. More sources are coming soon.</p>
             </div>
           </div>
 
@@ -3111,7 +3070,7 @@
           </section><!-- /Open-Meteo card -->
 
           <!-- ===== Direct Feed (build-your-own card) ===== -->
-          <section class="acc-card" data-open="false" data-acc-id="direct-feed">
+          <section class="acc-card acc-card--soon" data-open="false" data-acc-id="direct-feed">
             <button type="button" class="acc-head" aria-expanded="false">
               <span class="acc-head__icon" aria-hidden="true">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
@@ -3120,7 +3079,7 @@
                 <span class="acc-head__title">Direct Feed</span>
                 <span class="acc-head__desc">Build your own card from your resort's API</span>
               </span>
-              <span class="acc-badge acc-badge--opt">Custom</span>
+              <span class="acc-badge acc-badge--soon">Coming soon</span>
               <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
             </button>
             <div class="acc-body">
@@ -3195,7 +3154,7 @@
           </section><!-- /Direct Feed card -->
 
           <!-- ===== Live Status (resort-reported snow & operations) ===== -->
-          <section class="acc-card" data-open="false" data-acc-id="live-status">
+          <section class="acc-card acc-card--soon" data-open="false" data-acc-id="live-status">
             <button type="button" class="acc-head" aria-expanded="false">
               <span class="acc-head__icon" aria-hidden="true">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M4 20l5-10 3.5 6 2.5-4 6 8"/><circle cx="9" cy="5.5" r="1.3"/></svg>
@@ -3204,7 +3163,7 @@
                 <span class="acc-head__title">Live Status</span>
                 <span class="acc-head__desc">Snow, lifts &amp; trails — reported by the resort, via SnoCountry</span>
               </span>
-              <span class="acc-badge acc-badge--opt">Optional</span>
+              <span class="acc-badge acc-badge--soon">Coming soon</span>
               <svg class="acc-head__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
             </button>
             <div class="acc-body">
@@ -3277,6 +3236,7 @@ import { normalizeSnoCountry } from './src/shared/weather/snocountry.js';
   document.querySelectorAll('.acc-head').forEach(head => {
     head.addEventListener('click', () => {
       const card = head.closest('.acc-card');
+      if (card.classList.contains('acc-card--soon')) return;   // "Coming soon" rows don't expand
       const open = card.getAttribute('data-open') === 'true';
       card.setAttribute('data-open', open ? 'false' : 'true');
       head.setAttribute('aria-expanded', open ? 'false' : 'true');
