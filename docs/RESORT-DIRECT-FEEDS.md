@@ -1,7 +1,20 @@
 # Resort Direct — feed audit & integration gameplan
 
-**Status (2026-06-11): design captured, not built.** The Weather tab's **Resort Direct**
-card is a "Coming soon" placeholder. This doc is the handover for building it.
+**Status (2026-06-20): prototyped, then PARKED behind "Coming soon."** The Weather tab's
+**Resort Direct** + **SnoCountry** cards are parked placeholders, but the ingestion engine
+was **built and is dormant in the repo** (kept, easy to revive):
+- **Direct Feed** — a multi-feed "build-your-own" card: add N endpoints per resort, each via
+  paste-a-sample or live fetch → `flatten()` auto-detect → heuristic map → combined preview
+  (merges feeds, "top feed wins" on overlap). Works in the dashboard; **not wired to the live
+  widget** (needs the server-side proxy for CORS-blocked/secret feeds).
+- **SnoCountry** — a working **Live Status adapter** (`src/shared/weather/snocountry.js`,
+  `fetchSnoCountry`; CORS-open, baked public read key; verified live).
+- **Composition layer** — `src/shared/weather/compose.js` turns the saved source selection
+  into the widget's 6-cell card (Open-Meteo live today; the above are dormant).
+- **OpenSnow was removed** (API access denied).
+
+To revive: un-park the two "Coming soon" tiles on `weather.html` (swap them back to active
+cards). The audit below is the build reference for finishing the proxy + more sources.
 
 > ⚠️ This repo is **public**. Per-resort endpoint URLs, API keys/tokens, and sample
 > payloads are **not** stored here — credentials live in Keeper. This doc keeps only the

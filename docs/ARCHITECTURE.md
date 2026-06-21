@@ -114,34 +114,40 @@ To wire per-bot persistence: replace the `localStorage` read on load with
 
 ## Weather subsystem
 
-One shared adapter, two consumers:
+**Adapters → a composition layer → two consumers.**
 
 - **`src/shared/weather/open-meteo.js`** — `fetchOpenMeteo({lat,lng,elevationFt,name})`
-  → normalized model (°F / mph). The single source of truth for live conditions.
+  → normalized model (°F / mph). The **live** weather source.
+- **`src/shared/weather/compose.js`** — `composeConditions(cfg, coords)` reads the saved
+  source selection (`localStorage["gsb-weather-integrations-v1"]`) and produces the data the
+  widget renders: a **6-cell conditions card filled by ONE active source** (Open-Meteo today).
+  No merging/precedence — one source → six cells.
+- **`src/shared/weather/snocountry.js`** — `fetchSnoCountry()` Live Status adapter. **Built
+  but dormant** (its card is parked "Coming soon").
 - Consumed by **`weather.html`** (the config/preview tab) and the **widget runtime**
-  (which overrides `data.snow.weather` after the resort feed loads).
+  (`omSeasonCells(...).slice(0,6)` renders the composed card).
 
 Coordinate resolution order (widget): `window.gsbWeatherConfig` →
-`localStorage["gsb-weather-config-v1"]` → Jackson Hole defaults.
+`localStorage["gsb-weather-config-v1"]` → Jackson Hole defaults (Summer card).
 
-`weather.html` is a **two-card accordion** — **Open-Meteo** (the active source: coords +
-optional summit, a Location Detail panel, live readings + chat preview, a ⚡ Live-preview
-toggle) and **Resort Direct** (a "Coming soon" placeholder). The saved config is
-**source-aware** — `gsb-weather-config-v1` stores `source: 'open-meteo' | 'resort-direct'`
-and restores the saved source's card (✓-marked) on load.
+`weather.html` is a **vertical stack of source cards** — **Open-Meteo** (live: coords +
+optional summit, Location Detail panel, live readings + chat preview, ⚡ Live-preview toggle;
+**on by default**, **JH coords + Summer** demo defaults, auto-fetches on load) + **Direct
+Feed** and **SnoCountry**, both parked as **"Coming soon"** rows.
 
-**What's live vs snapshot:**
+**What's live vs parked:**
 
-| Field | Source | Live? |
-|---|---|---|
-| Base/summit temp, wind | Open-Meteo (CORS-open) | ✅ live |
-| Snow 24h, season total, depth | resort `snow.json` (CORS-blocked) | ❌ baked snapshot |
+| Source | State |
+|---|---|
+| Open-Meteo — temp/wind/conditions/UV/precip/snow-level (CORS-open) | ✅ live, drives the card |
+| Direct Feed — resort's own API(s), multi-feed build-your-own engine | ⏸ built, parked (needs a server-side proxy to reach the live widget) |
+| SnoCountry — base depth / new snow / lifts / trails / surface (CORS-open) | ⏸ built, parked |
+| OpenSnow | ❌ removed (API access denied) |
 
-Open-Meteo provides current weather + snowfall forecast, but **not** resort snow
-depth or season totals. Making those live needs the resort's own feed (Resort Direct).
-The prototype field-mapper was removed and Resort Direct is now a "Coming soon" card —
-the full feed audit (7 shape families, CORS split, OpenSnow = our schema) and build plan
-live in [`RESORT-DIRECT-FEEDS.md`](./RESORT-DIRECT-FEEDS.md).
+Open-Meteo covers current weather + a snowfall forecast, but **not** resort operations
+(depth, lifts, trails) — those come from a resort feed (Direct Feed / SnoCountry), which is
+why those cards exist. Full feed audit (7 shape families, CORS split) + revival plan in
+[`RESORT-DIRECT-FEEDS.md`](./RESORT-DIRECT-FEEDS.md).
 
 ---
 

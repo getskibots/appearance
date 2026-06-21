@@ -75,19 +75,15 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
 ### 4 · Chat opening experience
 - **4.1 Chat header** — 🟡 logo/name/welcome ✅, webcam hero with fallback ✅;
   per-cam location label + "last updated" partial.
-- **4.2 Live conditions block** — ✅ ~70%. Card built; base/summit temp + wind
-  **live via Open-Meteo**; the snow figures (24h / season total / depth) are
-  **leftover resort-feed cells with no Open-Meteo source** (static fallback) and are
-  slated to be retired. A **Winter/Summer mode toggle** is **built on the Weather config
-  page** (`weather.html`, Open-Meteo card): one season cell-map swaps both the Live Readings
-  grid and the chat-preview card — winter = base/summit temp, summit wind, conditions, 5-day
-  snowfall, snow level; summer = temp, feels-like, conditions, wind, UV index, precip.
-  `seasonMode` persists in `gsb-weather-config-v1`. ✅ The same season swap is **also wired into
-  the production widget conditions card** (`widget-runtime.js` `resolveSeasonMode` + `omSeasonCells`,
-  summer default). Scoped to Open-Meteo on purpose; Resort Direct defines its own season
-  handling when built. The **"turn off conditions" toggle is now built** — the Appearance
-  **Weather readout** switch is one control for all weather: off hides both the launcher
-  temperature *and* the in-chat conditions card (`body[data-show-conditions="false"]`).
+- **4.2 Live conditions block** — ✅. A clean **6-cell matrix** filled by ONE active source
+  (Open-Meteo today) via `compose.js` → `widget-runtime.js` (`omSeasonCells(...).slice(0,6)`).
+  The old leftover snow cells (24h / season / depth with no live source) are **retired**.
+  **Winter/Summer toggle** (built on `weather.html`, also wired into the widget,
+  **summer default**): winter = base/summit temp, summit wind, conditions, 5-day snowfall,
+  snow level; summer = temp, feels-like, conditions, wind, UV index, precip. `seasonMode`
+  persists in `gsb-weather-config-v1`. The **"turn off conditions" toggle** (Appearance →
+  Weather readout) hides both the launcher temperature *and* the in-chat card
+  (`body[data-show-conditions="false"]`).
 
 ### 5 · Appearance tab — ✅ ~95% (the heaviest pre-build)
 - **5.1 Identity & branding** ✅ — logo upload (JPEG now **accepted with a warning**,
@@ -124,19 +120,35 @@ Legend: ✅ built · 🟡 partial · ⬜ mostly open
   ask-for-rating, disable text input.
 
 ### 6 · Widget integrations
+
+**Weather tab model (current):** a **vertical stack of accordion cards** — **Open-Meteo**
+(the one **live** source, on by default) + **Direct Feed** and **SnoCountry**, both parked
+as **"Coming soon"** rows. The guest-facing chat conditions card is a clean **6-cell matrix
+filled by ONE active source** (Open-Meteo today), composed in `src/shared/weather/compose.js`
+(`composeConditions`) — no merging/precedence/overflow. Selection persists in
+`localStorage['gsb-weather-integrations-v1']`; coords + season in `gsb-weather-config-v1`.
+Demo defaults: **Jackson Hole coords + Summer card**, auto-fetched on load.
+
 - **6.1 Weather (Open-Meteo)** ✅ ~85% — coords (base + optional summit), live readings,
-  chat preview, widget launcher temp. The Weather tab is now a **two-card accordion**
-  (Open-Meteo = active, Resort Direct = coming soon) matching the Appearance accordion;
-  **source-aware save** (`gsb-weather-config-v1.source`, restored on load, ✓-marked active
-  card); a **Location Detail** panel (reverse-geocoded place, model-DEM elevation, base↔summit
-  distance, sign-flip/elevation validation); a **⚡ Live preview** toggle (instant debounced
-  fetch as you type, without saving). Works today.
-- **6.2 Weather (Resort Direct / own endpoint)** ⬜ **coming soon** — the prototype 3-step
-  field-mapper was **removed**; Resort Direct is a tidy "Coming soon" card. The real design
-  (paste URL → auto-detect one of 7 feed-shape families → auto-map → save, with a server-side
-  poller for the CORS-blocked half) is fully captured in
-  [`RESORT-DIRECT-FEEDS.md`](./RESORT-DIRECT-FEEDS.md). Big finding: **OpenSnow already returns
-  our normalized model**, so it's a near-zero-mapping second source.
+  chat preview, widget launcher temp, the **6-cell season-aware card** (Winter/Summer, summer
+  default). **Location Detail** panel (reverse-geocoded place, model-DEM elevation, base↔summit
+  distance, validation) + **⚡ Live preview** toggle (instant debounced fetch as you type).
+  Open-Meteo is the always-on baseline; the dashboard auto-fetches whenever coords are present.
+  Works today.
+- **6.2 Resort Direct + SnoCountry** ⏸ **PARKED behind "Coming soon" — engines BUILT but
+  dormant** (code kept, easy to un-park). What's built and sitting behind the placeholders:
+  - **Direct Feed** = a **multi-feed "build-your-own" engine**: add N named endpoints per resort
+    (weather / lifts / terrain), each via paste-a-sample **or** live fetch → `flatten()`
+    auto-detect → heuristic field-map → a **combined preview** that merges feeds with per-cell
+    provenance + "top feed wins" on overlap. Works in the dashboard. **Not wired to the live
+    widget** — that needs the **server-side proxy** (CORS-blocked feeds + secret keys).
+  - **SnoCountry** = a **Live Status adapter** (`src/shared/weather/snocountry.js`,
+    `fetchSnoCountry`) — base depth, new snow, lifts/trails, surface. **CORS-open**, baked
+    public read key; verified live. The card is parked but functional.
+  - **OpenSnow was removed** (API access denied by OpenSnow).
+  - Revive = un-park the two tiles (swap "Coming soon" rows back to active cards). Full feed
+    audit (7 shape families, CORS split, proxy need) in
+    [`RESORT-DIRECT-FEEDS.md`](./RESORT-DIRECT-FEEDS.md).
 - **6.3 Webcam — multi-cam** ✅ (multi-cam re-added, with a polished treatment). Built:
   a **webcam card list** in the Appearance card — each cam is a card with a **live preview**
   thumbnail (+ LIVE badge), URL, **auto-detected type pill with a "change" override** menu

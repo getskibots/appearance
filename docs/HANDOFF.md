@@ -81,7 +81,9 @@ src/
     image-compress.js   Client-side resize + WebP/optimize (logos, featured + background images)
     sample-logo.js      JH demo logo as a data URI (bundles reliably on Pages)
     weather/
-      open-meteo.js     Shared Open-Meteo adapter (the ONE weather source of truth)
+      open-meteo.js     Shared Open-Meteo adapter (the live weather source)
+      compose.js        Composition layer: saved source selection → the widget's 6-cell card
+      snocountry.js     SnoCountry "Live Status" adapter (built; parked behind "Coming soon")
   dashboard/
     dashboard.css       Dashboard styling
     dashboard.js        Dashboard logic: state, render(), save/load, all controls
@@ -168,10 +170,13 @@ These four items are the seam between "what GSB built" and "what BotScrew wires"
 
 4. **Config injection the widget already honors today:**
    - `window.gsbWeatherConfig` — resort coordinates (base/summit lat/lng/elev).
-   - `localStorage["gsb-weather-config-v1"]` — what the Weather tab saves. **Source-aware:**
-     also stores `source: 'open-meteo' | 'resort-direct'` (Resort Direct is parked → effectively
-     always Open-Meteo today).
-   - Falls back to Jackson Hole defaults so nothing renders empty.
+   - `localStorage["gsb-weather-config-v1"]` — coords + `seasonMode` (Winter/Summer) the
+     Weather tab saves.
+   - `localStorage["gsb-weather-integrations-v1"]` — which sources are selected. **Open-Meteo
+     is on by default; Direct Feed + SnoCountry are parked ("Coming soon")**, so today it's
+     effectively always Open-Meteo. `src/shared/weather/compose.js` reads this and produces
+     the widget's **6-cell conditions card from one active source**.
+   - Falls back to Jackson Hole defaults (Summer card) so nothing renders empty.
 
 ---
 

@@ -25,8 +25,10 @@ separates the **embeddable chat widget** from the **admin appearance dashboard**
   widget per resort).
 - **`preview.html`** — a standalone live preview of the widget on a Jackson Hole
   resort-site mock.
-- **`weather.html`** — weather config tab: **Open-Meteo** (active) + **Resort Direct**
-  (coming soon), as a two-card accordion. Source-aware save, live readings + chat preview.
+- **`weather.html`** — weather config tab: a vertical stack of source cards — **Open-Meteo**
+  (live; drives the 6-cell conditions card, Jackson Hole / Summer demo defaults) + **Direct
+  Feed** and **SnoCountry** (parked, "Coming soon" — engines built but dormant). Live readings
+  + chat preview.
 
 ## Develop
 
