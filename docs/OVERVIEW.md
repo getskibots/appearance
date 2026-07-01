@@ -96,6 +96,7 @@ it; if it answers questions or carries Jackson Hole data, strip it.*
 
 | If you want… | Read |
 |---|---|
+| **Exactly which files to reuse / port / strip** | [`PORT-MAP.md`](./PORT-MAP.md) |
 | What's built vs. pending | [`BUILD-STATUS.md`](./BUILD-STATUS.md) · [`SCOPE-MAPPING.md`](./SCOPE-MAPPING.md) |
 | The data contract (Oleksa) | [`botscrew-widget-settings.md`](./botscrew-widget-settings.md) |
 | The iframe / host-page contract | [`SCRIPT-CHATBOT-CONTRACT.md`](./SCRIPT-CHATBOT-CONTRACT.md) · [`INTEGRATION.md`](./INTEGRATION.md) |

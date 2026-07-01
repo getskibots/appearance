@@ -12,6 +12,7 @@ separates the **embeddable chat widget** from the **admin appearance dashboard**
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Code + runtime model, config flow, how to extend |
 | [`docs/BUILD-STATUS.md`](docs/BUILD-STATUS.md) | What's done vs pending (where the build is) |
 | [`docs/SCOPE-MAPPING.md`](docs/SCOPE-MAPPING.md) | Status mapped line-by-line against the scope sheet (epics 1–7) |
+| [`docs/PORT-MAP.md`](docs/PORT-MAP.md) | Exactly which files to reuse / port / strip (start here for the port) |
 | [`docs/DEMO-CODE.md`](docs/DEMO-CODE.md) | Jackson Hole / demo-only code to strip (don't port) vs. the deliverable |
 | [`docs/ANALYTICS.md`](docs/ANALYTICS.md) | Chat-widget GA4 event layer — events fired, BotScrew signals to map, roadmap |
 | [`docs/botscrew-widget-settings.md`](docs/botscrew-widget-settings.md) | The BotScrew data contract (authoritative) |
