@@ -5,6 +5,8 @@
 
 // BotScrew-aligned config mapper (drop-in contract). See docs/botscrew-widget-settings.md.
 import { toBotscrewWidgetSettings, fromBotscrewWidgetSettings } from '../shared/widget-config.js';
+// Embed mode (iframe in BotScrew admin): per-bot persistence via the appearance store.
+import { isEmbedMode, initEmbed } from './embed.js';
 // Google Fonts typography: catalog + dynamic loader + searchable picker.
 import { loadFont, loadPreview, fontStack } from '../shared/fonts/font-loader.js';
 import { detectWebcamKind, webcamKindMeta, webcamPoster } from '../shared/webcam.js';
@@ -2001,6 +2003,22 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     state = JSON.parse(JSON.stringify(saved));
     render();
   });
+
+  // Embed mode (iframe in BotScrew admin) — per-bot load/save via the appearance
+  // store, keyed by botId. Additive: standalone/localStorage flow is untouched, and
+  // this is inert until the Supabase creds in embed-config.js are filled.
+  if (isEmbedMode()) {
+    initEmbed({
+      applyConfig: function(botscrewSettings) {
+        var partial = fromBotscrewWidgetSettings(botscrewSettings);
+        for (var k in partial) if (Object.prototype.hasOwnProperty.call(partial, k) && partial[k] !== undefined) state[k] = partial[k];
+        saved = JSON.parse(JSON.stringify(state)); // loaded config becomes the revert baseline
+        render();
+      },
+      getConfig: function() { return toBotscrewWidgetSettings(state); },
+      saveBtn: $('saveBtn')
+    });
+  }
 
   // Mobile preview drawer behavior
   // When the preview-col is collapsed (mobile only), tapping anywhere on it
