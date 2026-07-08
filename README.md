@@ -17,6 +17,7 @@ separates the **embeddable chat widget** from the **admin appearance dashboard**
 | [`docs/ANALYTICS.md`](docs/ANALYTICS.md) | Chat-widget GA4 event layer — events fired, BotScrew signals to map, roadmap |
 | [`docs/botscrew-widget-settings.md`](docs/botscrew-widget-settings.md) | The BotScrew data contract (authoritative) |
 | [`docs/SCRIPT-CHATBOT-CONTRACT.md`](docs/SCRIPT-CHATBOT-CONTRACT.md) | The host-page loader / parent↔iframe contract (Milestone 1 target) |
+| [`docs/EMBED-CONTRACT.md`](docs/EMBED-CONTRACT.md) | **Admin dashboard embed** — parent↔iframe handshake, token auth, GSB-hosted Supabase backend; what BotScrew wires to drop our Appearance tab in |
 | [`docs/INTEGRATION.md`](docs/INTEGRATION.md) | How the widget drops into BotScrew's embed — iframe/snippet model, seams, content provenance |
 | [`docs/RESORT-DIRECT-FEEDS.md`](docs/RESORT-DIRECT-FEEDS.md) | Resort-feed audit + Resort Direct build plan |
 
