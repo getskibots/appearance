@@ -174,5 +174,73 @@ export function bindAutoResize(o) {
   post();
 }
 
+/**
+ * Walk a BotScrew-shaped config and replace every embedded `data:` URL (base64
+ * image from an upload) with an uploaded Storage URL, so the saved JSON blob
+ * carries lightweight CDN links instead of megabytes of base64. This lets the
+ * dashboard keep base64 in `state` while editing (instant preview, identical to
+ * standalone) and only pay the upload at Save.
+ *
+ * - **Generic:** deep-walks the object, so it catches every image field (logo,
+ *   background, custom icon, featured images, webcam posters) — including any
+ *   added later — with no per-field wiring.
+ * - **Deduped:** identical images (e.g. the logo, which appears as both
+ *   `imageUrl` and `popupLogoUrl`) upload once.
+ * - **Idempotent:** filenames are content-hashed, so re-saving an unchanged
+ *   image overwrites the same object (x-upsert) instead of orphaning a new one.
+ * - **Non-destructive:** already-public URLs (external webcams, prior uploads)
+ *   are left untouched; works on a deep clone.
+ *
+ * @param {{ uploadImage:(botId:string, blob:Blob, name?:string)=>Promise<string> }} store
+ * @param {string} botId
+ * @param {object} config  BotScrew-shaped settings
+ * @returns {Promise<object>} the config with data: URLs swapped for public URLs
+ */
+export async function materializeImages(store, botId, config) {
+  var clone = JSON.parse(JSON.stringify(config || {}));
+  var jobs = {};            // dataUrl -> Promise<publicUrl> (dedup identical images)
+  var pending = [];
+
+  function upload(dataUrl) {
+    if (jobs[dataUrl]) return jobs[dataUrl];
+    var p = dataUrlToBlob(dataUrl).then(function (blob) {
+      var ext = mimeToExt(blob.type);
+      return store.uploadImage(botId, blob, 'img-' + hash32(dataUrl) + (ext ? '.' + ext : ''));
+    });
+    jobs[dataUrl] = p;
+    return p;
+  }
+
+  (function walk(node, parent, key) {
+    if (typeof node === 'string') {
+      if (node.slice(0, 5) === 'data:') {
+        pending.push(upload(node).then(function (url) { parent[key] = url; }));
+      }
+    } else if (Array.isArray(node)) {
+      node.forEach(function (v, i) { walk(v, node, i); });
+    } else if (node && typeof node === 'object') {
+      for (var k in node) if (Object.prototype.hasOwnProperty.call(node, k)) walk(node[k], node, k);
+    }
+  })(clone, null, null);
+
+  await Promise.all(pending);
+  return clone;
+}
+
+function dataUrlToBlob(dataUrl) { return fetch(dataUrl).then(function (r) { return r.blob(); }); }
+function mimeToExt(mime) {
+  return ({ 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp',
+            'image/gif': 'gif', 'image/svg+xml': 'svg' })[mime] || '';
+}
+// FNV-1a 32-bit → short stable hex id, for content-addressed (idempotent) filenames.
+function hash32(str) {
+  var h = 0x811c9dc5;
+  for (var i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+  }
+  return ('0000000' + h.toString(16)).slice(-8);
+}
+
 function safeText(res) { try { return res.text(); } catch (e) { return Promise.resolve(''); } }
 function sanitize(s) { return String(s).replace(/[^\w.\-]+/g, '_').slice(0, 120); }

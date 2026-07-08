@@ -17,7 +17,7 @@
  *      push assets to Storage instead of embedding base64 (future wiring step).
  * =============================================================================
  */
-import { createAppearanceStore, resolveEmbedContext, bindAutoResize } from '../shared/appearance-store.js';
+import { createAppearanceStore, resolveEmbedContext, bindAutoResize, materializeImages } from '../shared/appearance-store.js';
 import { GSB_STORE_CONFIG } from './embed-config.js';
 
 /** True when running as the embedded config dashboard (not the standalone demo). */
@@ -81,7 +81,10 @@ export async function initEmbed(hooks) {
     hooks.saveBtn.addEventListener('click', function () {
       var cfg;
       try { cfg = hooks.getConfig(); } catch (e) { console.error('[gsb-embed] getConfig failed:', e.message); return; }
-      store.save(ctx.botId, cfg)
+      // Push any base64 images to Storage first, then save the config with the
+      // resulting CDN URLs (keeps the JSON blob small and lets images be cached).
+      materializeImages(store, ctx.botId, cfg)
+        .then(function (rewritten) { return store.save(ctx.botId, rewritten); })
         .then(function () { console.log('[gsb-embed] saved appearance for bot ' + ctx.botId); })
         .catch(function (e) { console.error('[gsb-embed] save failed for bot ' + ctx.botId + ':', e.message); });
     });
