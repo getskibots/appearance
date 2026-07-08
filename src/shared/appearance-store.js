@@ -135,7 +135,7 @@ export function resolveEmbedContext(o) {
     // 1) URL params (signed-URL variant)
     var p = new URLSearchParams(location.search);
     if (p.get('botId') && p.get('token')) {
-      return resolve({ botId: p.get('botId'), token: p.get('token') });
+      return resolve({ botId: p.get('botId'), token: p.get('token'), publicIdentifier: p.get('publicId') || undefined });
     }
     // 2) postMessage from the parent admin (origin-checked)
     var done = false;
@@ -144,7 +144,12 @@ export function resolveEmbedContext(o) {
       if (e.data && e.data.type === 'initialization' && e.data.botId) {
         done = true;
         window.removeEventListener('message', onMsg);
-        resolve({ botId: String(e.data.botId), token: e.data.token, serverUrl: e.data.serverUrl });
+        resolve({
+          botId: String(e.data.botId),
+          token: e.data.token,
+          serverUrl: e.data.serverUrl,
+          publicIdentifier: e.data.publicIdentifier || e.data.publicId || undefined,
+        });
       }
     }
     window.addEventListener('message', onMsg);

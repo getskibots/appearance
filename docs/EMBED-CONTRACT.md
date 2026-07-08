@@ -71,7 +71,7 @@ BotScrew admin (parent)                 GSB iframe (child)
         │   { type: 'resize', height }           │  (set iframe height from this)
         │                                        │
         │                (admin edits, clicks Save inside the iframe)
-        │                                        │  writes config + images to GSB Supabase
+        │                                        │  PUT /api/appearance (+ images to Storage)
 ```
 
 **Origin-check everything.** The iframe validates that `initialization` came from
@@ -112,13 +112,14 @@ BotScrew hands it a **short-lived signed JWT** that identifies which bots the
 current admin may edit.
 
 - **Claim required:** `authorized_bots` — an array of bot-id strings the token
-  bearer may read/write (e.g. `["43"]` or the admin's full set). GSB's Supabase
-  Row-Level Security enforces access **per `bot_id`** against this claim, so a
-  token for bot 43 can never read or write bot 44.
+  bearer may write (e.g. `["43"]` or the admin's full set), so a token for bot 43
+  can never write bot 44.
 - **TTL:** minutes, not hours. The dashboard is a short editing session.
 - **Where it's used:** the iframe sends it as the `Authorization: Bearer` header
-  on its Supabase requests. GSB's publishable anon key is the `apikey` header;
-  RLS (not the anon key) is what protects data.
+  on its **`PUT /api/appearance`** save. GSB's endpoint verifies the token, then
+  writes with the Supabase service key server-side. (Reads are public — appearance
+  is presentation config served to every site visitor anyway.) The browser never
+  holds a Supabase key. Transport spec: omni-odin `docs/handoff/APPEARANCE_CONTRACT.md`.
 
 **Who mints it — one decision to make (§7):** simplest is a tiny GSB
 **token-mint endpoint** that BotScrew's admin backend calls server-to-server
@@ -130,9 +131,10 @@ which BotScrew then passes into the iframe. GSB can provide this endpoint.
 ## 5. What GSB hosts (so BotScrew doesn't build it)
 
 - **The app** — the Appearance dashboard, deployed and versioned by GSB.
-- **Config storage** — Supabase table `bot_appearance` (PK `bot_id`, jsonb
-  `config`), one row per bot. Schema + RLS SQL live in the header of
-  [`src/shared/appearance-store.js`](../src/shared/appearance-store.js).
+- **Config storage + API** — the `GET/PUT /api/appearance` endpoints (omni-odin),
+  backed by the Supabase table `bot_appearance` (PK `bot_id`, jsonb `config`), one
+  row per bot. The iframe saves through the endpoint, not Supabase directly.
+  Migration + contract: omni-odin `docs/handoff/APPEARANCE_CONTRACT.md`.
 - **Image hosting** — Supabase Storage bucket `appearance`, path `{botId}/…`.
   Uploaded logos/backgrounds/featured images are optimized client-side, pushed to
   Storage on Save, and stored in the config as CDN URLs (not base64). BotScrew
@@ -179,14 +181,15 @@ mirroring the omni-odin Knowledge-page model.
 |---|---|
 | `?embed=1` mode, `botId` capture, `ready`/`initialization` handshake | ✅ built |
 | Auto-resize (`ResizeObserver` → `resize` postMessage) | ✅ built |
-| Per-bot config load on init → hydrate dashboard | ✅ built |
-| Save → write config to Supabase, keyed by `botId` | ✅ built |
+| Per-bot config load on init (`GET /api/appearance?bot_id`) → hydrate dashboard | ✅ built |
+| Save → `PUT /api/appearance`, keyed by `botId` | ✅ built |
 | Image upload → Storage on Save, config carries CDN URLs | ✅ built |
-| Origin-checked postMessage, RLS-by-`bot_id` | ✅ built |
-| Supabase project + creds (`embed-config.js`) | ⏳ blank until the project exists |
+| Origin-checked postMessage; public read / token-gated write | ✅ built |
+| `/api/appearance` + `bot_appearance` table (omni-odin) | ✅ built (branch) |
+| `apiBase` + creds (`embed-config.js`) | ⏳ blank until the service is deployed |
 | Token-mint endpoint | ⏳ pending §7 decision |
 | BotScrew parent-side wiring | ⏳ this doc is the spec for it |
 
 Everything above the dashed line is code-complete and **inert** until the
-Supabase creds in `src/dashboard/embed-config.js` are filled — nothing breaks
+`apiBase` in `src/dashboard/embed-config.js` is filled — nothing breaks
 before the backend exists.
