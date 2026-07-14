@@ -30,7 +30,10 @@
 // GetSkiBots' own GA4 measurement id — ALWAYS receives every event.
 // Hardcoded in the widget (NOT stored in BotScrew). Only the resort's id is
 // configurable via gsbAppearance.analytics.
-export var GSB_GA4_ID = 'G-JH3FX7ENNT';
+// The DEDICATED Get Ski Bots property (widget telemetry across all resorts) —
+// NOT the getskitickets.com website property (G-JH3FX7ENNT), so widget events
+// never pollute the website's analytics.
+export var GSB_GA4_ID = 'G-BN9CX96J18';
 // ─────────────────────────────────────────────────────────────────────────────
 
 function isPlaceholderGsbId() {

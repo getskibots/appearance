@@ -9,7 +9,7 @@ exposes, and the roadmap. The emitter is `src/shared/analytics.js`.
 
 | # | Destination | When | Configured where |
 |---|---|---|---|
-| 1 | **GetSkiBots' GA4** (`GSB_GA4_ID = G-JH3FX7ENNT`) | **always** | Hardcoded in the widget — NOT stored in BotScrew |
+| 1 | **GetSkiBots' GA4** (`GSB_GA4_ID = G-BN9CX96J18`, the dedicated Get Ski Bots property) | **always** | Hardcoded in the widget — NOT stored in BotScrew |
 | 2 | **The resort's GA4** | only when set | Appearance → **Behavior → Google Analytics Measurement ID** (`gsbAppearance.analytics.ga4MeasurementId`, blank = off) |
 | 3 | **Console** (`[GSB Analytics] …`) | debug/testing | `gsbAnalyticsDebug(true)` in the browser console |
 
