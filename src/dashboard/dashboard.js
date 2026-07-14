@@ -1730,12 +1730,14 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
 
   $('widgetName').addEventListener('input', function(e){ state.widgetName = e.target.value; render(); });
   $('inputPlaceholder').addEventListener('input', function(e){ state.inputPlaceholder = e.target.value; render(); });
-  // Resort GA4 id — store loosely; warn (don't block) on a malformed id.
+  // Resort analytics id — accepts a GA4 measurement id (G-…) OR a GTM container
+  // id (GTM-…). Store loosely; warn (don't block) on a malformed id.
   function syncGa4Warn() {
     var warn = $('ga4Warn'); if (!warn) return;
     var v = ((state.analytics && state.analytics.ga4MeasurementId) || '').trim();
-    var bad = !!v && !/^G-[A-Z0-9]{6,}$/i.test(v);
-    warn.textContent = bad ? "That doesn't look like a GA4 ID — expected G-XXXXXXXXXX." : '';
+    var ok = /^GTM-[A-Z0-9-]{4,}$/i.test(v) || (/^G-[A-Z0-9]{6,}$/i.test(v) && !/^GTM-/i.test(v));
+    var bad = !!v && !ok;
+    warn.textContent = bad ? "That doesn't look right — expected a GA4 ID (G-XXXXXXXXXX) or GTM container ID (GTM-XXXXXXX)." : '';
     warn.style.display = bad ? '' : 'none';
   }
   if ($('ga4MeasurementId')) $('ga4MeasurementId').addEventListener('input', function(e){

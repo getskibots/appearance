@@ -2,20 +2,26 @@
  *
  * A thin, framework-agnostic *semantic* event emitter. One call —
  * analytics.track('widget_opened', { entry_point: 'bubble' }) — fans out to up
- * to three destinations:
- *   1. GetSkiBots' own GA4 property  (ALWAYS — hardcoded GSB_GA4_ID below)
- *   2. the resort's own GA4 property (ONLY when config.ga4MeasurementId is set)
- *   3. the browser console           (debug/testing)
+ * to four destinations:
+ *   1. the browser `dataLayer`        (ALWAYS — so ANY Google Tag Manager
+ *      container, the resort's or a parent page's, can trigger on chat events)
+ *   2. GetSkiBots' own GA4 property    (ALWAYS — hardcoded GSB_GA4_ID below)
+ *   3. the resort's own analytics      (their GA4 *or* GTM container — see below)
+ *   4. the browser console            (debug/testing)
  *
- * CONSOLE-FIRST: this module is fully functional and testable in console-only
- * mode. The GA (gtag) transport is added in a later step — until then,
- * routeToGA() is a safe no-op, so events can be verified independent of GA.
+ * The resort's id is auto-detected by prefix:
+ *   • `G-XXXXXXXXXX`  → GA4 measurement id (events go straight to their GA4)
+ *   • `GTM-XXXXXXX`   → GTM container id (their container loads + routes events,
+ *                        via the imported chat-events template — see docs/GTM-EVENTS.md)
  *
- * Ad-blocker safe: every external call is guarded; if gtag is blocked or absent
- * the widget keeps working with zero thrown errors.
+ * dataLayer is pushed ALWAYS; external scripts (gtag.js / gtm.js) load only when
+ * enableGA is set (production bootstrap), so the prototype/demo stay console-only.
+ *
+ * Ad-blocker safe: every external call is guarded; if a script is blocked or
+ * absent the widget keeps working with zero thrown errors.
  *
  * Usage:
- *   analytics.init({ ga4MeasurementId: 'G-RESORT123', debug: false })
+ *   analytics.init({ analyticsId: 'G-RESORT123', enableGA: true })   // or 'GTM-XXXX'
  *   analytics.track('message_sent', { turn_number: 3 })
  *   analytics.setDebug(true)
  */
@@ -23,39 +29,36 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // GetSkiBots' own GA4 measurement id — ALWAYS receives every event.
 // Hardcoded in the widget (NOT stored in BotScrew). Only the resort's id is
-// configurable via gsbAppearance.analytics.ga4MeasurementId.
-// GetSkiBots' own GA4 — getskitickets.com (Colorado Travel Company).
+// configurable via gsbAppearance.analytics.
 export var GSB_GA4_ID = 'G-JH3FX7ENNT';
 // ─────────────────────────────────────────────────────────────────────────────
 
 function isPlaceholderGsbId() {
   return !GSB_GA4_ID || /^G-X+$/i.test(GSB_GA4_ID) || GSB_GA4_ID.indexOf('XXXX') !== -1;
 }
+function isGtmId(id) { return /^GTM-[\w-]+$/i.test(String(id || '').trim()); }
+function isGa4Id(id) { var s = String(id || '').trim(); return /^G-[\w-]+$/i.test(s) && !isGtmId(s); }
 
-var _config = { ga4MeasurementId: '' }; // resort's own GA4 id ('' = off)
-// Console-first by default while GSB_GA4_ID is a placeholder, so events log even
-// before init() is called. init({ debug }) or setDebug() override this.
+var _resortId = ''; // the resort's own analytics id — GA4 (G-…) OR GTM (GTM-…); '' = off
 var _debug = isPlaceholderGsbId();
-// GA transport is OPT-IN: only the production widget bootstrap sets enableGA.
-// The prototype, the prospect demo, and the admin tool all leave it false →
-// console-only, so they never send events to a real GA property.
-var _enableGA = false;
+var _enableGA = false;   // OPT-IN: only the production bootstrap loads external scripts
 var _gaLoaded = false;
-var _gaSendTo = []; // the measurement ids each event is routed to (send_to)
+var _gtmLoaded = false;
+var _gaSendTo = [];      // GA4 property ids each event routes to (send_to)
 
 /**
  * Initialise the emitter.
- * @param {{ ga4MeasurementId?: string, debug?: boolean }} [config]
- *   ga4MeasurementId — the RESORT's GA4 id ('' disables their destination).
- *   debug — force console logging on/off. If omitted, console mode auto-enables
- *           while GSB_GA4_ID is still a placeholder (so console-first just works).
+ * @param {{ analyticsId?: string, ga4MeasurementId?: string, debug?: boolean, enableGA?: boolean }} [config]
+ *   analyticsId — the RESORT's GA4 id (G-…) or GTM container id (GTM-…). '' = off.
+ *                 `ga4MeasurementId` accepted as a legacy alias.
+ *   enableGA    — load external scripts (gtag/gtm). Prototype/demo leave false.
  */
 export function init(config) {
   config = config || {};
-  _config = { ga4MeasurementId: String(config.ga4MeasurementId || '').trim() };
+  _resortId = String(config.analyticsId || config.ga4MeasurementId || '').trim();
   _debug = (typeof config.debug === 'boolean') ? config.debug : isPlaceholderGsbId();
   _enableGA = config.enableGA === true;
-  if (_enableGA) ensureGtag(); // load gtag once, when GA is actually enabled
+  if (_enableGA) ensureTransports();
 }
 
 /** Toggle console logging independent of init(). */
@@ -70,58 +73,94 @@ export function track(event, props) {
   if (!event) return;
   props = props || {};
 
-  // Destination 3: console (debug/testing).
+  // Destination 4: console (debug/testing).
   if (_debug) {
     try { console.log('[GSB Analytics] ' + event, props); } catch (e) { /* never throw */ }
   }
 
-  // Destinations 1 & 2: GA4 (GSB always + resort when set).
-  // Wired in a later commit; safe no-op until then.
+  // Destination 1: dataLayer — ALWAYS. Prefixed `gsb_` so a GTM container can
+  // trigger on our events cleanly (see docs/GTM-EVENTS.md). Just an array push;
+  // harmless even with no GTM present, and needs no external script.
+  pushDataLayer(event, props);
+
+  // Destinations 2 & 3: GA4 via gtag (GSB always + the resort's GA4 when a G- id).
   routeToGA(event, props);
 }
 
-// ── GA4 transport (gtag.js) ──────────────────────────────────────────────────
-// Loads gtag ONCE, configures every live property, and routes each event to all
-// of them via send_to. Ad-blocker safe: every step is guarded; if gtag is
-// blocked or fails to load, the widget keeps working with zero thrown errors.
-
-function gtagAvailable() {
-  return typeof window !== 'undefined' && typeof window.gtag === 'function';
+// ── dataLayer (GTM) transport ────────────────────────────────────────────────
+function ensureDataLayer() {
+  if (typeof window === 'undefined') return null;
+  window.dataLayer = window.dataLayer || [];
+  return window.dataLayer;
+}
+function pushDataLayer(event, props) {
+  try {
+    var dl = ensureDataLayer();
+    if (!dl) return;
+    var payload = { event: 'gsb_' + event };
+    for (var k in props) { if (Object.prototype.hasOwnProperty.call(props, k)) payload[k] = props[k]; }
+    dl.push(payload);
+  } catch (e) { /* never throw */ }
 }
 
-// Which property ids are live: GSB's own (unless still a placeholder) + the
-// resort's (when configured). Empty → nothing to send, stay console-only.
+// ── external transports (opt-in via enableGA) ────────────────────────────────
+function ensureTransports() {
+  if (!_enableGA || typeof window === 'undefined') return;
+  ensureGtag();        // GSB's GA4 (+ the resort's GA4 when they gave a G- id)
+  ensureResortGtm();   // the resort's GTM container when they gave a GTM- id
+}
+
+// Which GA4 property ids fire via gtag: GSB's own + the resort's IF it's a GA4 id.
 function liveMeasurementIds() {
   var ids = [];
   if (!isPlaceholderGsbId()) ids.push(GSB_GA4_ID);
-  if (_config.ga4MeasurementId) ids.push(_config.ga4MeasurementId);
+  if (isGa4Id(_resortId)) ids.push(_resortId);
   return ids;
 }
 
 function ensureGtag() {
-  if (_gaLoaded || !_enableGA) return;
+  if (_gaLoaded) return;
   var ids = liveMeasurementIds();
-  if (!ids.length) return;            // no real ids yet → console-only
+  if (!ids.length) return;            // no real GA4 ids yet → nothing to load
   _gaLoaded = true;
   _gaSendTo = ids;
   try {
     window.dataLayer = window.dataLayer || [];
     window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
     window.gtag('js', new Date());
-    // Configure each property; suppress auto page_view — we only emit our events.
     ids.forEach(function (id) { window.gtag('config', id, { send_page_view: false }); });
-    // Inject gtag.js ONCE (one loader serves all configured properties).
     var s = document.createElement('script');
     s.async = true;
     s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(ids[0]);
-    s.onerror = function () { /* blocked by an ad blocker — stay silent, no throw */ };
+    s.onerror = function () { /* blocked → stay silent */ };
     (document.head || document.documentElement).appendChild(s);
   } catch (e) { /* never throw */ }
 }
 
+// Load the resort's GTM container (their tags + the imported chat-events template
+// route our dataLayer events wherever they want: GA4, Ads, Meta Pixel, …).
+function ensureResortGtm() {
+  if (_gtmLoaded || !isGtmId(_resortId)) return;
+  _gtmLoaded = true;
+  try {
+    var id = _resortId;
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ 'gtm.start': (new Date()).getTime(), event: 'gtm.js' });
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtm.js?id=' + encodeURIComponent(id);
+    s.onerror = function () { /* blocked → stay silent */ };
+    (document.head || document.documentElement).appendChild(s);
+  } catch (e) { /* never throw */ }
+}
+
+function gtagAvailable() {
+  return typeof window !== 'undefined' && typeof window.gtag === 'function';
+}
+
 function routeToGA(event, props) {
-  ensureGtag();                       // lazy: picks up a resort id set after first events
-  if (!_gaSendTo.length) return;      // console-only (no live ids)
+  if (_enableGA) ensureTransports(); // lazy: picks up a resort id set after first events
+  if (!_gaSendTo.length) return;      // no live GA4 ids → dataLayer/console only
   try {
     if (!gtagAvailable()) return;     // blocked / not loaded → drop silently
     var payload = {};
@@ -133,8 +172,6 @@ function routeToGA(event, props) {
 
 export var analytics = { init: init, track: track, setDebug: setDebug };
 
-// Convenience for testing: flip console logging from the browser console, even
-// after GSB_GA4_ID is a real id (which turns the default logging off). Sending
-// to GA is unaffected — this only controls the [GSB Analytics] console output.
+// Convenience for testing: flip console logging from the browser console.
 //   e.g.  gsbAnalyticsDebug(true)
 if (typeof window !== 'undefined') window.gsbAnalyticsDebug = setDebug;

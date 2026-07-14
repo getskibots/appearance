@@ -1021,11 +1021,11 @@
                 <button type="button" class="toggle" id="toggleDisableInput" role="switch" aria-checked="false"></button>
               </div>
 
-              <!-- Google Analytics (resort's own GA4 property) -->
+              <!-- Analytics (resort's own GA4 property or GTM container) -->
               <div class="field" style="margin-top:14px">
-                <label class="field__label" for="ga4MeasurementId" data-info="Adds your own Google Analytics so you can see chat usage (opens, messages, starters, handoffs) in your GA4. GetSkiBots' own analytics run regardless — this is just YOUR copy. Leave blank to keep it off.">Google Analytics Measurement ID</label>
-                <input class="input" type="text" id="ga4MeasurementId" placeholder="G-XXXXXXXXXX" maxlength="20" autocomplete="off" spellcheck="false" style="max-width:360px" />
-                <span class="field__hint">Paste your GA4 ID (G-XXXXXXXXXX) to see chat usage in your own Google Analytics.</span>
+                <label class="field__label" for="ga4MeasurementId" data-info="Route chat events (opens, messages, starters, handoffs) into your own analytics. Paste a GA4 ID to send them straight to Google Analytics, or a GTM container ID to route them anywhere — Google Ads, Meta Pixel, and more — via your own Tag Manager (import our chat-events template first). GetSkiBots' own analytics run regardless; this is just YOUR copy. Leave blank to keep it off.">Analytics ID</label>
+                <input class="input" type="text" id="ga4MeasurementId" placeholder="G-XXXXXXXXXX  or  GTM-XXXXXXX" maxlength="24" autocomplete="off" spellcheck="false" style="max-width:360px" />
+                <span class="field__hint">Paste your GA4 ID (G-XXXXXXXXXX) or GTM container ID (GTM-XXXXXXX) to route chat events into your own analytics.</span>
                 <span class="field__hint" id="ga4Warn" style="color:var(--danger,#c43f3f);display:none"></span>
               </div>
             </section>

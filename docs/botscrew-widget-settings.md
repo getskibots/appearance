@@ -125,7 +125,7 @@ interface GsbAppearance {
     iconWeight: 'thin' | 'regular' | 'bold'; label: string;
   };
   analytics: {
-    ga4MeasurementId: string;  // the RESORT's own GA4 id ('' = off, format 'G-XXXXXXXXXX')
+    ga4MeasurementId: string;  // the RESORT's own analytics id ('' = off): a GA4 id 'G-XXXXXXXXXX' OR a GTM container id 'GTM-XXXXXXX' (auto-detected by prefix). See docs/GTM-EVENTS.md.
   };
 }
 
@@ -197,7 +197,7 @@ GSB widget reads it. Defaults below match the dashboard's `DEFAULTS`.
 | `typography` | object | `{Inter, Playfair Display, 1.0}` | Body/display fonts + text scale. **`bodyFont`/`displayFont` are Google Fonts family names** (any of the ~1,800-family catalog). The embed must load the saved families from Google Fonts (`<link href="…css2?family=…">`) — the dashboard does this via `src/shared/fonts/font-loader.js`, which the widget loader can reuse |
 | `embedSearch` | object | see schema | Embeddable search-bar config. Drives the **shippable `.gsb-embed-search` component** (in `chat-widget.css`) via `--gsb-search-*` (radius/border/width/max-width) — sparkle on the left, chat-composer-style mic + Voice/Send on the right. The dashboard preview and the demo hero search use the *same* component |
 | `embedButton` | object | see schema | Embeddable magnifying-glass button config (the standalone search button), driven via `--gsb-embed-btn-*` |
-| `analytics` | object | `{ ga4MeasurementId: '' }` | **Behavior card.** Optional GA4 analytics for the chat widget. **`ga4MeasurementId` is the RESORT's own GA4 id** (`''` = off). GetSkiBots' own GA4 property is **hardcoded in the widget — NOT stored in BotScrew** — so this block is *only* the resort's id. Opaque-JSON, **zero backend change** — absent → analytics off (GSB's own still runs in production). Widget routes one event to both properties via gtag `send_to`; ad-blocker safe |
+| `analytics` | object | `{ ga4MeasurementId: '' }` | **Behavior card.** Optional per-resort analytics. **The id is the RESORT's own** (`''` = off) and accepts **either a GA4 id (`G-…`) or a GTM container id (`GTM-…`)**, auto-detected by prefix — GA4 sends straight to Google Analytics; GTM routes chat events to any tool via the resort's Tag Manager (import the chat-events template). Every event is also pushed to `dataLayer` (prefixed `gsb_`) for GTM to trigger on. GetSkiBots' own GA4 is **hardcoded in the widget — NOT stored in BotScrew**, so this block is *only* the resort's id. Opaque-JSON, **zero backend change**. Full event list + template: **docs/GTM-EVENTS.md** |
 
 ## What BotScrew's backend needs to do
 
