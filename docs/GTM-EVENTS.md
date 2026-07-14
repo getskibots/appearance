@@ -89,6 +89,17 @@ analytics.init({
 - Either way, **GSB's own GA4 always fires** (hardcoded `GSB_GA4_ID`) so GSB's
   baseline analytics never depend on the resort's setup.
 
+The helper `src/shared/analytics-bootstrap.js` (`bootstrapAnalytics`) is the one
+place that flips it on — production calls it with `{ analyticsId, enableGA: true }`.
+
+**Verify the pipe without touching the public demo** — append a URL param:
+- `?ga=1` → turn analytics on; **GSB's own GA4 fires** (watch it in GA4 → Realtime).
+- `?ga=G-XXXXXXXXXX` → also route to that GA4 property.
+- `?ga=GTM-XXXXXXX` → also load that GTM container.
+- `&gadebug=1` → also log every event to the console.
+
+Without a param the demo stays console-first, so only you trigger live sends.
+
 ---
 
 ## Open decision — where GTM runs (the iframe question)

@@ -617,6 +617,11 @@
     import { JH_LOGO } from '/src/shared/sample-logo.js';
     import { createSnowEngine } from '/src/shared/snow-engine.js';
     import { analytics } from '/src/shared/analytics.js';
+    import { bootstrapAnalytics } from '/src/shared/analytics-bootstrap.js';
+
+    // Console-first by default; append ?ga=1 (or ?ga=G-… / ?ga=GTM-…) to send live.
+    // Runs on load, AFTER the widget's own console-first init, so the param wins.
+    window.addEventListener('load', function () { bootstrapAnalytics({}); });
 
     // The resort's config (JH for now). On a real embed this comes from the bot's
     // BotScrew settings; here it's hardwired so the page wears Jackson Hole's brand.

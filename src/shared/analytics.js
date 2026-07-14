@@ -41,6 +41,7 @@ function isGa4Id(id) { var s = String(id || '').trim(); return /^G-[\w-]+$/i.tes
 
 var _resortId = ''; // the resort's own analytics id — GA4 (G-…) OR GTM (GTM-…); '' = off
 var _debug = isPlaceholderGsbId();
+var _includeGsb = true;  // fire GSB's own GA4 too (false = isolated test → only the resort id)
 var _enableGA = false;   // OPT-IN: only the production bootstrap loads external scripts
 var _gaLoaded = false;
 var _gtmLoaded = false;
@@ -57,6 +58,7 @@ export function init(config) {
   config = config || {};
   _resortId = String(config.analyticsId || config.ga4MeasurementId || '').trim();
   _debug = (typeof config.debug === 'boolean') ? config.debug : isPlaceholderGsbId();
+  _includeGsb = config.includeGsb !== false;
   _enableGA = config.enableGA === true;
   if (_enableGA) ensureTransports();
 }
@@ -113,7 +115,7 @@ function ensureTransports() {
 // Which GA4 property ids fire via gtag: GSB's own + the resort's IF it's a GA4 id.
 function liveMeasurementIds() {
   var ids = [];
-  if (!isPlaceholderGsbId()) ids.push(GSB_GA4_ID);
+  if (_includeGsb && !isPlaceholderGsbId()) ids.push(GSB_GA4_ID);
   if (isGa4Id(_resortId)) ids.push(_resortId);
   return ids;
 }
