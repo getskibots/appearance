@@ -1611,7 +1611,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       render();
     }
 
-    // After scroll pauses for 1.2s, reveal the pill (assume user has stopped)
+    // After scroll pauses for 2.5s, reveal the pill (assume user has stopped).
+    // Keep this in sync with preview.html's idle-reappear timer.
     if (scrollIdleTimer) clearTimeout(scrollIdleTimer);
     scrollIdleTimer = setTimeout(function() {
       if (!isAutoHideActive()) return;
@@ -1621,7 +1622,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
         syncSimulateButton();
         render();
       }
-    }, 3000);
+    }, 2500);
   }
 
   function syncSimulateButton() {
