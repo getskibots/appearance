@@ -612,7 +612,13 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
         onBake: function(out, origBytes) {
           img.url = out.dataUrl; urlIn.value = '';
           var fmt = out.mime === 'image/webp' ? 'WebP' : 'JPEG';
-          setInfo(formatBytes(origBytes) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height + ' · ' + fmt, 'ok');
+          // Only frame it as a reduction (with the arrow) when it actually got
+          // smaller; a pre-optimized source re-encodes to a bigger file, and
+          // "141 KB → 223 KB" reads like the tool made it worse. Show the output
+          // spec neutrally instead.
+          setInfo(out.bytes < origBytes
+            ? formatBytes(origBytes) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height + ' · ' + fmt
+            : formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height + ' · ' + fmt, 'ok');
           syncSourceUI();
           render();
         }
@@ -620,7 +626,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
         // Crop editor unavailable → plain resize+compress, cover-fit.
         optimizeImage(f).then(function(out) {
           img.url = out.dataUrl; urlIn.value = '';
-          setInfo(formatBytes(f.size) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height, 'ok');
+          setInfo(out.bytes < f.size
+            ? formatBytes(f.size) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height
+            : formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height + (out.keptOriginal ? ' · already optimized' : ''), 'ok');
           syncSourceUI(); renderPreview(); render();
         }).catch(function() {
           var rf = new FileReader();
@@ -1810,7 +1818,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     setInfo('Loading…', '');
     optimizeImage(f).then(function(out){
       state.backgroundImage = out.dataUrl;
-      setInfo(formatBytes(f.size) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height, 'ok');
+      setInfo(out.bytes < f.size
+        ? formatBytes(f.size) + ' → ' + formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height
+        : formatBytes(out.bytes) + ' · ' + out.width + '×' + out.height + (out.keptOriginal ? ' · already optimized' : ''), 'ok');
       render();
     }).catch(function(){
       var rf = new FileReader();

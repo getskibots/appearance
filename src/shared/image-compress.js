@@ -42,8 +42,20 @@ export async function optimizeImage(file, opts) {
   }
   if (src.close) src.close();
 
+  // Never inflate: an optimizer must never hand back a bigger file. If the
+  // re-encode ended up >= the original AND the original already fits (within the
+  // dimension cap + byte budget + a web-friendly format), keep the ORIGINAL —
+  // re-encoding an already-tightly-compressed source only makes it larger.
+  const origType = (file.type || '').toLowerCase();
+  const origFits = sw <= cfg.maxW && sh <= cfg.maxH && file.size <= cfg.maxBytes
+    && /^image\/(webp|jpeg|png)$/.test(origType);
+  if (blob.size >= file.size && origFits) {
+    const keptUrl = await blobToDataUrl(file);
+    return { dataUrl: keptUrl, blob: file, width: sw, height: sh, bytes: file.size, mime: origType, originalBytes: file.size, keptOriginal: true };
+  }
+
   const dataUrl = await blobToDataUrl(blob);
-  return { dataUrl, blob, width: w, height: h, bytes: blob.size, mime };
+  return { dataUrl, blob, width: w, height: h, bytes: blob.size, mime, originalBytes: file.size, keptOriginal: false };
 }
 
 // Decode a File to a drawable source (ImageBitmap or HTMLImageElement),
