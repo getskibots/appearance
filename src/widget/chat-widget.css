@@ -2613,3 +2613,14 @@ body[data-variant="full"] .gsb-agent-status-feature {
 .gsb-embed-search:not([data-has-text="true"]) .gsb-embed-search__send { display: none; }
 .gsb-embed-search[data-has-text="true"] .gsb-embed-search__voice { display: none; }
 
+/* Realtime voice OFF → mirror the in-chat composer exactly: hide the voice button
+   and keep Send (↗) as the permanent primary action, dimmed + inert until there's
+   text. Keeps the hero search and the in-chat composer congruent. */
+body[data-voice="off"] .gsb-embed-search__voice { display: none !important; }
+body[data-voice="off"] .gsb-embed-search:not([data-has-text="true"]) .gsb-embed-search__send {
+  display: inline-flex;
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
