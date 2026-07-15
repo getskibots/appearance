@@ -1761,6 +1761,17 @@ body[data-msg-style="squared"] .gsb-msg--user { border-bottom-right-radius: 3px;
 body[data-voice="off"] .gsb-composer-voice-mode { display: none !important; }
 body[data-voice="off"] .gsb-voice-mode-overlay { display: none !important; }
 
+/* With realtime voice OFF, the Send (↗) button becomes the PERMANENT primary
+   action: it stays in the (now-vacated) voice-button slot even when the input is
+   empty, so the composer never loses its submit affordance and the layout stays
+   balanced. Dimmed + inert until there's text — it lights up when submittable. */
+body[data-voice="off"] .gsb-composer-row:not([data-has-text="true"]) .gsb-composer-send {
+  display: inline-flex;
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
 /* Subtle waveform breathing animation on idle so the icon reads clearly as "voice" */
 .gsb-composer-voice-mode svg rect:nth-child(1),
 .gsb-composer-voice-mode svg rect:nth-child(5) {
