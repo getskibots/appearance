@@ -15,6 +15,8 @@ separates the **embeddable chat widget** from the **admin appearance dashboard**
 | [`docs/PORT-MAP.md`](docs/PORT-MAP.md) | Exactly which files to reuse / port / strip (start here for the port) |
 | [`docs/DEMO-CODE.md`](docs/DEMO-CODE.md) | Jackson Hole / demo-only code to strip (don't port) vs. the deliverable |
 | [`docs/ANALYTICS.md`](docs/ANALYTICS.md) | Chat-widget GA4 event layer — events fired, BotScrew signals to map, roadmap |
+| [`docs/GA4-SETUP.md`](docs/GA4-SETUP.md) | **GA4/GTM operational setup** — where the code lives, the 10 events, and the admin checklist (connect property, mark conversions, register params as custom dimensions, testing) |
+| [`docs/GTM-EVENTS.md`](docs/GTM-EVENTS.md) | The `dataLayer` event contract (10 `gsb_` events + params) + the GTM template-container model |
 | [`docs/botscrew-widget-settings.md`](docs/botscrew-widget-settings.md) | The BotScrew data contract (authoritative) |
 | [`docs/SCRIPT-CHATBOT-CONTRACT.md`](docs/SCRIPT-CHATBOT-CONTRACT.md) | The host-page loader / parent↔iframe contract (Milestone 1 target) |
 | [`docs/INTEGRATION.md`](docs/INTEGRATION.md) | How the widget drops into BotScrew's embed — iframe/snippet model, seams, content provenance |
