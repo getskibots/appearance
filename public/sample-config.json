@@ -1,0 +1,68 @@
+{
+  "_comment": "SAMPLE — the exact JSON blob the GetSkiBots appearance dashboard produces for one bot. BotScrew persists this verbatim: the 8 native fields map 1:1 to their widgetSettings; everything else rides in the opaque top-level `gsbAppearance` object (one JSON column). Images are hosted URLs, never base64. Schema: docs/botscrew-widget-settings.md.",
+  "isComposerInputEnabled": true,
+  "languageConfigs": {
+    "English": {
+      "imageUrl": "https://files.botscrew.com/widget/logos/58882109-jackson-hole.webp",
+      "color": "#1B3A6B",
+      "widgetName": "Jackson Hole Mountain Resort",
+      "inputPlaceholder": "Ask me anything — tickets, lessons, conditions…",
+      "doEnableSoundNotifications": true,
+      "doShowPopupMessagePreview": true,
+      "doAskForRating": false,
+      "greetingMessagePopupSettings": {
+        "popupLogoUrl": "https://files.botscrew.com/widget/logos/58882109-popup.webp",
+        "popupLogoSize": 64,
+        "alignment": "Right",
+        "bottomSpacing": 32,
+        "sideSpacing": 32
+      }
+    }
+  },
+  "gsbAppearance": {
+    "logoMaxHeight": 44,
+    "cornerRadius": 7,
+    "chatHeaderColor": "#ffffff",
+    "backgroundImage": "https://files.botscrew.com/widget/bg/58882109-teton.webp",
+    "bgTextMode": "light",
+    "welcomeText": "Welcome to Jackson Hole! Ask us anything about lift tickets, ski & ride school, dining, lodging, or today's conditions — we're here to help you plan the perfect day on the mountain.",
+    "updateLabel": "Season update",
+    "recentUpdate": "The 2025/26 ski season has wrapped. The Aerial Tram reopens for summer sightseeing on May 16th, with the gondolas joining June 6th.",
+    "recentUpdateSource": "manual",
+    "recentUpdateFlow": "",
+    "hero": {
+      "source": "featured",
+      "webcams": [
+        { "url": "https://cams.jacksonhole.com/webcam/codybowl.jpg", "label": "Cody Bowl", "sub": "10,450 ft", "kind": "image", "poster": "" },
+        { "url": "https://cams.jacksonhole.com/webcam/trambase.jpg", "label": "Tram Station", "sub": "9,095 ft", "kind": "image", "poster": "" },
+        { "url": "https://cams.jacksonhole.com/webcam/teewinot.jpg", "label": "Teewinot", "sub": "", "kind": "image", "poster": "" }
+      ],
+      "featuredImages": [
+        { "url": "https://files.botscrew.com/widget/featured/58882109-summer.webp", "caption": "Welcome to Teton Village", "link": "https://www.jacksonhole.com" },
+        { "url": "https://files.botscrew.com/widget/featured/58882109-tram.webp", "caption": "Aerial Tram", "link": "https://www.jacksonhole.com/aerial-tram" }
+      ]
+    },
+    "ctaText": "Need help?",
+    "bubbleStyle": "slidein",
+    "mobileSlideIn": true,
+    "customIconUrl": "https://files.botscrew.com/widget/icons/58882109-launcher.webp",
+    "customIconSize": 56,
+    "slideState": "visible",
+    "autoHideOnScroll": { "traditional": true, "enhanced": true, "slidein": true, "custom": true },
+    "layoutVariant": "side",
+    "animationStyle": "scale",
+    "blurredBackground": true,
+    "effectMode": "radiate",
+    "effectIntensity": 65,
+    "gradientAccent": "subtle",
+    "realtimeVoice": true,
+    "typingIndicator": "dots",
+    "messageStyle": "classic",
+    "snowfall": { "enabled": true, "style": "realistic", "intensity": 90, "showOnMobile": true, "pauseWhenIdle": true, "respectReducedMotion": true },
+    "statusPillFeatures": { "liveAgent": true, "weather": true, "needHelpCta": true },
+    "typography": { "bodyFont": "Inter", "displayFont": "Playfair Display", "textScale": 1.0 },
+    "embedSearch": { "borderRadius": 12, "borderThickness": 1, "width": "full", "placeholder": "Search the mountain…" },
+    "embedButton": { "size": 56, "shape": "round", "background": "brand", "iconWeight": "regular", "label": "Ask" },
+    "analytics": { "ga4MeasurementId": "" }
+  }
+}
