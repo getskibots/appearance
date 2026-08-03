@@ -4,10 +4,12 @@ import { resolve } from 'node:path';
 // Multi-page: the admin dashboard (index.html), the standalone JH preview
 // (preview.html), and the Agent Widget Weather tab (weather.html) — all vanilla,
 // pulling from src/widget + src/shared. `npm run dev` serves them; `npm run build`
-// emits them. Built under /appearance/ for GitHub Pages
-// (https://getskibots.github.io/appearance/); dev stays at '/'.
-export default defineConfig(({ command }) => ({
-  base: command === 'build' ? '/appearance/' : '/',
+// emits them.
+// Base path is deploy-target-aware: GitHub Pages serves under /appearance/
+// (https://getskibots.github.io/appearance/) — only there is GITHUB_ACTIONS set —
+// while Vercel (ui.getskibots.com) and local dev serve at root '/'.
+export default defineConfig(() => ({
+  base: process.env.GITHUB_ACTIONS ? '/appearance/' : '/',
   root: '.',
   server: {
     open: '/index.html',
