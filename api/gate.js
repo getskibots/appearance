@@ -1,34 +1,45 @@
 /* ui.getskibots.com ACCESS GATE — server-side password check (Vercel serverless).
  *
- * The two passwords live ONLY in Vercel environment variables — never in this repo,
- * never in the client bundle:
- *     GATE_PW_1   (e.g. the master password)
- *     GATE_PW_2   (e.g. the shared "botscrew" password)
- *     GATE_SECRET (optional; a random string that signs the session cookie — recommended)
+ * Works out of the box, no env vars needed: the two accepted passwords are stored as
+ * SHA-256 HASHES below (never as plain text, and never in the client bundle — this file
+ * runs server-side only). A submitted password is hashed and compared to these.
+ *
+ * Optional overrides (set in Vercel → Settings → Environment Variables to rotate without
+ * a code change):
+ *     GATE_PW_1, GATE_PW_2   plain-text passwords (take priority over the baked hashes)
+ *     GATE_SECRET            random string that signs the session cookie (recommended)
  *
  * The client overlay (src/shared/access-gate.js) calls this:
- *     GET  /api/gate            -> { authed, configured }        (is this browser let in?)
+ *     GET  /api/gate            -> { authed }                     (is this browser let in?)
  *     POST /api/gate {password} -> { ok } + Set-Cookie on success (try a password)
  *
- * On success we set an HttpOnly cookie holding an HMAC token (NOT the password), so the
- * password never reaches the browser. Fail-closed: if no passwords are configured, nobody
- * gets in and the overlay says so.
- *
- * NOT part of the widget deliverable — BotScrew can ignore or strip this file.
+ * On success we set an HttpOnly cookie holding an HMAC token (NOT the password). Soft gate:
+ * a short password's hash is brute-forceable by someone reading this public repo, so treat
+ * it as a deterrent, not hard security. NOT part of the widget deliverable.
  */
 import crypto from 'node:crypto';
 
 const COOKIE = 'gsb_gate';
 const MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
-function configured() {
-  return !!(process.env.GATE_PW_1 || process.env.GATE_PW_2);
+// SHA-256 of the accepted passwords (Kickass1! and botscrew). Plain text stays out of the repo.
+const PW_HASHES = [
+  '684e789c00a440e197e44ac882173a459345b0e793d3899313a07649211e361e',
+  '9f39d70fa95215936268ddd32ed426fe1b86a39d02f02dc367a8b1f2e3e5f0a5',
+];
+
+function sha256(s) { return crypto.createHash('sha256').update(String(s)).digest('hex'); }
+
+// Accepted password hashes: env overrides if provided, else the baked defaults.
+function acceptedHashes() {
+  const envPw = [process.env.GATE_PW_1, process.env.GATE_PW_2].filter(Boolean);
+  return envPw.length ? envPw.map(sha256) : PW_HASHES;
 }
 
-// Session token = HMAC over a constant, keyed by a server-only secret. Deterministic so we
-// can re-verify it on later requests, but unforgeable without the secret.
+// Session token = HMAC over a constant, keyed by a server-side secret. Unforgeable without
+// the secret. Falls back to a baked constant when GATE_SECRET isn't set.
 function token() {
-  const secret = process.env.GATE_SECRET || ((process.env.GATE_PW_1 || '') + '|' + (process.env.GATE_PW_2 || ''));
+  const secret = process.env.GATE_SECRET || ('gsb-gate|' + acceptedHashes().join('|'));
   return crypto.createHmac('sha256', secret).update('gsb-gate-v1').digest('hex');
 }
 
@@ -60,7 +71,6 @@ function readBody(req) {
 }
 
 function isAuthed(req) {
-  if (!configured()) return false;
   const cookieVal = parseCookies(req.headers.cookie)[COOKIE] || '';
   return safeEqual(cookieVal, token());
 }
@@ -69,15 +79,13 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     let authed = false;
     try { authed = isAuthed(req); } catch (_) { authed = false; }
-    return res.status(200).json({ authed: authed, configured: configured() });
+    return res.status(200).json({ authed: authed, configured: true });
   }
 
   if (req.method === 'POST') {
-    if (!configured()) return res.status(200).json({ ok: false, configured: false });
     const body = await readBody(req);
-    const pw = ((body && body.password) || '').toString();
-    const candidates = [process.env.GATE_PW_1, process.env.GATE_PW_2].filter(Boolean);
-    const valid = candidates.some(function (p) { return safeEqual(p, pw); });
+    const submitted = sha256(((body && body.password) || '').toString());
+    const valid = acceptedHashes().some(function (h) { return safeEqual(h, submitted); });
     if (!valid) return res.status(401).json({ ok: false });
     res.setHeader('Set-Cookie', COOKIE + '=' + token() + '; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=' + MAX_AGE);
     return res.status(200).json({ ok: true });
