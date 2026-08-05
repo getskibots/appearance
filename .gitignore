@@ -4,3 +4,12 @@ dist/
 .DS_Store
 Thumbs.db
 .vite/
+
+# Secrets / API-key scratch notes — never commit to this PUBLIC repo
+Open-Meteo.txt
+bigdatacloud.txt
+.env
+.env.*
+*.key
+*secret*
+*credentials*
