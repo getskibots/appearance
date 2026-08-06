@@ -116,23 +116,19 @@
 }
 
 .topbar__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 14px;
   color: var(--ink-soft);
   font-weight: 500;
 }
 
-.topbar__center {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  font-weight: 500;
-}
+.topbar__crumb-home { color: var(--ink-soft); }
+.topbar__crumb-sep { color: var(--ink-soft); opacity: 0.55; }
+.topbar__crumb-current { color: var(--ink); font-weight: 600; }
 
-.topbar__center .badge-active {
+.topbar__left .badge-active {
   font-size: 11px;
   font-weight: 700;
   background: #e9f7ee;
