@@ -81,7 +81,7 @@ export function applyWidgetConfig(config) {
     setVar('--enhanced-human-bg', lightBrand ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.18)');
     // Auto-contrast launcher ring — white on dark bubbles, dark on light — so the Simple
     // bubble always separates from the background, even when its fill ≈ the page/hero color.
-    setVar('--gsb-launcher-ring', lightBrand ? 'rgba(23,19,15,0.32)' : 'rgba(255,255,255,0.92)');
+    setVar('--gsb-launcher-ring', lightBrand ? 'rgba(23,19,15,0.38)' : 'rgba(255,255,255,0.85)');
   }
 
   /* ---- Shape / surface ---- */
