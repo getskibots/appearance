@@ -104,6 +104,27 @@
   justify-content: center;
   animation: gsb-launcher-pulse-traditional 2.5s ease-out infinite;
 }
+/* ============================================================
+   SIMPLE-BUBBLE AUTO-CONTRAST SEPARATION RING
+   WHY: the Simple ("traditional") bubble is a solid brand-color disc with no
+   border. When the resort's brand color happens to be close to the page/hero
+   color behind the launcher, the bubble loses its edge and visually disappears
+   — and the Depth-effect shadow can't be relied on (it's optional, and
+   effect="none" removes box-shadow entirely). This ring guarantees the bubble
+   always reads as a distinct, tappable object on ANY background.
+   HOW: ring color is auto-chosen from the brand's luminance in apply-config.js
+   (--gsb-launcher-ring: white on dark bubbles, dark on light bubbles), so it
+   always contrasts. It's drawn on ::after (not the element's box-shadow) so it
+   coexists with — and survives — the Depth-effect box-shadow/animation.
+   ============================================================ */
+.gsb-launcher[data-icon-style="traditional"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1.5px var(--gsb-launcher-ring, rgba(255,255,255,0.9));
+  pointer-events: none;
+}
 
 /* ============================================================
    OPTIONAL GRADIENT ACCENT (auto-derived from the brand color)
