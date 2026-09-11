@@ -872,7 +872,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       ring.style.backgroundColor = ringBg;
       ring.style.border = isTr ? 'none' : '1px solid var(--border-strong)';
       ring.style.boxShadow = isTr ? 'none' : '0 1px 2px rgba(23,19,15,0.10)';
-      var ringPx = state.avatarSize === 'small' ? 22 : state.avatarSize === 'large' ? 32 : 26;
+      var ringPx = state.avatarSize === 'small' ? 22 : state.avatarSize === 'large' ? 36 : 26;
       ring.style.width = ringPx + 'px'; ring.style.height = ringPx + 'px';
       ring.style.display = 'inline-flex'; ring.style.alignItems = 'center'; ring.style.justifyContent = 'center';
       ring.style.font = '600 ' + Math.round(ringPx * 0.42) + 'px/1 system-ui, sans-serif';
