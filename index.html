@@ -188,6 +188,20 @@
                 <div class="logo-warn" id="logoWarn"></div>
               </div>
 
+              <!-- Logo size (kept with the logo, not down by the colors) -->
+              <div class="field">
+                <label class="field__label" for="logoMaxHeight" data-info="Your logo's height in the chat header — the width scales automatically to keep its shape. Wide logos sit well at 44; tall or stacked logos look small there, so try 60–80.">Logo size</label>
+                <div class="max-height-row">
+                  <input class="input" type="number" id="logoMaxHeight" min="32" max="96" step="1" value="44" style="width:80px" />
+                  <span style="color:var(--ink-muted);font-size:13px">px</span>
+                  <div class="max-height-presets" role="group" aria-label="Common heights">
+                    <button type="button" data-preset="44">44</button>
+                    <button type="button" data-preset="60">60</button>
+                    <button type="button" data-preset="80">80</button>
+                  </div>
+                </div>
+              </div>
+
               <!-- Chat icon — the small round avatar next to bot replies -->
               <div class="field">
                 <label class="field__label" data-info="The small round avatar shown next to the bot's chat replies. Add a square image (or crop one from your logo, or pull your site's favicon). If none is set, the bot's initials are shown.">Chat icon <span style="font-weight:400;color:#9a9087">— reply avatar</span></label>
@@ -279,20 +293,6 @@
                   <button type="button" class="link" id="resetChatHeaderColorBtn">Reset to default</button>
                 </div>
                 <span class="field__hint">The color behind the chat's top bar. White keeps your logo easy to see.</span>
-              </div>
-
-              <!-- Logo max-height -->
-              <div class="field">
-                <label class="field__label" for="logoMaxHeight" data-info="Sets your logo's height in the header — the width scales automatically to keep its shape. Wide, horizontal logos sit well at 44; tall or stacked logos look small there, so go 60–80 to give them presence.">Logo max-height</label>
-                <div class="max-height-row">
-                  <input class="input" type="number" id="logoMaxHeight" min="32" max="96" step="1" value="44" style="width:80px" />
-                  <span style="color:var(--ink-muted);font-size:13px">px</span>
-                  <div class="max-height-presets" role="group" aria-label="Common heights">
-                    <button type="button" data-preset="44">44</button>
-                    <button type="button" data-preset="60">60</button>
-                    <button type="button" data-preset="80">80</button>
-                  </div>
-                </div>
               </div>
 
               </div><!-- /.card-grid__col (Logo & color) -->

@@ -13,16 +13,29 @@ Forced into the circle with `object-fit: cover`, it crops to an unreadable verti
 sliver. A wide logo and a round avatar are different shapes — one asset can't serve
 both. The fix is a **dedicated square "chat icon,"** separate from the wide logo.
 
-## Admin field (Identity & branding → Logo & color, directly under "Choose widget logo")
-- **Chat icon (square)** uploader + a live 26px reply-avatar preview.
-- **Fetch from website** — auto-pulls a favicon (see below).
-- **Crop from logo** — square crop with a circle safe-zone guide (see below).
-- **Disc background**: White / Brand / None.
-- **Padding**: 0–30% breathing room inside the disc.
-- **Low-res warning** when the source is too small to stay crisp.
+## Admin placement — Identity & branding → Logo & color
+Put it directly **under the logo group**, above the color controls. Recommended
+column order (groups the logo with its own size, which currently sits orphaned at
+the bottom of the column):
 
-Keep the **header logo field unchanged** — it stays the wide lockup (contain,
-max-height). The chat icon is a *separate, square* asset.
+1. **Choose widget logo** (the wide lockup — unchanged)
+2. **Logo size** (the logo's max-height — move it up here, next to the logo)
+3. **Chat icon** ← the block below
+4. **Choose widget color** → **Gradient accent** → **Chat header color**
+
+Reads as: *logo & its size → the small avatar → colors.* The header logo field is
+**unchanged** — it stays the wide lockup (contain, max-height); the chat icon is a
+*separate, square* asset.
+
+**Chat icon block (end-user flow, top to bottom):**
+- **Set the image** — Upload · Crop from logo · Remove, or *pull it from your website* (favicon fetch).
+- **Preview** — a live avatar ring ("how it appears next to replies").
+- **Size** — Small / Medium / Large.
+- **Fallback initials** — auto from the widget name, or a 1–3 char override.
+
+(The prototype keeps Disc background / Padding as `gsbAppearance` fields with fixed
+defaults — None background, 12% padding — but hides those controls to keep the panel
+simple. Expose them only if a customer needs them.)
 
 ## Source chain (what the avatar shows), in priority order
 1. **`chatIconUrl`** — explicit square icon (upload, crop, or fetched favicon). Always used.
