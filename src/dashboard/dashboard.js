@@ -167,6 +167,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
 
   var DEFAULTS = {
     logoUrl: SAMPLE_LOGO,
+    chatIconUrl: null,   // square mark for the reply avatar (+ launcher); falls back to logoUrl
+    chatIconBg: 'white', // avatar disc bg: 'white' | 'brand' | 'transparent'
+    chatIconPadding: 12, // % breathing room inside the disc
     logoMaxHeight: 44,
     cornerRadius: 7,
     effectMode: 'radiate',    // 'none' | 'shadow' | 'glow' | 'radiate'
@@ -840,6 +843,36 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       $('headerPlaceholder').style.display = 'flex';
     }
 
+    // Chat icon (reply avatar). Uploader thumbnail + a live 26px ring preview that
+    // shows exactly how the avatar renders (contain, so a wide logo shows whole).
+    var chatIcon = state.chatIconUrl || state.logoUrl || '';
+    if (state.chatIconUrl) {
+      $('chatIconPreview').src = state.chatIconUrl;
+      $('chatIconPreview').style.display = '';
+      $('chatIconEmpty').style.display = 'none';
+    } else {
+      $('chatIconPreview').removeAttribute('src');
+      $('chatIconPreview').style.display = 'none';
+      $('chatIconEmpty').style.display = 'flex';
+    }
+    var ring = $('chatIconAvatarPreview');
+    if (ring) {
+      var pad = state.chatIconPadding != null ? state.chatIconPadding : 12;
+      var ringBg = state.chatIconBg === 'brand' ? state.color
+                 : state.chatIconBg === 'transparent' ? 'transparent' : '#fff';
+      ring.style.backgroundImage = chatIcon ? 'url("' + chatIcon + '")' : 'none';
+      ring.style.backgroundColor = ringBg;
+      ring.style.backgroundSize = (100 - pad * 2) + '%';
+      ring.style.backgroundPosition = 'center';
+      ring.style.backgroundRepeat = 'no-repeat';
+    }
+    // Sync disc-background segmented + padding slider
+    document.querySelectorAll('#chatIconBgSeg .seg__btn').forEach(function (b) {
+      b.setAttribute('data-active', String(b.dataset.bg === (state.chatIconBg || 'white')));
+    });
+    if (document.activeElement !== $('chatIconPadding')) $('chatIconPadding').value = state.chatIconPadding;
+    if ($('chatIconPaddingReadout')) $('chatIconPaddingReadout').textContent = state.chatIconPadding + '%';
+
     document.documentElement.style.setProperty('--logo-max-height', state.logoMaxHeight + 'px');
     if (document.activeElement !== $('logoMaxHeight')) $('logoMaxHeight').value = state.logoMaxHeight;
     document.querySelectorAll('.max-height-presets button').forEach(function(b) {
@@ -1402,7 +1435,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // Per-accordion-card dirty dots — flag any card whose fields differ from the
     // last saved snapshot, so collapsed cards still signal what's been edited.
     var ACC_CARD_FIELDS = {
-      identity: ['logoUrl','logoMaxHeight','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText','updateLabel','recentUpdate','recentUpdateSource','recentUpdateFlow'],
+      identity: ['logoUrl','chatIconUrl','chatIconBg','chatIconPadding','logoMaxHeight','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText','updateLabel','recentUpdate','recentUpdateSource','recentUpdateFlow'],
       media: ['hero'],
       launcher: ['bubbleStyle','cornerRadius','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','launcherScale','statusPillFeatures','ctaText'],
       typography: ['typography'],
@@ -1520,6 +1553,153 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     state.customIconUrl = null;
     render();
   });
+
+  // Chat icon (reply avatar) upload — a dedicated SQUARE mark. Separate from the
+  // wide header logo; falls back to the logo when empty.
+  $('chatIconFile').addEventListener('change', function(e) {
+    var f = e.target.files && e.target.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function() { state.chatIconUrl = reader.result; render(); };
+    reader.readAsDataURL(f);
+  });
+
+  $('removeChatIconBtn').addEventListener('click', function() {
+    state.chatIconUrl = null;
+    render();
+  });
+
+  // Disc-background choice (white / brand / transparent)
+  document.querySelectorAll('#chatIconBgSeg .seg__btn').forEach(function (b) {
+    b.addEventListener('click', function () { state.chatIconBg = b.dataset.bg; render(); });
+  });
+
+  // Padding slider
+  $('chatIconPadding').addEventListener('input', function (e) {
+    state.chatIconPadding = parseInt(e.target.value, 10); render();
+  });
+
+  // Fetch a favicon from a pasted website. Tries the best square sources in order
+  // (apple-touch-icon → icon services → favicon.ico). NOTE for the port: production
+  // should fetch these server-side and STORE the image (data URI/asset), not hotlink
+  // — a hotlinked favicon can CORS-block or vanish, like the webcam .jpg issue.
+  function faviconCandidates(host) {
+    return [
+      'https://' + host + '/apple-touch-icon.png',
+      'https://' + host + '/apple-touch-icon-precomposed.png',
+      'https://icons.duckduckgo.com/ip3/' + host + '.ico',
+      'https://www.google.com/s2/favicons?domain=' + host + '&sz=128',
+      'https://' + host + '/favicon.ico'
+    ];
+  }
+  function tryLoad(url) {
+    return new Promise(function (resolve) {
+      var img = new Image();
+      var done = false;
+      img.onload = function () { if (!done) { done = true; resolve((img.naturalWidth || 0) >= 16 ? url : null); } };
+      img.onerror = function () { if (!done) { done = true; resolve(null); } };
+      img.referrerPolicy = 'no-referrer';
+      img.src = url;
+      setTimeout(function () { if (!done) { done = true; resolve(null); } }, 6000);
+    });
+  }
+  $('chatIconFetchBtn').addEventListener('click', function () {
+    var raw = ($('chatIconFetchUrl').value || '').trim();
+    var msg = $('chatIconFetchMsg');
+    if (!raw) { msg.textContent = 'Paste a website address first.'; return; }
+    var host;
+    try { host = new URL(raw.indexOf('http') === 0 ? raw : 'https://' + raw).hostname; }
+    catch (e) { msg.textContent = "That doesn't look like a website address."; return; }
+    msg.textContent = 'Looking for an icon on ' + host + '…';
+    var cands = faviconCandidates(host);
+    (function next(i) {
+      if (i >= cands.length) { msg.textContent = 'No icon found on ' + host + '. Try uploading one.'; return; }
+      tryLoad(cands[i]).then(function (ok) {
+        if (ok) { state.chatIconUrl = ok; msg.textContent = 'Found it. (Tip: for production, save this image rather than hotlinking.)'; render(); }
+        else next(i + 1);
+      });
+    })(0);
+  });
+
+  // ===== Chat-icon cropper: square crop with a circle safe-zone guide =====
+  // Drag to move, zoom to scale. Exports a 256×256 square (PNG) → chatIconUrl; the
+  // avatar masks it to a circle, the launcher to a rounded square. Crops best from
+  // the LOGO (a data URI) — a remote favicon can taint the canvas (caught below).
+  var Cropper = (function () {
+    var el = $('iconCropper'), canvas = $('iconCropCanvas'), ctx = canvas.getContext('2d');
+    var img = new Image(); img.crossOrigin = 'anonymous';
+    var V = 256, scale0 = 1, scale = 1, ox = 0, oy = 0, ready = false, dragging = false, lastX = 0, lastY = 0;
+    function clampOffsets() {
+      var dw = img.naturalWidth * scale, dh = img.naturalHeight * scale;
+      ox = dw <= V ? (V - dw) / 2 : Math.min(0, Math.max(V - dw, ox));
+      oy = dh <= V ? (V - dh) / 2 : Math.min(0, Math.max(V - dh, oy));
+    }
+    function renderBase(c) { // draws just the image (no guide) — used on-screen and for export
+      var f = c.canvas.width / V;
+      c.clearRect(0, 0, c.canvas.width, c.canvas.height);
+      c.drawImage(img, ox * f, oy * f, img.naturalWidth * scale * f, img.naturalHeight * scale * f);
+    }
+    function exportData() {
+      var out = document.createElement('canvas'); out.width = 256; out.height = 256;
+      renderBase(out.getContext('2d'));
+      try { return out.toDataURL('image/png'); }
+      catch (e) { return null; } // tainted (cross-origin source without CORS)
+    }
+    function updatePreviews() {
+      var d = exportData(); if (!d) return;
+      ['iconCropPreviewCircle', 'iconCropPreviewSquare'].forEach(function (id) {
+        if ($(id)) $(id).style.backgroundImage = 'url("' + d + '")';
+      });
+    }
+    function draw() {
+      if (!ready) return;
+      clampOffsets();
+      renderBase(ctx);
+      ctx.save();                                  // circle safe-zone guide (display only)
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.beginPath(); ctx.rect(0, 0, V, V); ctx.arc(V / 2, V / 2, V / 2 - 2, 0, Math.PI * 2, true);
+      ctx.fill('evenodd');
+      ctx.strokeStyle = 'rgba(23,19,15,0.35)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(V / 2, V / 2, V / 2 - 2, 0, Math.PI * 2); ctx.stroke();
+      ctx.restore();
+      updatePreviews();
+    }
+    function open(src) {
+      if (!src) { alert('Upload a logo or icon first.'); return; }
+      ready = false;
+      img.onload = function () {
+        scale0 = Math.max(V / img.naturalWidth, V / img.naturalHeight);
+        scale = scale0; ox = (V - img.naturalWidth * scale) / 2; oy = (V - img.naturalHeight * scale) / 2;
+        $('iconCropZoom').value = 100; ready = true; draw();
+      };
+      img.onerror = function () { alert('Could not load that image for cropping.'); };
+      img.src = src;
+      el.hidden = false;
+    }
+    function close() { el.hidden = true; }
+    canvas.addEventListener('pointerdown', function (e) { dragging = true; lastX = e.clientX; lastY = e.clientY; try { canvas.setPointerCapture(e.pointerId); } catch (x) {} });
+    canvas.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      var r = canvas.getBoundingClientRect(), sx = V / r.width;
+      ox += (e.clientX - lastX) * sx; oy += (e.clientY - lastY) * sx; lastX = e.clientX; lastY = e.clientY; draw();
+    });
+    canvas.addEventListener('pointerup', function () { dragging = false; });
+    $('iconCropZoom').addEventListener('input', function (e) {
+      var newScale = scale0 * (parseInt(e.target.value, 10) / 100), cx = V / 2, cy = V / 2;
+      ox = cx - (cx - ox) * (newScale / scale); oy = cy - (cy - oy) * (newScale / scale);
+      scale = newScale; draw();
+    });
+    $('iconCropApply').addEventListener('click', function () {
+      var d = exportData();
+      if (!d) { alert("Couldn't crop that image (it's from another site). Upload the logo file and crop that instead."); return; }
+      state.chatIconUrl = d; render(); close();
+    });
+    $('iconCropCancel').addEventListener('click', close);
+    el.addEventListener('click', function (e) { if (e.target === el) close(); });
+    return { open: open };
+  })();
+  // Prefer cropping the LOGO (usually a data URI → clean export); fall back to the icon.
+  $('cropChatIconBtn').addEventListener('click', function () { Cropper.open(state.logoUrl || state.chatIconUrl); });
 
   // Custom launcher size (px diameter; the uploaded image fills it)
   $('customIconSize').addEventListener('input', function(e) {
@@ -2259,6 +2439,9 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   function buildLivePreviewConfig() {
     return {
       logoUrl: state.logoUrl,
+      chatIconUrl: state.chatIconUrl,
+      chatIconBg: state.chatIconBg,
+      chatIconPadding: state.chatIconPadding,
       backgroundImage: state.backgroundImage,
       bgTextMode: state.bgTextMode,
       logoMaxHeight: state.logoMaxHeight,

@@ -1437,6 +1437,40 @@ body[data-variant="full"].gsb-conversation-started .gsb-conversation-intro { dis
   border-bottom-right-radius: 4px;
 }
 
+/* ===== Reply avatar =====
+   AI replies sit in a row with a small round brand mark on the left. The mark is
+   a CSS background (--gsb-chat-icon, set by applyWidgetConfig from chatIconUrl,
+   falling back to the logo) drawn with background-size:contain — so even a WIDE
+   header logo shows whole, never the cropped vertical sliver that <img cover>
+   produced. Give a bot a dedicated SQUARE chat icon and it fills the circle
+   perfectly; give it only a wide logo and it still reads (shrunk, uncropped).
+   Reference pattern for BotScrew's reply-avatar port. */
+.gsb-msg-row { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; }
+.gsb-msg-row--ai { align-self: flex-start; }
+.gsb-msg-row--ai .gsb-msg { max-width: 100%; align-self: auto; }
+.gsb-avatar {
+  flex: 0 0 26px; width: 26px; height: 26px; align-self: flex-end;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  /* Monogram fallback (initials) — shown only when no icon image is set. */
+  font: 600 11px/1 var(--gsb-body-font, system-ui, -apple-system, sans-serif);
+  color: var(--gsb-avatar-fg, #fff);
+  letter-spacing: 0.02em;
+  background-color: var(--gsb-avatar-bg, #fff);
+  background-image: var(--gsb-chat-icon, none);
+  background-repeat: no-repeat;
+  background-position: center;
+  /* --gsb-avatar-fit is a % (100 - 2×padding), so the mark keeps its aspect and
+     gets breathing room; a wide logo shows WHOLE, never the cropped sliver. */
+  background-size: var(--gsb-avatar-fit, 76%);
+  border: 1px solid var(--jh-border);
+  box-shadow: 0 1px 2px rgba(23, 19, 15, 0.08);
+}
+/* When an icon image IS set, the background covers the disc — hide the monogram. */
+body.gsb-has-chat-icon .gsb-avatar { color: transparent; }
+/* Transparent-background choice: drop the ring/shadow so the mark floats cleanly. */
+body.gsb-has-chat-icon .gsb-avatar { }
+
 /* ===== Conversation bubble variants — Classic / Minimal / Elevated / Squared =====
    The base .gsb-msg--ai/--user rules above are the Classic baseline (solid fills).
    Each variant is gated on body[data-msg-style], set by applyWidgetConfig

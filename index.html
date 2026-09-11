@@ -188,6 +188,52 @@
                 <div class="logo-warn" id="logoWarn"></div>
               </div>
 
+              <!-- Chat icon (square) — reply avatar + launcher mark -->
+              <div class="field">
+                <label class="field__label" data-info="A small SQUARE mark shown as the reply avatar beside bot messages (and reusable as the launcher bubble icon). A wide logo gets cropped in the little circle — upload a square icon (e.g. just your emblem or shield) so it fills cleanly. Leave empty and it falls back to your logo, shown whole (never cropped).">Chat icon <span style="font-weight:400;color:#9a9087">— square, reply avatar</span></label>
+                <div class="logo-upload">
+                  <label class="logo-dropzone logo-dropzone--avatar" for="chatIconFile">
+                    <img id="chatIconPreview" alt="" />
+                    <div class="logo-dropzone__empty" id="chatIconEmpty">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14" stroke-width="1.5" stroke-linecap="round"/></svg>
+                      Upload a square icon
+                    </div>
+                    <input type="file" id="chatIconFile" accept="image/png,image/svg+xml,image/jpeg" style="display:none" />
+                  </label>
+                  <div class="logo-meta">
+                    <div class="logo-actions">
+                      <button class="btn" type="button" onclick="document.getElementById('chatIconFile').click()">Upload icon</button>
+                      <button class="btn btn--ghost btn--small" type="button" id="cropChatIconBtn">Crop from logo</button>
+                      <button class="btn btn--ghost btn--small" type="button" id="removeChatIconBtn">Remove</button>
+                    </div>
+                    <div class="logo-info" id="chatIconInfo">
+                      <span class="avatar-preview-ring" id="chatIconAvatarPreview" title="How it looks as the reply avatar"></span>
+                      <span class="logo-info__label">reply-avatar preview</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="icon-opts">
+                  <div class="icon-opts__fetch">
+                    <input class="input" type="text" id="chatIconFetchUrl" placeholder="…or paste a website to grab its favicon (e.g. jacksonhole.com)" />
+                    <button class="btn btn--small" type="button" id="chatIconFetchBtn">Fetch</button>
+                  </div>
+                  <div class="icon-opts__msg" id="chatIconFetchMsg"></div>
+                  <div class="icon-opts__row">
+                    <span class="icon-opts__label" data-info="The circle behind the icon. Use White for dark/color marks, Brand for white/knockout marks, None to let a full-bleed icon fill the circle.">Disc background</span>
+                    <div class="seg" id="chatIconBgSeg">
+                      <button type="button" class="seg__btn" data-bg="white">White</button>
+                      <button type="button" class="seg__btn" data-bg="brand">Brand</button>
+                      <button type="button" class="seg__btn" data-bg="transparent">None</button>
+                    </div>
+                  </div>
+                  <div class="icon-opts__row">
+                    <span class="icon-opts__label" data-info="Breathing room between the mark and the edge of the circle.">Padding</span>
+                    <input type="range" id="chatIconPadding" min="0" max="30" step="1" />
+                    <span class="icon-opts__readout" id="chatIconPaddingReadout"></span>
+                  </div>
+                </div>
+              </div>
+
               <!-- Brand Color -->
               <div class="field">
                 <label class="field__label" for="brandColorHex" data-info="Your main brand color. It colors the launcher, the send button, the guest's chat bubbles, and other accents — and text on top adjusts on its own so it always stays easy to read.">Choose widget color</label>
@@ -1732,6 +1778,34 @@
     </div>
   </main>
 
+</div>
+
+<!-- Chat-icon cropper: square crop with a circle safe-zone guide. Drag to move,
+     zoom to scale; exports a 256×256 square that the avatar masks to a circle and
+     the launcher masks to a rounded square. -->
+<div class="cropper" id="iconCropper" hidden>
+  <div class="cropper__dialog" role="dialog" aria-label="Crop chat icon">
+    <div class="cropper__head">
+      <div class="cropper__title">Crop chat icon</div>
+      <div class="cropper__sub">Drag to reposition, zoom to fit. Keep the mark inside the circle — that's the part shown as the avatar.</div>
+    </div>
+    <div class="cropper__stage">
+      <canvas id="iconCropCanvas" width="256" height="256"></canvas>
+    </div>
+    <div class="cropper__zoom">
+      <span class="cropper__zoom-label">Zoom</span>
+      <input type="range" id="iconCropZoom" min="100" max="300" step="1" value="100" />
+    </div>
+    <div class="cropper__preview-row">
+      <span class="cropper__preview cropper__preview--circle" id="iconCropPreviewCircle" title="Avatar (circle)"></span>
+      <span class="cropper__preview cropper__preview--square" id="iconCropPreviewSquare" title="Launcher (rounded square)"></span>
+      <span class="cropper__preview-note">live preview — circle &amp; square</span>
+    </div>
+    <div class="cropper__actions">
+      <button class="btn btn--ghost" type="button" id="iconCropCancel">Cancel</button>
+      <button class="btn" type="button" id="iconCropApply">Use this icon</button>
+    </div>
+  </div>
 </div>
 
 <!-- App logic, extracted from the original inline <script> (two IIFEs).

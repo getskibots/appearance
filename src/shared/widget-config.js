@@ -55,6 +55,10 @@ function toGsbAppearance(state) {
     mobileSlideIn: state.mobileSlideIn,
     customIconUrl: state.customIconUrl,
     customIconSize: state.customIconSize,
+    chatIconUrl: state.chatIconUrl, // square mark for the reply avatar (+ launcher)
+    chatIconBg: state.chatIconBg,   // avatar disc background: 'white' | 'brand' | 'transparent'
+    chatIconPadding: state.chatIconPadding, // % breathing room inside the disc (0-30)
+
     slideState: state.slideState,
     autoHideOnScroll: state.autoHideOnScroll,
     launcherScale: state.launcherScale,
@@ -121,6 +125,9 @@ export function fromBotscrewWidgetSettings(settings, opts) {
   var ext = settings.gsbAppearance || {};
   var out = {
     logoUrl: lc.imageUrl,
+    chatIconUrl: ext.chatIconUrl,
+    chatIconBg: ext.chatIconBg,
+    chatIconPadding: ext.chatIconPadding,
     color: lc.color,
     widgetName: lc.widgetName,
     inputPlaceholder: lc.inputPlaceholder,
