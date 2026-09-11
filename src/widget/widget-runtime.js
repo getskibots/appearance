@@ -335,21 +335,17 @@ import { autolink } from '../shared/markdown.js';
     if (m < 60) return m + 'm ago';
     return Math.round(m / 60) + 'h ago';
   }
+  // Small DOM text/html helpers, module-scoped so the webcam code (updateCamStamp,
+  // the img onerror "Feed offline" path) and renderAllData can all use them.
+  function safeText(id, text) { var el = $(id); if (el) el.textContent = text; }
+  function safeSet(id, html) { var el = $(id); if (el) el.innerHTML = html; }
+
   function updateCamStamp() {
     if (camUpdatedAt) safeText('gsbHeroUpdated', 'Updated ' + relTime(camUpdatedAt));
   }
 
   function renderAllData() {
     if (!data.snow) return;
-
-    var safeSet = function(id, html) {
-      var el = $(id);
-      if (el) el.innerHTML = html;
-    };
-    var safeText = function(id, text) {
-      var el = $(id);
-      if (el) el.textContent = text;
-    };
 
     // Stats strip on the page (only exists in the master demo, not the dashboard)
     var snowSummit = data.snow.snow && data.snow.snow.tramSummit;
