@@ -131,6 +131,53 @@ export function applyWidgetConfig(config) {
     if (placeholder) placeholder.style.display = '';
   }
 
+  /* ---- Reply avatar / chat icon ----
+     Icon system: a SQUARE mark drives the reply avatar (and launcher). Source order
+     chatIconUrl → logoUrl → monogram. Rendered on a disc whose background + padding
+     are configurable; background-size keeps the mark whole (never the cropped sliver
+     a raw <img cover> gave). See chat-widget.css .gsb-avatar. */
+  var pad = config.chatIconPadding != null ? Math.min(30, Math.max(0, config.chatIconPadding)) : 12;
+  setVar('--gsb-avatar-fit', (100 - pad * 2) + '%'); // background-size → padding inside the disc
+  setVar('--gsb-avatar-fg', 'var(--enhanced-fg, #fff)'); // monogram text (auto-contrast to brand)
+  // Monogram fallback text: initials of the widget name (e.g. "Jackson Hole" → "JH").
+  var initials = String(config.widgetName || '')
+    .replace(/\b(support|resort|the|inc|llc|co)\b/gi, ' ')
+    .trim().split(/\s+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase();
+  body.setAttribute('data-avatar-monogram', initials || '•');
+  var discBg = config.chatIconBg === 'brand' ? 'var(--brand)'
+             : config.chatIconBg === 'transparent' ? 'transparent' : '#fff';
+  function useIcon(url) {
+    setVar('--gsb-chat-icon', 'url("' + url + '")');
+    setVar('--gsb-avatar-bg', discBg);
+    body.classList.add('gsb-has-chat-icon');
+  }
+  function useMonogram() {
+    document.documentElement.style.removeProperty('--gsb-chat-icon');
+    setVar('--gsb-avatar-bg', 'var(--brand)'); // initials sit on a brand disc
+    body.classList.remove('gsb-has-chat-icon');
+  }
+  if (config.chatIconUrl) {
+    // Explicit square icon (an upload, a crop, or a fetched favicon) — always trust it.
+    useIcon(config.chatIconUrl);
+  } else if (config.logoUrl) {
+    // Logo is only a GOOD avatar when it's roughly square; a wide/tall lockup shrinks
+    // to a sliver in the disc, so a monogram reads better. Measure the natural aspect
+    // (async) and upgrade to the logo only if it's near-square; otherwise keep the
+    // monogram. AVATAR_AR_MIN/MAX define "near-square".
+    var AVATAR_AR_MIN = 0.7, AVATAR_AR_MAX = 1.4;
+    useMonogram(); // default until the probe resolves
+    (function (url) {
+      var probe = new Image();
+      probe.onload = function () {
+        var ar = (probe.naturalWidth && probe.naturalHeight) ? probe.naturalWidth / probe.naturalHeight : 1;
+        if (!config.chatIconUrl && ar >= AVATAR_AR_MIN && ar <= AVATAR_AR_MAX) useIcon(url);
+      };
+      probe.src = url;
+    })(config.logoUrl);
+  } else {
+    useMonogram();
+  }
+
   /* ---- Copy ---- */
   setText('headerPlaceholderName', config.widgetName);
   setText('brandColTitle', config.widgetName);

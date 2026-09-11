@@ -585,15 +585,36 @@ import { autolink } from '../shared/markdown.js';
     });
   }
 
+  // Reply avatar: AI messages sit in a row with a small round brand mark to their
+  // left. The avatar is a CSS background (--gsb-chat-icon, set by applyWidgetConfig
+  // from chatIconUrl → logoUrl) rendered background-size:contain, so a wide logo
+  // shows WHOLE instead of the cropped vertical sliver a raw <img object-fit:cover>
+  // produced. This is the reference pattern for BotScrew's reply-avatar port:
+  // a dedicated square "chat icon" drives the avatar (and can drive the launcher).
+  function aiRow(bubble) {
+    var row = document.createElement('div');
+    row.className = 'gsb-msg-row gsb-msg-row--ai';
+    var av = document.createElement('span');
+    av.className = 'gsb-avatar';
+    av.setAttribute('aria-hidden', 'true');
+    // Monogram fallback text (shown only when no icon/logo image is set — CSS hides
+    // it behind the image otherwise). Initials come from applyWidgetConfig.
+    av.textContent = document.body.getAttribute('data-avatar-monogram') || '';
+    row.appendChild(av);
+    row.appendChild(bubble);
+    return row;
+  }
+
   function appendMessage(text, role) {
     var msg = document.createElement('div');
     msg.className = 'gsb-msg gsb-msg--' + role;
     // Linkify so booking/ticket/lesson URLs in replies are clickable (and tracked
     // via outbound_click). XSS-safe: autolink() escapes everything it doesn't anchor.
     msg.innerHTML = autolink(text);
-    $('gsbMessages').appendChild(msg);
+    var node = role === 'ai' ? aiRow(msg) : msg;
+    $('gsbMessages').appendChild(node);
     body.classList.add('gsb-conversation-started');
-    scrollMsgIntoView(msg);
+    scrollMsgIntoView(node);
   }
 
   // ============= JACKSON HOLE KNOWLEDGE BASE =============
@@ -927,11 +948,12 @@ import { autolink } from '../shared/markdown.js';
                     + '<span class="gsb-typing-dot"></span>'
                     + '<span class="gsb-typing-dot"></span>';
     }
-    $('gsbMessages').appendChild(msg);
+    var tRow = aiRow(msg);
+    $('gsbMessages').appendChild(tRow);
     body.classList.add('gsb-conversation-started');
     // Auto-scroll the typing indicator into view so the user immediately
     // sees the AI is composing — sells the realism of "someone is typing".
-    scrollMsgIntoView(msg);
+    scrollMsgIntoView(tRow);
   }
 
   function hideTypingIndicator(onDone) {
@@ -940,7 +962,8 @@ import { autolink } from '../shared/markdown.js';
     // Fade out (~150ms), then remove and continue — gives the dots-→-answer beat.
     ti.classList.add('gsb-typing-out');
     setTimeout(function() {
-      if (ti.parentNode) ti.parentNode.removeChild(ti);
+      var rm = (ti.closest && ti.closest('.gsb-msg-row')) || ti;
+      if (rm.parentNode) rm.parentNode.removeChild(rm);
       if (onDone) onDone();
     }, 160);
   }
@@ -1232,7 +1255,7 @@ import { autolink } from '../shared/markdown.js';
   function streamAiMessage(text, onDone) {
     var msg = document.createElement('div');
     msg.className = 'gsb-msg gsb-msg--ai';
-    $('gsbMessages').appendChild(msg);
+    $('gsbMessages').appendChild(aiRow(msg));
     body.classList.add('gsb-conversation-started');
     var words = (text || '').split(/\s+/);
     var i = 0;
