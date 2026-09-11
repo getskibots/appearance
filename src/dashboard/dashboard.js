@@ -171,6 +171,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     chatIconBg: 'transparent', // avatar disc bg: 'white' | 'brand' | 'transparent' (default: no fill)
     chatIconPadding: 12, // % breathing room inside the disc
     avatarShape: 'circle', // reply-avatar shape: 'circle' | 'rounded' | 'square'
+    avatarSize: 'medium',  // reply-avatar size: 'small'(22) | 'medium'(26) | 'large'(32)
     monogramText: '',      // manual monogram override; blank = auto from widget name
     logoMaxHeight: 44,
     cornerRadius: 7,
@@ -871,8 +872,10 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       ring.style.backgroundColor = ringBg;
       ring.style.border = isTr ? 'none' : '1px solid var(--border-strong)';
       ring.style.boxShadow = isTr ? 'none' : '0 1px 2px rgba(23,19,15,0.10)';
+      var ringPx = state.avatarSize === 'small' ? 22 : state.avatarSize === 'large' ? 32 : 26;
+      ring.style.width = ringPx + 'px'; ring.style.height = ringPx + 'px';
       ring.style.display = 'inline-flex'; ring.style.alignItems = 'center'; ring.style.justifyContent = 'center';
-      ring.style.font = '600 11px/1 system-ui, sans-serif';
+      ring.style.font = '600 ' + Math.round(ringPx * 0.42) + 'px/1 system-ui, sans-serif';
       if (ringImg) {
         ring.textContent = '';
         ring.style.backgroundImage = 'url("' + ringImg + '")';
@@ -890,6 +893,10 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // Sync avatar-shape segmented
     document.querySelectorAll('#avatarShapeSeg .seg__btn').forEach(function (b) {
       b.setAttribute('data-active', String(b.dataset.shape === (state.avatarShape || 'circle')));
+    });
+    // Sync avatar-size segmented
+    document.querySelectorAll('#avatarSizeSeg .seg__btn').forEach(function (b) {
+      b.setAttribute('data-active', String(b.dataset.size === (state.avatarSize || 'medium')));
     });
     // Monogram override: show the auto-derived initials as the placeholder (the default)
     if ($('monogramText')) {
@@ -1470,7 +1477,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // Per-accordion-card dirty dots — flag any card whose fields differ from the
     // last saved snapshot, so collapsed cards still signal what's been edited.
     var ACC_CARD_FIELDS = {
-      identity: ['logoUrl','chatIconUrl','chatIconBg','chatIconPadding','avatarShape','monogramText','logoMaxHeight','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText','updateLabel','recentUpdate','recentUpdateSource','recentUpdateFlow'],
+      identity: ['logoUrl','chatIconUrl','chatIconBg','chatIconPadding','avatarShape','avatarSize','monogramText','logoMaxHeight','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText','updateLabel','recentUpdate','recentUpdateSource','recentUpdateFlow'],
       media: ['hero'],
       launcher: ['bubbleStyle','cornerRadius','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','launcherScale','statusPillFeatures','ctaText'],
       typography: ['typography'],
@@ -1633,6 +1640,11 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   // Avatar shape (circle / rounded / square)
   document.querySelectorAll('#avatarShapeSeg .seg__btn').forEach(function (b) {
     b.addEventListener('click', function () { state.avatarShape = b.dataset.shape; render(); });
+  });
+
+  // Avatar size (small / medium / large)
+  document.querySelectorAll('#avatarSizeSeg .seg__btn').forEach(function (b) {
+    b.addEventListener('click', function () { state.avatarSize = b.dataset.size; render(); });
   });
 
   // Monogram override (blank = auto initials)
@@ -2523,6 +2535,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       chatIconBg: state.chatIconBg,
       chatIconPadding: state.chatIconPadding,
       avatarShape: state.avatarShape,
+      avatarSize: state.avatarSize,
       monogramText: state.monogramText,
       backgroundImage: state.backgroundImage,
       bgTextMode: state.bgTextMode,

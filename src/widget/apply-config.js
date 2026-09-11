@@ -141,6 +141,8 @@ export function applyWidgetConfig(config) {
   // Avatar shape: circle (default) | rounded (squircle) | square. Same stored square
   // asset — this only changes the mask radius.
   setVar('--gsb-avatar-radius', config.avatarShape === 'square' ? '14%' : config.avatarShape === 'rounded' ? '28%' : '50%');
+  // Avatar size: small | medium (default) | large.
+  setVar('--gsb-avatar-size', config.avatarSize === 'small' ? '22px' : config.avatarSize === 'large' ? '32px' : '26px');
   // Monogram fallback text: initials of the widget name (e.g. "Jackson Hole" → "JH").
   var initials = String(config.widgetName || '')
     .replace(/\b(support|resort|the|inc|llc|co)\b/gi, ' ')

@@ -1449,11 +1449,16 @@ body[data-variant="full"].gsb-conversation-started .gsb-conversation-intro { dis
 .gsb-msg-row--ai { align-self: flex-start; }
 .gsb-msg-row--ai .gsb-msg { max-width: 100%; align-self: auto; }
 .gsb-avatar {
-  flex: 0 0 26px; width: 26px; height: 26px; align-self: flex-end;
+  flex: 0 0 var(--gsb-avatar-size, 26px);
+  width: var(--gsb-avatar-size, 26px); height: var(--gsb-avatar-size, 26px);
+  align-self: flex-end;
   border-radius: var(--gsb-avatar-radius, 50%);
   display: flex; align-items: center; justify-content: center;
-  /* Monogram fallback (initials) — shown only when no icon image is set. */
-  font: 600 11px/1 var(--gsb-body-font, system-ui, -apple-system, sans-serif);
+  /* Monogram fallback (initials) — shown only when no icon image is set. Font
+     auto-scales with the avatar size. */
+  font-family: var(--gsb-body-font, system-ui, -apple-system, sans-serif);
+  font-weight: 600; line-height: 1;
+  font-size: calc(var(--gsb-avatar-size, 26px) * 0.42);
   color: var(--gsb-avatar-fg, #fff);
   letter-spacing: 0.02em;
   background-color: var(--gsb-avatar-bg, #fff);

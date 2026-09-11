@@ -59,6 +59,7 @@ function toGsbAppearance(state) {
     chatIconBg: state.chatIconBg,   // avatar disc background: 'white' | 'brand' | 'transparent'
     chatIconPadding: state.chatIconPadding, // % breathing room inside the disc
     avatarShape: state.avatarShape, // reply-avatar shape: 'circle' | 'rounded' | 'square'
+    avatarSize: state.avatarSize,   // reply-avatar size: 'small' | 'medium' | 'large'
     monogramText: state.monogramText, // manual monogram override (blank = auto initials) (0-30)
 
     slideState: state.slideState,
@@ -131,6 +132,7 @@ export function fromBotscrewWidgetSettings(settings, opts) {
     chatIconBg: ext.chatIconBg,
     chatIconPadding: ext.chatIconPadding,
     avatarShape: ext.avatarShape,
+    avatarSize: ext.avatarSize,
     monogramText: ext.monogramText,
     color: lc.color,
     widgetName: lc.widgetName,
