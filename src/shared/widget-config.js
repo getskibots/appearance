@@ -58,7 +58,8 @@ function toGsbAppearance(state) {
     chatIconUrl: state.chatIconUrl, // square mark for the reply avatar (+ launcher)
     chatIconBg: state.chatIconBg,   // avatar disc background: 'white' | 'brand' | 'transparent'
     chatIconPadding: state.chatIconPadding, // % breathing room inside the disc
-    avatarShape: state.avatarShape, // reply-avatar shape: 'circle' | 'rounded' | 'square' (0-30)
+    avatarShape: state.avatarShape, // reply-avatar shape: 'circle' | 'rounded' | 'square'
+    monogramText: state.monogramText, // manual monogram override (blank = auto initials) (0-30)
 
     slideState: state.slideState,
     autoHideOnScroll: state.autoHideOnScroll,
@@ -130,6 +131,7 @@ export function fromBotscrewWidgetSettings(settings, opts) {
     chatIconBg: ext.chatIconBg,
     chatIconPadding: ext.chatIconPadding,
     avatarShape: ext.avatarShape,
+    monogramText: ext.monogramText,
     color: lc.color,
     widgetName: lc.widgetName,
     inputPlaceholder: lc.inputPlaceholder,

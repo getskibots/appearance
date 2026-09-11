@@ -61,6 +61,7 @@ works as a rounded-square (launcher).
 | `chatIconBg` | `'white' \| 'brand' \| 'transparent'` | disc background |
 | `chatIconPadding` | number (0–30) | % breathing room inside the disc |
 | `avatarShape` | `'circle' \| 'rounded' \| 'square'` | avatar mask shape (default circle) |
+| `monogramText` | string (≤3) | manual monogram override; blank = auto-initials from the widget name |
 
 Round-trips losslessly via `to/fromBotscrewWidgetSettings`.
 

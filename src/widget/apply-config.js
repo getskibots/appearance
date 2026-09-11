@@ -146,7 +146,9 @@ export function applyWidgetConfig(config) {
   var initials = String(config.widgetName || '')
     .replace(/\b(support|resort|the|inc|llc|co)\b/gi, ' ')
     .trim().split(/\s+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase();
-  body.setAttribute('data-avatar-monogram', initials || '•');
+  // A manual monogram overrides the auto-derived initials (cap 3 chars).
+  var mono = String(config.monogramText || '').trim().slice(0, 3).toUpperCase() || initials || '•';
+  body.setAttribute('data-avatar-monogram', mono);
   var discBg = config.chatIconBg === 'brand' ? 'var(--brand)'
              : config.chatIconBg === 'transparent' ? 'transparent' : '#fff';
   function useIcon(url) {

@@ -171,6 +171,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     chatIconBg: 'white', // avatar disc bg: 'white' | 'brand' | 'transparent'
     chatIconPadding: 12, // % breathing room inside the disc
     avatarShape: 'circle', // reply-avatar shape: 'circle' | 'rounded' | 'square'
+    monogramText: '',      // manual monogram override; blank = auto from widget name
     logoMaxHeight: 44,
     cornerRadius: 7,
     effectMode: 'radiate',    // 'none' | 'shadow' | 'glow' | 'radiate'
@@ -872,6 +873,14 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     document.querySelectorAll('#avatarShapeSeg .seg__btn').forEach(function (b) {
       b.setAttribute('data-active', String(b.dataset.shape === (state.avatarShape || 'circle')));
     });
+    // Monogram override: show the auto-derived initials as the placeholder (the default)
+    if ($('monogramText')) {
+      var autoMono = String(state.widgetName || '')
+        .replace(/\b(support|resort|the|inc|llc|co)\b/gi, ' ')
+        .trim().split(/\s+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase();
+      $('monogramText').placeholder = autoMono ? 'Auto: ' + autoMono : 'Auto';
+      if (document.activeElement !== $('monogramText')) $('monogramText').value = state.monogramText || '';
+    }
     // Sync disc-background segmented + padding slider
     document.querySelectorAll('#chatIconBgSeg .seg__btn').forEach(function (b) {
       b.setAttribute('data-active', String(b.dataset.bg === (state.chatIconBg || 'white')));
@@ -1441,7 +1450,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // Per-accordion-card dirty dots — flag any card whose fields differ from the
     // last saved snapshot, so collapsed cards still signal what's been edited.
     var ACC_CARD_FIELDS = {
-      identity: ['logoUrl','chatIconUrl','chatIconBg','chatIconPadding','avatarShape','logoMaxHeight','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText','updateLabel','recentUpdate','recentUpdateSource','recentUpdateFlow'],
+      identity: ['logoUrl','chatIconUrl','chatIconBg','chatIconPadding','avatarShape','monogramText','logoMaxHeight','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText','updateLabel','recentUpdate','recentUpdateSource','recentUpdateFlow'],
       media: ['hero'],
       launcher: ['bubbleStyle','cornerRadius','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','launcherScale','statusPillFeatures','ctaText'],
       typography: ['typography'],
@@ -1604,6 +1613,11 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   // Avatar shape (circle / rounded / square)
   document.querySelectorAll('#avatarShapeSeg .seg__btn').forEach(function (b) {
     b.addEventListener('click', function () { state.avatarShape = b.dataset.shape; render(); });
+  });
+
+  // Monogram override (blank = auto initials)
+  if ($('monogramText')) $('monogramText').addEventListener('input', function (e) {
+    state.monogramText = e.target.value.slice(0, 3); render();
   });
 
   // Padding slider
@@ -2489,6 +2503,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       chatIconBg: state.chatIconBg,
       chatIconPadding: state.chatIconPadding,
       avatarShape: state.avatarShape,
+      monogramText: state.monogramText,
       backgroundImage: state.backgroundImage,
       bgTextMode: state.bgTextMode,
       logoMaxHeight: state.logoMaxHeight,
