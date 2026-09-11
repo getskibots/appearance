@@ -899,11 +899,13 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       $('monogramText').placeholder = autoMono ? 'Auto: ' + autoMono : 'Auto';
       if (document.activeElement !== $('monogramText')) $('monogramText').value = state.monogramText || '';
     }
-    // Sync disc-background segmented + padding slider
+    // (Disc background / padding / shape controls were simplified out of the UI;
+    //  their fixed defaults still drive the render. Guards below keep init safe if
+    //  the elements are absent.)
     document.querySelectorAll('#chatIconBgSeg .seg__btn').forEach(function (b) {
       b.setAttribute('data-active', String(b.dataset.bg === (state.chatIconBg || 'white')));
     });
-    if (document.activeElement !== $('chatIconPadding')) $('chatIconPadding').value = state.chatIconPadding;
+    if ($('chatIconPadding') && document.activeElement !== $('chatIconPadding')) $('chatIconPadding').value = state.chatIconPadding;
     if ($('chatIconPaddingReadout')) $('chatIconPaddingReadout').textContent = state.chatIconPadding + '%';
 
     document.documentElement.style.setProperty('--logo-max-height', state.logoMaxHeight + 'px');
@@ -1638,8 +1640,8 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     state.monogramText = e.target.value.slice(0, 3); render();
   });
 
-  // Padding slider
-  $('chatIconPadding').addEventListener('input', function (e) {
+  // Padding slider (simplified out of the UI; guard in case it's absent)
+  if ($('chatIconPadding')) $('chatIconPadding').addEventListener('input', function (e) {
     state.chatIconPadding = parseInt(e.target.value, 10); render();
   });
 
