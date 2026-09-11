@@ -60,6 +60,7 @@ works as a rounded-square (launcher).
 | `chatIconUrl` | string (URL/data URI) | the square mark; empty → fall back to logo/monogram |
 | `chatIconBg` | `'white' \| 'brand' \| 'transparent'` | disc background |
 | `chatIconPadding` | number (0–30) | % breathing room inside the disc |
+| `avatarShape` | `'circle' \| 'rounded' \| 'square'` | avatar mask shape (default circle) |
 
 Round-trips losslessly via `to/fromBotscrewWidgetSettings`.
 
@@ -71,6 +72,7 @@ Set by `applyWidgetConfig` on the root:
 | `--gsb-avatar-bg` | color | disc background (white / `var(--brand)` / transparent); brand when monogram |
 | `--gsb-avatar-fit` | `%` | `background-size` = `100 − 2×padding`% (keeps aspect, adds padding) |
 | `--gsb-avatar-fg` | color | monogram text color (`var(--enhanced-fg)`, auto-contrast) |
+| `--gsb-avatar-radius` | `%` | avatar mask shape: circle `50%` / rounded `28%` / square `14%` |
 
 Body hooks: `body.gsb-has-chat-icon` (an image is set → hide monogram text);
 `body[data-avatar-monogram="JH"]` (the initials).
