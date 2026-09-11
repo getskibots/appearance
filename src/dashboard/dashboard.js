@@ -1733,12 +1733,20 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       if (!ready) return;
       clampOffsets();
       renderBase(ctx);
-      ctx.save();                                  // circle safe-zone guide (display only)
+      // Crop-frame guide mirrors the chosen avatar shape: a rounded-rect whose
+      // radius = half the side is a circle; a smaller radius is a square. (display only)
+      var inset = 2, side = V - inset * 2;
+      var rad = (state.avatarShape === 'square') ? Math.round(side * 0.14) : side / 2;
+      var frame = function () {
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(inset, inset, side, side, rad);
+        else ctx.arc(V / 2, V / 2, side / 2, 0, Math.PI * 2); // fallback: circle
+      };
+      ctx.save();
       ctx.fillStyle = 'rgba(255,255,255,0.55)';
-      ctx.beginPath(); ctx.rect(0, 0, V, V); ctx.arc(V / 2, V / 2, V / 2 - 2, 0, Math.PI * 2, true);
-      ctx.fill('evenodd');
+      ctx.beginPath(); ctx.rect(0, 0, V, V); frame(); ctx.fill('evenodd');
       ctx.strokeStyle = 'rgba(23,19,15,0.35)'; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.arc(V / 2, V / 2, V / 2 - 2, 0, Math.PI * 2); ctx.stroke();
+      frame(); ctx.stroke();
       ctx.restore();
       updatePreviews();
     }
