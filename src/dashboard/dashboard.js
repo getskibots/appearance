@@ -898,13 +898,10 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     document.querySelectorAll('#avatarSizeSeg .seg__btn').forEach(function (b) {
       b.setAttribute('data-active', String(b.dataset.size === (state.avatarSize || 'medium')));
     });
-    // Monogram override: show the auto-derived initials as the placeholder (the default)
-    if ($('monogramText')) {
-      var autoMono = String(state.widgetName || '')
-        .replace(/\b(support|resort|the|inc|llc|co)\b/gi, ' ')
-        .trim().split(/\s+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase();
-      $('monogramText').placeholder = autoMono ? 'Auto: ' + autoMono : 'Auto';
-      if (document.activeElement !== $('monogramText')) $('monogramText').value = state.monogramText || '';
+    // Company-initials override field. Keep the generic HTML placeholder ("e.g. AB");
+    // just mirror the saved value. (Initials auto-generate from the widget name when blank.)
+    if ($('monogramText') && document.activeElement !== $('monogramText')) {
+      $('monogramText').value = state.monogramText || '';
     }
     // (Disc background / padding / shape controls were simplified out of the UI;
     //  their fixed defaults still drive the render. Guards below keep init safe if
