@@ -170,6 +170,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     chatIconUrl: null,   // square mark for the reply avatar (+ launcher); falls back to logoUrl
     chatIconBg: 'white', // avatar disc bg: 'white' | 'brand' | 'transparent'
     chatIconPadding: 12, // % breathing room inside the disc
+    avatarShape: 'circle', // reply-avatar shape: 'circle' | 'rounded' | 'square'
     logoMaxHeight: 44,
     cornerRadius: 7,
     effectMode: 'radiate',    // 'none' | 'shadow' | 'glow' | 'radiate'
@@ -865,7 +866,12 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       ring.style.backgroundSize = (100 - pad * 2) + '%';
       ring.style.backgroundPosition = 'center';
       ring.style.backgroundRepeat = 'no-repeat';
+      ring.style.borderRadius = state.avatarShape === 'square' ? '14%' : state.avatarShape === 'rounded' ? '28%' : '50%';
     }
+    // Sync avatar-shape segmented
+    document.querySelectorAll('#avatarShapeSeg .seg__btn').forEach(function (b) {
+      b.setAttribute('data-active', String(b.dataset.shape === (state.avatarShape || 'circle')));
+    });
     // Sync disc-background segmented + padding slider
     document.querySelectorAll('#chatIconBgSeg .seg__btn').forEach(function (b) {
       b.setAttribute('data-active', String(b.dataset.bg === (state.chatIconBg || 'white')));
@@ -1435,7 +1441,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     // Per-accordion-card dirty dots — flag any card whose fields differ from the
     // last saved snapshot, so collapsed cards still signal what's been edited.
     var ACC_CARD_FIELDS = {
-      identity: ['logoUrl','chatIconUrl','chatIconBg','chatIconPadding','logoMaxHeight','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText','updateLabel','recentUpdate','recentUpdateSource','recentUpdateFlow'],
+      identity: ['logoUrl','chatIconUrl','chatIconBg','chatIconPadding','avatarShape','logoMaxHeight','color','chatHeaderColor','widgetName','inputPlaceholder','welcomeText','updateLabel','recentUpdate','recentUpdateSource','recentUpdateFlow'],
       media: ['hero'],
       launcher: ['bubbleStyle','cornerRadius','customIconUrl','customIconSize','slideState','autoHideOnScroll','placement','launcherScale','statusPillFeatures','ctaText'],
       typography: ['typography'],
@@ -1593,6 +1599,11 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   // Disc-background choice (white / brand / transparent)
   document.querySelectorAll('#chatIconBgSeg .seg__btn').forEach(function (b) {
     b.addEventListener('click', function () { state.chatIconBg = b.dataset.bg; render(); });
+  });
+
+  // Avatar shape (circle / rounded / square)
+  document.querySelectorAll('#avatarShapeSeg .seg__btn').forEach(function (b) {
+    b.addEventListener('click', function () { state.avatarShape = b.dataset.shape; render(); });
   });
 
   // Padding slider
@@ -2477,6 +2488,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
       chatIconUrl: state.chatIconUrl,
       chatIconBg: state.chatIconBg,
       chatIconPadding: state.chatIconPadding,
+      avatarShape: state.avatarShape,
       backgroundImage: state.backgroundImage,
       bgTextMode: state.bgTextMode,
       logoMaxHeight: state.logoMaxHeight,

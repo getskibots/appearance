@@ -1450,7 +1450,7 @@ body[data-variant="full"].gsb-conversation-started .gsb-conversation-intro { dis
 .gsb-msg-row--ai .gsb-msg { max-width: 100%; align-self: auto; }
 .gsb-avatar {
   flex: 0 0 26px; width: 26px; height: 26px; align-self: flex-end;
-  border-radius: 50%;
+  border-radius: var(--gsb-avatar-radius, 50%);
   display: flex; align-items: center; justify-content: center;
   /* Monogram fallback (initials) — shown only when no icon image is set. */
   font: 600 11px/1 var(--gsb-body-font, system-ui, -apple-system, sans-serif);

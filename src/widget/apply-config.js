@@ -139,6 +139,9 @@ export function applyWidgetConfig(config) {
   var pad = config.chatIconPadding != null ? Math.min(30, Math.max(0, config.chatIconPadding)) : 12;
   setVar('--gsb-avatar-fit', (100 - pad * 2) + '%'); // background-size → padding inside the disc
   setVar('--gsb-avatar-fg', 'var(--enhanced-fg, #fff)'); // monogram text (auto-contrast to brand)
+  // Avatar shape: circle (default) | rounded (squircle) | square. Same stored square
+  // asset — this only changes the mask radius.
+  setVar('--gsb-avatar-radius', config.avatarShape === 'square' ? '14%' : config.avatarShape === 'rounded' ? '28%' : '50%');
   // Monogram fallback text: initials of the widget name (e.g. "Jackson Hole" → "JH").
   var initials = String(config.widgetName || '')
     .replace(/\b(support|resort|the|inc|llc|co)\b/gi, ' ')
