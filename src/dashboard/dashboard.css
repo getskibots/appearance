@@ -1384,6 +1384,8 @@
 }
 
 /* Chat-icon options: favicon fetch + disc background + padding */
+.chaticon__or { font-size: 12px; color: var(--ink-muted); margin-top: 4px; }
+.chaticon__hint { font-size: 12px; color: var(--ink-muted); }
 .icon-opts { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
 .icon-opts__fetch { display: flex; gap: 8px; }
 .icon-opts__fetch .input { flex: 1 1 auto; min-width: 0; }
