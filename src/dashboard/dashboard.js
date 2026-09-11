@@ -1554,18 +1554,39 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     render();
   });
 
+  // Low-res warning: a mark needs enough pixels to stay crisp up to the ~56px
+  // launcher at 2× (~112px). SVGs are vector (min dim reads 0) → never warned.
+  function showIconWarn(html) {
+    var w = $('chatIconWarn'); if (!w) return;
+    if (html) { w.innerHTML = '• ' + html; w.setAttribute('data-show', 'true'); }
+    else { w.innerHTML = ''; w.removeAttribute('data-show'); }
+  }
+  function probeMinDim(url, cb) {
+    var i = new Image();
+    i.onload = function () { cb(Math.min(i.naturalWidth || 0, i.naturalHeight || 0)); };
+    i.onerror = function () { cb(0); };
+    i.src = url;
+  }
+  function warnIfLowRes(url, label) {
+    probeMinDim(url, function (m) {
+      showIconWarn(m && m < 96 ? (label || 'This icon is ' + m + 'px') + ' — it may look soft. Use one at least 128px square.' : '');
+    });
+  }
+
   // Chat icon (reply avatar) upload — a dedicated SQUARE mark. Separate from the
   // wide header logo; falls back to the logo when empty.
   $('chatIconFile').addEventListener('change', function(e) {
     var f = e.target.files && e.target.files[0];
     if (!f) return;
     var reader = new FileReader();
-    reader.onload = function() { state.chatIconUrl = reader.result; render(); };
+    reader.onload = function() { state.chatIconUrl = reader.result; warnIfLowRes(reader.result); render(); };
     reader.readAsDataURL(f);
+    e.target.value = ''; // let the same file be re-selected later (fires change again)
   });
 
   $('removeChatIconBtn').addEventListener('click', function() {
     state.chatIconUrl = null;
+    showIconWarn('');
     render();
   });
 
@@ -1615,7 +1636,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     (function next(i) {
       if (i >= cands.length) { msg.textContent = 'No icon found on ' + host + '. Try uploading one.'; return; }
       tryLoad(cands[i]).then(function (ok) {
-        if (ok) { state.chatIconUrl = ok; msg.textContent = 'Found it. (Tip: for production, save this image rather than hotlinking.)'; render(); }
+        if (ok) { state.chatIconUrl = ok; msg.textContent = 'Found it. (Tip: for production, save this image rather than hotlinking.)'; warnIfLowRes(ok, 'Low-res favicon'); render(); }
         else next(i + 1);
       });
     })(0);
@@ -1672,7 +1693,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
         scale = scale0; ox = (V - img.naturalWidth * scale) / 2; oy = (V - img.naturalHeight * scale) / 2;
         $('iconCropZoom').value = 100; ready = true; draw();
       };
-      img.onerror = function () { alert('Could not load that image for cropping.'); };
+      img.onerror = function () { el.hidden = true; alert('Could not load that image for cropping. Upload the logo file, then crop it.'); };
       img.src = src;
       el.hidden = false;
     }
@@ -1692,14 +1713,28 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     $('iconCropApply').addEventListener('click', function () {
       var d = exportData();
       if (!d) { alert("Couldn't crop that image (it's from another site). Upload the logo file and crop that instead."); return; }
-      state.chatIconUrl = d; render(); close();
+      state.chatIconUrl = d;
+      var srcCaptured = Math.round(V / scale); // source px captured into the 256 export
+      showIconWarn(srcCaptured < 160 ? 'Cropped from a small area (~' + srcCaptured + 'px of source) — may look soft. Use a higher-res logo, or zoom out.' : '');
+      render(); close();
     });
     $('iconCropCancel').addEventListener('click', close);
     el.addEventListener('click', function (e) { if (e.target === el) close(); });
     return { open: open };
   })();
-  // Prefer cropping the LOGO (usually a data URI → clean export); fall back to the icon.
-  $('cropChatIconBtn').addEventListener('click', function () { Cropper.open(state.logoUrl || state.chatIconUrl); });
+  // Pick a CROPPABLE source. A cropper canvas can only read same-origin/data-URI
+  // images (a remote favicon taints or won't load), so:
+  //   1) the current icon if it's an uploaded/cropped data URI (lets you re-frame it),
+  //   2) else the logo if it's a data URI (the usual "square-ify the wide logo" case),
+  //   3) else whatever's there (last resort; apply() guards taint with a message).
+  // Fetched favicons are already square, so cropping the logo instead is the useful move.
+  var isData = function (u) { return /^data:/.test(u || ''); };
+  $('cropChatIconBtn').addEventListener('click', function () {
+    var src = isData(state.chatIconUrl) ? state.chatIconUrl
+            : isData(state.logoUrl) ? state.logoUrl
+            : (state.chatIconUrl || state.logoUrl);
+    Cropper.open(src);
+  });
 
   // Custom launcher size (px diameter; the uploaded image fills it)
   $('customIconSize').addEventListener('input', function(e) {
