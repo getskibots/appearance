@@ -168,7 +168,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
   var DEFAULTS = {
     logoUrl: SAMPLE_LOGO,
     chatIconUrl: null,   // square mark for the reply avatar (+ launcher); falls back to logoUrl
-    chatIconBg: 'white', // avatar disc bg: 'white' | 'brand' | 'transparent'
+    chatIconBg: 'transparent', // avatar disc bg: 'white' | 'brand' | 'transparent' (default: no fill)
     chatIconPadding: 12, // % breathing room inside the disc
     avatarShape: 'circle', // reply-avatar shape: 'circle' | 'rounded' | 'square'
     monogramText: '',      // manual monogram override; blank = auto from widget name
@@ -860,14 +860,32 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     var ring = $('chatIconAvatarPreview');
     if (ring) {
       var pad = state.chatIconPadding != null ? state.chatIconPadding : 12;
-      var ringBg = state.chatIconBg === 'brand' ? state.color
-                 : state.chatIconBg === 'transparent' ? 'transparent' : '#fff';
-      ring.style.backgroundImage = chatIcon ? 'url("' + chatIcon + '")' : 'none';
-      ring.style.backgroundColor = ringBg;
-      ring.style.backgroundSize = (100 - pad * 2) + '%';
-      ring.style.backgroundPosition = 'center';
-      ring.style.backgroundRepeat = 'no-repeat';
+      var isTr = state.chatIconBg === 'transparent';
+      var ringBg = state.chatIconBg === 'brand' ? state.color : isTr ? 'transparent' : '#fff';
+      // Mirror the widget's source ladder: chatIcon → near-square logo → monogram.
+      var lp = $('logoPreview');
+      var logoAR = (lp && lp.naturalWidth && lp.naturalHeight) ? lp.naturalWidth / lp.naturalHeight : 0;
+      var ringImg = state.chatIconUrl ? state.chatIconUrl
+                  : (state.logoUrl && logoAR >= 0.7 && logoAR <= 1.4) ? state.logoUrl : '';
       ring.style.borderRadius = state.avatarShape === 'square' ? '14%' : state.avatarShape === 'rounded' ? '28%' : '50%';
+      ring.style.backgroundColor = ringBg;
+      ring.style.border = isTr ? 'none' : '1px solid var(--border-strong)';
+      ring.style.boxShadow = isTr ? 'none' : '0 1px 2px rgba(23,19,15,0.10)';
+      ring.style.display = 'inline-flex'; ring.style.alignItems = 'center'; ring.style.justifyContent = 'center';
+      ring.style.font = '600 11px/1 system-ui, sans-serif';
+      if (ringImg) {
+        ring.textContent = '';
+        ring.style.backgroundImage = 'url("' + ringImg + '")';
+        ring.style.backgroundSize = (100 - pad * 2) + '%';
+        ring.style.backgroundPosition = 'center';
+        ring.style.backgroundRepeat = 'no-repeat';
+      } else {
+        // monogram: brand letters on white/none, white letters on a brand disc
+        ring.style.backgroundImage = 'none';
+        ring.textContent = String(state.monogramText || '').trim().slice(0, 3).toUpperCase()
+          || String(state.widgetName || '').replace(/\b(support|resort|the|inc|llc|co)\b/gi, ' ').trim().split(/\s+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase() || '•';
+        ring.style.color = state.chatIconBg === 'brand' ? '#fff' : state.color;
+      }
     }
     // Sync avatar-shape segmented
     document.querySelectorAll('#avatarShapeSeg .seg__btn').forEach(function (b) {

@@ -138,7 +138,6 @@ export function applyWidgetConfig(config) {
      a raw <img cover> gave). See chat-widget.css .gsb-avatar. */
   var pad = config.chatIconPadding != null ? Math.min(30, Math.max(0, config.chatIconPadding)) : 12;
   setVar('--gsb-avatar-fit', (100 - pad * 2) + '%'); // background-size → padding inside the disc
-  setVar('--gsb-avatar-fg', 'var(--enhanced-fg, #fff)'); // monogram text (auto-contrast to brand)
   // Avatar shape: circle (default) | rounded (squircle) | square. Same stored square
   // asset — this only changes the mask radius.
   setVar('--gsb-avatar-radius', config.avatarShape === 'square' ? '14%' : config.avatarShape === 'rounded' ? '28%' : '50%');
@@ -149,16 +148,22 @@ export function applyWidgetConfig(config) {
   // A manual monogram overrides the auto-derived initials (cap 3 chars).
   var mono = String(config.monogramText || '').trim().slice(0, 3).toUpperCase() || initials || '•';
   body.setAttribute('data-avatar-monogram', mono);
-  var discBg = config.chatIconBg === 'brand' ? 'var(--brand)'
-             : config.chatIconBg === 'transparent' ? 'transparent' : '#fff';
+  // Disc background honors the choice for BOTH icon and monogram. 'None' = fully
+  // transparent, with no ring/shadow, so nothing shows behind the mark/letters.
+  var isTransparent = config.chatIconBg === 'transparent';
+  var discBg = config.chatIconBg === 'brand' ? 'var(--brand)' : isTransparent ? 'transparent' : '#fff';
+  setVar('--gsb-avatar-bg', discBg);
+  // Monogram text auto-contrasts with the disc: white on a brand disc, otherwise the
+  // brand color (so letters read on a white disc or on 'None' over a light panel).
+  setVar('--gsb-avatar-fg', config.chatIconBg === 'brand' ? 'var(--enhanced-fg, #fff)' : 'var(--brand)');
+  setVar('--gsb-avatar-border', isTransparent ? 'none' : '1px solid var(--jh-border)');
+  setVar('--gsb-avatar-shadow', isTransparent ? 'none' : '0 1px 2px rgba(23, 19, 15, 0.08)');
   function useIcon(url) {
     setVar('--gsb-chat-icon', 'url("' + url + '")');
-    setVar('--gsb-avatar-bg', discBg);
     body.classList.add('gsb-has-chat-icon');
   }
   function useMonogram() {
     document.documentElement.style.removeProperty('--gsb-chat-icon');
-    setVar('--gsb-avatar-bg', 'var(--brand)'); // initials sit on a brand disc
     body.classList.remove('gsb-has-chat-icon');
   }
   if (config.chatIconUrl) {
