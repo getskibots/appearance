@@ -1647,7 +1647,7 @@ import FONT_CATALOG from '../shared/fonts/google-fonts.json';
     (function next(i) {
       if (i >= cands.length) { msg.textContent = 'No icon found on ' + host + '. Try uploading one.'; return; }
       tryLoad(cands[i]).then(function (ok) {
-        if (ok) { state.chatIconUrl = ok; msg.textContent = 'Found it. (Tip: for production, save this image rather than hotlinking.)'; warnIfLowRes(ok, 'Low-res favicon'); render(); }
+        if (ok) { state.chatIconUrl = ok; msg.textContent = "Found it — but it's linked from the site, not saved locally. For a permanent copy, Upload the file or Crop the logo."; warnIfLowRes(ok, 'Low-res favicon'); render(); }
         else next(i + 1);
       });
     })(0);
